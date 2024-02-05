@@ -10,6 +10,10 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
+        [SerializeField]
+        private string profileURL = "User Profile";
+
+
         [Space(5)]
         public AppData.StorageDirectoryData profileStorageData = new AppData.StorageDirectoryData();
 
@@ -179,27 +183,86 @@ namespace Com.RedicalGames.Filar
                         throw task.Exception;
                 });
 
-                string deviceID = AppData.Helpers.GetDeviceInfo().deviceID;
+                var serverInitializationCallbackTask = await databaseManager.OnServerAppInfoDatabaseInitializationCompleted();
 
-                var appInfoTaskResults = await databaseManager.GetAppInfoAsync(deviceID);
-
-                await Task.Delay(2000);
+                callbackResults.SetResult(serverInitializationCallbackTask);
 
                 if (callbackResults.Success())
                 {
-                    AppData.Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name, async appManagerCallbackResults =>
+                    string deviceID = AppData.Helpers.GetDeviceInfo().deviceID;
+
+                    var appInfoTaskResults = await databaseManager.GetAppInfoAsync(deviceID);
+
+                    await Task.Delay(2000);
+
+                    callbackResults.SetResult(appInfoTaskResults);
+
+                    if (callbackResults.Success())
                     {
-                        if (appManagerCallbackResults.Success())
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Service Manager Instance", "App Service Manager Instance Is Not initialized Yet."));
+
+                        if (callbackResults.Success())
                         {
-                            appManagerCallbackResults.data.SyncAppInfo(appInfoTaskResults.data);
+                            var appServiceManagerInstance = AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Service Manager Instance").GetData();
+
+                            appServiceManagerInstance.SyncAppInfo(appInfoTaskResults.GetData(), syncCallbackResults => 
+                            {
+                                callbackResults.SetResult(syncCallbackResults);
+                            });
                         }
                         else
-                            Log(appManagerCallbackResults.GetResultCode, appManagerCallbackResults.GetResult, this);
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                         await Task.Delay(1000);
+                    }
+                    else
+                    {
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance", "App Services Manager Instance Is not Yet Initialized."));
 
-                    }, "App Manager instane Is Not Yet Initialized.");
+                        if (callbackResults.Success())
+                        {
+                            var appServicesManagerInstance = AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance").GetData();
+                            var newProfile = CreateProfile(deviceID).GetData();
+                            var newAppInfo = appServicesManagerInstance.CreateAppDeviceInfo(newProfile).GetData();
+                            var registerDeviceInfoCallbackResultsTask = await databaseManager.RegisterDeficeAppInfoAsync(profileURL, newAppInfo);
+
+                            callbackResults.SetResult(registerDeviceInfoCallbackResultsTask);
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.result = "App Signed In Successfully.";
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+
+            return callbackResults;
+        }
+
+        private AppData.CallbackData<AppData.Profile> CreateProfile(string deviceID)
+        {
+            var callbackResults = new AppData.CallbackData<AppData.Profile>();
+
+            if (!string.IsNullOrEmpty(deviceID))
+            {
+                var profile = new AppData.Profile(AppData.ProfileStatus.Default);
+
+                callbackResults.result = $"Create Profile Success - A Profile Has Been Successfully Created Using Device ID : {deviceID}";
+                callbackResults.data = profile;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = "Create Profile Failed - Device ID Is Missing - Invalid Operation.";
+                callbackResults.data = default;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
             }
 
             return callbackResults;
@@ -266,44 +329,74 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public async Task<AuthError> SignInAsync(AppData.Profile profile)
+        public async Task<AppData.CallbackData<AuthError>> SignInAsync(AppData.Profile profile)
         {
-            AuthError authError = AuthError.None;
+            var callbackResults = new AppData.CallbackData<AuthError>(AppData.Helpers.GetAppComponentValid(profile, "Profile", "SignInAsync In Async Failed - Profile Parameter Value Is Missing / Null - Invalid Operation."));
 
-            try
+            if (callbackResults.Success())
             {
-                if (authDependencyStatus == DependencyStatus.Available)
+                callbackResults.SetResult(profile.Initialized());
+
+                if (callbackResults.Success())
                 {
-                    await authentication.SignInWithEmailAndPasswordAsync(profile.GetUserEmail(), profile.GetUserPassword()).ContinueWith(signedInTaskCompletion =>
+                    AuthError authError = AuthError.None;
+
+                    try
                     {
-                        if (signedInTaskCompletion.Exception == null)
+                        if (authDependencyStatus == DependencyStatus.Available)
                         {
-                            if (signedInTaskCompletion.Result.User.IsValid())
+                            await authentication.SignInWithEmailAndPasswordAsync(profile.GetUserEmail().GetData(), profile.GetUserPassword().GetData()).ContinueWith(signedInTaskCompletion =>
                             {
-                                LogSuccess($"User : {authentication.CurrentUser.DisplayName} Has Signed In Successfully.", this);
-                            }
-                            else
-                                LogWarning($"User : {profile.GetUserEmail()} Is Not Valid", this);
-                        }
-                        else
-                        {
-                            FirebaseException fbException = signedInTaskCompletion.Exception.GetBaseException() as FirebaseException;
-                            authError = (AuthError)fbException.ErrorCode;
+                                if (signedInTaskCompletion.Exception == null)
+                                {
+                                    if (signedInTaskCompletion.Result.User.IsValid())
+                                    {
+                                        callbackResults.result = $"User : {authentication.CurrentUser.DisplayName} Has Signed In Successfully.";
+                                        callbackResults.data = authError;
+                                    }
+                                    else
+
+                                    {
+                                        callbackResults.result = $"User : {profile.GetUserEmail()} Is Not Valid";
+                                        callbackResults.data = authError;
+                                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                                    }
+                                }
+                                else
+                                {
+                                    FirebaseException fbException = signedInTaskCompletion.Exception.GetBaseException() as FirebaseException;
+                                    authError = (AuthError)fbException.ErrorCode;
+
+                                    callbackResults.result = fbException.Message;
+                                    callbackResults.data = authError;
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                }
+
+                                return authError;
+                            });
                         }
 
-                        return authError;
-                    });
+                        return callbackResults;
+                    }
+                    catch (Exception exception)
+                    {
+                        FirebaseException fbException = exception.GetBaseException() as FirebaseException;
+                        var errorCode = (AuthError)fbException.ErrorCode;
+
+                        callbackResults.result = fbException.Message;
+                        callbackResults.data = errorCode;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+
+                        return callbackResults;
+                    }
                 }
-
-                return authError;
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
-            catch (Exception exception)
-            {
-                FirebaseException fbException = exception.GetBaseException() as FirebaseException;
-                var errorCode = (AuthError)fbException.ErrorCode;
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                return errorCode;
-            }
+            return callbackResults;
         }
 
         public async Task<AuthError> SignUpAsync(string userEmail, string userPassWord)

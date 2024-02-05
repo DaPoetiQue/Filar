@@ -5571,8 +5571,8 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            public Profile profile;
-            public LicenseKey licenseKey;
+            public string profile;
+            public string licenseKey;
 
             #endregion
 
@@ -5585,57 +5585,125 @@ namespace Com.RedicalGames.Filar
 
             public AppInfo(Profile profile, LicenseKey licenseKey)
             {
-                this.profile = profile;
-                this.licenseKey = licenseKey;
+                this.profile = JsonUtility.ToJson(profile);
+                this.licenseKey = JsonUtility.ToJson(licenseKey);
             }
 
             #region Data Setters
 
-            public void SetLicenseKey(LicenseKey licenseKey) => this.licenseKey = licenseKey;
-            public void SetProfile(Profile profile) => this.profile = profile;
+            public void SetLicenseKey(LicenseKey licenseKey, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(licenseKey, "License Key", "Set License Key Failed - License Key Parameter Value Is Null - Invalid Operation,"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(licenseKey.GetActivationKey());
+
+                    if (callbackResults.Success())
+                    {
+                        this.licenseKey = JsonUtility.ToJson(licenseKey);
+
+                        callbackResults.result = $"Set License Key Success - License Key : {licenseKey.GetActivationKey().GetData()} Has Been Assigned Successfully.";
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetProfile(Profile profile, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(profile, "Profile", "Set Profile Failed - Profile Parameter Value Is Null - Invalid Operation,"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(profile.GetUniqueIdentifier());
+
+                    if (callbackResults.Success())
+                    {
+                        this.profile = JsonUtility.ToJson(profile);
+
+                        callbackResults.result = $"Set Profile Success - Profile : {profile.GetUniqueIdentifier().GetData()} Has Been Assigned Successfully.";
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
 
             #endregion
 
             #region Data Getters
 
-            public LicenseKey GetLicenseKey() => licenseKey;
-            public Profile GetProfile() => profile;
-
-            #endregion
-
-            public CallbackData<LicenseKey> CompareLicense(LicenseKey licenseKey)
+            public CallbackData<LicenseKey> GetLicenseKey()
             {
-                CallbackData<LicenseKey> callbackResults = new CallbackData<LicenseKey>();
+                var callbackResults = new CallbackData<LicenseKey>();
 
-                if(this.licenseKey.GetAppKey() == licenseKey.GetAppKey())
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(licenseKey, "License Key", "Get License Key Failed - License Key Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
                 {
-                    callbackResults.result = "License App Key Matched";
-                    callbackResults.resultCode = Helpers.SuccessCode;
+                    var licenseKey = JsonUtility.FromJson<LicenseKey>(this.licenseKey);
+
+                    callbackResults.SetResult(licenseKey.GetActivationKey());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get License Key Success - License Key : {licenseKey.GetActivationKey().GetData()} Has Been Loaded Successfully.";
+                        callbackResults.data = licenseKey;
+                    }
                 }
-                else
+
+                return callbackResults;
+            }
+
+            public CallbackData<Profile> GetProfile()
+            {
+                var callbackResults = new CallbackData<Profile>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(profile, "Profile", "Get Profile Failed - Profile Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
                 {
-                    callbackResults.result = "License App Key Doesn't Match";
-                    callbackResults.resultCode = Helpers.ErrorCode;
+                    var profile = JsonUtility.FromJson<Profile>(this.profile);
+
+                    callbackResults.SetResult(profile.GetUniqueIdentifier());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Profile Success - Profile : {profile.GetUniqueIdentifier().GetData()} Has Been Loaded Successfully.";
+                        callbackResults.data = profile;
+                    }
                 }
 
                 return callbackResults;
             }
 
             #endregion
+
+            #endregion
+        }
+
+        public enum LicenseStatus
+        {
+            None,
+            Active,
+            TemporarlyBanned,
+            PermanentlyBanned
         }
 
         [Serializable]
-        public class LicenseKey
+        public class LicenseKey : DataDebugger
         {
             #region Components
 
-            public uint appKey;
+            public string appKey;
             public string activationKey;
-            public List<DeviceInfo> deviceInfoList;
+            public string deviceInfoString;
             public LicenseType licenseType;
-            public bool active;
+            public LicenseStatus status;
 
             public DateTimeComponent activationStartDate, activitionEndDate;
+
+            private string splitString = " | ";
 
             #endregion
 
@@ -5646,34 +5714,275 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public LicenseKey(uint appKey, string activationKey, List<DeviceInfo> deviceInfoList, LicenseType licenseType, bool active, DateTimeComponent activationStartDate, DateTimeComponent activitionEndDate = null)
+            public LicenseKey(string appKey, string activationKey, DeviceInfo deviceInfo, LicenseType licenseType, LicenseStatus status, DateTimeComponent activationStartDate, DateTimeComponent activitionEndDate = null)
             {
                 this.appKey = appKey;
                 this.activationKey = activationKey;
-                this.deviceInfoList = deviceInfoList;
                 this.licenseType = licenseType;
-                this.active = active;
+                this.status = status;
                 this.activationStartDate = activationStartDate;
                 this.activitionEndDate = activitionEndDate;
+
+                UpdateDeviceInfoString(GetDeviceInfoString(new List<DeviceInfo> { deviceInfo }, GetActivationKey().GetData())?.GetData());
             }
 
             #region Data Setters
 
-            public void SetAppKey(uint appKey) => this.appKey = appKey;
-            public void SetActivationKey(string activationKey) => this.activationKey = activationKey;
-            public void SetDeviceInfo(List<DeviceInfo> deviceInfo) => this.deviceInfoList = deviceInfo;
-            public void SetLicense(LicenseType licenseType) => this.licenseType = licenseType;
-            public void SetActive(bool active) => this.active = active;
+            /// <summary>
+            /// This Function Links A New Sign In Device To This License Key.
+            /// </summary>
+            /// <param name="deviceInfo"></param>
+            /// <param name="callback"></param>
+            public void AddDeviceInfo(DeviceInfo deviceInfo, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetDeviceInfoList());
+
+                if(callbackResults.Success())
+                {
+                    var deviceInfoList = GetDeviceInfoList().GetData();
+
+                    if(!deviceInfoList.Contains(deviceInfo))
+                    {
+                        deviceInfoList.Add(deviceInfo);
+
+                        callbackResults.SetResult(GetActivationKey());
+
+                        if (callbackResults.Success())
+                        {
+                            UpdateDeviceInfoString(GetDeviceInfoString(deviceInfoList, GetActivationKey().GetData())?.GetData(), deviceInfoUpdatedCallbackResults => 
+                            {
+                                callbackResults.SetResult(deviceInfoUpdatedCallbackResults);
+                            });
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Add Device Info Failed - Device With ID : {deviceInfo.deviceID} Already Exists In Device Info List - Invalid Operation.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            /// <summary>
+            /// This Function Updates The Type Of Assigned User License.
+            /// </summary>
+            /// <param name="licenseType"></param>
+            /// <param name="callback"></param>
+            public void UpdateType(LicenseType licenseType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(licenseType));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Update License Type Success - license Type Has Been Update From : {this.licenseType} To : {licenseType}";
+                    this.licenseType = licenseType;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            /// <summary>
+            /// This Funcgtion Updates The Sttaus Of The User's License
+            /// </summary>
+            /// <param name="status"></param>
+            /// <param name="callback"></param>
+            public void UpdateStatus(LicenseStatus status, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(status));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Update License Status Success - license Status Has Been Ppdate From : {this.status} To : {status}";
+                    this.status = status;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            /// <summary>
+            /// This Function Updates The Device Info String After Linking A New Device.
+            /// </summary>
+            /// <param name="deviceInfoString"></param>
+            /// <param name="callback"></param>
+            private void UpdateDeviceInfoString(string deviceInfoString, Action<Callback> callback = null)
+            {
+                var callbackResuts = new Callback(Helpers.GetAppStringValueNotNullOrEmpty(deviceInfoString, "Device Info String", "Update Device Info String Failed - Device Info String Parameter Value Is Empty /Null - Invalid Operation"));
+
+                if(callbackResuts.Success())
+                {
+                    this.deviceInfoString = deviceInfoString;
+                    callbackResuts.result = $"Update Device Info String Success - Device Info String Has Been Successfully Updated To : {deviceInfoString}";
+                }
+
+                callback?.Invoke(callbackResuts);
+            }
 
             #endregion
 
             #region Data Getters
 
-            public uint GetAppKey() => appKey;
-            public string GetActivationKey() => activationKey;
-            public List<DeviceInfo> GetDeviceIinfoList() => deviceInfoList;
-            public LicenseType GetLicense() => licenseType;
-            public bool GetActive() => active;
+            private CallbackData<string> GetDeviceInfoString(List<DeviceInfo> deviceInfos, string key)
+            {
+                var callbackResults = new CallbackData<string>(Helpers.GetAppComponentsValid(deviceInfos, "Device Infos", "Get Device Info String Failed - Device Infos Parameter Value"));
+
+                if (callbackResults.Success())
+                {
+                    var deviceInfoString = new StringBuilder();
+
+                    for (int i = 0; i < deviceInfos.Count; i++)
+                    {
+                        var deviceInfoJsonString = JsonUtility.ToJson(deviceInfos[i]);
+
+                        callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(deviceInfoJsonString, "Device Info Json String", "Get Device Info String Failed - Device Info Json String Couldn't Be Created - Invalid Operation."));
+
+                        if(callbackResults.Success())
+                            deviceInfoString.Append(deviceInfoJsonString).Append(splitString);
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+
+                    callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(deviceInfoString.ToString(), "Device Info String", "Get Device Info String Failed - Device Info String Couldn't Be Appended -Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        deviceInfoString.Remove(deviceInfoString.Length - splitString.Length, splitString.Length);
+
+                        callbackResults.result = $"Get Device Info String Success - Device Info String Has Been Generated Successfully.";
+                        callbackResults.data = deviceInfoString.ToString();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+
+                return callbackResults;
+            }
+
+            private CallbackData<string> GetDeviceInfoString()
+            {
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(deviceInfoString, "Device Info String", "Get Device Info String Failed - Device Info String Value Is Missing / Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Device Info String Success - Device Info String Value Is : {deviceInfoString}.";
+                    callbackResults.data = deviceInfoString;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<string> GetAppKey()
+            {
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(appKey, "App Key", "Get App Key Failed - App Key Value Is Missing / Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get App Key Success - App Key Value Is : {appKey}.";
+                    callbackResults.data = appKey;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<string> GetActivationKey()
+            {
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(activationKey, "Activation Key", "Get Activation Key Failed - Activation Key Value Is Missing / Null - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Activation Key Success - Activation Key Value Is : {activationKey}.";
+                    callbackResults.data = activationKey;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<DeviceInfo> GetDeviceInfoList()
+            {
+                var callbackResults = new CallbackDataList<DeviceInfo>(GetDeviceInfoString());
+
+                if (callbackResults.Success())
+                {
+                    var deviceInfoStringArray = GetDeviceInfoString().GetData().Split(splitString);
+
+                    callbackResults.SetResult(Helpers.GetAppStringArrayValid(deviceInfoStringArray, "Device Info String Array", $"Get Device Info List Failed - Couldn't Get Device Info String Array From : {GetDeviceInfoString().GetData()} Using Split String : {splitString}"));
+
+                    if (callbackResults.Success())
+                    {
+                        var deviceInfoList = new List<DeviceInfo>();
+
+                        for (int i = 0; i < deviceInfoStringArray.Length; i++)
+                        {
+                            LogInfo($"___+++++Logged_Cat: Device Info Encrypted At Index : {i} -Results : {deviceInfoStringArray[i]}", this);
+
+                            var deviceInfo = JsonUtility.FromJson<DeviceInfo>(deviceInfoStringArray[i]);
+
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(deviceInfo, "Device info", $"Get Device Info list Failed - Couldn't Get Device Info From Json String : {deviceInfoStringArray[i]} At Index : {i} - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                if (!deviceInfoList.Contains(deviceInfo))
+                                    deviceInfoList.Add(deviceInfo);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+
+                        if (deviceInfoList.Count > 0 && deviceInfoList.Count == deviceInfoStringArray.Length)
+                        {
+                            callbackResults.result = $"Get Device Info List Success - {deviceInfoList.Count} Device Info Data Have Been Loaded Successfully.";
+                            callbackResults.data = deviceInfoList;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Get Device Info List Failed - Couldn't Extract Device Info From Array Of : {deviceInfoStringArray.Length} Items - Please Check Here - Invaid Operation.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+
+                return callbackResults;
+            }
+
+            public new CallbackData<LicenseType> GetType()
+            {
+                var callbackResults = new CallbackData<LicenseType>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(licenseType, "License Type", $"Get license Type Failed - License Type Is Set To Default : {licenseType}"));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get license Type Success - License Type Is Set To : {licenseType}";
+                    callbackResults.data = licenseType;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<LicenseStatus> GetStatus()
+            {
+                var callbackResults = new CallbackData<LicenseStatus>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(status, "License Status", $"Get license Status Failed - License Status Is Set To Default : {status}"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get license Status Success - License Status Is Set To : {status}";
+                    callbackResults.data = status;
+                }
+
+                return callbackResults;
+            }
 
             #endregion
 
@@ -6476,11 +6785,11 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                callbackResults.SetResults(Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.GetName(), "Profile Manager Instance Is Not Yet Initialized."));
+                                                                callbackResults.SetResults(Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    var profileManager = Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.name).GetData();
+                                                                    var profileManager = Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
 
                                                                     #region Profile Sync
 
@@ -6705,7 +7014,7 @@ namespace Com.RedicalGames.Filar
                 {
                     Callback callbackResults = new Callback();
 
-                    Helpers.GetAppComponentValid(sequenceDataQueue, "Sequence Data Queue", async componentsValidCallbackResults => 
+                    Helpers.GetAppComponentValid(sequenceDataQueue, "Sequence Data Queue", componentsValidCallbackResults => 
                     {
                         callbackResults.SetResults(componentsValidCallbackResults);
                     }, "Sequence Data Queue Is Not Yet Initialized");
@@ -6904,10 +7213,10 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var sequenceInstance = callbackResults.data;
+                    var sequenceInstance = callbackResults.GetData();
 
                     if (sequenceInstance != null)
-                        await callbackResults.data.GetSequenceData().Execute();
+                        await callbackResults.GetData().GetSequenceData().Execute();
                     else
                         LogError(" *===>>> Last Processed Sequence Instance Not Found.", this);
                 }
@@ -7105,18 +7414,110 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            public string uniqueIdentifier, 
+            public string appKey, 
+                          uniqueIdentifier, 
                           rootIdentifier;
 
             #endregion
 
             #region Main
 
-            public void SetUniqueIdentifier(string uniqueIdentifier) => this.uniqueIdentifier = uniqueIdentifier;
-            public void SetRootdentifier(string rootIdentifier) => this.rootIdentifier = rootIdentifier;
+            #region Data Setters
 
-            public string GetUniqueIdentifier() => uniqueIdentifier;
-            public string GetRootIdentifier() => rootIdentifier;
+            public void SetAppKey(string appKey, Action<Callback> callback = null)
+            {
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(appKey, "App Key", "Set App Key Failed - App Key Parameter Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Set App Key Success - App Key Has Been Set To : {appKey}.";
+                    this.appKey = appKey;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetUniqueIdentifier(string uniqueIdentifier, Action<Callback> callback = null)
+            {
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(uniqueIdentifier, "Unique Identifier", "Set Unique Identifier Failed - Unique Identifier Parameter Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Set Unique Identifier Success - Unique Identifier Has Been Set To : {uniqueIdentifier}.";
+                    this.uniqueIdentifier = uniqueIdentifier;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+            public void SetRootdentifier(string rootIdentifier, Action<Callback> callback = null)
+            {
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(rootIdentifier, "Root Identifier", "Set Root Identifier Failed - Root Identifier Parameter Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Set Root Identifier Success - Root Identifier Has Been Set To : {rootIdentifier}.";
+                    this.rootIdentifier = rootIdentifier;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<string> GetUniqueIdentifier()
+            {
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(uniqueIdentifier, "Unique Identifier", "Get Unique Identifier Failed - Unique Identifier Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Unique Identifier Success - Unique Identifier Is : {uniqueIdentifier}.";
+                    callbackResults.data = uniqueIdentifier;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<string> GetRootIdentifier()
+            {
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(rootIdentifier, "Root Identifier", "Get Root Identifier Failed - Root Identifier Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Root Identifier Success - Root Identifier Is : {rootIdentifier}.";
+                    callbackResults.data = rootIdentifier;
+                }
+
+                return callbackResults;            
+            }
+
+            public CallbackData<string> GetAppKey()
+            {
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(appKey, "App Key", "Get App Key Failed - App Key Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get App Key Success - App Key Is : {appKey}.";
+                    callbackResults.data = appKey;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
 
             #endregion
         }
@@ -9926,62 +10327,72 @@ namespace Com.RedicalGames.Filar
 
             protected void AddLike(Profile profile, Action<CallbackData<int>> callback = null)
             {
-                CallbackData<int> callbackResults = new CallbackData<int>();
+                CallbackData<int> callbackResults = new CallbackData<int>(profile.GetUniqueIdentifier());
 
-                if (!GetLikes().Contains(profile.GetUniqueIdentifier()))
+                if (callbackResults.Success())
                 {
-                    GetLikes().Add(profile.GetUniqueIdentifier());
-
-                    if (GetLikes().Contains(profile.GetUniqueIdentifier()))
+                    if (!GetLikes().Contains(profile.GetUniqueIdentifier().GetData()))
                     {
-                        callbackResults.result = "Post Liked. Like Added To Likes List.";
-                        callbackResults.data = GetLikeCount();
-                        callbackResults.resultCode = Helpers.SuccessCode;
+                        GetLikes().Add(profile.GetUniqueIdentifier().GetData());
+
+                        if (GetLikes().Contains(profile.GetUniqueIdentifier().GetData()))
+                        {
+                            callbackResults.result = "Post Liked. Like Added To Likes List.";
+                            callbackResults.data = GetLikeCount();
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = "Failed To Like Post. Couldn't Add Like - Please Check Here.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
                     }
                     else
                     {
-                        callbackResults.result = "Failed To Like Post. Couldn't Add Like - Please Check Here.";
+                        callbackResults.result = "Post Already Liked. Couldn't Add Like.";
                         callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
                 else
-                {
-                    callbackResults.result = "Post Already Liked. Couldn't Add Like.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
 
             protected void RemoveLike(Profile profile, Action<CallbackData<int>> callback = null)
             {
-                CallbackData<int> callbackResults = new CallbackData<int>();
+                CallbackData<int> callbackResults = new CallbackData<int>(profile.GetUniqueIdentifier());
 
-                if (GetLikes().Contains(profile.GetUniqueIdentifier()))
+                if (callbackResults.Success())
                 {
-                    GetLikes().Remove(profile.GetUniqueIdentifier());
-
-                    if (!GetLikes().Contains(profile.GetUniqueIdentifier()))
+                    if (GetLikes().Contains(profile.GetUniqueIdentifier().GetData()))
                     {
-                        callbackResults.result = "Like Removed. Like Removed From Likes List.";
-                        callbackResults.data = GetLikeCount();
-                        callbackResults.resultCode = Helpers.SuccessCode;
+                        GetLikes().Remove(profile.GetUniqueIdentifier().GetData());
+
+                        if (!GetLikes().Contains(profile.GetUniqueIdentifier().GetData()))
+                        {
+                            callbackResults.result = "Like Removed. Like Removed From Likes List.";
+                            callbackResults.data = GetLikeCount();
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = "Failed To Remove Like From Post. Couldn't Remove Like - Please Check Here.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
                     }
                     else
                     {
-                        callbackResults.result = "Failed To Remove Like From Post. Couldn't Remove Like - Please Check Here.";
+                        callbackResults.result = "Profile Not Found In Liked List.";
                         callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
                 else
-                {
-                    callbackResults.result = "Profile Not Found In Liked List.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -10020,62 +10431,72 @@ namespace Com.RedicalGames.Filar
 
             protected void AddDislike(Profile profile, Action<CallbackData<int>> callback = null)
             {
-                CallbackData<int> callbackResults = new CallbackData<int>();
+                CallbackData<int> callbackResults = new CallbackData<int>(profile.GetUniqueIdentifier());
 
-                if (!GetDislikes().Contains(profile.GetUniqueIdentifier()))
+                if (callbackResults.Success())
                 {
-                    GetDislikes().Add(profile.GetUniqueIdentifier());
-
-                    if (GetDislikes().Contains(profile.GetUniqueIdentifier()))
+                    if (!GetDislikes().Contains(profile.GetUniqueIdentifier().GetData()))
                     {
-                        callbackResults.result = "Post Disliked. Dislike Added To Dislikes List.";
-                        callbackResults.data = GetLikeCount();
-                        callbackResults.resultCode = Helpers.SuccessCode;
+                        GetDislikes().Add(profile.GetUniqueIdentifier().GetData());
+
+                        if (GetDislikes().Contains(profile.GetUniqueIdentifier().GetData()))
+                        {
+                            callbackResults.result = "Post Disliked. Dislike Added To Dislikes List.";
+                            callbackResults.data = GetLikeCount();
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = "Failed To Dislike Post. Couldn't Add Dislike - Please Check Here.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
                     }
                     else
                     {
-                        callbackResults.result = "Failed To Dislike Post. Couldn't Add Dislike - Please Check Here.";
+                        callbackResults.result = "Post Already Disliked. Couldn't Dislike Post.";
                         callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
                 else
-                {
-                    callbackResults.result = "Post Already Disliked. Couldn't Dislike Post.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
 
             protected void RemoveDisike(Profile profile, Action<CallbackData<int>> callback = null)
             {
-                CallbackData<int> callbackResults = new CallbackData<int>();
+                CallbackData<int> callbackResults = new CallbackData<int>(profile.GetUniqueIdentifier());
 
-                if (GetDislikes().Contains(profile.GetUniqueIdentifier()))
+                if (callbackResults.Success())
                 {
-                    GetDislikes().Remove(profile.GetUniqueIdentifier());
-
-                    if (!GetDislikes().Contains(profile.GetUniqueIdentifier()))
+                    if (GetDislikes().Contains(profile.GetUniqueIdentifier().GetData()))
                     {
-                        callbackResults.result = "Dislike Removed. Dislike Removed From Dislikes List.";
-                        callbackResults.data = GetDislikeCount();
-                        callbackResults.resultCode = Helpers.SuccessCode;
+                        GetDislikes().Remove(profile.GetUniqueIdentifier().GetData());
+
+                        if (!GetDislikes().Contains(profile.GetUniqueIdentifier().GetData()))
+                        {
+                            callbackResults.result = "Dislike Removed. Dislike Removed From Dislikes List.";
+                            callbackResults.data = GetDislikeCount();
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = "Failed To Remove A Dislike From Post. Couldn't Remove Dislike - Please Check Here.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
                     }
                     else
                     {
-                        callbackResults.result = "Failed To Remove A Dislike From Post. Couldn't Remove Dislike - Please Check Here.";
+                        callbackResults.result = "Profile Not Found In Disliked List.";
                         callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
+                        callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
                 else
-                {
-                    callbackResults.result = "Profile Not Found In Disliked List.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -10092,19 +10513,39 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<PostCommentData> callbackResults = new CallbackData<PostCommentData>();
 
-                if (comment != null)
-                {
-                    PostCommentData commentData = new PostCommentData(comment);
+                callbackResults.SetResult(Helpers.GetAppComponentValid(profile, "Profile", "Add New Comment Data Failed - Profile Parameter Value is Missing / Null - Invalid Operation."));
 
-                    GetComments().Add(profile.GetUniqueIdentifier(), commentData);
-                    GetHasCommented(profile, hasCommentedCallbackResults => { callbackResults.SetResult(hasCommentedCallbackResults); });
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(profile.GetUniqueIdentifier());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(comment, "Comment", "Add New Comment Data Failed - Comment Parameter Value is Missing / Null - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            PostCommentData commentData = new PostCommentData(comment);
+
+                            GetComments().Add(profile.GetUniqueIdentifier().GetData(), commentData);
+
+                            GetHasCommented(profile, hasCommentedCallbackResults => 
+                            {
+                                callbackResults.SetResult(hasCommentedCallbackResults);
+                            });
+                        }
+                        else
+                        {
+                            callbackResults.result = "Failed To Add New Comment Data - Comment Value Is Null.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.ErrorCode;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                {
-                    callbackResults.result = "Failed To Add New Comment Data - Comment Value Is Null.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -10113,18 +10554,32 @@ namespace Com.RedicalGames.Filar
             {
                 Callback callbackResults = new Callback();
 
-                GetHasCommented(profile, hasCommentedCallbackResults =>
+                callbackResults.SetResult(Helpers.GetAppComponentValid(profile, "Profile", "Remove Comment Data Failed - Profile Parameter Value is Missing / Null - Invalid Operation."));
+
+                if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(hasCommentedCallbackResults);
+                    callbackResults.SetResult(profile.GetUniqueIdentifier());
 
                     if (callbackResults.Success())
-                        GetComments().Remove(profile.GetUniqueIdentifier());
+                    {
+                        GetHasCommented(profile, hasCommentedCallbackResults =>
+                        {
+                            callbackResults.SetResult(hasCommentedCallbackResults);
 
-                    if (!GetComments().Keys.Contains(profile.GetUniqueIdentifier()))
-                        callbackResults.result = "Comment Data Has Been Removed Successfully.";
+                            if (callbackResults.Success())
+                                GetComments().Remove(profile.GetUniqueIdentifier().GetData());
+
+                            if (!GetComments().Keys.Contains(profile.GetUniqueIdentifier().GetData()))
+                                callbackResults.result = "Comment Data Has Been Removed Successfully.";
+                            else
+                                callbackResults.SetResults("Failed To Remove Comment Data - Please Check Here.", Helpers.ErrorCode);
+                        });
+                    }
                     else
-                        callbackResults.SetResults("Failed To Remove Comment Data - Please Check Here.", Helpers.ErrorCode);
-                });
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -10133,27 +10588,41 @@ namespace Com.RedicalGames.Filar
             {
                 CallbackData<PostCommentData> callbackResults = new CallbackData<PostCommentData>();
 
-                if (GetComments().Keys.Contains(profile.GetUniqueIdentifier()))
+                callbackResults.SetResult(Helpers.GetAppComponentValid(profile, "Profile", "Get Has Commented Failed - Profile Parameter Value is Missing / Null - Invalid Operation."));
+
+                if (callbackResults.Success())
                 {
-                    if (GetComments().TryGetValue(profile.GetUniqueIdentifier(), out PostCommentData commentData))
+                    callbackResults.SetResult(profile.GetUniqueIdentifier());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.result = $"Profile Has Commented To Post ID : {GetIdentifier()}";
-                        callbackResults.data = commentData;
-                        callbackResults.resultCode = Helpers.SuccessCode;
+                        if (GetComments().Keys.Contains(profile.GetUniqueIdentifier().GetData()))
+                        {
+                            if (GetComments().TryGetValue(profile.GetUniqueIdentifier().GetData(), out PostCommentData commentData))
+                            {
+                                callbackResults.result = $"Profile Has Commented To Post ID : {GetIdentifier()}";
+                                callbackResults.data = commentData;
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Couldn't Find Post Comment Data - Please Chec Here.";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = Helpers.ErrorCode;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Profile Has Not Commented To Post ID : {GetIdentifier()}";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
                     }
                     else
-                    {
-                        callbackResults.result = $"Couldn't Find Post Comment Data - Please Chec Here.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                {
-                    callbackResults.result = $"Profile Has Not Commented To Post ID : {GetIdentifier()}";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback.Invoke(callbackResults);
             }
@@ -10162,18 +10631,25 @@ namespace Com.RedicalGames.Filar
             {
                 Callback callbackResults = new Callback();
 
-                GetHasCommented(profile, hasCommentedCallbackResults =>
-                {
-                    callbackResults.SetResult(hasCommentedCallbackResults);
+                callbackResults.SetResult(Helpers.GetAppComponentValid(profile, "Profile", "Comment Failed - Profile Parameter Value is Missing / Null - Invalid Operation."));
 
-                    if (callbackResults.Success())
+                if (callbackResults.Success())
+                {
+                    GetHasCommented(profile, hasCommentedCallbackResults =>
                     {
-                        var commentsData = hasCommentedCallbackResults.data;
-                        commentsData.AddComment(comment, commentAddedCallbackResults => { callbackResults.SetResult(commentAddedCallbackResults); });
-                    }
-                    else
-                        AddNewCommentData(profile, comment, newCommentAddedCallbackResults => { callbackResults.SetResult(newCommentAddedCallbackResults); });
-                });
+                        callbackResults.SetResult(hasCommentedCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            var commentsData = hasCommentedCallbackResults.GetData();
+                            commentsData.AddComment(comment, commentAddedCallbackResults => { callbackResults.SetResult(commentAddedCallbackResults); });
+                        }
+                        else
+                            AddNewCommentData(profile, comment, newCommentAddedCallbackResults => { callbackResults.SetResult(newCommentAddedCallbackResults); });
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -10182,16 +10658,23 @@ namespace Com.RedicalGames.Filar
             {
                 Callback callbackResults = new Callback();
 
-                GetHasCommented(profile, hasCommentedCallbackResults =>
-                {
-                    callbackResults.SetResult(hasCommentedCallbackResults);
+                callbackResults.SetResult(Helpers.GetAppComponentValid(profile, "Profile", "Delete Comment Failed - Profile Parameter Value is Missing / Null - Invalid Operation."));
 
-                    if (callbackResults.Success())
+                if (callbackResults.Success())
+                {
+                    GetHasCommented(profile, hasCommentedCallbackResults =>
                     {
-                        var commentsData = hasCommentedCallbackResults.data;
-                        commentsData.RemoveComment(comment, commentRemovedCallbackResults => { callbackResults.SetResult(commentRemovedCallbackResults); });
-                    }
-                });
+                        callbackResults.SetResult(hasCommentedCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            var commentsData = hasCommentedCallbackResults.data;
+                            commentsData.RemoveComment(comment, commentRemovedCallbackResults => { callbackResults.SetResult(commentRemovedCallbackResults); });
+                        }
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -11028,6 +11511,32 @@ namespace Com.RedicalGames.Filar
         #region Profile
 
         [Serializable]
+        public class UserInfo
+        {
+            #region Components
+
+            public string name;
+            public int age;
+            public int phoneNumber;
+            public int ipAddress;
+            public string region;
+
+            #endregion
+
+            #region Main
+
+            #endregion
+        }
+
+        public enum ProfileStatus
+        {
+            None,
+            Default,
+            Registered,
+            Varified
+        }
+
+        [Serializable]
         public class Profile : PostDataIdentifier
         {
             #region Components
@@ -11038,14 +11547,9 @@ namespace Com.RedicalGames.Filar
             public string userEmail;
             public string userPassword;
 
-            public string userProfilePictureURL;
+            public UserInfo userInfo;
 
-            #endregion
-
-            #region Profile Info
-
-            public int width;
-            public int height;
+            public ProfileStatus status;
 
             #endregion
 
@@ -11057,52 +11561,199 @@ namespace Com.RedicalGames.Filar
             {
             }
 
-            public Profile(string userName, string userEmail, string userPassword, string userProfilePictureURL = null)
+            public Profile(ProfileStatus status = ProfileStatus.Default, string userName = null, string userEmail = null, string userPassword = null)
             {
                 this.userName = userName;
                 this.userEmail = userEmail;
                 this.userPassword = userPassword;
-                this.userProfilePictureURL = userProfilePictureURL;
+                this.status = status;
             }
 
             #region Info Setters
 
-            public void SetUserName(string userName) => this.userName = userName;
-            public void SetUserEmail(string userEmail) => this.userEmail = userEmail;
-            public void SetUserPassword(string userPassword) => this.userPassword = userPassword;
-            public void SetUserProfilePictureURL(string userProfilePictureURL) => this.userProfilePictureURL = userProfilePictureURL;
-
-            public void SetProfilePictureDimensions(int width, int height)
+            public void SetUserName(string userName, Action<Callback> callback = null)
             {
-                this.width = width;
-                this.height = height;
+                var callbackResults = new Callback();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userName, "User Name", "Set User Name Failed - User Name Value Is Missing / Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetUniqueIdentifier());
+
+                    if (callbackResults.Success())
+                    {
+                        var encryptedName = new EncryptionObject(GetUniqueIdentifier().GetData(), userName);
+                        var encrypedUserNameCallbackResults = Helpers.Encrypt(encryptedName);
+
+                        callbackResults.SetResult(encrypedUserNameCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            this.userName = encrypedUserNameCallbackResults.GetData();
+                            callbackResults.result = $"Set User Name Success - User Name Is Set To : {this.userName}.";
+                        }
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
             }
+
+            public void SetUserEmail(string userEmail, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userEmail, "User Email", "Set User Email Failed - User Email Value Is Missing / Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetUniqueIdentifier());
+
+                    if (callbackResults.Success())
+                    {
+                        var encryptedEmail = new EncryptionObject(GetUniqueIdentifier().GetData(), userEmail);
+                        var encrypedUserEmailCallbackResults = Helpers.Encrypt(encryptedEmail);
+
+                        callbackResults.SetResult(encrypedUserEmailCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            this.userEmail = encrypedUserEmailCallbackResults.GetData();
+                            callbackResults.result = $"Set User Email Success - User Email Is Set To : {this.userEmail}.";
+                        }
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetUserPassword(string userPassword, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userPassword, "User Password", "Set User Password Failed - User Password Value Is Missing / Null - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetUniqueIdentifier());
+
+                    if (callbackResults.Success())
+                    {
+                        var encryptedPassword = new EncryptionObject(GetUniqueIdentifier().GetData(), userPassword);
+                        var encrypedUserPasswordCallbackResults = Helpers.Encrypt(encryptedPassword);
+
+                        callbackResults.SetResult(encrypedUserPasswordCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            this.userPassword = encrypedUserPasswordCallbackResults.GetData();
+                            callbackResults.result = $"Set User Password Success - User Password Is Set To : {this.userPassword}.";
+                        }
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public Callback Initialized()
+            {
+                var callbacResults = new Callback(GetUserName());
+
+                if(callbacResults.Success())
+                {
+                    callbacResults.SetResult(GetUserEmail());
+
+                    if (callbacResults.Success())
+                    {
+                        callbacResults.SetResult(GetUserPassword());
+
+                        if(callbacResults.Success())
+                            callbacResults.SetResult(GetStatus());
+                    }
+                }
+
+                return callbacResults;
+            }
+
 
             #endregion
 
             #region Info Getters
 
-            public string GetUserName()
+            public CallbackData<string> GetUserName()
             {
-                return userName;
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userName, "User Name", "Get User Name Failed - User Name Value Is Null - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get User Name Suuccess - User Name Value Is : {userName}.";
+                    callbackResults.data = userName;
+                }
+
+                return callbackResults;
             }
 
-            public string GetUserEmail()
+            public CallbackData<string> GetUserEmail()
             {
-                return userEmail;
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userEmail, "User Enail", "Get User Email Failed - User Email Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get User Email Suuccess - User Email Value Is : {userEmail}.";
+                    callbackResults.data = userEmail;
+                }
+
+                return callbackResults;
             }
 
-            public string GetUserPassword()
+            public CallbackData<string> GetUserPassword()
             {
-                return userPassword;
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userPassword, "User Password", "Get User Password Failed - User Password Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get User Password Suuccess - User Password Value Is : {userPassword}.";
+                    callbackResults.data = userPassword;
+                }
+
+                return callbackResults;
             }
 
-            public string GetUserProfilePictureURL()
+            public CallbackData<UserInfo> GetUserInfo()
             {
-                return userProfilePictureURL;
+                var callbackResults = new CallbackData<UserInfo>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(userInfo, "User Info", "Get User Info Failed - User Info Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get User Info Suuccess - User Info Value Is : {userInfo}.";
+                    callbackResults.data = userInfo;
+                }
+
+                return callbackResults;
             }
 
-            public (int width, int hieght) GetProfilePictureDimensions() => (width, height);
+            public CallbackData<ProfileStatus> GetStatus()
+            {
+                var callbackResults = new CallbackData<ProfileStatus>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(status, "Status", $"Get Status Failed - Status Is Set To Default : {status}"));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Status Success - Status Is Set To : {status}";
+                    callbackResults.data = status;
+                }
+
+                return callbackResults;
+            }
 
             #endregion
 
@@ -47273,7 +47924,7 @@ namespace Com.RedicalGames.Filar
         #region Encription
 
         [Serializable]
-        public class EncrptionObject
+        public class EncryptionObject
         {
             #region Components
 
@@ -47286,12 +47937,12 @@ namespace Com.RedicalGames.Filar
 
             #region Constructors
 
-            public EncrptionObject()
+            public EncryptionObject()
             {
 
             }
 
-            public EncrptionObject(string key, string data)
+            public EncryptionObject(string key, string data)
             {
                 this.key = key;
                 this.data = data;
@@ -49345,7 +49996,7 @@ namespace Com.RedicalGames.Filar
                 return key;
             }
 
-            public static CallbackData<string> Encrypt(EncrptionObject encrptionObject)
+            public static CallbackData<string> Encrypt(EncryptionObject encrptionObject)
             {
                 byte[] data = UTF8Encoding.UTF8.GetBytes(encrptionObject.data);
 
@@ -49362,9 +50013,9 @@ namespace Com.RedicalGames.Filar
                 }
             }
 
-            public static CallbackData<string> Decrypt(EncrptionObject encrptionObject)
+            public static CallbackData<string> Decrypt(EncryptionObject encrptionObject)
             {
-                byte[] data = Convert.FromBase64String(encrptionObject.data);
+                byte[] data = Convert.FromBase64String(encrptionObject.GetData());
 
                 using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
                 {
@@ -50410,6 +51061,50 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     callbackResults.result = (failedOperationFallbackResults != null)? failedOperationFallbackResults : $"Get Screen Data Packets : {name ?? "Scene Data Packets Parameter Name Not Assigned"} Is Not Valid - Screen Data Packets Is Null / Invalid / Not Assigned In The Function Call Parameter.";
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static CallbackData<string> GetAppStringValueNotNullOrEmpty(string value, string name = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                var callbackResults = new CallbackData<string>();
+
+                if (!string.IsNullOrEmpty(value))
+                {
+                    callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"String Value : {name ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.data = value;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"String Value : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static CallbackDataArray<string> GetAppStringArrayValid(string[] values, string name = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                var callbackResults = new CallbackDataArray<string>();
+
+                if (values != null && values.Length > 0)
+                {
+                    callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"{values.Length} String Arras Values : {name ?? "Name Unsassigned"} Are Assigned.";
+                    callbackResults.data = values;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"String Array Valuse : {name ?? "Name Unsassigned"} Are Not Assigned - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
                     callbackResults.resultCode = ErrorCode;
                 }
 

@@ -360,7 +360,7 @@ namespace Com.RedicalGames.Filar
 
                 databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
 
-                FirebaseDatabase.DefaultInstance.GetReference("App Info").ValueChanged += OnAppInfoDatabaseUpdate;
+                FirebaseDatabase.DefaultInstance.GetReference("Filar Authentications").Child("User Profiles").ValueChanged += OnAppInfoDatabaseUpdate;
                 FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Post Info Database").ValueChanged += OnPostsDatabaseUpdate;
                 FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Post Content Database").ValueChanged += OnPostsDatabaseUpdate;
 
@@ -503,48 +503,63 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                #region Posts Content
+                callbackResults.SetResult(post.GetRootIdentifier());
 
-                var publishingManager = AppData.Helpers.GetAppComponentValid(PublishingManager.Instance, PublishingManager.Instance.name).data;
-
-                var postContentsURL = publishingManager.PostContentsURL;
-
-                var modelBytes = await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(post.GetUniqueIdentifier()).Child("Model").GetBytesAsync(int.MaxValue);
-                var profilePictureThumbnail = await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(post.GetUniqueIdentifier()).Child("Thumbnail").GetBytesAsync(int.MaxValue);
-
-                StorageContentLoadUpdate(post, modelBytes, profilePictureThumbnail);
-
-                if (postContents.Count > 0 && postContents.ContainsKey(post))
+                if (callbackResults.Success())
                 {
-                    AppData.SessionStorage<AppData.Post, Texture2D>.GetStoredSessionData(post, thumbnailCallbackResults => 
+                    callbackResults.SetResult(post.GetUniqueIdentifier());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(thumbnailCallbackResults);
+                        #region Posts Content
 
-                        if(callbackResults.Success())
+                        var publishingManager = AppData.Helpers.GetAppComponentValid(PublishingManager.Instance, PublishingManager.Instance.name).data;
+
+                        var postContentsURL = publishingManager.PostContentsURL;
+
+                        var modelBytes = await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier().GetData()).Child(post.GetUniqueIdentifier().GetData()).Child("Model").GetBytesAsync(int.MaxValue);
+                        var profilePictureThumbnail = await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier().GetData()).Child(post.GetUniqueIdentifier().GetData()).Child("Thumbnail").GetBytesAsync(int.MaxValue);
+
+                        StorageContentLoadUpdate(post, modelBytes, profilePictureThumbnail);
+
+                        if (postContents.Count > 0 && postContents.ContainsKey(post))
                         {
-                            post.SetPostThumbnail(thumbnailCallbackResults.data);
+                            AppData.SessionStorage<AppData.Post, Texture2D>.GetStoredSessionData(post, thumbnailCallbackResults =>
+                            {
+                                callbackResults.SetResult(thumbnailCallbackResults);
 
-                            callbackResults.result = $"Loaded Thumbnail From Storage Cache -  For : {post.GetTitle()} Posts.";
-                            callbackResults.data = post;
-                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                if (callbackResults.Success())
+                                {
+                                    post.SetPostThumbnail(thumbnailCallbackResults.data);
+
+                                    callbackResults.result = $"Loaded Thumbnail From Storage Cache -  For : {post.GetTitle()} Posts.";
+                                    callbackResults.data = post;
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                }
+                                else
+                                {
+                                    var serializableImage = new AppData.SerializableImage(profilePictureThumbnail);
+                                    post.SetPostThumbnail(serializableImage.GetTexture2DImageFromCompressedData(100, 100));
+
+                                    callbackResults.result = $"Created Thumbnail For : {post.GetTitle()} And Cached To Session Storage.";
+                                    callbackResults.data = post;
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                }
+                            });
                         }
                         else
                         {
-                            var serializableImage = new AppData.SerializableImage(profilePictureThumbnail);
-                            post.SetPostThumbnail(serializableImage.GetTexture2DImageFromCompressedData(100, 100));
-
-                            callbackResults.result = $"Created Thumbnail For : {post.GetTitle()} And Cached To Session Storage.";
-                            callbackResults.data = post;
-                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                            callbackResults.result = $"Failed To Load Content For : {post.GetTitle()} Posts.";
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
-                    });
+
+                        #endregion
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                {
-                    callbackResults.result = $"Failed To Load Content For : {post.GetTitle()} Posts.";
-                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                }
-                #endregion
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             return callbackResults;
@@ -588,7 +603,7 @@ namespace Com.RedicalGames.Filar
         {
             if (valueChangedEvent.DatabaseError == null)
             {
-                if (valueChangedEvent.Snapshot.Key == "App Info")
+                if (valueChangedEvent.Snapshot.Key == "User Profiles")
                 {
                     if (valueChangedEvent.Snapshot.ChildrenCount > 0)
                     {
@@ -615,103 +630,130 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public void GetAppInfo(string deviceID, Action<AppData.CallbackData<AppData.AppInfo>> callback)
+
+        public async Task<AppData.Callback> OnServerAppInfoDatabaseInitializationCompleted()
         {
-            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>(GetAppInfoList());
+            var callbackResults = new AppData.Callback();
 
-            if (callbackResults.Success())
+            callbackResults.result = "Awaiting Server App Info Database Initialization.";
+            callbackResults.resultCode = AppData.Helpers.WarningCode;
+
+            while(!IsServerAppInfoDatabaseInitialized)
             {
-                var appInfos = GetAppInfoList().data;
-
-                foreach (var appInfo in appInfos)
-                {
-                    var device = appInfo.GetLicenseKey().GetDeviceIinfoList().Find(info => info.deviceID == deviceID);
-
-                    if (device != null)
-                    {
-                        callbackResults.result = $"App Info With Device ID : {deviceID} Found.";
-                        callbackResults.data = appInfo;
-
-                        break;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"App Info With Device ID : {deviceID} not Found.";
-                        callbackResults.resultCode = AppData.Helpers.WarningCode;
-                        callbackResults.data = default;
-
-                        continue;
-                    }
-                }
+                await Task.Yield();
             }
 
-            callback.Invoke(callbackResults);
+            callbackResults.result = "Server App Info Database Initialization Has Completed.";
+            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+            return callbackResults;
         }
 
-        public AppData.CallbackData<AppData.AppInfo> GetAppInfo(string deviceID)
+        public async Task<AppData.Callback> RegisterDeficeAppInfoAsync(string profileURL, AppData.AppInfo appInfo)
         {
-            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>();
+            var callbackResults = new AppData.Callback(appInfo.GetLicenseKey());
 
             if (callbackResults.Success())
             {
-                var appInfos = GetAppInfoList().data;
+                callbackResults.SetResult(appInfo.GetLicenseKey().GetData().GetAppKey());
 
-                foreach (var appInfo in appInfos)
+                if (callbackResults.Success())
                 {
-                    var device = appInfo.GetLicenseKey().GetDeviceIinfoList().Find(info => info.deviceID == deviceID);
+                    databaseReference.Database.GetReference(profileURL).ValueChanged += ProfileManager_ValueChanged;
 
-                    if (device != null)
-                    {
-                        callbackResults.result = $"App Info With Device ID : {deviceID} Found.";
-                        callbackResults.data = appInfo;
+                    var appInfoData = JsonUtility.ToJson(appInfo);
 
-                        break;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"App Info With Device ID : {deviceID} not Found.";
-                        callbackResults.resultCode = AppData.Helpers.WarningCode;
-                        callbackResults.data = default;
+                    Dictionary<string, object> infoDictionary = new Dictionary<string, object>();
+                    infoDictionary.Add(appInfo.GetLicenseKey().GetData().GetAppKey().GetData(), appInfoData);
 
-                        continue;
-                    }
+                    await databaseReference.Child("Filar Authentications").Child("User Profiles").UpdateChildrenAsync(infoDictionary);
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackData<DatabaseReference> GetDatabaseReference()
+        {
+            var callbackResults = new AppData.CallbackData<DatabaseReference>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(databaseReference, "Database Reference", "Get Database Reference Failed - Database Reference Value Is Not Initialized Yet - Invalid Operation"));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.result = $"Get Database Reference Success - Database Reference Value Has Been Initialized Successfully.";
+                callbackResults.data = databaseReference;
             }
 
             return callbackResults;
+        }
+
+
+        private void ProfileManager_ValueChanged(object sender, ValueChangedEventArgs e)
+        {
+
         }
 
         public async Task<AppData.CallbackData<AppData.AppInfo>> GetAppInfoAsync(string deviceID)
         {
             AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>();
 
+            callbackResults.SetResult(GetAppInfoList());
+
             if (callbackResults.Success())
             {
-                var appInfos = GetAppInfoList().data;
+                var appInfos = GetAppInfoList().GetData();
 
-                foreach (var appInfo in appInfos)
+                for (int i = 0; i < appInfos.Count; i++)
                 {
-                    await Task.Yield();
+                    callbackResults.SetResult(appInfos[i].GetLicenseKey());
 
-                    var device = appInfo.GetLicenseKey().GetDeviceIinfoList().Find(info => info.deviceID == deviceID);
-
-                    if (device != null)
+                    if (callbackResults.Success())
                     {
-                        callbackResults.result = $"App Info With Device ID : {deviceID} Found.";
-                        callbackResults.data = appInfo;
+                        callbackResults.SetResult(appInfos[i].GetLicenseKey().GetData().GetDeviceInfoList());
 
-                        break;
+                        if (callbackResults.Success())
+                        {
+                            var deviceInfoList = appInfos[i].GetLicenseKey().GetData().GetDeviceInfoList().GetData();
+
+                            await Task.Yield();
+
+                            var deviceInfo = deviceInfoList.Find(deviceInfoData => deviceInfoData.deviceID == deviceID);
+
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(deviceInfo, "Device Info", $"Get Device Info For Device ID : {deviceID} Failed - Device Info For ID : {deviceID} Not Found - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.result = $"Get App Info Async Success - Device Info For Device ID : {deviceID} have Been Successfully Found.";
+                                callbackResults.data = appInfos[i];
+
+                                break;
+                            }
+                            else
+                                continue;
+                        }
+                        else
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
+                        }
                     }
                     else
                     {
-                        callbackResults.result = $"App Info With Device ID : {deviceID} not Found.";
-                        callbackResults.resultCode = AppData.Helpers.WarningCode;
-                        callbackResults.data = default;
-
-                        continue;
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        break;
                     }
                 }
+
+                LogInfo($"_________+Logged_Cat: Get App Info Async Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}", this);
+
             }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             return callbackResults;
         }
@@ -743,21 +785,18 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackDataList<AppData.AppInfo> callbackResults = new AppData.CallbackDataList<AppData.AppInfo>();
 
-            AppData.Helpers.GetAppComponentsValid(appInfoDatabase, "App Info Database", hasComponentsCallbackResults =>
-            {
-                callbackResults.SetResult(hasComponentsCallbackResults);
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(appInfoDatabase, "App Info Database", "Get App Info List Failed - App Info Database Is Not Yet Initialized."));
 
-                if (callbackResults.Success())
-                {
-                    callbackResults.result = $"{appInfoDatabase.Count} App Info Data Found In The Database";
-                    callbackResults.data = appInfoDatabase;
-                }
-                else
-                {
-                    callbackResults.result = "There Are No App Info Data Found In The Database.";
-                    callbackResults.data = default;
-                }
-            });
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"{appInfoDatabase.Count} App Info Data Found In The Database";
+                callbackResults.data = appInfoDatabase;
+            }
+            else
+            {
+                callbackResults.result = "There Are No App Info Data Found In The Database.";
+                callbackResults.data = default;
+            }
 
             return callbackResults;
         }

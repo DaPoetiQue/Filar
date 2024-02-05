@@ -30,13 +30,6 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         List<AppData.PermissionInfo> permissionInfos = new List<AppData.PermissionInfo>();
 
-        [Space(5)]
-        [SerializeField]
-        string infoFolderName = "Filar";
-
-        AppData.AppInfo entry = new AppData.AppInfo();
-        public bool AppinfoSynced { get; private set; }
-
         #region Loading Data
 
         #endregion
@@ -385,12 +378,6 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public void SyncAppInfo(AppData.AppInfo appInfo)
-        {
-            this.entry = appInfo;
-            AppinfoSynced = true;
-        }
-
         #endregion
 
         #region Initialize App Entry
@@ -419,26 +406,6 @@ namespace Com.RedicalGames.Filar
             }
 
             return callbackResults;
-        }
-
-        public void GetAppInfo(Action<AppData.CallbackData<AppData.AppInfo>> callback)
-        {
-            AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>();
-
-            if(AppinfoSynced)
-            {
-                callbackResults.result = "App Info Is Synced.";
-                callbackResults.data = entry;
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-            }
-            else
-            {
-                callbackResults.result = "App Info Is Not Synced.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
-            }
-
-            callback.Invoke(callbackResults);
         }
 
         #endregion

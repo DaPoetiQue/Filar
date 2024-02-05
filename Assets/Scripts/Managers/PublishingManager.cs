@@ -67,7 +67,7 @@ namespace Com.RedicalGames.Filar
 
                 var postData = JsonUtility.ToJson(post);
 
-                string postKey = post.GetUniqueIdentifier();
+                string postKey = post.GetUniqueIdentifier().GetData();
 
                 Dictionary<string, object> postObject = new Dictionary<string, object>();
                 postObject.Add(postKey, postData);
@@ -76,10 +76,10 @@ namespace Com.RedicalGames.Filar
 
                 if (content.GetMeshBytesArray() != null && content.GetMeshBytesArray().Length > 0)
                 {
-                    await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(postKey).Child("Model").PutBytesAsync(content.GetMeshBytesArray());
+                    await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier().GetData()).Child(postKey).Child("Model").PutBytesAsync(content.GetMeshBytesArray());
 
                     if (thumbnailData.GetImageDataFromCompressedData() != null && thumbnailData.GetImageDataFromCompressedData().Length > 0)
-                        await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier()).Child(postKey).Child("Thumbnail").PutBytesAsync(thumbnailData.GetImageDataFromCompressedData());
+                        await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier().GetData()).Child(postKey).Child("Thumbnail").PutBytesAsync(thumbnailData.GetImageDataFromCompressedData());
                     else
                         LogError("Thumbnail Data Not Assigned", this);
                 }
