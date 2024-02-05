@@ -499,6 +499,7 @@ namespace Com.RedicalGames.Filar
             ColorReferenceImageURLField,
             ColorPromptField,
             InputPageNumberField,
+            UserPasswordVarificationField,
             None
         }
 
@@ -6752,9 +6753,7 @@ namespace Com.RedicalGames.Filar
                                                                 if (callbackResults.Success())
                                                                     OnCompletition();
                                                                 else
-                                                                {
-                                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Init Results {callbackResults.GetResult}", this);
-                                                                }
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
 
                                                             break;
@@ -6770,13 +6769,13 @@ namespace Com.RedicalGames.Filar
                                                                     messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).GetData().GetMessage());
                                                                     callbackResults = await appManager.GetCompatibilityStatusAsync();
                                                                 }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                                 if (callbackResults.Success())
                                                                     OnCompletition();
                                                                 else
-                                                                {
-                                                                    LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> Device Is Only 3D Compitable  - Show Compatiblity Message Pop Up", this);
-                                                                }
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
 
                                                             break;
@@ -6800,18 +6799,27 @@ namespace Com.RedicalGames.Filar
                                                                         messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).GetData().GetMessage());
                                                                         callbackResults = await profileManager.SynchronizingProfile();
                                                                     }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                                     #endregion
 
                                                                     #region App Sign In
 
-                                                                    callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.SigningApp));
-
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).GetData().GetMessage());
-                                                                        callbackResults = await profileManager.AppSignInAsync();
+                                                                        callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.SigningApp));
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).GetData().GetMessage());
+                                                                            callbackResults = await profileManager.AppSignInAsync();
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                     }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                                     #endregion
                                                                 }
@@ -35307,7 +35315,22 @@ namespace Com.RedicalGames.Filar
                                                                                             {
                                                                                                 callbackResults.SetResult(initializationCallbackResults);
 
-                                                                                                if (callbackResults.UnSuccessful())
+                                                                                                if (callbackResults.Success())
+                                                                                                {
+                                                                                                    callbackResults.SetResult(actionInputField.GetValue());
+
+                                                                                                    if (callbackResults.Success())
+                                                                                                    {
+                                                                                                        actionInputField.GetValue().GetData().onValueChanged.AddListener(value =>
+                                                                                                        {
+                                                                                                            OnInputFieldValueChanged(value, actionInputField.dataPackets);
+                                                                                                            ActionEvents.OnInputFieldValueChanged(value, actionInputField.dataPackets);
+                                                                                                        });
+                                                                                                    }
+                                                                                                    else
+                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                }
+                                                                                                else
                                                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                                             });
                                                                                         }
@@ -35325,7 +35348,22 @@ namespace Com.RedicalGames.Filar
                                                                             {
                                                                                 callbackResults.SetResult(initializationCallbackResults);
 
-                                                                                if (callbackResults.UnSuccessful())
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    callbackResults.SetResult(actionInputField.GetValue());
+
+                                                                                    if (callbackResults.Success())
+                                                                                    {
+                                                                                        actionInputField.GetValue().GetData().onValueChanged.AddListener(value =>
+                                                                                        {
+                                                                                            OnInputFieldValueChanged(value, actionInputField.dataPackets);
+                                                                                            ActionEvents.OnInputFieldValueChanged(value, actionInputField.dataPackets);
+                                                                                        });
+                                                                                    }
+                                                                                    else
+                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                }
+                                                                                else
                                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                             });
                                                                         }
@@ -35335,7 +35373,6 @@ namespace Com.RedicalGames.Filar
                                                                 }
                                                                 else
                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
                                                             }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -36042,146 +36079,305 @@ namespace Com.RedicalGames.Filar
 
             #region Input Fields
 
-            protected void SetInputFieldValue(InputFieldActionType actionType, string value)
+            protected void SetInputFieldValue(InputFieldActionType actionType, string value, Action<Callback> callback = null)
             {
-                //if (inputFields.Count > 0)
-                //{
-                //    UIInputField<InputFieldDataPackets> input = inputFields.Find((input) => input.dataPackets.action == actionType);
+                var callbackResults = new Callback(Initialized(InputType.InputField));
 
-                //    if (input.value != null)
-                //    {
-                //        if (!string.IsNullOrEmpty(value))
-                //            input.SetValue(value);
-                //        else
-                //            input.OnClearField();
-                //    }
-                //    else
-                //        LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this);
-                //}
-                //else
-                //    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this);
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.InputField).GetData().Find(input => input.GetInputFieldComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetInputFieldComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var inputField = inputActionHandler.GetInputFieldComponent().GetData();
+
+                            callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(value, "Input Field Value", "Set Input Field Value Failed - Input Field Value Parameter Is Null - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                inputField.SetValue(value);
+                                callbackResults.result = $"Field : {inputField.GetName()}'s Value Is Set To : {value}.";
+                            }
+                            else
+                            {
+                                inputField.OnClearField();
+
+                                callbackResults.result = $"Field : {inputField.GetName()} Has Been Cleared.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
-            protected void SetInputFieldPlaceHolder(InputFieldActionType actionType, string placeHolder)
+            protected void SetInputFieldPlaceHolder(InputFieldActionType actionType, string placeHolder, Action<Callback> callback = null)
             {
-                //if (inputFields.Count > 0)
-                //{
-                //    UIInputField<InputFieldDataPackets> input = inputFields.Find((input) => input.dataPackets.action == actionType);
 
-                //    if (input.value != null)
-                //    {
-                //        if (!string.IsNullOrEmpty(placeHolder))
-                //            input.SetPlaceHolderText(placeHolder);
-                //        else
-                //            input.OnClearField();
-                //    }
-                //    else
-                //        LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this);
-                //}
-                //else
-                //    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this);
+                var callbackResults = new Callback(Initialized(InputType.InputField));
+
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.InputField).GetData().Find(input => input.GetInputFieldComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetInputFieldComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var inputField = inputActionHandler.GetInputFieldComponent().GetData();
+
+                            callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(placeHolder, "Input Field Placeholder", "Set Input Field Placeholder Failed - Input Field Placeholder Parameter Is Null - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                inputField.SetPlaceHolderText(placeHolder);
+                                callbackResults.result = $"Field : {inputField.GetName()}'s Placeholder Is Set To : {placeHolder}.";
+                            }
+                            else
+                            {
+                                inputField.OnClearField();
+
+                                callbackResults.result = $"Field : {inputField.GetName()}'s Placeholder Has Been Cleared.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
-            protected void GetInputField(InputFieldActionType actionType, Action<CallbackData<UISelectable>> callback)
+            protected CallbackData<UIInputField<InputFieldConfigDataPacket>> GetInputField(InputFieldActionType actionType)
             {
-                CallbackData<UISelectable> callbackResults = new CallbackData<UISelectable>();
+                var callbackResults = new CallbackData<UIInputField<InputFieldConfigDataPacket>>(Initialized(InputType.InputField));
 
-                //if (inputFields != null && inputFields.Count > 0)
-                //{
-                //    UIInputField<InputFieldDataPackets> input = inputFields.Find((input) => input.dataPackets.action == actionType);
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.InputField).GetData().Find(input => input.GetInputFieldComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
 
-                //    if (input.value != null)
-                //    {
-                //        callbackResults.result = $"Found Input Field : {input.name} Of Type : {actionType}";
-                //        callbackResults.data = input;
-                //        callbackResults.resultCode = Helpers.SuccessCode;
-                //    }
-                //    else
-                //    {
-                //        callbackResults.result = $"Couldn't Find Input Field Of Type : {actionType}";
-                //        callbackResults.data = default;
-                //        callbackResults.resultCode = Helpers.ErrorCode;
-                //    }
-                //}
-                //else
-                //{
-                //    callbackResults.result = "There Are No Inputs Found.";
-                //    callbackResults.data = default;
-                //    callbackResults.resultCode = Helpers.ErrorCode;
-                //}
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Get Action Input Field Of Type Failed - Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetInputFieldComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.result = $"Get Action Input Field Of Type Success - Input Action Handler Of Type : {actionType} Has Been Successfully Found.";
+                            callbackResults.data = inputActionHandler.GetInputFieldComponent().GetData();
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            protected void GetInputField(InputFieldActionType actionType, Action<CallbackData<UIInputField<InputFieldConfigDataPacket>>> callback)
+            {
+                var callbackResults = new CallbackData<UIInputField<InputFieldConfigDataPacket>>(Initialized(InputType.InputField));
+
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.InputField).GetData().Find(input => input.GetInputFieldComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Get Action Input Field Of Type Failed - Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetInputFieldComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.result = $"Get Action Input Field Of Type Success - Input Action Handler Of Type : {actionType} Has Been Successfully Found.";
+                            callbackResults.data = inputActionHandler.GetInputFieldComponent().GetData();
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback.Invoke(callbackResults);
             }
 
-            protected void OnInputFieldValidation(ValidationResultsType results, InputFieldActionType actionType)
+            protected void OnInputFieldValidation<T>(T widgetType, ValidationResultsType results, InputFieldActionType actionType, Action<Callback> callback = null) where T : Enum
             {
-                //if (inputFields.Count > 0)
-                //{
-                //    UIInputField<InputFieldDataPackets> input = inputFields.Find((input) => input.dataPackets.action == actionType);
+                var callbackResults = new Callback(Initialized(InputType.InputField));
 
-                //    if (input != null)
-                //    {
-                //        input.SetValidationResults(results);
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.InputField).GetData().Find(input => input.GetInputFieldComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
 
-                //        SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
-                //        {
-                //            if (selectionSystemCallbackResults.Success())
-                //            {
-                //                selectionSystemCallbackResults.data.OnSelectUIInput(widgetType, input, selectionCallbackResults =>
-                //                {
-                //                    Log(selectionCallbackResults.resultCode, selectionCallbackResults.result, this);
-                //                });
-                //            }
-                //            else
-                //                Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
-                //        });
-                //    }
-                //    else
-                //        LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this);
-                //}
-                //else
-                //    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this);
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetInputFieldComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance", "Selectable Manager Instance Is Not initialized Yet - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                var selectableManagerInstance = Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance").GetData();
+
+                                var inputField = inputActionHandler.GetInputFieldComponent().GetData();
+
+                                inputField.SetValidationResults(results);
+
+                                selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                {
+                                    callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        selectionSystemCallbackResults.GetData().OnSelectUIInput(widgetType, inputField, selectionCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(selectionCallbackResults);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                });
+                            }
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
-            protected void OnClearInputFieldValue(InputFieldActionType actionType)
+            protected void OnClearInputFieldValue(InputFieldActionType actionType,  Action<Callback> callback = null)
             {
-                //if (inputFields.Count > 0)
-                //{
-                //    UIInputField<InputFieldDataPackets> input = inputFields.Find((input) => input.dataPackets.action == actionType);
+                var callbackResults = new Callback(Initialized(InputType.InputField));
 
-                //    if (input != null)
-                //        input.OnClearField();
-                //    else
-                //        LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this);
-                //}
-                //else
-                //    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this);
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.InputField).GetData().Find(input => input.GetInputFieldComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetInputFieldComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var inputField = inputActionHandler.GetInputFieldComponent().GetData();
+                            inputField.OnClearField();
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
-            protected void OnClearInputFieldValidation(InputFieldActionType actionType)
+            protected void OnClearInputFieldValidation(InputFieldActionType actionType, Action<Callback> callback = null)
             {
-                //if (inputFields.Count > 0)
-                //{
-                //    UIInputField<InputFieldDataPackets> input = inputFields.Find((input) => input.dataPackets.action == actionType);
+                var callbackResults = new Callback(Initialized(InputType.InputField));
 
-                //    if (input != null)
-                //        input.OnClearValidation();
-                //    else
-                //        LogWarning($"Couldn't Find Input Field Of Type : {actionType}", this);
-                //}
-                //else
-                //    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this);
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.InputField).GetData().Find(input => input.GetInputFieldComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetInputFieldComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var inputField = inputActionHandler.GetInputFieldComponent().GetData();
+                            inputField.OnClearValidation();
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
-            protected void HighlightInputFieldValue(InputFieldActionType actionType, bool highlight = true)
+            protected void HighlightInputFieldValue(InputFieldActionType actionType, bool highlight = true, Action<Callback> callback = null)
             {
-                //if (inputFields.Count > 0)
-                //{
-                //    UIInputField<InputFieldDataPackets> input = inputFields.Find((input) => input.dataPackets.action == actionType);
-                //    input.OnSelect();
-                //}
-                //else
-                //    LogWarning("Set Input Field Value Failed : No Input Fields Found.", this, () => HighlightInputFieldValue(actionType, highlight = true));
+                var callbackResults = new Callback(Initialized(InputType.InputField));
+
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.InputField).GetData().Find(input => input.GetInputFieldComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetInputFieldComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var inputField = inputActionHandler.GetInputFieldComponent().GetData();
+                            inputField.OnSelect();
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion
@@ -53594,6 +53790,7 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<FocusedSelectionInfo<SceneConfigDataPacket>> _OnWidgetSelectionDataEvent;
 
             public static event ParamVoid<ButtonConfigDataPacket> _OnActionButtonPressedEvent;
+            public static event ParamVoid<string, InputFieldConfigDataPacket> _OnInputFieldValueChanged;
 
             public static event ParamVoid<float> _OnScreenLoadInProgressEvent;
 
@@ -53677,6 +53874,7 @@ namespace Com.RedicalGames.Filar
             public static void OnWidgetsSelectionEvent(FocusedSelectionData selectionData) => _OnWidgetsSelectionDataEvent?.Invoke(selectionData);
 
             public static void OnActionButtonPressedEvent(ButtonConfigDataPacket buttonConfig) => _OnActionButtonPressedEvent?.Invoke(buttonConfig);
+            public static void OnInputFieldValueChanged(string value, InputFieldConfigDataPacket inputFieldConfig) => _OnInputFieldValueChanged?.Invoke(value, inputFieldConfig);
 
             public static void OnScreenLoadInProgressEvent(float progress) => _OnScreenLoadInProgressEvent?.Invoke(progress);
 

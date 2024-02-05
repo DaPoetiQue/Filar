@@ -117,7 +117,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         if (dataValidCallbackResults.Success())
                                         {
-                                            OnInputFieldValidation(AppData.ValidationResultsType.Success, dataValidCallbackResults.data);
+                                            OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Success, dataValidCallbackResults.data);
 
                                             if (AppDatabaseManager.Instance != null)
                                             {
@@ -157,7 +157,7 @@ namespace Com.RedicalGames.Filar
                                         }
                                         else
                                         {
-                                            OnInputFieldValidation(AppData.ValidationResultsType.Error, dataValidCallbackResults.data);
+                                            OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Error, dataValidCallbackResults.data);
 
                                             Log(dataValidCallbackResults.resultCode, dataValidCallbackResults.result, this);
                                         }
@@ -324,8 +324,8 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (inputFieldCallbackResults.Success())
                                     {
-                                        if (inputFieldCallbackResults.data.GetValidationStateInfo().Results == AppData.ValidationResultsType.Warning || inputFieldCallbackResults.data.GetValidationStateInfo().Results == AppData.ValidationResultsType.Error)
-                                            OnInputFieldValidation(AppData.ValidationResultsType.Success, dataValidCallbackResults.GetData());
+                                        if (inputFieldCallbackResults.GetData().GetValidationStateInfo().Results == AppData.ValidationResultsType.Warning || inputFieldCallbackResults.data.GetValidationStateInfo().Results == AppData.ValidationResultsType.Error)
+                                            OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Success, dataValidCallbackResults.GetData());
                                     }
                                     else
                                         Log(inputFieldCallbackResults.resultCode, inputFieldCallbackResults.result, this);
@@ -337,8 +337,8 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (inputFieldCallbackResults.Success())
                                     {
-                                        if (inputFieldCallbackResults.data.GetValidationStateInfo().Results == AppData.ValidationResultsType.Success)
-                                            OnInputFieldValidation(AppData.ValidationResultsType.Warning, dataValidCallbackResults.GetData());
+                                        if (inputFieldCallbackResults.GetData().GetValidationStateInfo().Results == AppData.ValidationResultsType.Success)
+                                            OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Warning, dataValidCallbackResults.GetData());
                                     }
                                     else
                                         Log(inputFieldCallbackResults.resultCode, inputFieldCallbackResults.result, this);

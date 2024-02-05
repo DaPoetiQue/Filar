@@ -189,55 +189,62 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    string deviceID = AppData.Helpers.GetDeviceInfo().deviceID;
-
-                    var appInfoTaskResults = await databaseManager.GetAppInfoAsync(deviceID);
-
-                    await Task.Delay(2000);
-
-                    callbackResults.SetResult(appInfoTaskResults);
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Service Manager Instance", "App Service Manager Instance Is Not initialized Yet."));
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Service Manager Instance", "App Service Manager Instance Is Not initialized Yet."));
+                        var appServiceManagerInstance = AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Service Manager Instance").GetData();
+
+                        string deviceID = AppData.Helpers.GetDeviceInfo().deviceID;
+
+                        var appInfoTaskResults = await databaseManager.GetAppInfoAsync(deviceID);
+
+                        await Task.Delay(2000);
+
+                        callbackResults.SetResult(appInfoTaskResults);
 
                         if (callbackResults.Success())
                         {
-                            var appServiceManagerInstance = AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Service Manager Instance").GetData();
-
-                            appServiceManagerInstance.SyncAppInfo(appInfoTaskResults.GetData(), syncCallbackResults => 
+                            appServiceManagerInstance.SyncAppInfo(appInfoTaskResults.GetData(), syncCallbackResults =>
                             {
                                 callbackResults.SetResult(syncCallbackResults);
                             });
+
+                            await Task.Delay(1000);
                         }
                         else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                        await Task.Delay(1000);
-                    }
-                    else
-                    {
-                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance", "App Services Manager Instance Is not Yet Initialized."));
-
-                        if (callbackResults.Success())
                         {
-                            var appServicesManagerInstance = AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance").GetData();
-                            var newProfile = CreateProfile(deviceID).GetData();
-                            var newAppInfo = appServicesManagerInstance.CreateAppDeviceInfo(newProfile).GetData();
-                            var registerDeviceInfoCallbackResultsTask = await databaseManager.RegisterDeficeAppInfoAsync(profileURL, newAppInfo);
-
-                            callbackResults.SetResult(registerDeviceInfoCallbackResultsTask);
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance", "App Services Manager Instance Is not Yet Initialized."));
 
                             if (callbackResults.Success())
                             {
-                                callbackResults.result = "App Signed In Successfully.";
+                                var appServicesManagerInstance = AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance").GetData();
+                                var newProfile = CreateProfile(deviceID).GetData();
+                                var newAppInfo = appServicesManagerInstance.CreateAppDeviceInfo(newProfile).GetData();
+                                var registerDeviceInfoCallbackResultsTask = await databaseManager.RegisterDeficeAppInfoAsync(profileURL, newAppInfo);
+
+                                callbackResults.SetResult(registerDeviceInfoCallbackResultsTask);
+
+                                if (callbackResults.Success())
+                                {
+                                    appServiceManagerInstance.SyncAppInfo(newAppInfo, syncCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(syncCallbackResults);
+                                    });
+
+                                    await Task.Delay(1000);
+
+                                    callbackResults.result = "App Signed In Successfully.";
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

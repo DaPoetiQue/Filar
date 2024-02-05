@@ -27,21 +27,21 @@ namespace Com.RedicalGames.Filar
         {
             var callbackResults = new AppData.Callback();
 
-            switch (actionType)
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
             {
-                case AppData.InputActionButtonType.ReadButton:
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
 
-                    if (callbackResults.Success())
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    switch (actionType)
                     {
-                        var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
-
-                        callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
-
-                        if (callbackResults.Success())
-                        {
-                            var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+                        case AppData.InputActionButtonType.ReadButton:
 
                             screen.HideScreenWidget(AppData.WidgetType.SignInWidget);
 
@@ -51,12 +51,50 @@ namespace Com.RedicalGames.Filar
                             readTermsAndConditionsWidgetConfig.blurScreen = true;
 
                             screen.ShowWidget(readTermsAndConditionsWidgetConfig);
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            break;
+
+                        case AppData.InputActionButtonType.SignUpButton:
+
+                            callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserNameField));
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserEmailField));
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserPasswordField));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserPasswordVarificationField));
+
+                                        if (callbackResults.Success())
+                                        { 
+                                            var userName = GetInputField(AppData.InputFieldActionType.UserNameField).GetData().GetValue().GetData().text;
+                                            var email = GetInputField(AppData.InputFieldActionType.UserEmailField).GetData().GetValue().GetData().text;
+                                            var password = GetInputField(AppData.InputFieldActionType.UserPasswordField).GetData().GetValue().GetData().text;
+                                            var passwordVarification = GetInputField(AppData.InputFieldActionType.UserPasswordVarificationField).GetData().GetValue().GetData().text;
+
+                                            LogInfo($"***_Log_cat: Sign Up - Name : {name} - Email : {email} - Password : {password} ", this);
+                                        }
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            break;
                     }
 
-                    break;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
         }
 
@@ -67,37 +105,64 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)
         {
-            throw new NotImplementedException();
+           
         }
 
         protected override void OnScrollerValueChanged(Vector2 value)
         {
-            throw new NotImplementedException();
+          
         }
 
         protected override void OnInputFieldValueChanged(string value, AppData.InputFieldConfigDataPacket dataPackets)
         {
-            throw new NotImplementedException();
+            
         }
 
         protected override void OnInputFieldValueChanged(int value, AppData.InputFieldConfigDataPacket dataPackets)
         {
-            throw new NotImplementedException();
+            
         }
 
         protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxConfigDataPacket dataPackets)
         {
-            throw new NotImplementedException();
+            
         }
 
         protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.TabViewType, AppData.TabViewType, AppData.Widget>> OnGetState()
         {
-            throw new NotImplementedException();
+            var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.TabViewType, AppData.TabViewType, AppData.Widget>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(GetType());
+
+                if (callbackResults.Success())
+                {
+                    var widgetType = GetType().data;
+
+                    callbackResults.SetResult(GetStatePacket().Initialized(widgetType));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Widget : {GetStatePacket().GetName()} Of Type : {GetStatePacket().GetType()} State Is Set To : {GetStatePacket().GetStateType()}";
+                        callbackResults.data = GetStatePacket();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         protected override void OnScreenWidgetShownEvent()
         {
-           
+            
+
         }
 
         protected override void OnScreenWidgetHiddenEvent()
