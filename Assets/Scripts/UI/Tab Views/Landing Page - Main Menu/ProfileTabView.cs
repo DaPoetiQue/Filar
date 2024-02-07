@@ -24,6 +24,20 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        #region Tab View Overrides
+
+        protected override void OnTabViewShown(Action<AppData.Callback> callback = null)
+        {
+
+        }
+
+        protected override void OnTabViewHidden(Action<AppData.Callback> callback = null)
+        {
+
+        }
+
+        #endregion
+
         protected override void OnActionButtonEvent(AppData.TabViewType screenWidgetType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
             var callbackResults = new AppData.Callback();

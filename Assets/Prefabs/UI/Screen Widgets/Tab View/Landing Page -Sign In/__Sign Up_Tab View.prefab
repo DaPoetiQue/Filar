@@ -1059,7 +1059,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    title: {fileID: 0}
+    title: {fileID: 2455903827970195032}
     fieldUIImageList: []
     value: {fileID: 2455903828130393562}
     dataPackets:
@@ -1384,7 +1384,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -3372,7 +3371,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -5910,7 +5908,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -7766,10 +7763,10 @@ RectTransform:
   m_Father: {fileID: 2455903829830076232}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 208.125, y: -26.25}
+  m_SizeDelta: {x: 53.75, y: 52.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2455903828620083696
 CanvasRenderer:
@@ -8245,7 +8242,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -10469,7 +10465,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -10870,7 +10865,7 @@ MonoBehaviour:
     selectable: 1
     visualizationType: 3
     selectionFrame:
-      value: {fileID: 2455903829005002452}
+      value: {fileID: 2455903828571884913}
     inputType: 2
     validationStatesInfo:
       validate: 0
@@ -12607,7 +12602,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 2455903829646677035}
     characterLimit: 20
-    concealField: 1
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -14899,7 +14893,6 @@ MonoBehaviour:
     placeHolderText: info@filar.io
     placeholderTextDisplayer: {fileID: 2455903828771663055}
     characterLimit: 30
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -16410,10 +16403,10 @@ RectTransform:
   m_Father: {fileID: 2455903829830076232}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 90.625, y: -26.25}
+  m_SizeDelta: {x: 53.75, y: 52.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2455903829208631326
 CanvasRenderer:
@@ -16889,7 +16882,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -19011,7 +19003,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -21110,7 +21101,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -23538,7 +23528,6 @@ MonoBehaviour:
     placeHolderText: Filar
     placeholderTextDisplayer: {fileID: 2455903829842236892}
     characterLimit: 30
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -25049,10 +25038,10 @@ RectTransform:
   m_Father: {fileID: 2455903829830076232}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 31.875, y: -26.25}
+  m_SizeDelta: {x: 53.75, y: 52.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2455903829531366016
 CanvasRenderer:
@@ -25528,7 +25517,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -27039,10 +27027,10 @@ RectTransform:
   m_Father: {fileID: 2455903829830076232}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 149.375, y: -26.25}
+  m_SizeDelta: {x: 53.75, y: 52.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2455903829599644054
 CanvasRenderer:
@@ -27518,7 +27506,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -29852,7 +29839,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 2455903828558563105}
     characterLimit: 20
-    concealField: 1
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -32092,7 +32078,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -33791,6 +33776,11 @@ MonoBehaviour:
     - {fileID: 6628210929302801384}
     - {fileID: 2790990373247760782}
     initialize: 1
+  - name: Checkboxes
+    inputActionGroupType: 2
+    inputActionGroup:
+    - {fileID: 4140719281353957116}
+    initialize: 1
   - name: Buttons
     inputActionGroupType: 1
     inputActionGroup:
@@ -33800,11 +33790,6 @@ MonoBehaviour:
     - {fileID: 304250651269652852}
     - {fileID: 5001494023696215388}
     - {fileID: 8498891307691593696}
-    initialize: 1
-  - name: Checkboxes
-    inputActionGroupType: 2
-    inputActionGroup:
-    - {fileID: 4140719281353957116}
     initialize: 1
   screenType: 7
   parentType: 31
@@ -34583,7 +34568,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -36727,7 +36711,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 

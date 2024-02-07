@@ -197,6 +197,25 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
+        public void Select(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.GetName(), $"Selectable Manager Instance Is Not Yet Initialized In : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var selectableManager = AppData.Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.GetName()).GetData();
+
+                selectableManager.Select(GetName(), AppData.FocusedSelectionType.SelectedItem, selectionCallbackResults => 
+                {
+                    callbackResults.SetResult(selectionCallbackResults);
+                });
+
+                callback?.Invoke(callbackResults);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
         public void GetInputDataPacket<T>(Action<AppData.CallbackData<T>> callback) where T : AppData.SceneConfigDataPacket
         {
             AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();

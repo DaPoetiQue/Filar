@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
@@ -11,6 +12,7 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
+
         protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.TabViewType, AppData.TabViewType, AppData.Widget>>> callback)
         {
             var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.TabViewType, AppData.TabViewType, AppData.Widget>>();
@@ -18,10 +20,88 @@ namespace Com.RedicalGames.Filar
             Init(initializationCallbackResults =>
             {
                 callbackResults.SetResultsData(initializationCallbackResults);
+
+                if(callbackResults.Success())
+                {
+                    //callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "App Events Manager Instance Is Not Yet Initialized."));
+
+                    //if (callbackResults.Success())
+                    //{
+                    //    var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+
+                    //    appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetShown, AppData.EventType.OnWidgetShownEvent, true);
+                    //    appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetHidden, AppData.EventType.OnWidgetHiddenEvent, true);
+                    //}
+                    //else
+                    //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             });
 
             callback.Invoke(callbackResults);
         }
+
+        #region On Widget Events
+
+        private void OnWidgetShown(AppData.Widget widget)
+        {
+            //var callbackResults = new AppData.Callback(widget.GetType());
+
+            //if (callbackResults.Success())
+            //{
+            //    if (widget.GetType().GetData() == AppData.WidgetType.SignInWidget)
+            //    {
+            //        HighlightInputFieldValue(AppData.InputFieldActionType.UserNameField, callback: fieldHighlightedCallbackResults =>
+            //        {
+            //            callbackResults.SetResult(fieldHighlightedCallbackResults);
+            //        });
+            //    }
+            //}
+            //else
+            //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        private void OnWidgetHidden(AppData.Widget widget)
+        {
+            //var callbackResults = new AppData.Callback(widget.GetType());
+
+            //if (callbackResults.Success())
+            //{
+            //    if (widget.GetType().GetData() == AppData.WidgetType.SignInWidget)
+            //    {
+            //        HighlightInputFieldValue(AppData.InputFieldActionType.UserNameField, false, fieldHighlightedCallbackResults =>
+            //        {
+            //            callbackResults.SetResult(fieldHighlightedCallbackResults);
+            //        });
+            //    }
+            //}
+            //else
+            //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        #endregion
+
+        #region Tab View Overrides
+
+        protected override void OnTabViewShown(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+      
+            callback?.Invoke(callbackResults);
+        }
+
+        protected override void OnTabViewHidden(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+           
+
+            callback?.Invoke(callbackResults);
+        }
+
+        #endregion
 
         protected override void OnActionButtonEvent(AppData.TabViewType screenWidgetType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {

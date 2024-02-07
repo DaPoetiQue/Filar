@@ -167,6 +167,42 @@ namespace Com.RedicalGames.Filar
         public static void ShowActionInput(this Button reference) => reference.gameObject.SetActive(true);
         public static void HideActionInput(this Button reference) => reference.gameObject.SetActive(false);
 
+        public static void RemoveEvents(this Button reference, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"On Select Failed - Selectable Input Component Handler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+
+            if(callbackResults.Success())
+               reference.onClick.RemoveAllListeners();
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public static void SetColor(this Button reference, Color color, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"Set Color Failed - Selectable Input Component Handler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.image.color = color;
+                callbackResults.result = $"Set Color Success - {reference.GetName()}'s Color Has Been Set to : {color.ToString()}.";
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public static void SetImage(this Button reference, Sprite sprite, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(sprite, "Sprite", $"Set Image Failed - Sprite Parameter For {reference.GetName()} Is Not Assigned - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.image.sprite = sprite;
+                callbackResults.result = $"Set Value Success - Value Parameter For {reference.GetName()} Is Successfully Asigned.";
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
         public static string GetName(this Button reference) => reference.name;
 
         #endregion
@@ -181,6 +217,19 @@ namespace Com.RedicalGames.Filar
             {
                 reference.text = value;
                 callbackResults.result = $"Set Value Success - Value Parameter For {reference.GetName()} Is Set To : {value}.";
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public static void SetColor(this TMP_InputField reference, Color color, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"Set Color Failed - Selectable Input Component Handler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.image.color = color;
+                callbackResults.result = $"Set Color Success - {reference.GetName()}'s Color Has Been Set to : {color.ToString()}.";
             }
 
             callback?.Invoke(callbackResults);
@@ -216,7 +265,7 @@ namespace Com.RedicalGames.Filar
 
         public static void Refresh(this TMP_InputField reference, Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"On Select Failed - SelectableInputComponentHandler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"On Select Failed - Selectable Input Component Handler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
 
             if (callbackResults.Success())
                 reference.ForceLabelUpdate();
@@ -226,7 +275,7 @@ namespace Com.RedicalGames.Filar
 
         public static void OnSelect(this TMP_InputField reference, Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"On Select Failed - SelectableInputComponentHandler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"On Select Failed - Selectable Input Component Handler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
 
             if (callbackResults.Success())
                 reference.Select();
@@ -286,6 +335,33 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Checkbox
+
+        public static void SetColor(this Toggle reference, Color color, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"Set Color Failed - Selectable Input Component Handler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.image.color = color;
+                callbackResults.result = $"Set Color Success - {reference.GetName()}'s Color Has Been Set to : {color}.";
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public static void SetImage(this Toggle reference, Sprite sprite, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(sprite, "Sprite", $"Set Image Failed - Sprite Parameter For {reference.GetName()} Is Not Assigned - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.image.sprite = sprite;
+                callbackResults.result = $"Set Value Success - Value Parameter For {reference.GetName()} Is Successfully Asigned.";
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
 
         public static void ShowActionInput(this Toggle reference) => reference.gameObject.SetActive(true);
         public static void HideActionInput(this Toggle reference) => reference.gameObject.SetActive(false);

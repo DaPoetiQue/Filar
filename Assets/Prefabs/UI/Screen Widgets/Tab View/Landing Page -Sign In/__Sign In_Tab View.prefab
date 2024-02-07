@@ -651,7 +651,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -2924,7 +2923,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -5020,7 +5018,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -7323,7 +7320,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -9387,7 +9383,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -12067,7 +12062,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -14014,7 +14008,6 @@ MonoBehaviour:
     placeHolderText: info@filar.io
     placeholderTextDisplayer: {fileID: 2464518915993421495}
     characterLimit: 30
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -16635,7 +16628,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -19185,7 +19177,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -21252,7 +21243,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -23895,7 +23885,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
-    concealField: 0
     valueType: 0
   inputSliderComponentConfig:
     name: 
@@ -25542,10 +25531,15 @@ MonoBehaviour:
     parameterEventActions: []
   actionGroup:
   - name: Input Fields
-    inputActionGroupType: 3
+    inputActionGroupType: 1
     inputActionGroup:
     - {fileID: 8126243306172905684}
     - {fileID: 412574612215610640}
+    initialize: 1
+  - name: Checkboxes
+    inputActionGroupType: 1
+    inputActionGroup:
+    - {fileID: 7476802199355137803}
     initialize: 1
   - name: Buttons
     inputActionGroupType: 1
@@ -25556,11 +25550,6 @@ MonoBehaviour:
     - {fileID: 7443705130512240703}
     - {fileID: 3142583646940633969}
     - {fileID: 884555536379587514}
-    initialize: 1
-  - name: Checkboxes
-    inputActionGroupType: 2
-    inputActionGroup:
-    - {fileID: 7476802199355137803}
     initialize: 1
   screenType: 7
   parentType: 31
@@ -26408,7 +26397,6 @@ MonoBehaviour:
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 2464518916148106014}
     characterLimit: 30
-    concealField: 1
     valueType: 0
   inputSliderComponentConfig:
     name: 
