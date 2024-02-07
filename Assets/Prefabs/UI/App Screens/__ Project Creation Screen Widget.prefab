@@ -960,7 +960,7 @@ MonoBehaviour:
     isShowing: 0
   screenTogglableWidgetsList: []
   includesLoadingAssets: 0
-  initializeScreenWidgets: 1
+  initializeScreenWidgets: 0
   focusedWidgets: []
 --- !u!1 &6372227949350724790
 GameObject:

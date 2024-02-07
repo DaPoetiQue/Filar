@@ -41,40 +41,33 @@ namespace Com.RedicalGames.Filar
 
         }
 
-        void CreateProfile(AppData.Profile profile, Action<AppData.CallbackData<AppData.Profile>> callback = null)
-        {
-            AppData.CallbackData<AppData.Profile> callbackResults = new AppData.CallbackData<AppData.Profile>();
-
-            AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
-            {
-                callbackResults.result = sceneAssetsManagerCallbackResults.result;
-                callbackResults.resultCode = sceneAssetsManagerCallbackResults.resultCode;
-
-                if (callbackResults.Success())
-                {
-
-                }
-
-            }, "Scene Assets Manager Instance In Not Yet Initialized.");
-
-            callback?.Invoke(callbackResults);
-        }
-
         public void GetUserProfile(Action<AppData.CallbackData<AppData.Profile>> callback)
         {
-            AppData.CallbackData<AppData.Profile> callbackResults = new AppData.CallbackData<AppData.Profile>();
+            AppData.CallbackData<AppData.Profile> callbackResults = new AppData.CallbackData<AppData.Profile>(AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance", "App Services Manager Instance Is Not Yet Initialized."));
 
-            AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, sceneAssetsManagerCallbackResults =>
+            if (callbackResults.Success())
             {
+                var appServicesManagerInstance = AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance").GetData();
 
-                callbackResults.SetResults(sceneAssetsManagerCallbackResults);
-
-                if(callbackResults.Success())
+                appServicesManagerInstance.GetAppInfo(getAppInfoCallbackResults => 
                 {
+                    callbackResults.SetResult(getAppInfoCallbackResults);
+                
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.SetResult(getAppInfoCallbackResults.GetData().GetProfile());
 
-                }
-
-            }, "Scene Assets Manager Instance In Not Yet Initialized.");
+                        if (callbackResults.Success())
+                            callbackResults.data = getAppInfoCallbackResults.GetData().GetProfile().GetData();
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             callback.Invoke(callbackResults);
         }
@@ -259,7 +252,7 @@ namespace Com.RedicalGames.Filar
 
             if (!string.IsNullOrEmpty(deviceID))
             {
-                var profile = new AppData.Profile(AppData.ProfileStatus.Default);
+                var profile = new AppData.Profile(AppData.ProfileStatus.Anonymous);
 
                 callbackResults.result = $"Create Profile Success - A Profile Has Been Successfully Created Using Device ID : {deviceID}";
                 callbackResults.data = profile;

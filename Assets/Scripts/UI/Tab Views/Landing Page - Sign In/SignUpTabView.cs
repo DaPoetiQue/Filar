@@ -25,77 +25,120 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.TabViewType screenWidgetType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
-            var callbackResults = new AppData.Callback();
-
-            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
-                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+                var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
 
-                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
-
-                if (callbackResults.Success())
+                profileManagerInstance.GetUserProfile(userProfileCallbackResults => 
                 {
-                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+                    callbackResults.SetResult(userProfileCallbackResults);
 
-                    switch (actionType)
+                    if (callbackResults.Success())
                     {
-                        case AppData.InputActionButtonType.ReadButton:
+                        var userProfile = userProfileCallbackResults.GetData();
 
-                            screen.HideScreenWidget(AppData.WidgetType.SignInWidget);
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
 
-                            var readTermsAndConditionsWidgetConfig = new AppData.SceneConfigDataPacket();
+                        if (callbackResults.Success())
+                        {
+                            var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                            readTermsAndConditionsWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.TermsAndConditionsWidget);
-                            readTermsAndConditionsWidgetConfig.blurScreen = true;
-
-                            screen.ShowWidget(readTermsAndConditionsWidgetConfig);
-
-                            break;
-
-                        case AppData.InputActionButtonType.SignUpButton:
-
-                            callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserNameField));
+                            callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
 
                             if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserEmailField));
+                                var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
 
-                                if (callbackResults.Success())
+                                switch (actionType)
                                 {
-                                    callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserPasswordField));
+                                    case AppData.InputActionButtonType.ReadButton:
 
-                                    if (callbackResults.Success())
-                                    {
-                                        callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserPasswordVarificationField));
+                                        screen.HideScreenWidget(AppData.WidgetType.SignInWidget);
+
+                                        var readTermsAndConditionsWidgetConfig = new AppData.SceneConfigDataPacket();
+
+                                        readTermsAndConditionsWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.TermsAndConditionsWidget);
+                                        readTermsAndConditionsWidgetConfig.blurScreen = true;
+
+                                        screen.ShowWidget(readTermsAndConditionsWidgetConfig);
+
+                                        break;
+
+                                    case AppData.InputActionButtonType.SignUpButton:
+
+                                        callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserNameField));
 
                                         if (callbackResults.Success())
-                                        { 
-                                            var userName = GetInputField(AppData.InputFieldActionType.UserNameField).GetData().GetValue().GetData().text;
-                                            var email = GetInputField(AppData.InputFieldActionType.UserEmailField).GetData().GetValue().GetData().text;
-                                            var password = GetInputField(AppData.InputFieldActionType.UserPasswordField).GetData().GetValue().GetData().text;
-                                            var passwordVarification = GetInputField(AppData.InputFieldActionType.UserPasswordVarificationField).GetData().GetValue().GetData().text;
+                                        {
+                                            callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserEmailField));
 
-                                            LogInfo($"***_Log_cat: Sign Up - Name : {name} - Email : {email} - Password : {password} ", this);
+                                            if (callbackResults.Success())
+                                            {
+                                                callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserPasswordField));
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserPasswordVarificationField));
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        var userName = GetInputField(AppData.InputFieldActionType.UserNameField).GetData().GetValue().GetData().text;
+                                                        var userEmail = GetInputField(AppData.InputFieldActionType.UserEmailField).GetData().GetValue().GetData().text;
+                                                        var userPassword = GetInputField(AppData.InputFieldActionType.UserPasswordField).GetData().GetValue().GetData().text;
+                                                        var userPasswordVarification = GetInputField(AppData.InputFieldActionType.UserPasswordVarificationField).GetData().GetValue().GetData().text;
+
+                                                        callbackResults.SetResult(AppData.Helpers.GetAppStringValueEqual(userPassword, userPasswordVarification, "Varifying Password"));
+
+                                                        if(callbackResults.Success())
+                                                        {
+                                                            userProfile.SetUserName(userName);
+                                                            userProfile.SetUserEmail(userEmail);
+                                                            userProfile.SetUserPassword(userPassword);
+
+                                                            callbackResults.SetResult(userProfile.Initialized());
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                LogSuccess($"***_Log_cat: Sign Up Success - Name : {userName} - Email : {userEmail} - Password : {userPassword} - Password Varification : {userPasswordVarification} ", this);
+                                                            }
+                                                            else
+                                                            {
+                                                                var invalidFieldType = userProfile.Initialized().GetData();
+
+                                                                LogWarning($"***_Log_cat: Sign Up Failed - {invalidFieldType} Field Is Invalid", this);
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            LogWarning($"***_Log_cat: Sign Up Failed - Passwords Doesn't Match - Password : {userPassword} -Varification Pasword : {userPasswordVarification}", this);
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         }
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        break;
                                 }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                            break;
+                        }
                     }
-
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
             }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)

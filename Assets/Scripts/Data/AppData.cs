@@ -370,6 +370,7 @@ namespace Com.RedicalGames.Filar
             SignOutButton,
             TabNavigationButton,
             AcceptTermsAndConditionsButton,
+            ConcealFieldButton,
             None
         }
 
@@ -11539,7 +11540,7 @@ namespace Com.RedicalGames.Filar
         public enum ProfileStatus
         {
             None,
-            Default,
+            Anonymous,
             Registered,
             Varified
         }
@@ -11569,15 +11570,39 @@ namespace Com.RedicalGames.Filar
             {
             }
 
-            public Profile(ProfileStatus status = ProfileStatus.Default, string userName = null, string userEmail = null, string userPassword = null)
+            public Profile(ProfileStatus status = ProfileStatus.Anonymous, string userName = null, string userEmail = null, string userPassword = null)
             {
                 this.userName = userName;
                 this.userEmail = userEmail;
                 this.userPassword = userPassword;
                 this.status = status;
+
+                Initialize();
+            }
+
+            public Profile(string userName, string userEmail, string userPassword, ProfileStatus status = ProfileStatus.Anonymous)
+            {
+                this.userName = userName;
+                this.userEmail = userEmail;
+                this.userPassword = userPassword;
+                this.status = status;
+
+                Initialize();
             }
 
             #region Info Setters
+
+            void Initialize(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback();
+
+                SetUniqueIdentifier(Helpers.GenerateUniqueIdentifier(5), identifierSetCallbackResults => 
+                {
+                    callbackResults.SetResult(identifierSetCallbackResults);
+                });
+
+                callback?.Invoke(callbackResults);
+            }
 
             public void SetUserName(string userName, Action<Callback> callback = null)
             {
@@ -11663,9 +11688,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public Callback Initialized()
+            public CallbackData<InputFieldActionType> Initialized()
             {
-                var callbacResults = new Callback(GetUserName());
+                var callbacResults = new CallbackData<InputFieldActionType>(GetUserName());
 
                 if(callbacResults.Success())
                 {
@@ -11677,7 +11702,22 @@ namespace Com.RedicalGames.Filar
 
                         if(callbacResults.Success())
                             callbacResults.SetResult(GetStatus());
+                        else
+                        {
+                            callbacResults.result = "User Password Required.";
+                            callbacResults.data = InputFieldActionType.UserPasswordField;
+                        }
                     }
+                    else
+                    {
+                        callbacResults.result = "User Email Required.";
+                        callbacResults.data = InputFieldActionType.UserEmailField;
+                    }
+                }
+                else
+                {
+                    callbacResults.result = "User Name Required.";
+                    callbacResults.data = InputFieldActionType.UserNameField;
                 }
 
                 return callbacResults;
@@ -17960,6 +18000,8 @@ namespace Com.RedicalGames.Filar
                                 callbackResults.SetResult(initializedCallbackResults);
                             });
                         }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     });
                 }
                 else
@@ -18037,26 +18079,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            protected CallbackData<SelectionVisualizationType> GetVisualizationType()
-            {
-                var callbackResults = new CallbackData<SelectionVisualizationType>();
-
-                if (visualizationType != SelectionVisualizationType.None)
-                {
-                    callbackResults.result = $"Selectable Component : {GetName()}'s Visualization Type Is Set To : {visualizationType}.";
-                    callbackResults.data = visualizationType;
-                    callbackResults.resultCode = Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"Selectable Component : {GetName()}'s Visualization Type Is Set To Default : {visualizationType} - Invalid Operation.";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
-
-                return callbackResults;
-            }
-
             protected CallbackData<SelectionFrame> GetSelectionFrame()
             {
                 var callbackResults = new CallbackData<SelectionFrame>(selectionFrame.Initialized());
@@ -18065,6 +18087,36 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.result = $"Selection Frame Has Been Successfully Initialized.";
                     callbackResults.data = selectionFrame;
+                }
+
+                return callbackResults;
+            }
+
+            protected new CallbackData<InputType> GetType()
+            {
+                var callbackResults = new CallbackData<InputType>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(inputType, "Input Type", $"Get Type Failed - Input Type Value For : {GetName()} Is Set To Default : {inputType} - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Type Success - Input Type Value For : {GetName()} Is Set To : {inputType}.";
+                    callbackResults.data = inputType;
+                }
+
+                return callbackResults;
+            }
+
+            protected CallbackData<SelectionVisualizationType> GetVisualizationType()
+            {
+                var callbackResults = new CallbackData<SelectionVisualizationType>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(visualizationType, "Visualization Type", $"Get Visualization Type Failed - Visualization Type Value For : {GetName()} Is Set To Default : {visualizationType} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Visualization Type Success - Visualization Type Value For : {GetName()} Is Set To : {visualizationType}.";
+                    callbackResults.data = visualizationType;
                 }
 
                 return callbackResults;
@@ -18225,7 +18277,22 @@ namespace Com.RedicalGames.Filar
 
             #region UI States
 
-            public void SetSelectableInputUIState(InputUIState state) => GetSelectionStateInfo().GetData().SetInputState(state);
+            public void SetSelectableInputUIState(InputUIState state, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(state, "State", $"Set Selectable State Failed - State Parameter Value Is Set To Default : {state} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    GetSelectionStateInfo().GetData().SetInputState(state, selectionStateCallbackResults => 
+                    {
+                        callbackResults.SetResult(selectionStateCallbackResults);
+                    });
+                }
+                else
+                    Log(callbackResults.resultCode, callbackResults.result, this);
+
+                callback?.Invoke(callbackResults);
+            }
 
             public InputUIState GetInputUIState() => GetSelectionStateInfo().GetData().GetInputUIState().GetData();
 
@@ -18405,19 +18472,26 @@ namespace Com.RedicalGames.Filar
                 return (success: value != null, results: results);
             }
 
-
             public Callback Initialized()
             {
                 Callback callbackResults = new Callback(GetValue());
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.result = $"Input : {GetName()} Of Type : {inputType}'s Value Assigned";
-                    callbackResults.resultCode = Helpers.SuccessCode;
+                    callbackResults.SetResult(GetType());
+
+                    if (callbackResults.Success())
+                    {
+                        if(selectable)
+                            callbackResults.SetResult(GetVisualizationType());
+
+                        if (callbackResults.Success())
+                            callbackResults.result = $"Input : {GetName()} Of Type : {GetType().GetData()} Has Been Initialized Successfully.";
+                    }
                 }
                 else
                 {
-                    callbackResults.result = $"Input : {name} Of Type : {inputType}'s Value Missing / Not Found / Not Assigned In The Editor Inspector Panel.";
+                    callbackResults.result = $"Input : {GetName()} Of Type : {GetType()?.GetData()}'s Value Missing / Not Found / Not Assigned In The Editor Inspector Panel.";
                     callbackResults.resultCode = Helpers.ErrorCode;
                 }
 
@@ -19215,7 +19289,7 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             [Space(5)]
-            public Button clearButton;
+            public List<InputActionHandler> fieldActionInputs;
 
             [Space(5)]
             public string placeHolderText;
@@ -19229,11 +19303,15 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public InputFieldValueType valueType;
 
-            string clearTextPlaceHolder;
+            private string clearTextPlaceHolder;
+
+            private bool concealField;
 
             #endregion
 
             #region Main
+
+            #region Initialization
 
             protected override void OnInitialize(Action<Callback> callback = null)
             {
@@ -19252,6 +19330,61 @@ namespace Com.RedicalGames.Filar
                             SetUIInputState(GetSelectionStateInfo().GetData().GetInputUIState().GetData(), showCallbackResults =>
                             {
                                 callbackResults.SetResult(showCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    InitializeFieldInputs(fieldInputInitializationCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(fieldInputInitializationCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(GetPlaceHolderText());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                SetPlaceHolderText(GetPlaceHolderText().GetData(), placeHolderSetCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(placeHolderSetCallbackResults);
+                                                });
+                                            }
+                                            else
+                                            {
+                                                callbackResults.result = $"Input Field : {GetName()} Doesn't Have Place Holder Text - Continuing Execution.";
+                                                callbackResults.resultCode = Helpers.SuccessCode;
+                                            }
+
+                                            callbackResults.SetResult(GetDataPackets());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var dataPacket = GetDataPackets().GetData() as InputFieldConfigDataPacket;
+
+                                                ConfigureInput(dataPacket, inputConfiguredCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(inputConfiguredCallbackResults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        GetValue().GetData().onValueChanged.AddListener(value =>
+                                                        {
+                                                            OnUpdateFieldInputStates(value, fieldUpdateCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(fieldUpdateCallbackResults);
+                                                            });
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             });
                         }
                         else
@@ -19266,179 +19399,996 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void Initialize()
+            public void InitializeFieldInputs(Action<Callback> callback = null)
             {
-                if (clearButton != null)
-                    clearButton.onClick.AddListener(OnClearField);
+                var callbackResults = new Callback(GetFieldInputs());
 
-                if (value != null)
-                    value.characterLimit = characterLimit;
-
-                SetPlaceHolderText(placeHolderText);
-            }
-
-            public void SetPlaceHolderText(string placeholder)
-            {
-                if (!string.IsNullOrEmpty(placeholder))
+                if(callbackResults.Success())
                 {
-                    clearTextPlaceHolder = placeholder;
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.GetName(), $"Selectable Manager Instance Is Not Yet Initialized In : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation."));
 
-                    value.text = string.Empty;
+                    if (callbackResults.Success())
+                    {
+                        var selectableManager = Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.GetName()).GetData();
 
-                    if (placeholderTextDisplayer)
-                        placeholderTextDisplayer.text = placeholder;
+                        foreach (var input in GetFieldInputs().GetData())
+                        {
+                            callbackResults.SetResult(input.Initialized());
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(input.Selectable());
+
+                                if (callbackResults.Success())
+                                {
+                                    selectableManager.GetProjectStructureSelectionSystem(structureCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(structureCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var selectionSystem = structureCallbackResults.GetData();
+
+                                            selectionSystem.OnRegisterInputToSelectableEventListener(GetType().GetData(), input, selectableCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(selectableCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    input.Initialize(initializationCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(initializationCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            callbackResults.SetResult(input.GetValue());
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                input.GetValue().GetData().onClick.AddListener(() =>
+                                                                {
+                                                                    OnActionButtonInputEvent(input.dataPackets.GetAction().GetData(), actionCallbackResults => 
+                                                                    {
+                                                                        callbackResults.SetResult(callbackResults);
+                                                                    });
+
+                                                                    ActionEvents.OnActionButtonPressedEvent(input.dataPackets);
+                                                                });
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                {
+                                    input.Initialize(initializationCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(initializationCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(input.GetValue());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                input.GetValue().GetData().onClick.AddListener(() =>
+                                                {
+                                                    OnActionButtonInputEvent(input.dataPackets.GetAction().GetData(), actionCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(callbackResults);
+                                                    });
+
+                                                    ActionEvents.OnActionButtonPressedEvent(input.dataPackets);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                    LogError($"Placeholder Text For : {name} Of Type : {inputType} Is Not Set / Empty / Null.", this);
-            }
-
-            public void SetPlaceHolderText(int placeholder)
-            {
-                this.clearTextPlaceHolder = placeholder.ToString();
-
-                if (value != null)
-                    value.text = string.Empty;
-                else
-                    Debug.LogWarning("--> SetPlaceHolderText Failed : Value Missing / Null.");
-
-                if (placeholderTextDisplayer)
-                    placeholderTextDisplayer.text = placeholder.ToString();
-            }
-
-            public void SetValue(string value) => this.value.text = value;
-
-            public void OnClearField()
-            {
-                if (value)
                 {
-                    value.text = string.Empty;
+                    callbackResults.result = $"Initialize Field Inputs Unsuccessful - Input Field : {GetName()} Doesn't Contain Field Inputs - Continuing Operation.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
 
-                    if (placeholderTextDisplayer)
+                callback?.Invoke(callbackResults);
+            }
+
+            private void ConfigureInput(InputFieldConfigDataPacket dataPacket, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(dataPacket, "Data Packet",
+                    $"Configure Input Failed - Data Packet Parameter Value Is Missing / Null - Invalid Operation.", 
+                    $"Configure Input Success - Data Packet Parameter Value Is Valid."));
+
+                if(callbackResults.Success())
+                {
+                    switch (dataPacket.GetAction().GetData())
                     {
-                        if (string.IsNullOrEmpty(clearTextPlaceHolder) && !string.IsNullOrEmpty(placeHolderText))
-                            clearTextPlaceHolder = placeHolderText;
+                        case InputFieldActionType.UserNameField:
 
-                        placeholderTextDisplayer.text = clearTextPlaceHolder;
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Name, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.UserEmailField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.EmailAddress, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.UserPasswordField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Password, fieldSetCallbackResults => 
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+
+                                if (callbackResults.Success())
+                                    concealField = true;
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.UserPasswordVarificationField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Password, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+
+                                if (callbackResults.Success())
+                                    concealField = true;
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.AssetNameField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Name, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.AssetSearchField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Autocorrected, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.AssetDescriptionField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Standard, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.XRotationPropertyField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.DecimalNumber, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.YRotationPropertyField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.DecimalNumber, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.ZRotationPropertyField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.DecimalNumber, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.InputPageNumberField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.IntegerNumber, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.ColorValueField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Custom, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.ColorHexidecimalField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Custom, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.ColorPromptField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Name, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
+
+                        case InputFieldActionType.ColorReferenceImageURLField:
+
+                            GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Standard, fieldSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldSetCallbackResults);
+                            });
+
+                            break;
                     }
 
-                    value.Select();
+                    GetValue().GetData().characterLimit = characterLimit;
+
+                    callbackResults.result = $"Input Field : {GetName()} Has Been Successfully Configured.";
                 }
+
+                callback?.Invoke(callbackResults);
             }
 
-            public void OnSelect()
+            #endregion
+
+            #region Field Inputs Functions
+
+            private void OnActionButtonInputEvent(InputActionButtonType actionType, Action<Callback> callback = null)
             {
-                if (value)
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(actionType, "Action Type", $"On Action Button Input Event Failed For : {GetName()} - Action Type Parameter Value Is Set To Default : {actionType} - Invalid Operation."));
+
+                if (callbackResults.Success())
                 {
-                    if (!string.IsNullOrEmpty(value.text))
-                        value.Select();
+                    switch (actionType)
+                    {
+                        case InputActionButtonType.ClearButton:
+
+                            OnClearField(fieldClearedCallbackResults => 
+                            {
+                                callbackResults.SetResult(fieldClearedCallbackResults);
+                            });
+
+                            break;
+
+                        case InputActionButtonType.ConcealFieldButton:
+
+                            OnConcealField(fieldConcealedCallbackResults =>
+                            {
+                                callbackResults.SetResult(fieldConcealedCallbackResults);
+                            });
+
+                            break;
+                    }
                 }
                 else
-                    Debug.LogWarning("--> On Select Failed : Value Missing / Null.");
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
-            bool IsInitialized()
+            public CallbackData<UIButton<ButtonConfigDataPacket>> GetFieldInput(InputActionButtonType inputFieldType)
             {
-                return value;
+                var callbackResults = new CallbackData<UIButton<ButtonConfigDataPacket>>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(inputFieldType, "Input Field Type", $"Get Input Field Failed - Input Field Type Parameter Value Is Set To Default : {inputFieldType} - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetFieldInputs());
+
+                    if (callbackResults.Success())
+                    {
+                        var fieldInput = GetFieldInputs().GetData().Find(field => field.GetDataPackets().GetData().GetAction().GetData() == inputFieldType);
+
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(fieldInput, "Field Input", $"Get Field Input Failed - Couldn't Find Field Input Of Type : {inputFieldType} In Field Inputs For : {GetName()} - Invalid Operation."));
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.result = $"Get Field Input Success - Field Input Of Type : {inputFieldType} Has Been Successfully Found In Field Inputs For : {GetName()}";
+                            callbackResults.data = fieldInput;
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private CallbackDataList<UIButton<ButtonConfigDataPacket>> GetFieldInputs()
+            {
+                var callbackResults = new CallbackDataList<UIButton<ButtonConfigDataPacket>>(GetFieldInputHandlers());
+
+                if (callbackResults.Success())
+                {
+                    var fieldInputs = GetFieldInputHandlers().GetData().FindAll(field => field.GetType().GetData() == InputType.Button);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(fieldInputs, "Field Inputs", $"Get Field Inputs Failed - Couldn't Find Field Inputs Of Button Type In Field Inputs For : {GetName()} - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        var initializedInputs = new List<UIButton<ButtonConfigDataPacket>>();
+
+                        for (int i = 0; i < fieldInputs.Count; i++)
+                        {
+                            var fieldInput = fieldInputs[i];
+
+                            fieldInput.Init<ButtonConfigDataPacket>(buttonInitializationCallbackResults => 
+                            {
+                                callbackResults.SetResult(buttonInitializationCallbackResults);
+                            
+                                if(callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(fieldInput.GetButtonComponent());
+
+                                    if(callbackResults.Success())
+                                    {
+                                        if(!initializedInputs.Contains(fieldInput.GetButtonComponent().GetData()))
+                                            initializedInputs.Add(fieldInput.GetButtonComponent().GetData());
+                                        else
+                                        {
+                                            callbackResults.result = $"GetFieldInputs Failed - Field input : {fieldInput.GetName()} At Index : {i} Couldn'nt Be Added To Field Inputs Because It Already Exists In Field Inputs For : {GetName()} - Invalid Operation.";
+                                            callbackResults.resultCode = Helpers.WarningCode;
+                                        }
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+
+                            if(callbackResults.UnSuccessful())
+                            {
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                break;
+                            }
+                        }
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(Helpers.GetAppComponentsValid(initializedInputs, "Initialized Field Inputs", $"Get Field Inputs Failed - Couldn't Find Initialized Field Inputs Of Button Type In Field Inputs For : {GetName()} - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.result = $"Get Field Input Success - {initializedInputs.Count} Field Input(s) Of Button Type Have Been Successfully Found In Field Inputs For : {GetName()}";
+                                callbackResults.data = initializedInputs;
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private CallbackDataList<InputActionHandler> GetFieldInputHandlers()
+            {
+                var callbackResults = new CallbackDataList<InputActionHandler>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(fieldActionInputs, "Field Button Handlers", $"Get Field Button Handlers Failed - There Are No Field Button Handlers Assigned In The Unity Editor Inspector Panel For : {GetName()} - invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Field Button Handlers Success - There Are {fieldActionInputs.Count} : Field Button Handlers(s) Found For : {GetName()}.";
+                    callbackResults.data = fieldActionInputs;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private void OnUpdateFieldInputStates(string value, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetFieldInput(InputActionButtonType.ClearButton));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(value, "Value", $"On Update Field Input States - Value For : {GetName()} Has Been Cleared - Disable Field Inputs."));
+
+                    if(callbackResults.Success())
+                    {
+                        GetFieldInput(InputActionButtonType.ClearButton).GetData().SetUIInputState(InputUIState.Enabled, inputStateUpdatedCallbackResults =>
+                        {
+                            callbackResults.SetResult(inputStateUpdatedCallbackResults);
+                        });
+
+                        callbackResults.SetResult(GetFieldInput(InputActionButtonType.ConcealFieldButton));
+
+                        if (callbackResults.Success())
+                        {
+                            GetFieldInput(InputActionButtonType.ConcealFieldButton).GetData().SetUIInputState(InputUIState.Enabled, inputStateUpdatedCallbackResults =>
+                            {
+                                callbackResults.SetResult(inputStateUpdatedCallbackResults);
+                            });
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Field Input : {GetName()} Doesn't Contain A Conceal Field Button - Continuing Execution.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                    }
+                    else
+                    {
+                        GetFieldInput(InputActionButtonType.ClearButton).GetData().SetUIInputState(InputUIState.Disabled, inputStateUpdatedCallbackResults =>
+                        {
+                            callbackResults.SetResult(inputStateUpdatedCallbackResults);
+                        });
+
+                        callbackResults.SetResult(GetFieldInput(InputActionButtonType.ConcealFieldButton));
+
+                        if (callbackResults.Success())
+                        {
+                            GetFieldInput(InputActionButtonType.ConcealFieldButton).GetData().SetUIInputState(InputUIState.Disabled, inputStateUpdatedCallbackResults =>
+                            {
+                                callbackResults.SetResult(inputStateUpdatedCallbackResults);
+                            });
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Field Input : {GetName()} Doesn't Contain A Conceal Field Button - Continuing Execution.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            public void SetPlaceHolderText(string placeholder, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetValue());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetPlaceholderTextDisplayer());
+
+                    if(callbackResults.Success())
+                    {
+                        GetValue().GetData().ClearValue(valueClearedCallbackResults => 
+                        {
+                            callbackResults.SetResult(valueClearedCallbackResults);
+
+                            if(callbackResults.Success())
+                            {
+                                SetClearTextPlaceHolder(placeholder, clearTextSetCallbacResults => 
+                                {
+                                    callbackResults.SetResult(clearTextSetCallbacResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        GetPlaceholderTextDisplayer().GetData().SetValue(placeholder, placeHolderSetCallbackResults => 
+                                        {
+                                            callbackResults.SetResult(placeHolderSetCallbackResults);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetClearTextPlaceHolder(string placeholder, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppStringValueNotNullOrEmpty(placeholder, "Place Holder", $"Set Clear Text Place Holder Failed - Place Holder Value Parameter For : {GetName()} Is Null / Empty - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    clearTextPlaceHolder = placeholder;
+                    callbackResults.result = $"Set Clear Text Place Holder Success - Clear Text Place Holder Value For : {GetName()} Is Set To : {placeholder}";
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private CallbackData<string> GetClearTextPlaceHolder()
+            {
+                var callbackResults = new CallbackData<string>(Initialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(clearTextPlaceHolder, "Clear Text Place Holder", $"Get Clear Text Place Holder Failed - Clear Text Place Holder Value For : {GetName()} Is Null / Empty - Invalid Operation."));
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Clear Text Place Holder Success - Clear Text Place Holder Value For : {GetName()} Is Set Tp : {clearTextPlaceHolder}.";
+                        callbackResults.data = clearTextPlaceHolder;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public void SetValue(string value, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetValue());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(value, "Value", $"Set Value Failed - Value Parameter For : {GetName()} Is Null / Empty - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        GetValue().GetData().SetValue(value, valueSetCallbackResults => 
+                        {
+                            callbackResults.SetResult(valueSetCallbackResults);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public CallbackData<TMP_Text> GetPlaceholderTextDisplayer()
+            {
+                var callbackResults = new CallbackData<TMP_Text>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(placeholderTextDisplayer, "Placeholder Text Displayer", $"Get Placeholder Text Displayer Failed - Placeholder Text Displayer Value For : {GetName()} Is Missing - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Placeholder Text Displayer Success - Placeholder Text Displayer Value For : {GetName()} Has Been Successfully Found.";
+                    callbackResults.data = placeholderTextDisplayer;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public void OnClearField(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetValue());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetPlaceholderTextDisplayer());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetClearTextPlaceHolder());
+
+                        if (callbackResults.Success())
+                        {
+                            GetValue().GetData().ClearValue(valueClearedCallbackResults => 
+                            {
+                                callbackResults.SetResult(valueClearedCallbackResults);
+
+                                if(callbackResults.Success())
+                                {
+                                    GetPlaceholderTextDisplayer().GetData().SetValue(GetClearTextPlaceHolder().GetData(), placeHolderSetCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(placeHolderSetCallbackResults);
+
+                                        if(callbackResults.Success())
+                                        {
+                                            GetValue().GetData().OnSelect(inputSelectionCallbackResults => 
+                                            {
+                                                callbackResults.SetResult(inputSelectionCallbackResults);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                        {
+                            GetValue().GetData().ClearValue(valueClearedCallbackResults =>
+                            {
+                                callbackResults.SetResult(valueClearedCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    GetValue().GetData().OnSelect(inputSelectionCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(inputSelectionCallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void OnConcealField(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    concealField = !concealField;
+
+                    if(concealField)
+                    {
+                        GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Password, concealFieldCallbackResults => 
+                        {
+                            callbackResults.SetResult(concealFieldCallbackResults);
+
+                            if(callbackResults.Success())
+                            {
+                                callbackResults.SetResult(GetValue().GetData().GetTextLength());
+
+                                if (callbackResults.Success())
+                                {
+                                    GetValue().GetData().Refresh(fieldRefreshedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(fieldRefreshedCallbackResults);
+
+                                        if(callbackResults.Success())
+                                        {
+                                            GetValue().GetData().caretPosition = 2;
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                    {
+                        GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Standard, concealFieldCallbackResults =>
+                        {
+                            callbackResults.SetResult(concealFieldCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(GetValue().GetData().GetTextLength());
+
+                                if (callbackResults.Success())
+                                {
+                                    GetValue().GetData().Refresh(fieldRefreshedCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(fieldRefreshedCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            GetValue().GetData().caretPosition = 2;
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private CallbackData<string> GetPlaceHolderText()
+            {
+                var callbackResults = new CallbackData<string>(Initialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(placeHolderText, "Place Holder Text", $"Get Place Holder Text Failed - Place Holder Text Value For : {GetName()} Is Null / Empty - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Place Holder Text Success - Place Holder Text For : {GetName()} Has Been Found And Set To : {placeHolderText}.";
+                        callbackResults.data = placeHolderText;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private void SetFieldConcealedState(bool concealField) => this.concealField = concealField;
+            private bool GetFieldConcealedState() => concealField;
+
+            public void OnSelect(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetValue());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(GetValue().GetData().text, "Input Text Value", $"On Select Failed - There Is No Text To Select For Input - {GetName()} - Invalid Operation"));
+
+                    if (callbackResults.Success())
+                        GetValue().GetData().Select();
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public override bool GetInteractableState()
             {
-                if (IsInitialized())
-                    return value.interactable;
-                else
-                {
-                    Debug.LogWarning("--> GetInteractableState Failed : Value Is Missing / Null.");
-                    return false;
-                }
+                return value.interactable;
             }
 
             public override void SetInteractableState(bool interactable, Action<Callback> callback = null)
             {
-                if (InputValueAssigned().success)
+                var callbackResults = new Callback(GetValue());
+
+                if (callbackResults.Success())
                 {
-                    value.interactable = interactable;
+                    callbackResults.SetResult(Initialized());
 
-                    if(clearButton)
-                        clearButton.interactable = interactable;
-
-                    InputUIState state = (interactable) ? InputUIState.Enabled : InputUIState.Disabled;
-
-                    GetSelectionState(state, selectionStateCallbackResults =>
+                    if(callbackResults.Success())
                     {
-                        if (selectionStateCallbackResults.Success())
+                        GetValue().GetData().interactable = interactable;
+
+                        callbackResults.SetResult(GetFieldInputs());
+
+                        if (callbackResults.Success())
                         {
-                            if (fieldUIImageList != null && fieldUIImageList.Count > 0)
+                            var fieldInputList = GetFieldInputs().GetData();
+
+                            for (int i = 0; i < fieldInputList.Count; i++)
                             {
-                                var inputIcon = fieldUIImageList.Find(icon => icon.imageDisplayerType == UIImageDisplayerType.InputIcon);
+                                callbackResults.SetResult(fieldInputList[i].GetValue());
 
-                                if (inputIcon.value != null)
-                                {
-                                    inputIcon.value.color = selectionStateCallbackResults.data.color;
-
-                                    if (selectionStateCallbackResults.data.value != null)
-                                        inputIcon.value.sprite = selectionStateCallbackResults.data.value;
-                                }
+                                if(callbackResults.Success())
+                                    fieldInputList[i].GetValue().GetData().interactable = interactable;
                                 else
-                                    LogError("Input Icon Value Missing / Not Found.", this);
+                                {
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    break;
+                                }
                             }
                         }
                         else
-                            Log(selectionStateCallbackResults.resultCode, selectionStateCallbackResults.result, this);
-                    });
+                        {
+                            callbackResults.result = $"There are No Field Inputs For Input Field : {GetName()} - Continuing Execution.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+
+                        if (callbackResults.Success())
+                        {
+                            InputUIState state = (interactable) ? InputUIState.Enabled : InputUIState.Disabled;
+
+                            GetSelectionState(state, selectionStateCallbackResults =>
+                            {
+                                callbackResults.SetResult(selectionStateCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(Helpers.GetAppComponentsValid(fieldUIImageList, "Field UI Image List", $"Set Interactable State Failed - Field UI Image List Is Not Assigned For : {GetName()} - Invalid Operation."));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var inputIcon = fieldUIImageList.Find(icon => icon.imageDisplayerType == UIImageDisplayerType.InputIcon);
+
+                                        callbackResults.SetResult(Helpers.GetAppComponentValid(inputIcon.value, "Input Icon", $"Set Interactable State Failed - Input Icon Value Is Not Assigned For : {GetName()} - Invalid Operation."));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            inputIcon.value.color = selectionStateCallbackResults.data.color;
+
+                                            if (selectionStateCallbackResults.data.value != null)
+                                                inputIcon.value.sprite = selectionStateCallbackResults.data.value;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = $"There are No Field Images For Input Field : {GetName()} - Continuing Execution.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                    LogError(InputValueAssigned().results, this);
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public override void SetUIInputVisibilityState(bool visible, Action<Callback> callback = null)
             {
-                if (InputValueAssigned().success)
-                    value.gameObject.SetActive(visible);
+                var callbackResults = new Callback(GetValue());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Initialized());
+
+                    if (callbackResults.Success())
+                    {
+                        if (visible)
+                            GetValue().GetData().ShowActionInput();
+                        else
+                            GetValue().GetData().HideActionInput();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
                 else
-                    Debug.LogWarning(InputValueAssigned().results);
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public override bool GetUIInputVisibilityState()
             {
-                if (IsInitialized())
-                    return value.isActiveAndEnabled;
-                else
-                {
-                    Debug.LogWarning("--> GetUIInputVisibilityState Failed : Value Is Missing / Null.");
-                    return false;
-                }
+                return value.isActiveAndEnabled;
             }
 
             public override void SetUIInputState(InputUIState state, Action<Callback> callback = null)
             {
-                switch (state)
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(state, "State", $"Set UI Input State Failed - State Parameter Value Is Set To Default : {state} - Invalid Operation."));
+
+                if (callbackResults.Success())
                 {
-                    case InputUIState.Enabled:
+                    SetSelectableInputUIState(state, selectionStateCallbackResults => 
+                    {
+                        callbackResults.SetResult(selectionStateCallbackResults);      
+                        
+                        if(callbackResults.Success())
+                        {
+                            switch (state)
+                            {
+                                case InputUIState.Enabled:
 
-                        SetInteractableState(true);
+                                    SetInteractableState(true, interactableStateCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(interactableStateCallbackResults);
+                                    });
 
-                        break;
+                                    break;
 
-                    case InputUIState.Disabled:
+                                case InputUIState.Disabled:
 
-                        SetInteractableState(false);
+                                    SetInteractableState(false, interactableStateCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(interactableStateCallbackResults);
+                                    });
 
-                        break;
+                                    break;
 
-                    case InputUIState.Shown:
+                                case InputUIState.Shown:
 
-                        SetUIInputVisibilityState(true);
+                                    SetUIInputVisibilityState(true, visibiltyStateCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(visibiltyStateCallbackResults);
+                                    });
 
-                        break;
+                                    break;
 
-                    case InputUIState.Hidden:
+                                case InputUIState.Hidden:
 
-                        SetUIInputVisibilityState(false);
+                                    SetUIInputVisibilityState(false, visibiltyStateCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(visibiltyStateCallbackResults);
+                                    });
 
-                        break;
+                                    break;
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                SetSelectableInputUIState(state);
+                callback?.Invoke(callbackResults);
             }
 
             public override void SetChildWidgetsState(bool interactable, bool isSelected)
@@ -19453,30 +20403,73 @@ namespace Com.RedicalGames.Filar
 
             #region Selections
 
-            bool HasSelectableComponent()
+            public CallbackData<SelectableInputComponentHandler> GetSelectableInputComponentHandler()
             {
-                return value.gameObject.GetComponent<SelectableInputComponentHandler>() != null;
+                var callbackResults = new CallbackData<SelectableInputComponentHandler>(GetValue());
+
+                if (callbackResults.Success())
+                {
+                    if (selectable)
+                    {
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(GetValue().GetData().GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"Get Selectable Input Component Handler Failed - Selectable Input Component Handler Is not Found In Selectable : {GetName()} - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            var selectableInputComponentHandler = Helpers.GetAppComponentValid(GetValue().GetData().GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler").GetData();
+
+                            callbackResults.result = $"Get Selectable Input Component Handler Success - Selectable Input Component Handler For : {GetName()} Has Been Successfully Found.";
+                            callbackResults.data = selectableInputComponentHandler;
+                        }
+                        else
+                        {
+                            GetValue().GetData().gameObject.AddComponent<SelectableInputComponentHandler>();
+
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(GetValue().GetData().GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"Get Selectable Input Component Handler Failed - Selectable Input Component Handler Is not Found In Selectable : {GetName()} - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                var selectableInputComponentHandler = Helpers.GetAppComponentValid(GetValue().GetData().GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler").GetData();
+
+                                callbackResults.result = $"Get Selectable Input Component Handler Success - Selectable Input Component Handler For : {GetName()} Has Been Successfully Found.";
+                                callbackResults.data = selectableInputComponentHandler;
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Get Selectable Input Component Handler Failed - {GetName()} Is Not Set As Selectable Input - Invalid Operation.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
             }
 
             public override void SelectableInit(Action<Callback> callback = null)
             {
-                if (!HasSelectableComponent())
+                var callbackResults = new Callback(GetSelectableInputComponentHandler());
+              
+                if (callbackResults.Success())
                 {
-                    SelectableInputComponentHandler selectable = value.gameObject.AddComponent<SelectableInputComponentHandler>();
-
-                    if (selectable)
+                    GetSelectableInputComponentHandler().GetData().Init(this, initializedCallbackResults =>
                     {
-                        selectable.Init(this, initializedCallbackResults =>
-                        {
-                            if (initializedCallbackResults.Success())
-                                Deselect();
-                            else
-                                Debug.LogError($"Initialization Failed With Results : {initializedCallbackResults.result}");
-                        });
-                    }
-                    else
-                        Debug.LogWarning("UIDropDown Initialize Failed : SelectableInputDropdownHandler Component Missing / Not Found.");
+                        callbackResults.SetResult(initializedCallbackResults);
+
+                        if (callbackResults.Success())
+                            Deselect();
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public override void SetSelectionState(SelectionVisualizationType visualizationType, SelectionState selectionState)
@@ -20724,7 +21717,20 @@ namespace Com.RedicalGames.Filar
                 
             }
 
-            public void SetInputState(InputUIState inputState) => this.inputState = inputState;
+            public void SetInputState(InputUIState inputState, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(inputState, "Input State", $"Set Input State Failed - State Parameter Value For : {GetName()} Is Set To Default : {inputState}"));
+
+                if (callbackResults.Success())
+                {
+                    this.inputState = inputState;
+                    callbackResults.result = $"Set Input State Success - State For : {GetName()} Is Set To : {inputState}";
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
 
             public CallbackData<InputUIState> GetInputUIState()
             {
@@ -46001,18 +47007,14 @@ namespace Com.RedicalGames.Filar
                         if (callbackResults.UnSuccessful())
                         {
                             canvasGroup = value?.AddComponent<CanvasGroup>();
-
                             callbackResults.SetResult(Helpers.GetAppComponentValid(canvasGroup, "Canvas Group", "Canvas Group Component Is Not Assigned - Invalid Operation."));
                         }
                         else
                         {
                             canvasGroup = value?.GetComponent<CanvasGroup>();
-
                             callbackResults.result = $"Canvas Group Component Successfully Found For : {GetName()}";
                         }
                     }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -51285,6 +52287,36 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public static CallbackData<string> GetAppStringValueEqual(string valueA, string valueB, string name = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                var callbackResults = new CallbackData<string>(GetAppStringValueNotNullOrEmpty(valueA, name, "Get String Value Equal Failed - Value A Parameter Value Is Null / Empty - Invalid operation"));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetAppStringValueNotNullOrEmpty(valueB, name, "Get String Value Equal Failed - Value B Parameter Value Is Null / Empty - Invalid operation"));
+
+                    if(callbackResults.Success())
+                    {
+                        if (valueA.Equals(valueB))
+                        {
+                            callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"String Value A : {valueB} Is Eual To String Value B : {valueB}.";
+                            callbackResults.data = valueA;
+                            callbackResults.resultCode = SuccessCode;
+                        }
+                        else
+                        {
+                            string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"String Value : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+
+                            callbackResults.result = results;
+                            callbackResults.data = default;
+                            callbackResults.resultCode = ErrorCode;
+                        }
+                    }
+                }
+
+                return callbackResults;
+            }
+
             public static CallbackDataArray<string> GetAppStringArrayValid(string[] values, string name = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
             {
                 var callbackResults = new CallbackDataArray<string>();
@@ -52451,7 +53483,7 @@ namespace Com.RedicalGames.Filar
             void Expand();
             void Collapse();
 
-            void SetSelectableInputUIState(InputUIState state);
+            void SetSelectableInputUIState(InputUIState state, Action<Callback> callback = null);
 
             InputUIState GetInputUIState();
 

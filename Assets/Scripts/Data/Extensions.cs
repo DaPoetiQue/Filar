@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using static TMPro.TMP_InputField;
 
 namespace Com.RedicalGames.Filar
 { 
@@ -156,6 +159,214 @@ namespace Com.RedicalGames.Filar
 
         public static (Vector3 position, Vector3 scale, Quaternion rotation) GetPose(this Transform reference) => (reference.position, reference.localScale, reference.rotation);
         public static (Vector3 position, Vector3 scale, Quaternion rotation) GetLocalPose(this Transform reference) => (reference.localPosition, reference.localScale, reference.localRotation);
+
+        #region Unity Inputs Extensions
+
+        #region Button
+
+        public static void ShowActionInput(this Button reference) => reference.gameObject.SetActive(true);
+        public static void HideActionInput(this Button reference) => reference.gameObject.SetActive(false);
+
+        public static string GetName(this Button reference) => reference.name;
+
+        #endregion
+
+        #region Input Field
+
+        public static void SetValue(this TMP_InputField reference, string value, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppStringValueNotNullOrEmpty(value, "Value", $"Set Value Failed - Value Parameter For {reference.GetName()} Is Not Assigned - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.text = value;
+                callbackResults.result = $"Set Value Success - Value Parameter For {reference.GetName()} Is Set To : {value}.";
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public static void ClearValue(this TMP_InputField reference, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppStringValueNotNullOrEmpty(reference.text, "Value", $"Clear Value Failed - There Is No Value To Clear For {reference.GetName()} - Continuing Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.text = string.Empty;
+                callbackResults.result = $"Clear Value Success - Value For {reference.GetName()} Has Been Successfully Cleared.";
+            }
+            else
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public static void SetFieldType(this TMP_InputField reference, ContentType fieldType, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(fieldType, "Field Type", $"Set Field Type Failed - Field Type Parameter Value For {reference.GetName()} Is Set To Default : {fieldType} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.contentType = fieldType;
+                callbackResults.result = $"Set Field Type Success - Field Type Parameter For {reference.GetName()} Is Set To : {fieldType}.";
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public static void Refresh(this TMP_InputField reference, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"On Select Failed - SelectableInputComponentHandler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+                reference.ForceLabelUpdate();
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public static void OnSelect(this TMP_InputField reference, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"On Select Failed - SelectableInputComponentHandler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+                reference.Select();
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public static AppData.CallbackData<string> GetValue(this TMP_InputField reference)
+        {
+            var callbackResults = new AppData.CallbackData<string>(AppData.Helpers.GetAppStringValueNotNullOrEmpty(reference.text, "Value", $"Get Value Failed - There Is No Value Assigned For {reference.GetName()} - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.result = $"Get Value Success - Value Found For {reference.GetName()}.";
+                callbackResults.data = reference.text;
+            }
+
+            return callbackResults;
+        }
+
+        public static AppData.CallbackData<int> GetTextLength(this TMP_InputField reference)
+        {
+            var callbackResults = new AppData.CallbackData<int>(AppData.Helpers.GetAppStringValueNotNullOrEmpty(reference.text, "Value", $"Get Text Length Failed - There Is No Value Assigned For {reference.GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"Get Text Length Success - {reference.GetName()} Has A Text Length Of : {reference.text.Length}.";
+                callbackResults.data = reference.text.Length;
+            }
+
+            return callbackResults;
+        }
+
+        public static void ShowActionInput(this TMP_InputField reference) => reference.gameObject.SetActive(true);
+        public static void HideActionInput(this TMP_InputField reference) => reference.gameObject.SetActive(false);
+
+        public static string GetName(this TMP_InputField reference) => reference.name;
+
+        #endregion
+
+        #region Slider
+
+        public static void ShowActionInput(this Slider reference) => reference.gameObject.SetActive(true);
+        public static void HideActionInput(this Slider reference) => reference.gameObject.SetActive(false);
+
+        public static string GetName(this Slider reference) => reference.name;
+
+        #endregion
+
+        #region Dropdown
+
+        public static void ShowActionInput(this TMP_Dropdown reference) => reference.gameObject.SetActive(true);
+        public static void HideActionInput(this TMP_Dropdown reference) => reference.gameObject.SetActive(false);
+
+        public static string GetName(this TMP_Dropdown reference) => reference.name;
+
+        #endregion
+
+        #region Checkbox
+
+        public static void ShowActionInput(this Toggle reference) => reference.gameObject.SetActive(true);
+        public static void HideActionInput(this Toggle reference) => reference.gameObject.SetActive(false);
+
+        public static string GetName(this Toggle reference) => reference.name;
+
+        #endregion
+
+        #region Text
+
+        public static void SetValue(this TMP_Text reference, string value, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppStringValueNotNullOrEmpty(value, "Value", $"Set Value Failed - Value Parameter For {reference.GetName()} Is Not Assigned - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.text = value;
+                callbackResults.result = $"Set Value Success - Value Parameter For {reference.GetName()} Is Set To : {value}.";
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public static void ClearValue(this TMP_Text reference, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppStringValueNotNullOrEmpty(reference.text, "Value", $"Clear Value Failed - There Is No Value To Clear For {reference.GetName()} - Continuing Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.text = string.Empty;
+                callbackResults.result = $"Clear Value Success - Value For {reference.GetName()} Has Been Successfully Cleared.";
+            }
+            else
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public static AppData.CallbackData<string> GetValue(this TMP_Text reference)
+        {
+            var callbackResults = new AppData.CallbackData<string>(AppData.Helpers.GetAppStringValueNotNullOrEmpty(reference.text, "Value", $"Get Value Failed - There Is No Value Assigned For {reference.GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"Get Value Success - Value Found For {reference.GetName()}.";
+                callbackResults.data = reference.text;
+            }
+
+            return callbackResults;
+        }
+
+        public static AppData.CallbackData<int> GetTextLength(this TMP_Text reference)
+        {
+            var callbackResults = new AppData.CallbackData<int>(AppData.Helpers.GetAppStringValueNotNullOrEmpty(reference.text, "Value", $"Get Text Length Failed - There Is No Value Assigned For {reference.GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"Get Text Length Success - {reference.GetName()} Has A Text Length Of : {reference.text.Length}.";
+                callbackResults.data = reference.text.Length;
+            }
+
+            return callbackResults;
+        }
+
+        public static void ShowActionInput(this TMP_Text reference) => reference.gameObject.SetActive(true);
+        public static void HideActionInput(this TMP_Text reference) => reference.gameObject.SetActive(false);
+
+        public static string GetName(this TMP_Text reference) => reference.name;
+
+        #endregion
+
+        #region Image
+
+        public static void ShowActionInput(this Image reference) => reference.gameObject.SetActive(true);
+        public static void HideActionInput(this Image reference) => reference.gameObject.SetActive(false);
+
+        public static string GetName(this Image reference) => reference.name;
+
+        #endregion
+
+        #endregion
 
         #region Container Placements
 

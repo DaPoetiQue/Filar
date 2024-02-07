@@ -35,14 +35,22 @@ namespace Com.RedicalGames.Filar
                 var activationKey = AppData.Helpers.GenerateUniqueIdentifier(5);
                 var deviceInfo = AppData.Helpers.GetDeviceInfo();
 
-                AppData.DateTimeComponent activationStartDate = new AppData.DateTimeComponent(DateTime.UtcNow);
+                newProfile.SetAppKey(appKey, appKeySetCallbackResults => 
+                {
+                    callbackResults.SetResult(appKeySetCallbackResults);
 
-                AppData.LicenseKey newLicense = new AppData.LicenseKey(appKey, activationKey, deviceInfo, AppData.LicenseType.Default, AppData.LicenseStatus.Active, activationStartDate);
+                    if(callbackResults.Success())
+                    {
+                        AppData.DateTimeComponent activationStartDate = new AppData.DateTimeComponent(DateTime.UtcNow);
+                        AppData.LicenseKey newLicense = new AppData.LicenseKey(appKey, activationKey, deviceInfo, AppData.LicenseType.Default, AppData.LicenseStatus.Active, activationStartDate);
+                        AppData.AppInfo appInfo = new AppData.AppInfo(newProfile, newLicense);
 
-                AppData.AppInfo appInfo = new AppData.AppInfo(newProfile, newLicense);
-
-                callbackResults.result = $"CreateAppDeviceInfo Success - App Info Have Been Successfully Created.";
-                callbackResults.data = appInfo;
+                        callbackResults.result = $"CreateAppDeviceInfo Success - App Info Have Been Successfully Created.";
+                        callbackResults.data = appInfo;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -77,17 +85,21 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<AppData.AppInfo> callbackResults = new AppData.CallbackData<AppData.AppInfo>();
 
-            if (AppinfoSynced)
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(entry, "Entry", "Get App Info Failed - Entry Value Is Null - Invalid Operation."));
+
+            if (callbackResults.Success())
             {
-                callbackResults.result = "App Info Is Synced.";
-                callbackResults.data = entry;
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-            }
-            else
-            {
-                callbackResults.result = "App Info Is Not Synced.";
-                callbackResults.data = default;
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                if (AppinfoSynced)
+                {
+                    callbackResults.result = "App Info Is Synced.";
+                    callbackResults.data = entry;
+                }
+                else
+                {
+                    callbackResults.result = "App Info Is Not Synced.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
             }
 
             callback.Invoke(callbackResults);

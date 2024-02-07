@@ -244,8 +244,6 @@ namespace Com.RedicalGames.Filar
                         callbackResults.resultCode = AppData.Helpers.WarningCode;
                     }
                 }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
