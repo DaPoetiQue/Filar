@@ -67,82 +67,82 @@ namespace Com.RedicalGames.Filar
 
                                             callbackResults.SetResult(actionImage.Initialized());
 
-                                            if (callbackResults.Success())
-                                            {
-                                                actionImage.Initialize(initializationCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(initializationCallbackResults);
+                                            //if (callbackResults.Success())
+                                            //{
+                                            //    actionImage.Initialize(initializationCallbackResults =>
+                                            //    {
+                                            //        callbackResults.SetResult(initializationCallbackResults);
 
-                                                    if(callbackResults.Success())
-                                                    {
-                                                        callbackResults.SetResult(GetOptions());
+                                            //        if(callbackResults.Success())
+                                            //        {
+                                            //            callbackResults.SetResult(GetOptions());
 
-                                                        if (callbackResults.Success())
-                                                        {
-                                                            actionImage.SetUIInputState(AppData.InputUIState.Shown);
+                                            //            if (callbackResults.Success())
+                                            //            {
+                                            //                actionImage.SetUIInputState(AppData.InputUIState.Shown);
 
-                                                            if (callbackResults.Success())
-                                                            {
-                                                                GetButton().GetData().onClick.AddListener(() =>
-                                                                {
-                                                                    OnClickEvent(clickCallbackResults =>
-                                                                    {
-                                                                        callbackResults.SetResult(clickCallbackResults);
-                                                                    });
-                                                                });
-                                                            }
-                                                            else
-                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //                if (callbackResults.Success())
+                                            //                {
+                                            //                    GetButton().GetData().onClick.AddListener(() =>
+                                            //                    {
+                                            //                        OnClickEvent(clickCallbackResults =>
+                                            //                        {
+                                            //                            callbackResults.SetResult(clickCallbackResults);
+                                            //                        });
+                                            //                    });
+                                            //                }
+                                            //                else
+                                            //                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                                            if(callbackResults.Success())
-                                                            {
-                                                                var options = GetOptions().GetData();
+                                            //                if(callbackResults.Success())
+                                            //                {
+                                            //                    var options = GetOptions().GetData();
 
-                                                                for (int i = 0; i < options.Count; i++)
-                                                                {
-                                                                    callbackResults.SetResult(options[i].GetOptions());
+                                            //                    for (int i = 0; i < options.Count; i++)
+                                            //                    {
+                                            //                        callbackResults.SetResult(options[i].GetOptions());
 
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        options[i].Initialize(callback: panelClosedCallbackResults =>
-                                                                        {
-                                                                            callbackResults.SetResult(panelClosedCallbackResults);
-                                                                        });
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        options[i].Initialize(OnClosePanel, panelClosedCallbackResults => 
-                                                                        {
-                                                                            callbackResults.SetResult(panelClosedCallbackResults);
-                                                                        });
-                                                                    }
-                                                                }
-                                                            }
-                                                            else
-                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                        }
-                                                        else
-                                                        {
-                                                            callbackResults.result = $"{GetName()} Doesn't Contain Any Options.";
-                                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                            //                        if (callbackResults.Success())
+                                            //                        {
+                                            //                            options[i].Initialize(callback: panelClosedCallbackResults =>
+                                            //                            {
+                                            //                                callbackResults.SetResult(panelClosedCallbackResults);
+                                            //                            });
+                                            //                        }
+                                            //                        else
+                                            //                        {
+                                            //                            options[i].Initialize(OnClosePanel, panelClosedCallbackResults => 
+                                            //                            {
+                                            //                                callbackResults.SetResult(panelClosedCallbackResults);
+                                            //                            });
+                                            //                        }
+                                            //                    }
+                                            //                }
+                                            //                else
+                                            //                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //            }
+                                            //            else
+                                            //            {
+                                            //                callbackResults.result = $"{GetName()} Doesn't Contain Any Options.";
+                                            //                callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
-                                                            actionImage.SetUIInputState(AppData.InputUIState.Hidden);
+                                            //                actionImage.SetUIInputState(AppData.InputUIState.Hidden);
 
-                                                            GetButton().GetData().onClick.AddListener(() =>
-                                                            {
-                                                                OnClickEvent(clickCallbackResults =>
-                                                                {
-                                                                    callbackResults.SetResult(clickCallbackResults);
-                                                                });
-                                                            });
-                                                        }
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //                GetButton().GetData().onClick.AddListener(() =>
+                                            //                {
+                                            //                    OnClickEvent(clickCallbackResults =>
+                                            //                    {
+                                            //                        callbackResults.SetResult(clickCallbackResults);
+                                            //                    });
+                                            //                });
+                                            //            }
+                                            //        }
+                                            //        else
+                                            //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //    });
+                                            //}
+                                            //else
+                                            //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         }
                                         else
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -205,82 +205,82 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                actionImage.Initialize(initializationCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(initializationCallbackResults);
+                                                //actionImage.Initialize(initializationCallbackResults =>
+                                                //{
+                                                //    callbackResults.SetResult(initializationCallbackResults);
 
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        callbackResults.SetResult(GetOptions());
+                                                //    if (callbackResults.Success())
+                                                //    {
+                                                //        callbackResults.SetResult(GetOptions());
 
-                                                        if (callbackResults.Success())
-                                                        {
-                                                            actionImage.SetUIInputState(AppData.InputUIState.Shown);
+                                                //        if (callbackResults.Success())
+                                                //        {
+                                                //            actionImage.SetUIInputState(AppData.InputUIState.Shown);
 
-                                                            if (callbackResults.Success())
-                                                            {
-                                                                GetButton().GetData().onClick.AddListener(() =>
-                                                                {
-                                                                    OnClickEvent(clickCallbackResults =>
-                                                                    {
-                                                                        callbackResults.SetResult(clickCallbackResults);
-                                                                    });
-                                                                });
-                                                            }
-                                                            else
-                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                //            if (callbackResults.Success())
+                                                //            {
+                                                //                GetButton().GetData().onClick.AddListener(() =>
+                                                //                {
+                                                //                    OnClickEvent(clickCallbackResults =>
+                                                //                    {
+                                                //                        callbackResults.SetResult(clickCallbackResults);
+                                                //                    });
+                                                //                });
+                                                //            }
+                                                //            else
+                                                //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                                            if (callbackResults.Success())
-                                                            {
-                                                                var options = GetOptions().GetData();
+                                                //            if (callbackResults.Success())
+                                                //            {
+                                                //                var options = GetOptions().GetData();
 
-                                                                for (int i = 0; i < options.Count; i++)
-                                                                {
-                                                                    callbackResults.SetResult(options[i].GetOptions());
+                                                //                for (int i = 0; i < options.Count; i++)
+                                                //                {
+                                                //                    callbackResults.SetResult(options[i].GetOptions());
 
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        options[i].Initialize(callback: panelClosedCallbackResults => 
-                                                                        {
-                                                                            callbackResults.SetResult(panelClosedCallbackResults);
-                                                                        });
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        options[i].Initialize(OnClosePanel, panelClosedCallbackResults =>
-                                                                        {
-                                                                            callbackResults.SetResult(panelClosedCallbackResults);
-                                                                        });
-                                                                    }
-                                                                }
-                                                            }
-                                                            else
-                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                        }
-                                                        else
-                                                        {
-                                                            callbackResults.result = $"{GetName()} Doesn't Contain Any Options.";
-                                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                //                    if (callbackResults.Success())
+                                                //                    {
+                                                //                        options[i].Initialize(callback: panelClosedCallbackResults => 
+                                                //                        {
+                                                //                            callbackResults.SetResult(panelClosedCallbackResults);
+                                                //                        });
+                                                //                    }
+                                                //                    else
+                                                //                    {
+                                                //                        options[i].Initialize(OnClosePanel, panelClosedCallbackResults =>
+                                                //                        {
+                                                //                            callbackResults.SetResult(panelClosedCallbackResults);
+                                                //                        });
+                                                //                    }
+                                                //                }
+                                                //            }
+                                                //            else
+                                                //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                //        }
+                                                //        else
+                                                //        {
+                                                //            callbackResults.result = $"{GetName()} Doesn't Contain Any Options.";
+                                                //            callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
-                                                            actionImage.SetUIInputState(AppData.InputUIState.Hidden);
+                                                //            actionImage.SetUIInputState(AppData.InputUIState.Hidden);
 
-                                                            GetButton().GetData().onClick.AddListener(() =>
-                                                            {
-                                                                OnClickEvent(clickCallbackResults =>
-                                                                {
-                                                                    callbackResults.SetResult(clickCallbackResults);
+                                                //            GetButton().GetData().onClick.AddListener(() =>
+                                                //            {
+                                                //                OnClickEvent(clickCallbackResults =>
+                                                //                {
+                                                //                    callbackResults.SetResult(clickCallbackResults);
 
-                                                                    if (callbackResults.Success())
-                                                                        baseAction.Invoke();
-                                                                    else
-                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                });
-                                                            });
-                                                        }
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
+                                                //                    if (callbackResults.Success())
+                                                //                        baseAction.Invoke();
+                                                //                    else
+                                                //                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                //                });
+                                                //            });
+                                                //        }
+                                                //    }
+                                                //    else
+                                                //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                //});
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

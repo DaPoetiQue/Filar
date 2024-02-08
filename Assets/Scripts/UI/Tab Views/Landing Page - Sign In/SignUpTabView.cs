@@ -23,17 +23,17 @@ namespace Com.RedicalGames.Filar
 
                 if(callbackResults.Success())
                 {
-                    //callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "App Events Manager Instance Is Not Yet Initialized."));
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "App Events Manager Instance Is Not Yet Initialized."));
 
-                    //if (callbackResults.Success())
-                    //{
-                    //    var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+                    if (callbackResults.Success())
+                    {
+                        var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
 
-                    //    appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetShown, AppData.EventType.OnWidgetShownEvent, true);
-                    //    appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetHidden, AppData.EventType.OnWidgetHiddenEvent, true);
-                    //}
-                    //else
-                    //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetShown, AppData.EventType.OnWidgetShownEvent, true);
+                        appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetHidden, AppData.EventType.OnWidgetHiddenEvent, true);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -46,38 +46,38 @@ namespace Com.RedicalGames.Filar
 
         private void OnWidgetShown(AppData.Widget widget)
         {
-            //var callbackResults = new AppData.Callback(widget.GetType());
+            var callbackResults = new AppData.Callback(widget.GetType());
 
-            //if (callbackResults.Success())
-            //{
-            //    if (widget.GetType().GetData() == AppData.WidgetType.SignInWidget)
-            //    {
-            //        HighlightInputFieldValue(AppData.InputFieldActionType.UserNameField, callback: fieldHighlightedCallbackResults =>
-            //        {
-            //            callbackResults.SetResult(fieldHighlightedCallbackResults);
-            //        });
-            //    }
-            //}
-            //else
-            //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            if (callbackResults.Success())
+            {
+                if (widget.GetType().GetData() == AppData.WidgetType.SignInWidget)
+                {
+                    HighlightInputFieldValue(AppData.InputFieldActionType.UserNameField, callback: fieldHighlightedCallbackResults =>
+                    {
+                        callbackResults.SetResult(fieldHighlightedCallbackResults);
+                    });
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         private void OnWidgetHidden(AppData.Widget widget)
         {
-            //var callbackResults = new AppData.Callback(widget.GetType());
+            var callbackResults = new AppData.Callback(widget.GetType());
 
-            //if (callbackResults.Success())
-            //{
-            //    if (widget.GetType().GetData() == AppData.WidgetType.SignInWidget)
-            //    {
-            //        HighlightInputFieldValue(AppData.InputFieldActionType.UserNameField, false, fieldHighlightedCallbackResults =>
-            //        {
-            //            callbackResults.SetResult(fieldHighlightedCallbackResults);
-            //        });
-            //    }
-            //}
-            //else
-            //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            if (callbackResults.Success())
+            {
+                if (widget.GetType().GetData() == AppData.WidgetType.SignInWidget)
+                {
+                    HighlightInputFieldValue(AppData.InputFieldActionType.UserNameField, false, fieldHighlightedCallbackResults =>
+                    {
+                        callbackResults.SetResult(fieldHighlightedCallbackResults);
+                    });
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         #endregion

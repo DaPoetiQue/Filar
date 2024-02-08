@@ -318,6 +318,19 @@ namespace Com.RedicalGames.Filar
 
         #region Slider
 
+        public static void SetColor(this Slider reference, Color color, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"Set Color Failed - Selectable Input Component Handler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.image.color = color;
+                callbackResults.result = $"Set Color Success - {reference.GetName()}'s Color Has Been Set to : {color}.";
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
         public static void ShowActionInput(this Slider reference) => reference.gameObject.SetActive(true);
         public static void HideActionInput(this Slider reference) => reference.gameObject.SetActive(false);
 
@@ -326,6 +339,19 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Dropdown
+
+        public static void SetColor(this TMP_Dropdown reference, Color color, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"Set Color Failed - Selectable Input Component Handler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.image.color = color;
+                callbackResults.result = $"Set Color Success - {reference.GetName()}'s Color Has Been Set to : {color}.";
+            }
+
+            callback?.Invoke(callbackResults);
+        }
 
         public static void ShowActionInput(this TMP_Dropdown reference) => reference.gameObject.SetActive(true);
         public static void HideActionInput(this TMP_Dropdown reference) => reference.gameObject.SetActive(false);
