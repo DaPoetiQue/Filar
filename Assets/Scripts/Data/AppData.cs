@@ -18019,21 +18019,21 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    SelectableInit(selectableInitializationCallbackResults =>
+                    SetGroupID(groupID, groupIDSetCallbackResults =>
                     {
-                        callbackResults.SetResult(selectableInitializationCallbackResults);
+                        callbackResults.SetResult(groupIDSetCallbackResults);
 
                         if (callbackResults.Success())
                         {
-                            OnInitialize(initializedCallbackResults =>
+                            SelectableInit(selectableInitializationCallbackResults =>
                             {
-                                callbackResults.SetResult(initializedCallbackResults);
+                                callbackResults.SetResult(selectableInitializationCallbackResults);
 
-                                if(callbackResults.Success())
+                                if (callbackResults.Success())
                                 {
-                                    SetGroupID(groupID, groupIDSetCallbackResults => 
+                                    OnInitialize(initializedCallbackResults =>
                                     {
-                                        callbackResults.SetResult(groupIDSetCallbackResults);
+                                        callbackResults.SetResult(initializedCallbackResults);
                                     });
                                 }
                                 else
@@ -19738,58 +19738,55 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    LogInfo($" *****===Log_Cat: Initializing Input : {GetName()}", this);
+                                    InitializeFieldInputs(fieldInputInitializationCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(fieldInputInitializationCallbackResults);
 
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(GetPlaceHolderText());
 
-                                    //InitializeFieldInputs(fieldInputInitializationCallbackResults =>
-                                    //{
-                                    //    callbackResults.SetResult(fieldInputInitializationCallbackResults);
+                                            if (callbackResults.Success())
+                                            {
+                                                SetPlaceHolderText(GetPlaceHolderText().GetData(), placeHolderSetCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(placeHolderSetCallbackResults);
+                                                });
+                                            }
+                                            else
+                                            {
+                                                callbackResults.result = $"Input Field : {GetName()} Doesn't Have Place Holder Text - Continuing Execution.";
+                                                callbackResults.resultCode = Helpers.SuccessCode;
+                                            }
 
-                                    //    if (callbackResults.Success())
-                                    //    {
-                                    //        callbackResults.SetResult(GetPlaceHolderText());
+                                            callbackResults.SetResult(GetDataPackets());
 
-                                    //        if (callbackResults.Success())
-                                    //        {
-                                    //            SetPlaceHolderText(GetPlaceHolderText().GetData(), placeHolderSetCallbackResults =>
-                                    //            {
-                                    //                callbackResults.SetResult(placeHolderSetCallbackResults);
-                                    //            });
-                                    //        }
-                                    //        else
-                                    //        {
-                                    //            callbackResults.result = $"Input Field : {GetName()} Doesn't Have Place Holder Text - Continuing Execution.";
-                                    //            callbackResults.resultCode = Helpers.SuccessCode;
-                                    //        }
+                                            if (callbackResults.Success())
+                                            {
+                                                var dataPacket = GetDataPackets().GetData() as InputFieldConfigDataPacket;
 
-                                    //        callbackResults.SetResult(GetDataPackets());
+                                                ConfigureInput(dataPacket, inputConfiguredCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(inputConfiguredCallbackResults);
 
-                                    //        if (callbackResults.Success())
-                                    //        {
-                                    //            var dataPacket = GetDataPackets().GetData() as InputFieldConfigDataPacket;
-
-                                    //            ConfigureInput(dataPacket, inputConfiguredCallbackResults =>
-                                    //            {
-                                    //                callbackResults.SetResult(inputConfiguredCallbackResults);
-
-                                    //                if (callbackResults.Success())
-                                    //                {
-                                    //                    GetValue().GetData().onValueChanged.AddListener(value =>
-                                    //                    {
-                                    //                        OnUpdateFieldInputStates(value, fieldUpdateCallbackResults =>
-                                    //                        {
-                                    //                            callbackResults.SetResult(fieldUpdateCallbackResults);
-                                    //                        });
-                                    //                    });
-                                    //                }
-                                    //            });
-                                    //        }
-                                    //        else
-                                    //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    //    }
-                                    //    else
-                                    //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    //});
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        GetValue().GetData().onValueChanged.AddListener(value =>
+                                                        {
+                                                            OnUpdateFieldInputStates(value, fieldUpdateCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(fieldUpdateCallbackResults);
+                                                            });
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -19857,14 +19854,26 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    input.GetValue().GetData().onClick.AddListener(() =>
+                                                                    input.SetUIInputState(InputUIState.Disabled, inputStateSetCallbackResults => 
                                                                     {
-                                                                        OnActionButtonInputEvent(input.dataPackets.GetAction().GetData(), actionCallbackResults =>
-                                                                        {
-                                                                            callbackResults.SetResult(callbackResults);
-                                                                        });
+                                                                        callbackResults.SetResult(inputStateSetCallbackResults);
 
-                                                                        ActionEvents.OnActionButtonPressedEvent(input.dataPackets);
+                                                                        if(callbackResults.Success())
+                                                                        {
+                                                                            LogInfo($" +__+_+Log_Cat: Init Field Input : {input.GetName()} For : {GetName()} - State : {input.GetSelectionStateInfo().GetData().GetInputUIState().GetData()}", this);
+
+                                                                            input.GetValue().GetData().onClick.AddListener(() =>
+                                                                            {
+                                                                                OnActionButtonInputEvent(input.dataPackets.GetAction().GetData(), actionCallbackResults =>
+                                                                                {
+                                                                                    callbackResults.SetResult(callbackResults);
+                                                                                });
+
+                                                                                ActionEvents.OnActionButtonPressedEvent(input.dataPackets);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                     });
                                                                 }
                                                                 else
@@ -19883,34 +19892,7 @@ namespace Com.RedicalGames.Filar
                                         });
                                     }
                                     else
-                                    {
-                                        input.Initialize(GetGroupID().GetData(), initializationCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(initializationCallbackResults);
-
-                                            if (callbackResults.Success())
-                                            {
-                                                callbackResults.SetResult(input.GetValue());
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    input.GetValue().GetData().onClick.AddListener(() =>
-                                                    {
-                                                        OnActionButtonInputEvent(input.dataPackets.GetAction().GetData(), actionCallbackResults =>
-                                                        {
-                                                            callbackResults.SetResult(callbackResults);
-                                                        });
-
-                                                        ActionEvents.OnActionButtonPressedEvent(input.dataPackets);
-                                                    });
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
