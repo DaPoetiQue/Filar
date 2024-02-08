@@ -14630,29 +14630,52 @@ namespace Com.RedicalGames.Filar
                 return groupID;
             }
 
-            public List<UISelectable> GetSelectables()
+            public CallbackDataList<UISelectable> GetSelectables()
             {
-                return selectables;
+                var callbackResults = new CallbackDataList<UISelectable>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(selectables, "Selectables", $"Get Selectables Failed - There Are No Selectables Found For Group ID : {groupID}"));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Selectables Success - There Are {selectables.Count} : Selectable(s) Found For Group ID : {groupID}";
+                    callbackResults.data = selectables;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
             }
 
             public void OnRegisterSelectableToEventListener(UISelectable selectable, Action<Callback> callback = null)
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(GetSelectables());
 
-                if (!selectables.Contains(selectable))
+                if (callbackResults.Success())
                 {
-                    //selectable.Initialize();
-                    selectable._OnSelectableActionEvent += Select;
+                    if (!GetSelectables().GetData().Contains(selectable))
+                    {
+                        selectable._OnSelectableActionEvent += Select;
 
-                    selectables.Add(selectable);
+                        GetSelectables().GetData().Add(selectable);
 
-                    callbackResults.result = $"Selectable : {selectable.name} Added.";
-                    callbackResults.resultCode = Helpers.SuccessCode;
+                        callbackResults.result = $"Selectable : {selectable.name} Added.";
+                    }
+                    else
+                    {
+                        callbackResults.result = "Selectable ALready Exists";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
                 }
                 else
                 {
-                    callbackResults.result = "Selectable ALready Exists";
-                    callbackResults.resultCode = Helpers.WarningCode;
+                    selectables = new List<UISelectable>();
+                    selectables.Add(selectable);
+
+                    selectable._OnSelectableActionEvent += Select;
+
+                    callbackResults.result = $"Selectable : {selectable.name} Added.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -14660,46 +14683,53 @@ namespace Com.RedicalGames.Filar
 
             public void Select(UISelectable selectable)
             {
-               if(selectables.Contains(selectable))
-                {
-                    if (selectable.GetSelectionStateInfo().GetData().GetInputUIState().GetData() != InputUIState.Disabled)
-                    {
-                        var selected = selectables.FindAll(x => x.GetInputUIState() != InputUIState.Normal);
+                Callback callbackResults = new Callback(GetSelectables());
 
-                        if (selected != null && selected.Count > 0)
+                if (callbackResults.Success())
+                {
+                    if (GetSelectables().GetData().Contains(selectable))
+                    {
+                        if (selectable.GetSelectionStateInfo().GetData().GetInputUIState().GetData() != InputUIState.Disabled)
                         {
-                            foreach (var item in selected)
+                            var selected = GetSelectables().GetData().FindAll(x => x.GetInputUIState() != InputUIState.Normal);
+
+                            if (selected != null && selected.Count > 0)
                             {
-                                if (item.GetInputUIState() != InputUIState.Disabled)
+                                foreach (var item in selected)
                                 {
-                                    if (item.inputType == InputType.DropDown)
-                                        item.Collapse();
-                                    else
-                                        item.Deselect();
+                                    if (item.GetInputUIState() != InputUIState.Disabled)
+                                    {
+                                        if (item.inputType == InputType.DropDown)
+                                            item.Collapse();
+                                        else
+                                            item.Deselect();
+                                    }
                                 }
                             }
-                        }
 
-                        if (selectable.inputType == InputType.DropDown)
-                            selectable.Expand();
-                        else
-                            selectable.Select();
+                            if (selectable.inputType == InputType.DropDown)
+                                selectable.Expand();
+                            else
+                                selectable.Select();
+                        }
                     }
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             public void Clear(Action<Callback> callback = null)
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(GetSelectables());
 
-                if(selectables != null && selectables.Count > 0)
+                if (callbackResults.Success())
                 {
-                    foreach (var selectable in selectables)
+                    foreach (var selectable in GetSelectables().GetData())
                         selectable.Deselect();
 
                     bool deselected = true;
 
-                    foreach (var selectable in selectables)
+                    foreach (var selectable in GetSelectables().GetData())
                     {
                         if (selectable.GetInputUIState() == InputUIState.Selected)
                         {
@@ -14708,7 +14738,7 @@ namespace Com.RedicalGames.Filar
                         }
                     }
 
-                    if(deselected)
+                    if (deselected)
                     {
                         callbackResults.result = $"Deselected All Selections For : {groupID} Group.";
                         callbackResults.resultCode = Helpers.SuccessCode;
@@ -14720,10 +14750,7 @@ namespace Com.RedicalGames.Filar
                     }
                 }
                 else
-                {
-                    callbackResults.result = $"There Are No Selectables To Clear Selections For : {groupID} Group";
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
