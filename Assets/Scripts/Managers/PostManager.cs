@@ -732,41 +732,60 @@ namespace Com.RedicalGames.Filar
             {
                 var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                screenUIManagerInstance.GetCurrentScreen(currentScreenCallbackResults =>
+                screenUIManagerInstance.GetCurrentScreen(async currentScreenCallbackResults =>
                 {
                     callbackResults.SetResult(currentScreenCallbackResults);
 
                     var screen = currentScreenCallbackResults.GetData();
 
-                    screen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults =>
+                    callbackResults.SetResult(GetPost());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(widgetShownCallbackResults);
+                        callbackResults.SetResult(GetPostWidget(GetPost().GetData()));
 
                         if (callbackResults.Success())
                         {
-                            await Task.Delay(refrenshDuration);
+                            int refreshDelay = (refrenshDuration / 4);
 
-                            SelectPost(postSelectedCallbacKResults =>
+                            var widget = GetPostWidget(GetPost().GetData()).GetData();
+
+                            await Task.Delay(refreshDelay);
+
+                            widget.Select(async widgetSelectedCallbackResults =>
                             {
-                                callbackResults.SetResult(postSelectedCallbacKResults);
+                                callbackResults.SetResult(widgetSelectedCallbackResults);
 
                                 if (callbackResults.Success())
                                 {
-                                    screen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                    await Task.Delay(refreshDelay);
 
-                                    callbackResults.SetResult(GetPostWidget(postSelectedCallbacKResults.GetData()));
-
-                                    if(callbackResults.Success())
+                                    screen.ShowWidget(AppData.WidgetType.LoadingWidget, async widgetShownCallbackResults =>
                                     {
-                                        var widget = GetPostWidget(postSelectedCallbacKResults.GetData()).GetData();
+                                        callbackResults.SetResult(widgetShownCallbackResults);
 
-                                        widget.Select(widgetSelectedCallbackResults => 
+                                        if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(widgetSelectedCallbackResults);
-                                        });
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            await Task.Delay(refrenshDuration);
+
+                                            SelectPost(postSelectedCallbacKResults =>
+                                            {
+                                                callbackResults.SetResult(postSelectedCallbacKResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    screen.HideScreenWidget(AppData.WidgetType.LoadingWidget, callback: screenHiddenCallbackResults => 
+                                                    {
+                                                        callbackResults.SetResult(screenHiddenCallbackResults);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -774,7 +793,9 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                    });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 });
             }
             else

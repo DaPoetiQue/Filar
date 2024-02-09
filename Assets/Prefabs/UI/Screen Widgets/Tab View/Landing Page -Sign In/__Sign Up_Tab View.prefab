@@ -7763,10 +7763,10 @@ RectTransform:
   m_Father: {fileID: 2455903829830076232}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 208.125, y: -26.25}
+  m_SizeDelta: {x: 53.75, y: 52.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2455903828620083696
 CanvasRenderer:
@@ -10868,7 +10868,7 @@ MonoBehaviour:
       value: {fileID: 2455903828571884913}
     inputType: 2
     validationStatesInfo:
-      validate: 0
+      validate: 1
       validationStates:
       - name: Default
         value: {fileID: 0}
@@ -10876,15 +10876,15 @@ MonoBehaviour:
         resultsType: 1
       - name: Success
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.16078432, g: 0.67058825, b: 0, a: 1}
         resultsType: 2
       - name: Warning
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.98039216, g: 0.7019608, b: 0.03137255, a: 1}
         resultsType: 3
       - name: Error
         value: {fileID: 0}
-        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        color: {r: 0.6039216, g: 0.03137255, b: 0.03137255, a: 1}
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
@@ -12442,7 +12442,7 @@ MonoBehaviour:
       value: {fileID: 2455903828518920252}
     inputType: 3
     validationStatesInfo:
-      validate: 0
+      validate: 1
       validationStates:
       - name: Default
         value: {fileID: 0}
@@ -12450,15 +12450,15 @@ MonoBehaviour:
         resultsType: 1
       - name: Success
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.16078432, g: 0.67058825, b: 0, a: 1}
         resultsType: 2
       - name: Warning
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.98039216, g: 0.7019608, b: 0.03137255, a: 1}
         resultsType: 3
       - name: Error
         value: {fileID: 0}
-        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        color: {r: 0.6039216, g: 0.03137255, b: 0.03137255, a: 1}
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
@@ -14734,7 +14734,7 @@ MonoBehaviour:
       value: {fileID: 2455903828823587319}
     inputType: 3
     validationStatesInfo:
-      validate: 0
+      validate: 1
       validationStates:
       - name: Default
         value: {fileID: 0}
@@ -14742,15 +14742,15 @@ MonoBehaviour:
         resultsType: 1
       - name: Success
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.16078432, g: 0.67058825, b: 0, a: 1}
         resultsType: 2
       - name: Warning
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.98039216, g: 0.7019608, b: 0.03137255, a: 1}
         resultsType: 3
       - name: Error
         value: {fileID: 0}
-        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        color: {r: 0.6039216, g: 0.03137255, b: 0.03137255, a: 1}
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
@@ -16403,10 +16403,10 @@ RectTransform:
   m_Father: {fileID: 2455903829830076232}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 90.625, y: -26.25}
+  m_SizeDelta: {x: 53.75, y: 52.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2455903829208631326
 CanvasRenderer:
@@ -23369,7 +23369,7 @@ MonoBehaviour:
       value: {fileID: 2455903829611442056}
     inputType: 3
     validationStatesInfo:
-      validate: 0
+      validate: 1
       validationStates:
       - name: Default
         value: {fileID: 0}
@@ -23377,15 +23377,15 @@ MonoBehaviour:
         resultsType: 1
       - name: Success
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.16001038, g: 0.6698113, b: 0, a: 1}
         resultsType: 2
       - name: Warning
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.9811321, g: 0.70056534, b: 0.03147021, a: 1}
         resultsType: 3
       - name: Error
         value: {fileID: 0}
-        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        color: {r: 0.6037736, g: 0.030758228, b: 0.030758228, a: 1}
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
@@ -25038,10 +25038,10 @@ RectTransform:
   m_Father: {fileID: 2455903829830076232}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 31.875, y: -26.25}
+  m_SizeDelta: {x: 53.75, y: 52.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2455903829531366016
 CanvasRenderer:
@@ -27027,10 +27027,10 @@ RectTransform:
   m_Father: {fileID: 2455903829830076232}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 149.375, y: -26.25}
+  m_SizeDelta: {x: 53.75, y: 52.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2455903829599644054
 CanvasRenderer:
@@ -29672,14 +29672,14 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 1, g: 1, b: 1, a: 1}
         state: 3
-      inputState: 0
+      inputState: 2
     selectable: 1
     visualizationType: 3
     selectionFrame:
       value: {fileID: 2455903828583217533}
     inputType: 3
     validationStatesInfo:
-      validate: 0
+      validate: 1
       validationStates:
       - name: Default
         value: {fileID: 0}
@@ -29687,15 +29687,15 @@ MonoBehaviour:
         resultsType: 1
       - name: Success
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.16078432, g: 0.67058825, b: 0, a: 1}
         resultsType: 2
       - name: Warning
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.98039216, g: 0.7019608, b: 0.03137255, a: 1}
         resultsType: 3
       - name: Error
         value: {fileID: 0}
-        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        color: {r: 0.6039216, g: 0.03137255, b: 0.03137255, a: 1}
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []

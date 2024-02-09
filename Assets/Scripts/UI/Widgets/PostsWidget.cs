@@ -178,7 +178,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidgetHiddenEvent()
         {
-            SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+            //SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
             //SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
         }
 

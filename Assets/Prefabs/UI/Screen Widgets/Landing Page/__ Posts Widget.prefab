@@ -1152,7 +1152,7 @@ GameObject:
   - component: {fileID: 6256656634593061708}
   - component: {fileID: 2588740175071789630}
   m_Layer: 5
-  m_Name: Show Posts Button
+  m_Name: __Show Posts Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1649,7 +1649,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -3637,7 +3637,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0

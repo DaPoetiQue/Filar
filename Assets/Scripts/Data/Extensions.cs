@@ -375,6 +375,32 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
+        public static void SetToggleState(this Toggle reference, bool toggled, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"Set Toggle State Failed - Selectable Input Component Handler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.isOn = toggled;
+                callbackResults.result = $"Set Toggle State Success - {reference.GetName()}'s Toggle State Has Been Set to : {toggled}.";
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public static void SetToggleStateWithoutNotification(this Toggle reference, bool toggled, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"Set Toggle State Failed - Selectable Input Component Handler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                reference.SetIsOnWithoutNotify(toggled);
+                callbackResults.result = $"Set Toggle State Without Notification Success - {reference.GetName()}'s Toggle State Has Been Set to : {toggled}.";
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
         public static void SetImage(this Toggle reference, Sprite sprite, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(sprite, "Sprite", $"Set Image Failed - Sprite Parameter For {reference.GetName()} Is Not Assigned - Invalid Operation."));

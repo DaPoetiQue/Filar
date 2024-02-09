@@ -13849,23 +13849,23 @@ MonoBehaviour:
       value: {fileID: 2464518916096050953}
     inputType: 3
     validationStatesInfo:
-      validate: 0
+      validate: 1
       validationStates:
       - name: Default
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.16078432, g: 0.67058825, b: 0, a: 1}
         resultsType: 1
       - name: Success
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.16078432, g: 0.67058825, b: 0, a: 1}
         resultsType: 2
       - name: Warning
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.98039216, g: 0.7019608, b: 0.03137255, a: 1}
         resultsType: 3
       - name: Error
         value: {fileID: 0}
-        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        color: {r: 0.6039216, g: 0.03137255, b: 0.03137255, a: 1}
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
@@ -26237,23 +26237,23 @@ MonoBehaviour:
       value: {fileID: 2464518916184536238}
     inputType: 3
     validationStatesInfo:
-      validate: 0
+      validate: 1
       validationStates:
       - name: Default
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.16078432, g: 0.67058825, b: 0, a: 1}
         resultsType: 1
       - name: Success
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.16078432, g: 0.67058825, b: 0, a: 1}
         resultsType: 2
       - name: Warning
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.98039216, g: 0.7019608, b: 0.03137255, a: 1}
         resultsType: 3
       - name: Error
         value: {fileID: 0}
-        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        color: {r: 0.6039216, g: 0.03137255, b: 0.03137255, a: 1}
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []

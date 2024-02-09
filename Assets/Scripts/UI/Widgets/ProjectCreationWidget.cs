@@ -324,7 +324,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (inputFieldCallbackResults.Success())
                                     {
-                                        if (inputFieldCallbackResults.GetData().GetValidationStateInfo().Results == AppData.ValidationResultsType.Warning || inputFieldCallbackResults.data.GetValidationStateInfo().Results == AppData.ValidationResultsType.Error)
+                                        if (inputFieldCallbackResults.GetData().GetValidationStateInfo().GetData().GetValidationResult().GetData() == AppData.ValidationResultsType.Warning || inputFieldCallbackResults.data.GetValidationStateInfo().GetData().GetValidationResult().GetData() == AppData.ValidationResultsType.Error)
                                             OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Success, dataValidCallbackResults.GetData());
                                     }
                                     else
@@ -337,7 +337,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     if (inputFieldCallbackResults.Success())
                                     {
-                                        if (inputFieldCallbackResults.GetData().GetValidationStateInfo().Results == AppData.ValidationResultsType.Success)
+                                        if (inputFieldCallbackResults.GetData().GetValidationStateInfo().GetData().GetValidationResult().GetData() == AppData.ValidationResultsType.Success)
                                             OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Warning, dataValidCallbackResults.GetData());
                                     }
                                     else

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -52,7 +53,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (widget.GetType().GetData() == AppData.WidgetType.SignInWidget)
                 {
-                    HighlightInputFieldValue(AppData.InputFieldActionType.UserNameField, callback: fieldHighlightedCallbackResults =>
+                    HighlightInputField(AppData.InputFieldActionType.UserNameField, callback: fieldHighlightedCallbackResults =>
                     {
                         callbackResults.SetResult(fieldHighlightedCallbackResults);
                     });
@@ -70,9 +71,44 @@ namespace Com.RedicalGames.Filar
             {
                 if (widget.GetType().GetData() == AppData.WidgetType.SignInWidget)
                 {
-                    HighlightInputFieldValue(AppData.InputFieldActionType.UserNameField, false, fieldHighlightedCallbackResults =>
+                    HighlightInputField(AppData.InputFieldActionType.UserNameField, false, fieldHighlightedCallbackResults =>
                     {
                         callbackResults.SetResult(fieldHighlightedCallbackResults);
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.SetResult(GetValidatableInputFields());
+
+                            if(callbackResults.Success())
+                            {
+                                var validatedFields = GetValidatableInputFields().GetData().FindAll(field => field.GetValidationResults().GetData() != AppData.ValidationResultsType.Default);
+
+                                callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(validatedFields, "Validated Fields", $"Clear Validated Fields On Widget Hide Failed - Couldn't Find Validated Fields For : {GetName()} - Continuing Execution."));
+
+                                if (callbackResults.Success())
+                                {
+                                    for (int i = 0; i < validatedFields.Count; i++)
+                                    {
+                                        OnClearInputFieldValidation(validatedFields[i].GetDataPackets().GetData().GetAction().GetData(), clearValidationCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(clearValidationCallbackResults);
+                                        });
+
+                                        if (callbackResults.UnSuccessful())
+                                        {
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     });
                 }
             }
@@ -169,30 +205,133 @@ namespace Com.RedicalGames.Filar
                                                         var userPassword = GetInputField(AppData.InputFieldActionType.UserPasswordField).GetData().GetValue().GetData().text;
                                                         var userPasswordVarification = GetInputField(AppData.InputFieldActionType.UserPasswordVarificationField).GetData().GetValue().GetData().text;
 
-                                                        callbackResults.SetResult(AppData.Helpers.GetAppStringValueEqual(userPassword, userPasswordVarification, "Varifying Password"));
+                                                        userProfile.SetUserName(userName);
+                                                        userProfile.SetUserEmail(userEmail);
+                                                        userProfile.SetUserPassword(userPassword);
+                                                        userProfile.SetUserPasswordVerification(userPasswordVarification);
 
-                                                        if(callbackResults.Success())
+                                                        callbackResults.SetResult(userProfile.Initialized());
+
+                                                        if (callbackResults.Success())
                                                         {
-                                                            userProfile.SetUserName(userName);
-                                                            userProfile.SetUserEmail(userEmail);
-                                                            userProfile.SetUserPassword(userPassword);
-
-                                                            callbackResults.SetResult(userProfile.Initialized());
+                                                            callbackResults.SetResult(AppData.Helpers.GetAppStringValueEqual(userProfile.GetUserPassword().GetData(), userProfile.GetUserPasswordVerification().GetData(), "Varifying Password"));
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                LogSuccess($"***_Log_cat: Sign Up Success - Name : {userName} - Email : {userEmail} - Password : {userPassword} - Password Varification : {userPasswordVarification} ", this);
+                                                                callbackResults.SetResult(userProfile.GetTermsAndConditionsAccepted());
+
+                                                                if(callbackResults.Success())
+                                                                {
+
+                                                                    LogSuccess($"***_Log_cat: Sign Up Success - Name : {userName} - Email : {userEmail} - Password : {userPassword} - Password Varification : {userPasswordVarification} ", this);
+                                                                }
+                                                                else
+                                                                {
+                                                                    LogWarning($"***_Log_cat: Sign Up Failed - User : {userName} Haven't Accepted The terms And Conditions", this);
+
+                                                                    HighlightCheckbox(AppData.CheckboxInputActionType.AcceptTermsAndConditionsOption, callback: termsAndConditionToggleHighlightCallbackResults => 
+                                                                    {
+                                                                        callbackResults.SetResult(termsAndConditionToggleHighlightCallbackResults);
+                                                                    });
+                                                                }
                                                             }
                                                             else
                                                             {
-                                                                var invalidFieldType = userProfile.Initialized().GetData();
+                                                                OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Error, AppData.InputFieldActionType.UserPasswordVarificationField, onInputValidationCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(onInputValidationCallbackResults);
 
-                                                                LogWarning($"***_Log_cat: Sign Up Failed - {invalidFieldType} Field Is Invalid", this);
+                                                                    if (callbackResults.Success())
+                                                                    {
+
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                });
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            LogWarning($"***_Log_cat: Sign Up Failed - Passwords Doesn't Match - Password : {userPassword} -Varification Pasword : {userPasswordVarification}", this);
+                                                            callbackResults.SetResult(GetValidatableInputFields());
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                var invalidFieldType = userProfile.Initialized().GetData();
+
+                                                                for (int i = 0; i < GetValidatableInputFields().GetData().Count; i++)
+                                                                {
+                                                                    var inputField = GetValidatableInputFields().GetData()[i];
+
+                                                                    callbackResults.SetResult(inputField.GetDataPackets());
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        callbackResults.SetResult(inputField.GetDataPackets().GetData().GetAction());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            if (inputField.GetDataPackets().GetData().GetAction().GetData() == invalidFieldType)
+                                                                            {
+                                                                                OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Warning, invalidFieldType, onInputValidationCallbackResults =>
+                                                                                {
+                                                                                    callbackResults.SetResult(onInputValidationCallbackResults);
+
+                                                                                    if (callbackResults.Success())
+                                                                                    {
+                                                                                        // Set Field Validation Info.
+                                                                                    }
+                                                                                    else
+                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                });
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                callbackResults.SetResult(inputField.GetValidationResults());
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    if (inputField.GetValidationResults().GetData() != AppData.ValidationResultsType.Default)
+                                                                                    {
+                                                                                        callbackResults.SetResult(OnProfileFieldIsValidated(userProfile, inputField));
+
+                                                                                        if(callbackResults.Success())
+                                                                                        {
+                                                                                            OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Success, inputField.GetDataPackets().GetData().GetAction().GetData(), onInputValidationCallbackResults =>
+                                                                                            {
+                                                                                                callbackResults.SetResult(onInputValidationCallbackResults);
+                                                                                            });
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            callbackResults.result = $"Field : {inputField.GetName()} - Is Still Invalid - Continuing Exectution.";
+                                                                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                        continue;
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                         }
                                                     }
                                                 }
@@ -220,6 +359,64 @@ namespace Com.RedicalGames.Filar
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
+
+        private AppData.Callback OnProfileFieldIsValidated(AppData.Profile userProfile, AppData.UIInputField<AppData.InputFieldConfigDataPacket> inputField)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(userProfile, "User Profile", $"On Profile Field Is Validated Failed - User Profile Parameter Value For : {GetName()} Is Missing / Null - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(inputField, "Input Field", $"On Profile Field Is Validated Failed - Input Field Parameter Value For : {GetName()} Is Missing / Null - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(inputField.Initialized());
+
+                    if (callbackResults.Success())
+                    {
+                        switch (inputField.GetDataPackets().GetData().GetAction().GetData())
+                        {
+                            case AppData.InputFieldActionType.UserNameField:
+
+                                userProfile.SetUserName(inputField.GetValue().GetData().text);
+                                callbackResults.SetResult(userProfile.GetUserName());
+
+                                break;
+
+                            case AppData.InputFieldActionType.UserEmailField:
+
+                                userProfile.SetUserEmail(inputField.GetValue().GetData().text);
+                                callbackResults.SetResult(userProfile.GetUserEmail());
+
+                                break;
+
+                            case AppData.InputFieldActionType.UserPasswordField:
+
+                                userProfile.SetUserPassword(inputField.GetValue().GetData().text);
+                                callbackResults.SetResult(userProfile.GetUserPassword());
+
+                                break;
+
+                            case AppData.InputFieldActionType.UserPasswordVarificationField:
+
+                                userProfile.SetUserPasswordVerification(inputField.GetValue().GetData().text);
+                                callbackResults.SetResult(userProfile.GetUserPasswordVerification());
+
+                                break;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
