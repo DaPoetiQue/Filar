@@ -155,9 +155,63 @@ namespace Com.RedicalGames.Filar
 
                             case AppData.InputActionButtonType.AcceptTermsAndConditionsButton:
 
-                                screen.HideScreenWidget(this);
+                                callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.SignInWidget));
 
-                                screen.ShowWidget(signInWidgetConfig);
+                                if (callbackResults.Success())
+                                {
+                                    var widget = screen.GetWidget(AppData.WidgetType.SignInWidget).GetData();
+
+                                    callbackResults.SetResult(widget.GetTabViewComponent());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(widget.GetTabViewComponent().GetData().GetTabView(AppData.TabViewType.SignUpView));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var tabView = widget.GetTabViewComponent().GetData().GetTabView(AppData.TabViewType.SignUpView).GetData() as SignUpTabView;
+
+                                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(tabView, "Tab View", "Accept Terms And Conditions Failed - Sign Up Tab View Couldn't Be Found - Invalid Operation."));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                tabView.AcceptTermsAndConditions(termsAndConditionsAcceptedCallbackResults => 
+                                                {
+                                                    callbackResults.SetResult(termsAndConditionsAcceptedCallbackResults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        screen.HideScreenWidget(this, widgetHiddenCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(widgetHiddenCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                screen.ShowWidget(signInWidgetConfig, widgetShownCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(widgetShownCallbackResults);
+                                                                });
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                });                                            
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                 break;
 

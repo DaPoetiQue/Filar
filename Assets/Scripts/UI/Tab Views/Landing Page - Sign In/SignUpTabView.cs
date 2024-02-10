@@ -13,7 +13,6 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-
         protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.TabViewType, AppData.TabViewType, AppData.Widget>>> callback)
         {
             var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.TabViewType, AppData.TabViewType, AppData.Widget>>();
@@ -227,11 +226,9 @@ namespace Com.RedicalGames.Filar
                                                                 }
                                                                 else
                                                                 {
-                                                                    LogWarning($"***_Log_cat: Sign Up Failed - User : {userName} Haven't Accepted The terms And Conditions", this);
-
-                                                                    HighlightCheckbox(AppData.CheckboxInputActionType.AcceptTermsAndConditionsOption, callback: termsAndConditionToggleHighlightCallbackResults => 
+                                                                    OnButtonValidation(GetType().GetData(), AppData.ValidationResultsType.Warning, AppData.InputActionButtonType.ReadButton, callback: termsAndConditionButtonHighlightCallbackResults =>
                                                                     {
-                                                                        callbackResults.SetResult(termsAndConditionToggleHighlightCallbackResults);
+                                                                        callbackResults.SetResult(termsAndConditionButtonHighlightCallbackResults);
                                                                     });
                                                                 }
                                                             }
@@ -388,6 +385,8 @@ namespace Com.RedicalGames.Filar
                                 userProfile.SetUserEmail(inputField.GetValue().GetData().text);
                                 callbackResults.SetResult(userProfile.GetUserEmail());
 
+                                LogInfo($" --Logs_Cats/: Email Check : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}", this);
+
                                 break;
 
                             case AppData.InputFieldActionType.UserPasswordField:
@@ -417,6 +416,53 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
+
+        public void AcceptTermsAndConditions(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
+
+                profileManagerInstance.GetUserProfile(userProfileCallbackResults => 
+                {
+                    callbackResults.SetResult(userProfileCallbackResults);
+
+                    if(callbackResults.Success())
+                    {
+                        var userProfile = userProfileCallbackResults.GetData();
+
+                        callbackResults.SetResult(GetActionCheckbox(AppData.CheckboxInputActionType.AcceptTermsAndConditionsOption));
+
+                        if (callbackResults.Success())
+                        {
+                            var checkbox = GetActionCheckbox(AppData.CheckboxInputActionType.AcceptTermsAndConditionsOption).GetData();
+
+                            checkbox.SetToggleState(true, toggleStateSetCallbackResults => 
+                            {
+                                callbackResults.SetResult(toggleStateSetCallbackResults);
+
+                                if(callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(userProfile.AcceptTermsAndConditions());
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {

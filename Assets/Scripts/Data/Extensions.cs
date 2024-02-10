@@ -169,7 +169,7 @@ namespace Com.RedicalGames.Filar
 
         public static void RemoveEvents(this Button reference, Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"On Select Failed - Selectable Input Component Handler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"On Select Failed - Selectable Input Component Handler Is Missing From Button : {reference.GetName()} - Invalid Operation."));
 
             if(callbackResults.Success())
                reference.onClick.RemoveAllListeners();
@@ -179,12 +179,22 @@ namespace Com.RedicalGames.Filar
 
         public static void SetColor(this Button reference, Color color, Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"Set Color Failed - Selectable Input Component Handler Is Missing From Input Field : {reference.GetName()} - Invalid Operation."));
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(reference.GetComponent<SelectableInputComponentHandler>(), "Selectable Input Component Handler", $"Set Color Failed - Selectable Input Component Handler Is Missing From Button : {reference.GetName()} - Invalid Operation."));
 
             if (callbackResults.Success())
             {
-                reference.image.color = color;
-                callbackResults.result = $"Set Color Success - {reference.GetName()}'s Color Has Been Set to : {color.ToString()}.";
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(reference.image, "Image", $"Set Color Failed - Image Value Is Missing From Button : {reference.GetName()} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    reference.image.color = color;
+                    callbackResults.result = $"Set Color Success - {reference.GetName()}'s Color Has Been Set to : {color.ToString()}.";
+                }
+                else
+                {
+                    callbackResults.result = $"Set Color Unsuccessful - There Is No Image omponent Assigned To Button - Continuing Execution.";
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                }
             }
 
             callback?.Invoke(callbackResults);

@@ -5565,7 +5565,7 @@ MonoBehaviour:
       value: {fileID: 2455903829005002452}
     inputType: 1
     validationStatesInfo:
-      validate: 0
+      validate: 1
       validationStates:
       - name: Default
         value: {fileID: 0}
@@ -5573,15 +5573,15 @@ MonoBehaviour:
         resultsType: 1
       - name: Success
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.16078432, g: 0.67058825, b: 0, a: 1}
         resultsType: 2
       - name: Warning
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0.98039216, g: 0.7019608, b: 0.03137255, a: 1}
         resultsType: 3
       - name: Error
         value: {fileID: 0}
-        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        color: {r: 0.6039216, g: 0.03137255, b: 0.03137255, a: 1}
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
@@ -10046,7 +10046,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_NormalColor: {r: 0.1509434, g: 0.14724101, b: 0.14724101, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -10847,19 +10847,19 @@ MonoBehaviour:
       states:
       - name: Normal
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0, g: 0, b: 0, a: 1}
         state: 0
       - name: Enabled
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0, g: 0, b: 0, a: 1}
         state: 1
       - name: Disabled
         value: {fileID: 0}
-        color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+        color: {r: 0, g: 0, b: 0, a: 1}
         state: 2
       - name: Selected
         value: {fileID: 0}
-        color: {r: 1, g: 1, b: 1, a: 1}
+        color: {r: 0, g: 0, b: 0, a: 1}
         state: 3
       inputState: 0
     selectable: 1
