@@ -41,6 +41,54 @@ namespace Com.RedicalGames.Filar
 
         }
 
+        public void UpdateUserProfile(AppData.Profile referenceProfile, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(referenceProfile, "Reference Profile", "Update Profile Failed - Reference Profile Parameter Value Is Null - invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance", "App Services Manager Instance Is Not Yet Initialized."));
+
+                if(callbackResults.Success())
+                {
+                    var appServicesManagerInstance = AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance").GetData();
+
+                    appServicesManagerInstance.GetAppInfo(getAppInfoCallbackResults =>
+                    {
+                        callbackResults.SetResult(getAppInfoCallbackResults);
+
+                        if(callbackResults.Success())
+                        {
+                            var appInfo = getAppInfoCallbackResults.GetData();
+
+                            appInfo.SetProfile(referenceProfile, referenceProfileCallbackResults => 
+                            {
+                                callbackResults.SetResult(referenceProfileCallbackResults);
+
+                                if(callbackResults.Success())
+                                {
+                                    appServicesManagerInstance.SyncAppInfo(appInfo, appInfoCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(appInfoCallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }   
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
         public void GetUserProfile(Action<AppData.CallbackData<AppData.Profile>> callback)
         {
             AppData.CallbackData<AppData.Profile> callbackResults = new AppData.CallbackData<AppData.Profile>(AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance", "App Services Manager Instance Is Not Yet Initialized."));

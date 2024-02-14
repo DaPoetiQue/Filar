@@ -105,7 +105,6 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
-
         #endregion
     }
 }

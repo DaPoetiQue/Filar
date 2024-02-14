@@ -503,7 +503,7 @@ namespace Com.RedicalGames.Filar
             ColorReferenceImageURLField,
             ColorPromptField,
             InputPageNumberField,
-            UserPasswordVarificationField,
+            UserPasswordValidationField,
             None
         }
 
@@ -6746,11 +6746,11 @@ namespace Com.RedicalGames.Filar
 
                                                                 callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ContentDownload));
 
-                                                                if (callbackResults.Success())
-                                                                {
-                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ContentDownload).GetData().GetMessage());
-                                                                    callbackResults = await appManager.DownloadPostEntryDataAsync();
-                                                                }
+                                                                // if (callbackResults.Success())
+                                                                // {
+                                                                //     messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ContentDownload).GetData().GetMessage());
+                                                                //     callbackResults = await appManager.DownloadPostEntryDataAsync();
+                                                                // }
 
                                                                 #endregion
 
@@ -11558,8 +11558,9 @@ namespace Com.RedicalGames.Filar
             public string userName;
             public string userEmail;
             public string userPassword;
-            private string userPasswordVerification;
+            private string userPasswordValidation;
 
+            public bool termsAndConditionsRead;
             public bool termsAndConditionsAccepted;
 
             public UserInfo userInfo;
@@ -11694,11 +11695,11 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void SetUserPasswordVerification(string userPasswordVerification, Action<Callback> callback = null)
+            public void SetUserPasswordValidation(string userPasswordValidation, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback();
 
-                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userPasswordVerification, "User Password Verification", "Set User Password Verification Failed - User Password Verification Parameter Value Is Missing / Null - Invalid Operation."));
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userPasswordValidation, "User Password Validation", "Set User Password Validation Failed - User Password Validation Parameter Value Is Missing / Null - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
@@ -11706,15 +11707,16 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        var encryptedPassword = new EncryptionObject(GetUniqueIdentifier().GetData(), userPasswordVerification);
-                        var encrypedUserPasswordCallbackResults = Helpers.Encrypt(encryptedPassword);
+                        var encryptedPasswordValidation = new EncryptionObject(GetUniqueIdentifier().GetData(), userPasswordValidation);
+                        var encrypedUserPasswordValidationCallbackResults = Helpers.Encrypt(encryptedPasswordValidation);
 
-                        callbackResults.SetResult(encrypedUserPasswordCallbackResults);
+                        callbackResults.SetResult(encrypedUserPasswordValidationCallbackResults);
 
                         if (callbackResults.Success())
                         {
-                            this.userPasswordVerification = encrypedUserPasswordCallbackResults.GetData();
-                            callbackResults.result = $"Set User Password Success - User Password Is Set To : {this.userPasswordVerification}.";
+                            this.userPasswordValidation = encrypedUserPasswordValidationCallbackResults.GetData();
+                            
+                            callbackResults.result = $"Set User Password Validation Success - User Password Validation Is Set To : {this.userPasswordValidation}.";
                         }
                     }
                 }
@@ -11722,16 +11724,28 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public CallbackData<InputFieldActionType> AcceptTermsAndConditions()
+            public void ReadTermsAndConditions(Action<Callback> callback = null)
             {
-                var callbackResults = new CallbackData<InputFieldActionType>();
+                var callbackResults = new Callback();
 
-                callbackResults.SetResultsData(Initialized());
+                callbackResults.SetResult(GetUniqueIdentifier());
 
                 if (callbackResults.Success())
-                    termsAndConditionsAccepted = true;
+                    termsAndConditionsRead = true;
 
-                return callbackResults;
+                callback?.Invoke(callbackResults);
+            }
+
+            public void AcceptTermsAndConditions(bool termsAndConditionsAccepted = true, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback();
+
+                callbackResults.SetResult(GetUniqueIdentifier());
+
+                if (callbackResults.Success())
+                    this.termsAndConditionsAccepted = termsAndConditionsAccepted;
+
+                callback?.Invoke(callbackResults);
             }
 
             public CallbackData<InputFieldActionType> Initialized()
@@ -11748,14 +11762,14 @@ namespace Com.RedicalGames.Filar
 
                         if (callbacResults.Success())
                         {
-                            callbacResults.SetResult(GetUserPasswordVerification());
+                            callbacResults.SetResult(GetUserPasswordValidation());
 
                             if(callbacResults.Success())
                                 callbacResults.SetResult(GetStatus());
                             else
                             {
                                 callbacResults.result = "User Password Verification.";
-                                callbacResults.data = InputFieldActionType.UserPasswordVarificationField;
+                                callbacResults.data = InputFieldActionType.UserPasswordValidationField;
                             }
                         }
                         else
@@ -11801,8 +11815,17 @@ namespace Com.RedicalGames.Filar
                     {
                         var decryptedName = encrypedUserNameCallbackResults.GetData();
 
-                        callbackResults.result = $"Get User Name Suuccess - User Name Value Is : {decryptedName}.";
-                        callbackResults.data = decryptedName;
+                        var nameValidationCallbackResults = Helpers.NameValidation(decryptedName);
+
+                        callbackResults.SetResult(nameValidationCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            var validateduserName = nameValidationCallbackResults.GetData();
+
+                            callbackResults.result = $"Get User Name Success - User Name Value Is : {validateduserName}.";
+                            callbackResults.data = validateduserName;
+                        }
                     }
                 }
 
@@ -11860,33 +11883,51 @@ namespace Com.RedicalGames.Filar
                     {
                         var decryptedUserPassword = encrypedUserPasswordCallbackResults.GetData();
 
-                        callbackResults.result = $"Get User Password Success - User Password Value Is : {decryptedUserPassword}.";
-                        callbackResults.data = decryptedUserPassword;
+                       var passwordValidationCallbackResults = Helpers.PasswordRegExValidation(decryptedUserPassword);
+
+                        callbackResults.SetResult(passwordValidationCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            var validatedUserPassword = passwordValidationCallbackResults.GetData();
+
+                            callbackResults.result = $"Get User Password Success - User Password Value Is : {validatedUserPassword}.";
+                            callbackResults.data = validatedUserPassword;
+                        }
                     }
                 }
 
                 return callbackResults;
             }
 
-            public CallbackData<string> GetUserPasswordVerification()
+            public CallbackData<string> GetUserPasswordValidation()
             {
                 var callbackResults = new CallbackData<string>();
 
-                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userPasswordVerification, "User Password Verification", "Get User Password Verification Failed - User Password Verification Value Is Null - Invalid Operation."));
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userPasswordValidation, "User Password Validation", "Get User Password Validation Failed - User Password Validation Value Is Null - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
-                    var encryptedPasswordVarifiction = new EncryptionObject(GetUniqueIdentifier().GetData(), userPasswordVerification);
-                    var encrypedUserPasswordVarificationCallbackResults = Helpers.Decrypt(encryptedPasswordVarifiction);
+                    var encryptedPasswordValidation = new EncryptionObject(GetUniqueIdentifier().GetData(), userPasswordValidation);
+                    var encrypedUserPasswordValidationCallbackResults = Helpers.Decrypt(encryptedPasswordValidation);
 
-                    callbackResults.SetResult(encrypedUserPasswordVarificationCallbackResults);
+                    callbackResults.SetResult(encrypedUserPasswordValidationCallbackResults);
 
                     if (callbackResults.Success())
                     {
-                        var decryptedUserPasswordVerification = encrypedUserPasswordVarificationCallbackResults.GetData();
+                        var decryptedUserPasswordValidation = encrypedUserPasswordValidationCallbackResults.GetData();
 
-                        callbackResults.result = $"Get User Password Verification Success - User Password Value Is : {decryptedUserPasswordVerification}.";
-                        callbackResults.data = decryptedUserPasswordVerification;
+                          var passwordValidationCallbackResults = Helpers.PasswordRegExValidation(decryptedUserPasswordValidation);
+
+                        callbackResults.SetResult(passwordValidationCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            var validatedUserPasswordValidation = passwordValidationCallbackResults.GetData();
+
+                            callbackResults.result = $"Get User Password Validation Success - User Password Value Is : {validatedUserPasswordValidation}.";
+                            callbackResults.data = validatedUserPasswordValidation;
+                        }
                     }
                 }
 
@@ -11923,17 +11964,19 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public Callback GetTermsAndConditionsAccepted()
+            #region Terms And Conditions
+
+            public Callback GetTermsAndConditionsRead()
             {
-                var callbackResults = new Callback(Initialized());
+                var callbackResults = new Callback(GetUniqueIdentifier());
 
                 if (callbackResults.Success())
                 {
-                    if (termsAndConditionsAccepted)
-                        callbackResults.result = $"Get Terms And Conditions Accepted Success - Terms And Conditions Have Been Successfully Accepted By : {GetUserName().GetData()}";
+                    if (termsAndConditionsRead)
+                        callbackResults.result = $"Get Terms And Conditions Read Success - Terms And Conditions Have Been Successfully Read.";
                     else
                     {
-                        callbackResults.result = $"Get Terms And Conditions Accepted Failed - Terms And Conditions Are Not Yet Accepted By : {GetUserName().GetData()}";
+                        callbackResults.result = $"Get Terms And Conditions Accepted Failed - Terms And Conditions Are Not Yet Read.";
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
@@ -11941,6 +11984,25 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public Callback GetTermsAndConditionsAccepted()
+            {
+                var callbackResults = new Callback(GetUniqueIdentifier());
+
+                if (callbackResults.Success())
+                {
+                    if (termsAndConditionsAccepted)
+                        callbackResults.result = $"Get Terms And Conditions Accepted Success - Terms And Conditions Have Been Successfully Accepted.";
+                    else
+                    {
+                        callbackResults.result = $"Get Terms And Conditions Accepted Failed - Terms And Conditions Are Not Yet Accepted.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
 
             #endregion
 
@@ -19192,11 +19254,64 @@ namespace Com.RedicalGames.Filar
                                 {
                                     switch (state)
                                     {
+                                        case InputUIState.Normal:
+
+                                        SetInteractableState(true, interactableStateCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(interactableStateCallbackResults);
+
+                                                if(callbackResults.Success())
+                                                {
+                                                    GetSelectionStateInfo().GetData().GetSelectionState(state, selectionStateCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(selectionStateCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var selectionState = selectionStateCallbackResults.GetData();
+
+                                                            // GetValue().GetData()?.SetColor(selectionState.color, colorSetCallbackResults =>
+                                                            // {
+                                                            //     callbackResults.SetResult(colorSetCallbackResults);
+                                                            // });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                        break;
+
                                         case InputUIState.Enabled:
 
                                             SetInteractableState(true, interactableStateCallbackResults =>
                                             {
                                                 callbackResults.SetResult(interactableStateCallbackResults);
+
+                                                if(callbackResults.Success())
+                                                {
+                                                    GetSelectionStateInfo().GetData().GetSelectionState(state, selectionStateCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(selectionStateCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var selectionState = selectionStateCallbackResults.GetData();
+
+                                                            GetValue().GetData()?.SetColor(selectionState.color, colorSetCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(colorSetCallbackResults);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             });
 
                                             break;
@@ -19206,6 +19321,28 @@ namespace Com.RedicalGames.Filar
                                             SetInteractableState(false, interactableStateCallbackResults =>
                                             {
                                                 callbackResults.SetResult(interactableStateCallbackResults);
+
+                                                if(callbackResults.Success())
+                                                {
+                                                    GetSelectionStateInfo().GetData().GetSelectionState(state, selectionStateCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(selectionStateCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var selectionState = selectionStateCallbackResults.GetData();
+
+                                                            GetValue().GetData()?.SetColor(selectionState.color, colorSetCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(colorSetCallbackResults);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             });
 
                                             break;
@@ -19294,6 +19431,170 @@ namespace Com.RedicalGames.Filar
                                                                     selectionSystemCallbackResults.GetData().OnClearInputSelection(deselectionCallbackResults =>
                                                                     {
                                                                         callbackResults.SetResult(deselectionCallbackResults);
+                                                                    });
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                            break;
+
+                                           case InputUIState.Pressed:
+                                         
+                                            GetSelectionStateInfo().GetData().GetSelectionState(state, selectionStateCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(selectionStateCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var selectionState = selectionStateCallbackResults.GetData();
+
+                                                    GetValue().GetData()?.SetColor(selectionState.color, colorSetCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(colorSetCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    selectionSystemCallbackResults.GetData().OnSelectUIInput(GetGroupID().GetData(), this, selectionCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(selectionCallbackResults);
+                                                                    });
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                            break;
+
+                                            case InputUIState.Focused:
+                                         
+                                            GetSelectionStateInfo().GetData().GetSelectionState(state, selectionStateCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(selectionStateCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var selectionState = selectionStateCallbackResults.GetData();
+
+                                                    GetValue().GetData()?.SetColor(selectionState.color, colorSetCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(colorSetCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    selectionSystemCallbackResults.GetData().OnSelectUIInput(GetGroupID().GetData(), this, selectionCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(selectionCallbackResults);
+                                                                    });
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                            break;
+
+                                            case InputUIState.Hovered:
+                                         
+                                            GetSelectionStateInfo().GetData().GetSelectionState(state, selectionStateCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(selectionStateCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var selectionState = selectionStateCallbackResults.GetData();
+
+                                                    GetValue().GetData()?.SetColor(selectionState.color, colorSetCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(colorSetCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    selectionSystemCallbackResults.GetData().OnSelectUIInput(GetGroupID().GetData(), this, selectionCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(selectionCallbackResults);
+                                                                    });
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                            break;
+
+                                            case InputUIState.Highlighted:
+                                         
+                                            GetSelectionStateInfo().GetData().GetSelectionState(state, selectionStateCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(selectionStateCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var selectionState = selectionStateCallbackResults.GetData();
+
+                                                    GetValue().GetData()?.SetColor(selectionState.color, colorSetCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(colorSetCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    selectionSystemCallbackResults.GetData().OnSelectUIInput(GetGroupID().GetData(), this, selectionCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(selectionCallbackResults);
                                                                     });
                                                                 }
                                                                 else
@@ -20171,7 +20472,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case InputFieldActionType.UserPasswordVarificationField:
+                        case InputFieldActionType.UserPasswordValidationField:
 
                             GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Password, fieldSetCallbackResults =>
                             {
@@ -38225,7 +38526,7 @@ namespace Com.RedicalGames.Filar
 
                                                     case InputType.Checkbox:
 
-                                                        action.Init<CheckboxConfigDataPacket>(initializationCallbackResults =>
+                                                         action.Init<CheckboxConfigDataPacket>(initializationCallbackResults =>
                                                         {
                                                             callbackResults.SetResult(initializationCallbackResults);
 
@@ -38263,7 +38564,22 @@ namespace Com.RedicalGames.Filar
                                                                                             {
                                                                                                 callbackResults.SetResult(initializationCallbackResults);
 
-                                                                                                if (callbackResults.UnSuccessful())
+                                                                                                if (callbackResults.Success())
+                                                                                                {
+                                                                                                    callbackResults.SetResult(actionCheckbox.GetValue());
+
+                                                                                                    if (callbackResults.Success())
+                                                                                                    {
+                                                                                                        actionCheckbox.GetValue().GetData().onValueChanged.AddListener(value =>
+                                                                                                        {
+                                                                                                            OnCheckboxValueChanged(actionCheckbox.dataPackets.GetAction().GetData(), value, actionCheckbox.dataPackets);
+                                                                                                            ActionEvents.OnCheckboxValueChanged(value, actionCheckbox.dataPackets);
+                                                                                                        });
+                                                                                                    }
+                                                                                                    else
+                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                }
+                                                                                                else
                                                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                                             });
                                                                                         }
@@ -38281,7 +38597,22 @@ namespace Com.RedicalGames.Filar
                                                                             {
                                                                                 callbackResults.SetResult(initializationCallbackResults);
 
-                                                                                if (callbackResults.UnSuccessful())
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    callbackResults.SetResult(actionCheckbox.GetValue());
+
+                                                                                    if (callbackResults.Success())
+                                                                                    {
+                                                                                        actionCheckbox.GetValue().GetData().onValueChanged.AddListener(value =>
+                                                                                        {
+                                                                                            OnCheckboxValueChanged(actionCheckbox.GetDataPackets().GetData().GetAction().GetData(), value, actionCheckbox.dataPackets);
+                                                                                            ActionEvents.OnCheckboxValueChanged(value, actionCheckbox.dataPackets);
+                                                                                        });
+                                                                                    }
+                                                                                    else
+                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                }
+                                                                                else
                                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                             });
                                                                         }
@@ -38294,6 +38625,7 @@ namespace Com.RedicalGames.Filar
                                                             }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
                                                         });
 
                                                         break;
@@ -38928,7 +39260,7 @@ namespace Com.RedicalGames.Filar
 
             #region On Validations
 
-            protected void OnButtonValidation<T>(T widgetType, ValidationResultsType results, InputActionButtonType actionType, Action<Callback> callback = null) where T : Enum
+            protected void OnButtonValidation(T widgetType, ValidationResultsType results, InputActionButtonType actionType, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized(InputType.Button));
 
@@ -38991,7 +39323,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected void OnInputFieldValidation<T>(T widgetType, ValidationResultsType results, InputFieldActionType actionType, Action<Callback> callback = null) where T : Enum
+            protected void OnInputFieldValidation(T widgetType, ValidationResultsType results, InputFieldActionType actionType, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized(InputType.InputField));
 
@@ -39054,7 +39386,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected void OnInputSliderValidation<T>(T widgetType, ValidationResultsType results, InputSliderActionType actionType, Action<Callback> callback = null) where T : Enum
+            protected void OnInputSliderValidation(T widgetType, ValidationResultsType results, InputSliderActionType actionType, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized(InputType.InputSlider));
 
@@ -39117,7 +39449,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected void OnSliderValidation<T>(T widgetType, ValidationResultsType results, SliderValueType valueType, Action<Callback> callback = null) where T : Enum
+            protected void OnSliderValidation(T widgetType, ValidationResultsType results, SliderValueType valueType, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized(InputType.Slider));
 
@@ -39180,7 +39512,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected void OnInputCheckboxValidation<T>(T widgetType, ValidationResultsType results, CheckboxInputActionType actionType, Action<Callback> callback = null) where T : Enum
+            protected void OnInputCheckboxValidation(T widgetType, ValidationResultsType results, CheckboxInputActionType actionType, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized(InputType.Checkbox));
 
@@ -39243,7 +39575,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected void OnInputDropdownValidation<T>(T widgetType, ValidationResultsType results, InputDropDownActionType actionType, Action<Callback> callback = null) where T : Enum
+            protected void OnInputDropdownValidation(T widgetType, ValidationResultsType results, InputDropDownActionType actionType, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized(InputType.DropDown));
 
@@ -39478,7 +39810,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected void OnCheckboxValidation(CheckboxInputActionType actionType, Action<Callback> callback = null)
+            protected void OnClearCheckboxValidation(CheckboxInputActionType actionType, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized(InputType.Checkbox));
 
@@ -39520,7 +39852,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected void OnDropdownValidation(InputDropDownActionType actionType, Action<Callback> callback = null)
+            protected void OnClearDropdownValidation(InputDropDownActionType actionType, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized(InputType.DropDown));
 
@@ -45164,16 +45496,6 @@ namespace Com.RedicalGames.Filar
                     ShowSelectedLayout(GetDefaultLayoutViewType().GetData(), tabShowCallbackResults => 
                     {
                         callbackResults.SetResult(tabShowCallbackResults);
-
-                        if(callbackResults.Success())
-                        {
-                            //OnTabViewShown(tabShownCallbackResults => 
-                            //{
-                            //    callbackResults.SetResult(tabShownCallbackResults);
-                            //});
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     });
                 }
                 else
@@ -45191,16 +45513,6 @@ namespace Com.RedicalGames.Filar
                     HideSelectedLayout(GetDefaultLayoutViewType().GetData(), tabHiddenCallbackResults =>
                     {
                         callbackResults.SetResult(tabHiddenCallbackResults);
-
-                        if (callbackResults.Success())
-                        {
-                            //OnTabViewHidden(tabHiddenCallbackResults =>
-                            //{
-                            //    callbackResults.SetResult(tabHiddenCallbackResults);
-                            //});
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     });
                 }
                 else
@@ -52094,11 +52406,80 @@ namespace Com.RedicalGames.Filar
                 };
             }
 
-            #region Email Validation
+
+            #region User Name Validation
+
+            public static CallbackData<string> NameValidation(string validatedName)
+            {
+                var callbacResults = new CallbackData<string>(GetAppStringValueNotNullOrEmpty(validatedName, "Validated Name", "Name Validation Failed - Validated Name Parameter Value Is Null / Empty - Invalid Operation."));
+
+                if (callbacResults.Success())
+                {
+                    if(validatedName.Length > 1)
+                    {
+                       // Move To A Jason File Editable Outside The Game.
+                       var profinityList = new List<string>
+                       {
+                            "Shit",
+                            "Fuck",
+                            "Bitch",
+                            "Slut",
+                            "Hoe",
+                            "Prostitute",
+                            "Kill",
+                            "Die",
+                            "Rape",
+                            "Murder",
+                            "Murderer",
+                            "Msunu",
+                            "Dick",
+                            "Ass",
+                            "AssHole",
+                            "Nigga",
+                            "Niggas",
+                            "Nigger",
+                            "Nyash",
+                            "Penis",
+                            "Vagina",
+                            "Anal"
+                       };
+
+                       for(int i = 0; i < profinityList.Count; i++)
+                       {
+                            if(validatedName.Contains(profinityList[i]))
+                            {
+                                callbacResults.result = $"Name : {validatedName} - Contains Profinity.";
+                                callbacResults.data = default;
+                                callbacResults.resultCode = WarningCode;
+
+                                break;
+                            }
+                            else
+                            {
+                                callbacResults.result = $"Name : {validatedName} - Is Valid.";
+                                callbacResults.data = validatedName;
+                                callbacResults.resultCode = SuccessCode;
+                            }
+                       }
+                    }
+                    else
+                    {
+                        callbacResults.result = $"Name : {validatedName} - Is Too Short.";
+                        callbacResults.data = default;
+                        callbacResults.resultCode = WarningCode;
+                    }
+                }
+
+                return callbacResults;
+            }
+
+            #endregion
+
+            #region User Email Validation
 
             public static CallbackData<string> EmailAddressRegExValidation(string email)
             {
-                var callbacResults = new CallbackData<string>(GetAppStringValueNotNullOrEmpty(email, "Email", "Is Email Valid Failed - Email Parameter Value Is Null / Empty - Invalid Operation."));
+                var callbacResults = new CallbackData<string>(GetAppStringValueNotNullOrEmpty(email, "Email", "Email Reg Ex Validation Failed - Email Parameter Value Is Null / Empty - Invalid Operation."));
 
                 if(callbacResults.Success())
                 {
@@ -52163,7 +52544,6 @@ namespace Com.RedicalGames.Filar
 
                 return callbacResults;
             }
-
             public static CallbackData<string> EmailAddressValidation(string email)
             {
                 var callbacResults = new CallbackData<string>(GetAppStringValueNotNullOrEmpty(email, "Email", "Is Email Valid Failed - Email Parameter Value Is Null / Empty - Invalid Operation."));
@@ -52184,6 +52564,44 @@ namespace Com.RedicalGames.Filar
                         callbacResults.data = default;
                         callbacResults.resultCode = WarningCode;
                     }
+                }
+
+                return callbacResults;
+            }
+
+            #endregion
+
+            #region Password Validation
+
+            public static CallbackData<string> PasswordRegExValidation(string password)
+            {
+                var callbacResults = new CallbackData<string>(GetAppStringValueNotNullOrEmpty(password, "Password", "Password Reg Ex Validation Failed - Password Parameter Value Is Null / Empty - Invalid Operation."));
+
+                if (callbacResults.Success())
+                {
+                    try
+                    {
+                        string regExString = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*#?&]{8,10}$";
+
+                        if (Regex.IsMatch(password, regExString, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, TimeSpan.FromMilliseconds(250)))
+                        {
+                            callbacResults.result = $"Password : {password} - Is Valid.";
+                            callbacResults.data = password;
+                             callbacResults.resultCode = SuccessCode;
+                        }
+                        else
+                        {
+                            callbacResults.result = $"Password : {password} - Is Invalid.";
+                            callbacResults.data = default;
+                            callbacResults.resultCode = WarningCode;
+                        }
+                    }
+                    catch(Exception exception)
+                    {
+                        callbacResults.result = $"Password : {password} - Is Invalid - Failed With Exception : {exception.Message}.";
+                        callbacResults.data = default;
+                        callbacResults.resultCode = WarningCode;
+                    }             
                 }
 
                 return callbacResults;
@@ -57386,7 +57804,8 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<FocusedSelectionInfo<SceneConfigDataPacket>> _OnWidgetSelectionDataEvent;
 
             public static event ParamVoid<ButtonConfigDataPacket> _OnActionButtonPressedEvent;
-            public static event ParamVoid<string, InputFieldConfigDataPacket> _OnInputFieldValueChanged;
+            public static event ParamVoid<string, InputFieldConfigDataPacket> _OnInputFieldValueChanged;          
+            public static event ParamVoid<bool, CheckboxConfigDataPacket> _OnCheckboxValueChanged;
 
             public static event ParamVoid<float> _OnScreenLoadInProgressEvent;
 
@@ -57471,6 +57890,7 @@ namespace Com.RedicalGames.Filar
 
             public static void OnActionButtonPressedEvent(ButtonConfigDataPacket buttonConfig) => _OnActionButtonPressedEvent?.Invoke(buttonConfig);
             public static void OnInputFieldValueChanged(string value, InputFieldConfigDataPacket inputFieldConfig) => _OnInputFieldValueChanged?.Invoke(value, inputFieldConfig);
+            public static void OnCheckboxValueChanged(bool value, CheckboxConfigDataPacket checkboxConfig) => _OnCheckboxValueChanged?.Invoke(value, checkboxConfig);
 
             public static void OnScreenLoadInProgressEvent(float progress) => _OnScreenLoadInProgressEvent?.Invoke(progress);
 

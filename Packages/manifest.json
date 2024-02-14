@@ -1,9 +1,6 @@
 {
   "dependencies": {
-    "com.bridge.app.content.manager": "https://github.com/DaPoetiQue/com.bridge.app.content.manager.git",
-    "com.bridge.app.data.storage": "https://github.com/DaPoetiQue/com.bridge.app.data.storage.git",
-    "com.bridge.debugger": "https://github.com/DaPoetiQue/com.bridge.debugger.git",
-    "com.bridge.events.manager": "https://github.com/DaPoetiQue/com.bridge.events.manager.git",
+    "com.unity.addressables": "1.20.5",
     "com.unity.burst": "1.7.4",
     "com.unity.collab-proxy": "1.17.2",
     "com.unity.collections": "1.2.4",

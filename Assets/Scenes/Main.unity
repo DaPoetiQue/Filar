@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3708985, g: 0.3783704, b: 0.35722548, a: 1}
+  m_IndirectSpecularColor: {r: 0.37089843, g: 0.37837029, b: 0.35722524, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4089,6 +4089,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  <AppinfoSynced>k__BackingField: 0
 --- !u!1 &625718228
 GameObject:
   m_ObjectHideFlags: 0
@@ -8672,6 +8673,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  profileURL: User Profile
   profileStorageData:
     name: Profile
     type: 8
@@ -9920,7 +9922,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -11841,7 +11843,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -12028,7 +12030,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -12215,7 +12217,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -14577,7 +14579,6 @@ MonoBehaviour:
     message: Filar requires access to device Storage to read and write data.
     type: 2
     granted: 0
-  infoFolderName: App Info
 --- !u!1 &1478371150
 GameObject:
   m_ObjectHideFlags: 0
@@ -16201,7 +16202,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b785e9cb98d71f459ce0ffed0ea7af8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enabledLogChannel: 0
 --- !u!1 &1835105840
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,6 +9,8 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
+        private AppData.Profile userProfileReference = null;
+
         #endregion
 
         #region Main
@@ -121,9 +123,8 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnTabViewShown(Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback();
+           var callbackResults = new AppData.Callback();
 
-      
             callback?.Invoke(callbackResults);
         }
 
@@ -146,11 +147,11 @@ namespace Com.RedicalGames.Filar
             {
                 var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
 
-                profileManagerInstance.GetUserProfile(userProfileCallbackResults => 
+                profileManagerInstance.GetUserProfile(userProfileCallbackResults =>
                 {
                     callbackResults.SetResult(userProfileCallbackResults);
 
-                    if (callbackResults.Success())
+                    if(callbackResults.Success())
                     {
                         var userProfile = userProfileCallbackResults.GetData();
 
@@ -160,272 +161,147 @@ namespace Com.RedicalGames.Filar
                         {
                             var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                            callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+                                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
 
-                            if (callbackResults.Success())
-                            {
-                                var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
-
-                                switch (actionType)
+                                if (callbackResults.Success())
                                 {
-                                    case AppData.InputActionButtonType.ReadButton:
+                                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
 
-                                        screen.HideScreenWidget(AppData.WidgetType.SignInWidget);
+                                    switch (actionType)
+                                    {
+                                        case AppData.InputActionButtonType.ReadButton:
 
-                                        var readTermsAndConditionsWidgetConfig = new AppData.SceneConfigDataPacket();
+                                            screen.HideScreenWidget(AppData.WidgetType.SignInWidget);
 
-                                        readTermsAndConditionsWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.TermsAndConditionsWidget);
-                                        readTermsAndConditionsWidgetConfig.blurScreen = true;
+                                            var readTermsAndConditionsWidgetConfig = new AppData.SceneConfigDataPacket();
 
-                                        screen.ShowWidget(readTermsAndConditionsWidgetConfig);
+                                            readTermsAndConditionsWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.TermsAndConditionsWidget);
+                                            readTermsAndConditionsWidgetConfig.blurScreen = true;
 
-                                        break;
+                                            screen.ShowWidget(readTermsAndConditionsWidgetConfig);
 
-                                    case AppData.InputActionButtonType.SignUpButton:
+                                            break;
 
-                                        callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserNameField));
+                                        case AppData.InputActionButtonType.SignUpButton:
 
-                                        if (callbackResults.Success())
-                                        {
-                                            callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserEmailField));
+                                            callbackResults.SetResult(GetValidatableInputFields());
 
-                                            if (callbackResults.Success())
+                                            if(callbackResults.Success())
                                             {
-                                                callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserPasswordField));
+                                                userProfile.SetUserName(GetInputField(AppData.InputFieldActionType.UserNameField).GetData().GetValue().GetData().text);
+                                                userProfile.SetUserEmail(GetInputField(AppData.InputFieldActionType.UserEmailField).GetData().GetValue().GetData().text);
+                                                userProfile.SetUserPassword(GetInputField(AppData.InputFieldActionType.UserPasswordField).GetData().GetValue().GetData().text);
+                                                userProfile.SetUserPasswordValidation(GetInputField(AppData.InputFieldActionType.UserPasswordValidationField).GetData().GetValue().GetData().text); 
 
-                                                if (callbackResults.Success())
+                                                #region Fields Validations
+
+                                                callbackResults.SetResult(userProfile.Initialized());
+
+                                                if(callbackResults.Success())
                                                 {
-                                                    callbackResults.SetResult(GetInputField(AppData.InputFieldActionType.UserPasswordVarificationField));
-
-                                                    if (callbackResults.Success())
+                                                    profileManagerInstance.UpdateUserProfile(userProfile, updateUserProfileCallbackResults => 
                                                     {
-                                                        var userName = GetInputField(AppData.InputFieldActionType.UserNameField).GetData().GetValue().GetData().text;
-                                                        var userEmail = GetInputField(AppData.InputFieldActionType.UserEmailField).GetData().GetValue().GetData().text;
-                                                        var userPassword = GetInputField(AppData.InputFieldActionType.UserPasswordField).GetData().GetValue().GetData().text;
-                                                        var userPasswordVarification = GetInputField(AppData.InputFieldActionType.UserPasswordVarificationField).GetData().GetValue().GetData().text;
+                                                        callbackResults.SetResult(updateUserProfileCallbackResults);
 
-                                                        userProfile.SetUserName(userName);
-                                                        userProfile.SetUserEmail(userEmail);
-                                                        userProfile.SetUserPassword(userPassword);
-                                                        userProfile.SetUserPasswordVerification(userPasswordVarification);
-
-                                                        callbackResults.SetResult(userProfile.Initialized());
-
-                                                        if (callbackResults.Success())
+                                                        if(callbackResults.Success())
                                                         {
-                                                            callbackResults.SetResult(AppData.Helpers.GetAppStringValueEqual(userProfile.GetUserPassword().GetData(), userProfile.GetUserPasswordVerification().GetData(), "Varifying Password"));
+                                                            callbackResults.SetResult(AppData.Helpers.GetAppStringValueEqual(userProfile.GetUserPassword().GetData(), userProfile.GetUserPasswordValidation().GetData(), "Varifying Password"));
 
-                                                            if (callbackResults.Success())
+                                                            if(callbackResults.Success())
                                                             {
                                                                 callbackResults.SetResult(userProfile.GetTermsAndConditionsAccepted());
 
                                                                 if(callbackResults.Success())
                                                                 {
-
-                                                                    LogSuccess($"***_Log_cat: Sign Up Success - Name : {userName} - Email : {userEmail} - Password : {userPassword} - Password Varification : {userPasswordVarification} ", this);
+                                                                    LogSuccess($" __Log_Cat/: Sign Up : {userProfile.GetUserName().GetData()} With Profile ID : {userProfile.GetUniqueIdentifier().GetData()} - Sending Email varification To : {userProfile.GetUserEmail().GetData()}", this);
                                                                 }
                                                                 else
                                                                 {
-                                                                    OnButtonValidation(GetType().GetData(), AppData.ValidationResultsType.Warning, AppData.InputActionButtonType.ReadButton, callback: termsAndConditionButtonHighlightCallbackResults =>
+                                                                    callbackResults.SetResult(userProfile.GetTermsAndConditionsRead());
+
+                                                                    if(callbackResults.Success())
                                                                     {
-                                                                        callbackResults.SetResult(termsAndConditionButtonHighlightCallbackResults);
-                                                                    });
+                                                                        OnInputCheckboxValidation(GetType().GetData(), AppData.ValidationResultsType.Warning, AppData.CheckboxInputActionType.AcceptTermsAndConditionsOption, callback: termsAndConditionCheckboxHighlightCallbackResults =>
+                                                                        {
+                                                                            callbackResults.SetResult(termsAndConditionCheckboxHighlightCallbackResults);
+                                                                        });
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        OnButtonValidation(GetType().GetData(), AppData.ValidationResultsType.Warning, AppData.InputActionButtonType.ReadButton, callback: termsAndConditionButtonHighlightCallbackResults =>
+                                                                        {
+                                                                            callbackResults.SetResult(termsAndConditionButtonHighlightCallbackResults);
+                                                                        });
+                                                                    }
                                                                 }
                                                             }
                                                             else
                                                             {
-                                                                OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Error, AppData.InputFieldActionType.UserPasswordVarificationField, onInputValidationCallbackResults =>
+                                                                OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Error, AppData.InputFieldActionType.UserPasswordValidationField, onInputValidationCallbackResults =>
                                                                 {
                                                                     callbackResults.SetResult(onInputValidationCallbackResults);
 
-                                                                    if (callbackResults.Success())
-                                                                    {
-
-                                                                    }
-                                                                    else
-                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                        if(callbackResults.Success())
+                                                                        {
+                                                                                // Set Field Validation Info.
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 });
                                                             }
                                                         }
                                                         else
-                                                        {
-                                                            callbackResults.SetResult(GetValidatableInputFields());
-
-                                                            if (callbackResults.Success())
-                                                            {
-                                                                var invalidFieldType = userProfile.Initialized().GetData();
-
-                                                                for (int i = 0; i < GetValidatableInputFields().GetData().Count; i++)
-                                                                {
-                                                                    var inputField = GetValidatableInputFields().GetData()[i];
-
-                                                                    callbackResults.SetResult(inputField.GetDataPackets());
-
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        callbackResults.SetResult(inputField.GetDataPackets().GetData().GetAction());
-
-                                                                        if (callbackResults.Success())
-                                                                        {
-                                                                            if (inputField.GetDataPackets().GetData().GetAction().GetData() == invalidFieldType)
-                                                                            {
-                                                                                OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Warning, invalidFieldType, onInputValidationCallbackResults =>
-                                                                                {
-                                                                                    callbackResults.SetResult(onInputValidationCallbackResults);
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        // Set Field Validation Info.
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                callbackResults.SetResult(inputField.GetValidationResults());
-
-                                                                                if (callbackResults.Success())
-                                                                                {
-                                                                                    if (inputField.GetValidationResults().GetData() != AppData.ValidationResultsType.Default)
-                                                                                    {
-                                                                                        callbackResults.SetResult(OnProfileFieldIsValidated(userProfile, inputField));
-
-                                                                                        if(callbackResults.Success())
-                                                                                        {
-                                                                                            OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Success, inputField.GetDataPackets().GetData().GetAction().GetData(), onInputValidationCallbackResults =>
-                                                                                            {
-                                                                                                callbackResults.SetResult(onInputValidationCallbackResults);
-                                                                                            });
-                                                                                        }
-                                                                                        else
-                                                                                        {
-                                                                                            callbackResults.result = $"Field : {inputField.GetName()} - Is Still Invalid - Continuing Exectution.";
-                                                                                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                                                                                        }
-                                                                                    }
-                                                                                    else
-                                                                                        continue;
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                    break;
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                            break;
-                                                                        }
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        break;
-                                                                    }
-                                                                }
-                                                            }
-                                                            else
-                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                        }
-                                                    }
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
                                                 }
                                                 else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                {
+                                                    var invalidFieldType = userProfile.Initialized().GetData();
+
+                                                    OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Warning, invalidFieldType, onInputValidationCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(onInputValidationCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            // Set Field Validation Info.
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+
+                                                        #endregion   
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                        break;
+                                                    break;
+                                    }
                                 }
-
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this); 
                 });
             }
             else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);              
         }
 
-        private AppData.Callback OnProfileFieldIsValidated(AppData.Profile userProfile, AppData.UIInputField<AppData.InputFieldConfigDataPacket> inputField)
+        public void ReadAndAcceptTermsAndConditions(Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(userProfile, "User Profile", $"On Profile Field Is Validated Failed - User Profile Parameter Value For : {GetName()} Is Missing / Null - Invalid Operation."));
-
-            if(callbackResults.Success())
-            {
-                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(inputField, "Input Field", $"On Profile Field Is Validated Failed - Input Field Parameter Value For : {GetName()} Is Missing / Null - Invalid Operation."));
-
-                if(callbackResults.Success())
-                {
-                    callbackResults.SetResult(inputField.Initialized());
-
-                    if (callbackResults.Success())
-                    {
-                        switch (inputField.GetDataPackets().GetData().GetAction().GetData())
-                        {
-                            case AppData.InputFieldActionType.UserNameField:
-
-                                userProfile.SetUserName(inputField.GetValue().GetData().text);
-                                callbackResults.SetResult(userProfile.GetUserName());
-
-                                break;
-
-                            case AppData.InputFieldActionType.UserEmailField:
-
-                                userProfile.SetUserEmail(inputField.GetValue().GetData().text);
-                                callbackResults.SetResult(userProfile.GetUserEmail());
-
-                                LogInfo($" --Logs_Cats/: Email Check : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}", this);
-
-                                break;
-
-                            case AppData.InputFieldActionType.UserPasswordField:
-
-                                userProfile.SetUserPassword(inputField.GetValue().GetData().text);
-                                callbackResults.SetResult(userProfile.GetUserPassword());
-
-                                break;
-
-                            case AppData.InputFieldActionType.UserPasswordVarificationField:
-
-                                userProfile.SetUserPasswordVerification(inputField.GetValue().GetData().text);
-                                callbackResults.SetResult(userProfile.GetUserPasswordVerification());
-
-                                break;
-                        }
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-            return callbackResults;
-        }
-
-
-        public void AcceptTermsAndConditions(Action<AppData.Callback> callback = null)
-        {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
+             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
                 var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
 
-                profileManagerInstance.GetUserProfile(userProfileCallbackResults => 
+                profileManagerInstance.GetUserProfile(userProfileCallbackResults =>
                 {
                     callbackResults.SetResult(userProfileCallbackResults);
 
@@ -433,26 +309,51 @@ namespace Com.RedicalGames.Filar
                     {
                         var userProfile = userProfileCallbackResults.GetData();
 
-                        callbackResults.SetResult(GetActionCheckbox(AppData.CheckboxInputActionType.AcceptTermsAndConditionsOption));
-
-                        if (callbackResults.Success())
+                        userProfile.ReadTermsAndConditions(termsAndConditionsReadCallbackResults => 
                         {
-                            var checkbox = GetActionCheckbox(AppData.CheckboxInputActionType.AcceptTermsAndConditionsOption).GetData();
-
-                            checkbox.SetToggleState(true, toggleStateSetCallbackResults => 
-                            {
-                                callbackResults.SetResult(toggleStateSetCallbackResults);
+                            callbackResults.SetResult(termsAndConditionsReadCallbackResults);
 
                                 if(callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(userProfile.AcceptTermsAndConditions());
+                                    bool acceptTermsAndConditions = !userProfile.GetTermsAndConditionsAccepted().Success();
+
+                                    userProfile.AcceptTermsAndConditions(acceptTermsAndConditions, acceptTermsAndConditionsCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(acceptTermsAndConditionsCallbackResults);
+
+                                        if(callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(GetActionCheckbox(AppData.CheckboxInputActionType.AcceptTermsAndConditionsOption));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var checkbox = GetActionCheckbox(AppData.CheckboxInputActionType.AcceptTermsAndConditionsOption).GetData();
+
+                                                checkbox.SetToggleState(acceptTermsAndConditions, toggleStateSetCallbackResults => 
+                                                {
+                                                    callbackResults.SetResult(toggleStateSetCallbackResults);
+
+                                                    if(callbackResults.Success())
+                                                    {
+                                                        profileManagerInstance.UpdateUserProfile(userProfile, profileUpdatedCallbackResults => 
+                                                        {
+                                                            callbackResults.SetResult(profileUpdatedCallbackResults);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });            
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             });
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -489,9 +390,53 @@ namespace Com.RedicalGames.Filar
             
         }
 
-        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool value, AppData.CheckboxConfigDataPacket dataPackets)
+        protected override void OnCheckboxValueChanged(AppData.CheckboxInputActionType actionType, bool acceptTermsAndConditions, AppData.CheckboxConfigDataPacket dataPackets)
         {
-            
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
+
+            if(callbackResults.Success())
+            {
+                var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
+
+                profileManagerInstance.GetUserProfile(userProfileCallbackResults =>
+                {
+                    callbackResults.SetResult(userProfileCallbackResults);
+
+                    if(callbackResults.Success())
+                    {
+                        if(actionType == AppData.CheckboxInputActionType.AcceptTermsAndConditionsOption)
+                        {
+                            var userProfile = userProfileCallbackResults.GetData();
+
+                            userProfile.AcceptTermsAndConditions(acceptTermsAndConditions, termsAndConditionsAcceptedCallbackResults => 
+                            {
+                                callbackResults.SetResult(termsAndConditionsAcceptedCallbackResults);
+
+                                if(callbackResults.Success())
+                                {
+                                    LogInfo($" __Logs_Cat/: Terms And Conditions Accepted : {userProfile.GetTermsAndConditionsAccepted().Success()}", this);
+
+                                    profileManagerInstance.UpdateUserProfile(userProfile, userProfileUpdatedcallbackResults => 
+                                    {
+                                        callbackResults.SetResult(userProfileUpdatedcallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                        {
+                            callbackResults.result = $"On Check box Value Changed Failed - Checkbox Is not Set To Accept Terms And Conditions Option - The Checkbox Is Action Type For : {GetName()} Is Set To : {actionType} - Invalid operation.";
+                            callbackResults.resultCode = AppData.Helpers.WarningCode;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this); 
         }
 
         protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.TabViewType, AppData.TabViewType, AppData.Widget>> OnGetState()
@@ -527,8 +472,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidgetShownEvent()
         {
-            
-
+           
         }
 
         protected override void OnScreenWidgetHiddenEvent()

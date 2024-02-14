@@ -1,35 +1,5 @@
 {
   "dependencies": {
-    "com.bridge.app.content.manager": {
-      "version": "https://github.com/DaPoetiQue/com.bridge.app.content.manager.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.addressables": "1.16.19"
-      },
-      "hash": "3bacf656ac84fdfc4ebec13a72a174e63972aea4"
-    },
-    "com.bridge.app.data.storage": {
-      "version": "https://github.com/DaPoetiQue/com.bridge.app.data.storage.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "eb8cf805918172a766e3c7d8e4c1ec9bc0cc93bb"
-    },
-    "com.bridge.debugger": {
-      "version": "https://github.com/DaPoetiQue/com.bridge.debugger.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "b3e77b02715a59653792b7ecb49249707bef5c7a"
-    },
-    "com.bridge.events.manager": {
-      "version": "https://github.com/DaPoetiQue/com.bridge.events.manager.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "5f4245a66dc54527ddf3c370abd0036aa1be6c34"
-    },
     "com.unity.2d.animation": {
       "version": "8.0.3",
       "depth": 1,
@@ -109,11 +79,11 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.addressables": {
-      "version": "1.20.0",
-      "depth": 1,
+      "version": "1.20.5",
+      "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.scriptablebuildpipeline": "1.19.6",
+        "com.unity.scriptablebuildpipeline": "1.20.2",
         "com.unity.modules.assetbundle": "1.0.0",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0",
@@ -261,8 +231,8 @@
       }
     },
     "com.unity.scriptablebuildpipeline": {
-      "version": "1.20.1",
-      "depth": 2,
+      "version": "1.20.2",
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
