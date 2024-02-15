@@ -94,27 +94,27 @@ namespace Com.RedicalGames.Filar
 
                         callbackResults.SetResult(userProfile.GetTermsAndConditionsRead());
 
-                        if(callbackResults.Success())
+                        if (callbackResults.Success())
                         {
                             confirmationButtonEnabled = true;
                             SetActionButtonState(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.InputUIState.Enabled);
 
                             callbackResults.SetResult(userProfile.GetTermsAndConditionsAccepted());
 
-                            if(callbackResults.Success())
+                            if (callbackResults.Success())
                             {
-                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Decline Terms", buttonTitleSetCallbackResults => 
+                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Decline Terms", buttonTitleSetCallbackResults =>
                                 {
                                     callbackResults.SetResult(buttonTitleSetCallbackResults);
 
-                                    if(callbackResults.Success())
+                                    if (callbackResults.Success())
                                     {
                                         // Change Button Color
-                                        SetActionButtonState(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.InputUIState.Selected, buttonStateCallbackResults => 
+                                        SetActionButtonState(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.InputUIState.Selected, buttonStateCallbackResults =>
                                         {
                                             callbackResults.SetResult(buttonStateCallbackResults);
 
-                                            if(callbackResults.Success())
+                                            if (callbackResults.Success())
                                                 confirmationButtonEnabled = true;
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -126,19 +126,29 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Accept Terms", buttonTitleSetCallbackResults => 
+                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Accept Terms", buttonTitleSetCallbackResults =>
                                 {
                                     callbackResults.SetResult(buttonTitleSetCallbackResults);
 
-                                    if(callbackResults.Success())
+                                    if (callbackResults.Success())
                                     {
-                                        // Change Button Color
-                                        SetActionButtonState(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.InputUIState.Enabled, buttonStateCallbackResults => 
+                                        HighlightButton(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, callback: highlightedButtonCallbackResults =>
                                         {
-                                            callbackResults.SetResult(buttonStateCallbackResults);
+                                            callbackResults.SetResult(highlightedButtonCallbackResults);
 
-                                            if(callbackResults.Success())
-                                                confirmationButtonEnabled = true;
+                                            if (callbackResults.Success())
+                                            {
+                                                // Change Button Color
+                                                SetActionButtonState(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.InputUIState.Enabled, buttonStateCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(buttonStateCallbackResults);
+
+                                                    if (callbackResults.Success())
+                                                        confirmationButtonEnabled = true;
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         });
@@ -150,25 +160,52 @@ namespace Com.RedicalGames.Filar
                         }
                         else
                         {
-                            SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Accept Terms", buttonTitleSetCallbackResults => 
+                            callbackResults.SetResult(userProfile.GetTermsAndConditionsAccepted());
+
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(buttonTitleSetCallbackResults);
-
-                                if(callbackResults.Success())
+                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Decline Terms", buttonTitleSetCallbackResults =>
                                 {
-                                    SetActionButtonState(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.InputUIState.Disabled, buttonStateCallbackResults => 
-                                    {
-                                        callbackResults.SetResult(buttonStateCallbackResults);
+                                    callbackResults.SetResult(buttonTitleSetCallbackResults);
 
-                                        if(callbackResults.Success())
-                                            confirmationButtonEnabled = false;
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            });
+                                    if (callbackResults.Success())
+                                    {
+                                        SetActionButtonState(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.InputUIState.Disabled, buttonStateCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(buttonStateCallbackResults);
+
+                                            if (callbackResults.Success())
+                                                confirmationButtonEnabled = false;
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                            {
+                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Accept Terms", buttonTitleSetCallbackResults =>
+                                {
+                                    callbackResults.SetResult(buttonTitleSetCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        SetActionButtonState(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.InputUIState.Disabled, buttonStateCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(buttonStateCallbackResults);
+
+                                            if (callbackResults.Success())
+                                                confirmationButtonEnabled = false;
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
                         }
                     }
                     else
@@ -182,14 +219,6 @@ namespace Com.RedicalGames.Filar
             
         }
 
-        //protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
-        //{
-        //    var confirmationButtonState = (confirmationButtonEnabled) ? AppData.InputUIState.Enabled : AppData.InputUIState.Disabled;
-        //    SetActionButtonState(AppData.InputActionButtonType.ConfirmationButton, confirmationButtonState);
-
-        //    ShowSelectedLayout(AppData.WidgetLayoutViewType.DefaultView);
-        //}
-
         protected override void OnScrollerValueChanged(Vector2 value)
         {
             if (OnScrollEnded(value))
@@ -200,10 +229,86 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var button = GetActionButtonOfType(AppData.InputActionButtonType.AcceptTermsAndConditionsButton).GetData();
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
 
-                    if (button.GetInputUIState() == AppData.InputUIState.Disabled)
-                        button.SetUIInputState(AppData.InputUIState.Enabled);
+                    if(callbackResults.Success())
+                    {
+                        var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
+
+                        profileManagerInstance.GetUserProfile(userProfileCallbackResults =>
+                        {
+                            callbackResults.SetResult(userProfileCallbackResults);
+
+                            if(callbackResults.Success())
+                            {
+                                var userProfile = userProfileCallbackResults.GetData();
+                        
+                                var button = GetActionButtonOfType(AppData.InputActionButtonType.AcceptTermsAndConditionsButton).GetData();
+
+                                callbackResults.SetResult(userProfile.GetTermsAndConditionsAccepted());
+
+                                if(callbackResults.Success())
+                                {
+                                    SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Decline Terms", buttonTitleSetCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(buttonTitleSetCallbackResults);
+
+                                        if(callbackResults.Success())
+                                        {
+                                            SetActionButtonState(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.InputUIState.Selected, buttonStateCallbackResults => 
+                                            {
+                                                callbackResults.SetResult(buttonStateCallbackResults);
+
+                                                if(callbackResults.Success())
+                                                    confirmationButtonEnabled = true;
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
+                                }
+                                else
+                                {
+                                    SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Accept Terms", buttonTitleSetCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(buttonTitleSetCallbackResults);
+
+                                        if(callbackResults.Success())
+                                        {
+                                            HighlightButton(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, callback: highlightedButtonCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(highlightedButtonCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    SetActionButtonState(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.InputUIState.Enabled, buttonStateCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(buttonStateCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                            confirmationButtonEnabled = true;
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -417,16 +522,16 @@ namespace Com.RedicalGames.Filar
 
         protected override void ScrollerPosition(Vector2 position)
         {
-            if(confirmationButtonEnabled)
-                return;
+            // if(confirmationButtonEnabled)
+            //     return;
 
-            if (scroller.value.verticalNormalizedPosition == 1.0f)
-            {
-                confirmationButtonEnabled = true;
+            // if (scroller.value.verticalNormalizedPosition == 1.0f)
+            // {
+            //     confirmationButtonEnabled = true;
 
-                var confirmationButtonState = (confirmationButtonEnabled) ? AppData.InputUIState.Enabled : AppData.InputUIState.Disabled;
-                SetActionButtonState(AppData.InputActionButtonType.ConfirmationButton, confirmationButtonState);
-            }
+            //     var confirmationButtonState = (confirmationButtonEnabled) ? AppData.InputUIState.Enabled : AppData.InputUIState.Disabled;
+            //     SetActionButtonState(AppData.InputActionButtonType.ConfirmationButton, confirmationButtonState);
+            // }
         }
 
         protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)

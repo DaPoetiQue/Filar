@@ -1113,7 +1113,9 @@ namespace Com.RedicalGames.Filar
             ListViewDeselectionIcon,
             LockedIcon,
             UnlockedIcon,
-            ImagePlaceholder
+            ImagePlaceholder,
+            ConcealFieldIcon,
+            UnconcealFieldIcon
         }
 
         public enum SelectableWidgetType
@@ -1364,6 +1366,52 @@ namespace Com.RedicalGames.Filar
             All,
             EventActions,
             ParameterEventActions
+        }
+
+        #endregion
+
+        #region Localization
+
+        [Serializable]
+        public class LanguageRestriction 
+        {
+            #region Components
+
+            public string[] restricted;
+
+            #endregion
+
+            #region Main
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(GetRetrictedList());
+                return callbackResults;
+            }
+
+            public CallbackDataList<string> GetRetrictedList()
+            {
+                var callbackResults = new CallbackDataList<string>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(restricted, "Black Listed Words", "Get Black Listed Words Failed - There Are No Black Listed Words Found - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Black Listed Words Success - {restricted.Length} Black Listed Words Found.";
+                    callbackResults.data = Helpers.GetList(restricted);
+                }
+
+                return callbackResults;
+            }
+
+            public Callback Contains(string blackListedWord)
+            {
+                var callbackResults = new Callback(GetRetrictedList());
+
+                return callbackResults;
+            }
+
+            #endregion
         }
 
         #endregion
@@ -6746,11 +6794,11 @@ namespace Com.RedicalGames.Filar
 
                                                                 callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ContentDownload));
 
-                                                                // if (callbackResults.Success())
-                                                                // {
-                                                                //     messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ContentDownload).GetData().GetMessage());
-                                                                //     callbackResults = await appManager.DownloadPostEntryDataAsync();
-                                                                // }
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ContentDownload).GetData().GetMessage());
+                                                                    callbackResults = await appManager.DownloadPostEntryDataAsync();
+                                                                }
 
                                                                 #endregion
 
@@ -11635,6 +11683,13 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                 }
+                else
+                {
+                    this.userName = string.Empty;
+
+                    callbackResults.result = "User Name Have Been Cleared.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
 
                 callback?.Invoke(callbackResults);
             }
@@ -11662,6 +11717,13 @@ namespace Com.RedicalGames.Filar
                             callbackResults.result = $"Set User Email Success - User Email Is Set To : {this.userEmail}.";
                         }
                     }
+                }
+                else
+                {
+                    this.userEmail = string.Empty;
+
+                    callbackResults.result = "User Email Have Been Cleared.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -11691,6 +11753,13 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                 }
+                else
+                {
+                    this.userPassword = string.Empty;
+
+                    callbackResults.result = "User Password Have Been Cleared.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
 
                 callback?.Invoke(callbackResults);
             }
@@ -11719,6 +11788,13 @@ namespace Com.RedicalGames.Filar
                             callbackResults.result = $"Set User Password Validation Success - User Password Validation Is Set To : {this.userPasswordValidation}.";
                         }
                     }
+                }
+                else
+                {
+                    this.userPasswordValidation = string.Empty;
+
+                    callbackResults.result = "User Password Validation Have Been Cleared.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
 
                 callback?.Invoke(callbackResults);
@@ -11800,31 +11876,34 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<string> GetUserName()
             {
-                var callbackResults = new CallbackData<string>();
+                var callbackResults = new CallbackData<string>(Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "Get User Name Failed - Localization Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
-                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userName, "User Name", "Get User Name Failed - User Name Value Is Null - Invalid Operation."));
-
-                if(callbackResults.Success())
+                if (callbackResults.Success())
                 {
-                    var encryptedName = new EncryptionObject(GetUniqueIdentifier().GetData(), userName);
-                    var encrypedUserNameCallbackResults = Helpers.Decrypt(encryptedName);
+                    var localizationManagerInstance = Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
 
-                    callbackResults.SetResult(encrypedUserNameCallbackResults);
+                    callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userName, "User Name", "Get User Name Failed - User Name Value Is Null - Invalid Operation."));
 
                     if (callbackResults.Success())
                     {
-                        var decryptedName = encrypedUserNameCallbackResults.GetData();
+                        var encryptedName = new EncryptionObject(GetUniqueIdentifier().GetData(), userName);
+                        var encrypedUserNameCallbackResults = Helpers.Decrypt(encryptedName);
 
-                        var nameValidationCallbackResults = Helpers.NameValidation(decryptedName);
-
-                        callbackResults.SetResult(nameValidationCallbackResults);
+                        callbackResults.SetResult(encrypedUserNameCallbackResults);
 
                         if (callbackResults.Success())
                         {
-                            var validateduserName = nameValidationCallbackResults.GetData();
+                            var decryptedName = encrypedUserNameCallbackResults.GetData();
 
-                            callbackResults.result = $"Get User Name Success - User Name Value Is : {validateduserName}.";
-                            callbackResults.data = validateduserName;
+                            callbackResults.SetResult(localizationManagerInstance.UnRestricted(decryptedName));
+
+                            if (callbackResults.Success())
+                            {
+                                var validateduserName = localizationManagerInstance.UnRestricted(decryptedName).GetData();
+
+                                callbackResults.result = $"Get User Name Success - User Name Value Is : {validateduserName}.";
+                                callbackResults.data = validateduserName;
+                            }
                         }
                     }
                 }
@@ -12321,9 +12400,9 @@ namespace Com.RedicalGames.Filar
                 {
                     if (initializationCallback.Success())
                     {
-                        value.sprite = AppDatabaseManager.Instance.GetImageFromLibrary(imageType).value;
+                        value.sprite = AppDatabaseManager.Instance.GetImageFromLibrary(imageType).GetData().value;
 
-                        if (value?.sprite == AppDatabaseManager.Instance.GetImageFromLibrary(imageType).value)
+                        if (value?.sprite == AppDatabaseManager.Instance.GetImageFromLibrary(imageType).GetData().value)
                         {
                             callbackResults.result = $"UI Image Displayer Named : {name} - Of Type : {imageDisplayerType} Has Been Set Successfully";
                             callbackResults.resultCode = Helpers.SuccessCode;
@@ -12393,9 +12472,9 @@ namespace Com.RedicalGames.Filar
                 {
                     if(initializationCallback.Success())
                     {
-                        value = AppDatabaseManager.Instance.GetImageFromLibrary(imageType).value;
+                        value = AppDatabaseManager.Instance.GetImageFromLibrary(imageType).GetData().value;
 
-                        if(value == AppDatabaseManager.Instance.GetImageFromLibrary(imageType).value)
+                        if(value == AppDatabaseManager.Instance.GetImageFromLibrary(imageType).GetData().value)
                         {
                             callbackResults.result = $"UI Image Data Set Successfully";
                             callbackResults.resultCode = Helpers.SuccessCode;
@@ -19367,33 +19446,53 @@ namespace Com.RedicalGames.Filar
 
                                         case InputUIState.Selected:
 
-                                            GetSelectionStateInfo().GetData().GetSelectionState(state, selectionStateCallbackResults =>
+                                            SetUIInputVisibilityState(true, visibiltyStateCallbackResults =>
                                             {
-                                                callbackResults.SetResult(selectionStateCallbackResults);
+                                                callbackResults.SetResult(visibiltyStateCallbackResults);
 
-                                                if (callbackResults.Success())
+                                                if(callbackResults.Success())
                                                 {
-                                                    var selectionState = selectionStateCallbackResults.GetData();
-
-                                                    GetValue().GetData()?.SetColor(selectionState.color, colorSetCallbackResults =>
+                                                    SetInteractableState(true, interactableStateCallbackResults =>
                                                     {
-                                                        callbackResults.SetResult(colorSetCallbackResults);
+                                                        callbackResults.SetResult(interactableStateCallbackResults);
 
-                                                        if (callbackResults.Success())
+                                                        if(callbackResults.Success())
                                                         {
-                                                            selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                                            GetSelectionStateInfo().GetData().GetSelectionState(state, selectionStateCallbackResults =>
                                                             {
-                                                                callbackResults.SetResult(selectionSystemCallbackResults);
+                                                                callbackResults.SetResult(selectionStateCallbackResults);
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    selectionSystemCallbackResults.GetData().OnSelectUIInput(GetGroupID().GetData(), this, selectionCallbackResults =>
+                                                                    var selectionState = selectionStateCallbackResults.GetData();
+
+                                                                    GetValue().GetData()?.SetColor(selectionState.color, colorSetCallbackResults =>
                                                                     {
-                                                                        callbackResults.SetResult(selectionCallbackResults);
+                                                                         callbackResults.SetResult(colorSetCallbackResults);
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    selectionSystemCallbackResults.GetData().OnSelectUIInput(GetGroupID().GetData(), this, selectionCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(selectionCallbackResults);
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                     });
                                                                 }
                                                                 else
-                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             });
                                                         }
                                                         else
@@ -19449,33 +19548,53 @@ namespace Com.RedicalGames.Filar
 
                                            case InputUIState.Pressed:
                                          
-                                            GetSelectionStateInfo().GetData().GetSelectionState(state, selectionStateCallbackResults =>
+                                            SetUIInputVisibilityState(true, visibiltyStateCallbackResults =>
                                             {
-                                                callbackResults.SetResult(selectionStateCallbackResults);
+                                                callbackResults.SetResult(visibiltyStateCallbackResults);
 
-                                                if (callbackResults.Success())
+                                                if(callbackResults.Success())
                                                 {
-                                                    var selectionState = selectionStateCallbackResults.GetData();
-
-                                                    GetValue().GetData()?.SetColor(selectionState.color, colorSetCallbackResults =>
+                                                    SetInteractableState(true, interactableStateCallbackResults =>
                                                     {
-                                                        callbackResults.SetResult(colorSetCallbackResults);
+                                                        callbackResults.SetResult(interactableStateCallbackResults);
 
-                                                        if (callbackResults.Success())
+                                                        if(callbackResults.Success())
                                                         {
-                                                            selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                                            GetSelectionStateInfo().GetData().GetSelectionState(state, selectionStateCallbackResults =>
                                                             {
-                                                                callbackResults.SetResult(selectionSystemCallbackResults);
+                                                                callbackResults.SetResult(selectionStateCallbackResults);
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    selectionSystemCallbackResults.GetData().OnSelectUIInput(GetGroupID().GetData(), this, selectionCallbackResults =>
+                                                                    var selectionState = selectionStateCallbackResults.GetData();
+
+                                                                    GetValue().GetData()?.SetColor(selectionState.color, colorSetCallbackResults =>
                                                                     {
-                                                                        callbackResults.SetResult(selectionCallbackResults);
+                                                                        callbackResults.SetResult(colorSetCallbackResults);
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    selectionSystemCallbackResults.GetData().OnSelectUIInput(GetGroupID().GetData(), this, selectionCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(selectionCallbackResults);
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                     });
                                                                 }
                                                                 else
-                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             });
                                                         }
                                                         else
@@ -19578,31 +19697,19 @@ namespace Com.RedicalGames.Filar
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    var selectionState = selectionStateCallbackResults.GetData();
-
-                                                    GetValue().GetData()?.SetColor(selectionState.color, colorSetCallbackResults =>
+                                                    selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
                                                     {
-                                                        callbackResults.SetResult(colorSetCallbackResults);
+                                                        callbackResults.SetResult(selectionSystemCallbackResults);
 
-                                                        if (callbackResults.Success())
+                                                        if(callbackResults.Success())
                                                         {
-                                                            selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                                            selectionSystemCallbackResults.GetData().OnSelectUIInput(GetGroupID().GetData(), this, selectionCallbackResults =>
                                                             {
-                                                                callbackResults.SetResult(selectionSystemCallbackResults);
-
-                                                                if (callbackResults.Success())
-                                                                {
-                                                                    selectionSystemCallbackResults.GetData().OnSelectUIInput(GetGroupID().GetData(), this, selectionCallbackResults =>
-                                                                    {
-                                                                        callbackResults.SetResult(selectionCallbackResults);
-                                                                    });
-                                                                }
-                                                                else
-                                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                                                callbackResults.SetResult(selectionCallbackResults);
                                                             });
                                                         }
                                                         else
-                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            Log(callbackResults.resultCode, callbackResults.result, this);
                                                     });
                                                 }
                                                 else
@@ -21006,74 +21113,112 @@ namespace Com.RedicalGames.Filar
 
             public void OnConcealField(Action<Callback> callback = null)
             {
-                var callbackResults = new Callback(Initialized());
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "Conceal Field Failed - App Database Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
-                    concealField = !concealField;
+                    var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
 
-                    if(concealField)
+                    callbackResults.SetResult(Initialized());
+
+                    if (callbackResults.Success())
                     {
-                        GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Password, concealFieldCallbackResults => 
+                        callbackResults.SetResult(GetFieldInput(InputActionButtonType.ConcealFieldButton));
+
+                        if (callbackResults.Success())
                         {
-                            callbackResults.SetResult(concealFieldCallbackResults);
+                            var concealButton = GetFieldInput(InputActionButtonType.ConcealFieldButton).GetData();
 
-                            if(callbackResults.Success())
+                            concealField = !concealField;
+
+                            if (concealField)
                             {
-                                callbackResults.SetResult(GetValue().GetData().GetTextLength());
-
-                                if (callbackResults.Success())
+                                GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Password, concealFieldCallbackResults =>
                                 {
-                                    GetValue().GetData().Refresh(fieldRefreshedCallbackResults =>
+                                    callbackResults.SetResult(concealFieldCallbackResults);
+
+                                    if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(fieldRefreshedCallbackResults);
-
-                                        if(callbackResults.Success())
-                                        {
-                                            GetValue().GetData().caretPosition = 2;
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
-                    }
-                    else
-                    {
-                        GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Standard, concealFieldCallbackResults =>
-                        {
-                            callbackResults.SetResult(concealFieldCallbackResults);
-
-                            if (callbackResults.Success())
-                            {
-                                callbackResults.SetResult(GetValue().GetData().GetTextLength());
-
-                                if (callbackResults.Success())
-                                {
-                                    GetValue().GetData().Refresh(fieldRefreshedCallbackResults => 
-                                    {
-                                        callbackResults.SetResult(fieldRefreshedCallbackResults);
+                                        callbackResults.SetResult(GetValue().GetData().GetTextLength());
 
                                         if (callbackResults.Success())
                                         {
-                                            GetValue().GetData().caretPosition = 2;
+                                            GetValue().GetData().Refresh(fieldRefreshedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(fieldRefreshedCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    GetValue().GetData().caretPosition = 2;
+
+                                                    callbackResults.SetResult(appDatabaseManagerInstance.GetImageFromLibrary(UIImageType.UnconcealFieldIcon));
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        var imageIcon = appDatabaseManagerInstance.GetImageFromLibrary(UIImageType.UnconcealFieldIcon).GetData();
+                                                        concealButton.SetUIImageValue(imageIcon, UIImageDisplayerType.InputIcon);
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
                                         }
                                         else
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
                             }
                             else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
+                            {
+                                GetValue().GetData().SetFieldType(TMP_InputField.ContentType.Standard, concealFieldCallbackResults =>
+                                {
+                                    callbackResults.SetResult(concealFieldCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(GetValue().GetData().GetTextLength());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            GetValue().GetData().Refresh(fieldRefreshedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(fieldRefreshedCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    GetValue().GetData().caretPosition = 2;
+
+                                                    callbackResults.SetResult(appDatabaseManagerInstance.GetImageFromLibrary(UIImageType.ConcealFieldIcon));
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        var imageIcon = appDatabaseManagerInstance.GetImageFromLibrary(UIImageType.ConcealFieldIcon).GetData();
+                                                        concealButton.SetUIImageValue(imageIcon, UIImageDisplayerType.InputIcon);
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -30955,7 +31100,7 @@ namespace Com.RedicalGames.Filar
                 {
                     case DefaultUIWidgetActionState.Default:
 
-                        SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.Null_TransparentIcon).value, UIImageDisplayerType.PinnedIcon);
+                        SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.Null_TransparentIcon).GetData().value, UIImageDisplayerType.PinnedIcon);
 
                         break;
 
@@ -30964,13 +31109,13 @@ namespace Com.RedicalGames.Filar
                         Debug.LogError("==> Asset Hidden.");
 
 
-                        SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.Null_TransparentIcon).value, UIImageDisplayerType.PinnedIcon);
+                        SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.Null_TransparentIcon).GetData().value, UIImageDisplayerType.PinnedIcon);
 
                         break;
 
                     case DefaultUIWidgetActionState.Pinned:
 
-                        SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.PinEnabledIcon).value, UIImageDisplayerType.PinnedIcon);
+                        SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.PinEnabledIcon).GetData().value, UIImageDisplayerType.PinnedIcon);
 
                         break;
                 }
@@ -31893,7 +32038,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 OnWidgetScaleEvent(Vector3.one);
                                 OnSelectionFrameState(true, InputUIState.Hovered, true);
-                                SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.UIWidget_MoveIcon).value, UIImageDisplayerType.ActionIcon);
+                                SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.UIWidget_MoveIcon).GetData().value, UIImageDisplayerType.ActionIcon);
                                 hoveredWidget.SetIsHovered(true);
                                 break;
                             }
@@ -31902,7 +32047,7 @@ namespace Com.RedicalGames.Filar
 
                                 OnWidgetScaleEvent(selectionButtonScaleVect);
                                 OnSelectionFrameState(true, InputUIState.Highlighted, true);
-                                SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.Null_TransparentIcon).value, UIImageDisplayerType.ActionIcon);
+                                SetUIImageDisplayerValue(AppDatabaseManager.Instance.GetImageFromLibrary(UIImageType.Null_TransparentIcon).GetData().value, UIImageDisplayerType.ActionIcon);
 
                                 if (hoveredWidget != null)
                                     hoveredWidget = null;
@@ -39920,7 +40065,7 @@ namespace Com.RedicalGames.Filar
                         {
                             var button = inputActionHandler.GetButtonComponent().GetData();
 
-                            button.SetUIInputState(InputUIState.Selected, inputSelectionCallbackResults =>
+                            button.SetUIInputState(InputUIState.Highlighted, inputSelectionCallbackResults =>
                             {
                                 callbackResults.SetResult(inputSelectionCallbackResults);
                             });
@@ -40198,8 +40343,6 @@ namespace Com.RedicalGames.Filar
                         {
                             var button = inputActionHandler.GetButtonComponent().GetData();
                             button.SetUIInputState(state);
-
-                            LogInfo($" ______Log_Cat:::: On Hide : {GetName()} - Set Button : {button.GetName()} Of Type : {actionType} (Verified As : {button.GetDataPackets().GetData().GetAction().GetData()}) - To State : {state}", this);
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -52405,75 +52548,6 @@ namespace Com.RedicalGames.Filar
                     deviceMemorySize = SystemInfo.systemMemorySize
                 };
             }
-
-
-            #region User Name Validation
-
-            public static CallbackData<string> NameValidation(string validatedName)
-            {
-                var callbacResults = new CallbackData<string>(GetAppStringValueNotNullOrEmpty(validatedName, "Validated Name", "Name Validation Failed - Validated Name Parameter Value Is Null / Empty - Invalid Operation."));
-
-                if (callbacResults.Success())
-                {
-                    if(validatedName.Length > 1)
-                    {
-                       // Move To A Jason File Editable Outside The Game.
-                       var profinityList = new List<string>
-                       {
-                            "Shit",
-                            "Fuck",
-                            "Bitch",
-                            "Slut",
-                            "Hoe",
-                            "Prostitute",
-                            "Kill",
-                            "Die",
-                            "Rape",
-                            "Murder",
-                            "Murderer",
-                            "Msunu",
-                            "Dick",
-                            "Ass",
-                            "AssHole",
-                            "Nigga",
-                            "Niggas",
-                            "Nigger",
-                            "Nyash",
-                            "Penis",
-                            "Vagina",
-                            "Anal"
-                       };
-
-                       for(int i = 0; i < profinityList.Count; i++)
-                       {
-                            if(validatedName.Contains(profinityList[i]))
-                            {
-                                callbacResults.result = $"Name : {validatedName} - Contains Profinity.";
-                                callbacResults.data = default;
-                                callbacResults.resultCode = WarningCode;
-
-                                break;
-                            }
-                            else
-                            {
-                                callbacResults.result = $"Name : {validatedName} - Is Valid.";
-                                callbacResults.data = validatedName;
-                                callbacResults.resultCode = SuccessCode;
-                            }
-                       }
-                    }
-                    else
-                    {
-                        callbacResults.result = $"Name : {validatedName} - Is Too Short.";
-                        callbacResults.data = default;
-                        callbacResults.resultCode = WarningCode;
-                    }
-                }
-
-                return callbacResults;
-            }
-
-            #endregion
 
             #region User Email Validation
 

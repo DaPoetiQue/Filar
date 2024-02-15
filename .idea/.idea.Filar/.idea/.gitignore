@@ -1,0 +1,13 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/contentModel.xml
+/modules.xml
+/projectSettingsUpdater.xml
+/.idea.Filar.iml
+# Datasource local storage ignored files
+/../../../../../../../../../:\Users\Hlulani\Documents\Mentorship Program\Filar\.idea\.idea.Filar\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/

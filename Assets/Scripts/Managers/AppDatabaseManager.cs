@@ -363,6 +363,7 @@ namespace Com.RedicalGames.Filar
                 FirebaseDatabase.DefaultInstance.GetReference("Filar Authentications").Child("User Profiles").ValueChanged += OnAppInfoDatabaseUpdate;
                 FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Post Info Database").ValueChanged += OnPostsDatabaseUpdate;
                 FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Post Content Database").ValueChanged += OnPostsDatabaseUpdate;
+                FirebaseDatabase.DefaultInstance.GetReference("Filar Localization").Child("Language Restrictions").ValueChanged += OnLocalizationDatabaseUpdate;
 
                 await Task.Delay(1000);
 
@@ -799,6 +800,52 @@ namespace Com.RedicalGames.Filar
             }
 
             return callbackResults;
+        }
+
+        #endregion
+
+        #region Localization Database
+
+        void OnLocalizationDatabaseUpdate(object sender, ValueChangedEventArgs valueChangedEvent)
+        {
+            var callbackResults = new AppData.Callback();
+
+            if (valueChangedEvent.DatabaseError == null)
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "On Localization Database Update Failed - Localization Manager Instance Is Not Initialized Yet."));
+
+                if (callbackResults.Success())
+                {
+                    var localizationManagerInstance = AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
+
+                    if (valueChangedEvent.Snapshot.Key == "Language Restrictions")
+                    {
+                        var languageRestrictionSnapshot = valueChangedEvent.Snapshot.Children.FirstOrDefault();
+
+                        var resultsJson = (string)languageRestrictionSnapshot.GetValue(true);
+                        var languageRestriction = JsonUtility.FromJson<AppData.LanguageRestriction >(resultsJson);
+
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(languageRestriction, "Language Restriction", "On Localization Database Update Failed - Language Restriction Couldn't Be Found - Invalid Operation."));
+
+                        if(callbackResults.Success())
+                        {
+                            localizationManagerInstance.SyncLocalizationData(languageRestriction, localizationsyncedCallbackResults => 
+                            {
+                                callbackResults.SetResult(localizationsyncedCallbackResults);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                    {
+                        callbackResults.result = $"On Localization Database Update Failed - Database Snap Shot Is Not Set To Language Restriction - Loaded Database Is : {valueChangedEvent.Snapshot.Key} - Invalid Operation.";
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
         }
 
         #endregion
@@ -5881,9 +5928,23 @@ namespace Com.RedicalGames.Filar
             return imageDataLibrary;
         }
 
-        public AppData.UIImageData GetImageFromLibrary(AppData.UIImageType imageType)
+        public AppData.CallbackData<AppData.UIImageData> GetImageFromLibrary(AppData.UIImageType imageType)
         {
-            return imageDataLibrary.Find(imageData => imageData.imageType == imageType);
+            var callbackResults = new AppData.CallbackData<AppData.UIImageData>();
+
+            var image = imageDataLibrary.Find(imageData => imageData.imageType == imageType);
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(image, "Image", $"Get Image From Library Failed - Image Of Type : {imageType} Is Not Found In The Image Library - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.result = $"Get Image From Library Success - Image Of Type : {imageType} Has Been Successfully Found.";
+                callbackResults.data = image;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         public AppData.SceneMode GetCurrentSceneMode()
