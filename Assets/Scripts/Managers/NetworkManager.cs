@@ -73,7 +73,12 @@ namespace Com.RedicalGames.Filar
                 string result = (status != NetworkReachability.NotReachable) ? "Network Connection Available." : "Network Connection Not Available.";
                 callbackResults.SetResults(result, (status != NetworkReachability.NotReachable) ? AppData.LogInfoChannel.Success : AppData.LogInfoChannel.Error);
 
-                if (callbackResults.UnSuccessful())
+                if (callbackResults.Success())
+                {
+                    AppData.ActionEvents.OnNetworkConnectedEvent();
+                    callbackResults.result = $"Network Successfully Connected For Device : [{AppData.Helpers.GetDeviceInfo().deviceName}] - Model : [{AppData.Helpers.GetDeviceInfo().deviceModel}] - ID : [{AppData.Helpers.GetDeviceInfo().deviceID}]";
+                }
+                else
                 {
                     callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName(), "App Database Manager Instance Is Not Yet Initialized."));
 
@@ -102,7 +107,7 @@ namespace Com.RedicalGames.Filar
                                 networkDataPackets.SetScreenBlurState(true);
                                 networkDataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.ForeGround);
 
-                                screenUIManagerInstance.GetCurrentScreen().GetData().ShowWidget(networkDataPackets, networkWarningMessage, widgetShownCallbackResults => 
+                                screenUIManagerInstance.GetCurrentScreen().GetData().ShowWidget(networkDataPackets, networkWarningMessage, widgetShownCallbackResults =>
                                 {
                                     callbackResults.SetResult(widgetShownCallbackResults);
 

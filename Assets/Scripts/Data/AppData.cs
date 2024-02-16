@@ -56947,7 +56947,8 @@ namespace Com.RedicalGames.Filar
             OnSelectableWidgetHiddenEvent,
             OnSelectableWidgetTransitionInProgressEvent,
             OnActionButtonPressedEvent,
-            OnPostSelectedEvent
+            OnPostSelectedEvent,
+            OnNetworkConnectedEvent
         }
 
         public enum TransitionableEventType
@@ -58130,6 +58131,8 @@ namespace Com.RedicalGames.Filar
             public static event Void _OnInitializationStartedEvent;
             public static event Void _OnInitializationCompletedEvent;
 
+
+            public static event Void _OnNetworkConnectedEvent;
             public static event Void _OnNetworkFailedEvent;
 
             public static event Void _OnPostsInitializationStartedEvent;
@@ -58214,6 +58217,8 @@ namespace Com.RedicalGames.Filar
             public static void OnInitializationStartedEvent() => _OnInitializationStartedEvent?.Invoke();
             public static void OnInitializationCompletedEvent() => _OnInitializationCompletedEvent?.Invoke();
 
+
+            public static void OnNetworkConnectedEvent() => _OnNetworkConnectedEvent?.Invoke();
             public static void OnNetworkFailedEvent() => _OnNetworkFailedEvent?.Invoke();
 
             public static void OnPostsInitializationStartedEvent() => _OnPostsInitializationStartedEvent?.Invoke();
@@ -58327,6 +58332,15 @@ namespace Com.RedicalGames.Filar
                                     _OnNetworkFailedEvent += eventAction.TriggeredEventMethod;
                                 else
                                     _OnNetworkFailedEvent -= eventAction.TriggeredEventMethod;
+
+                                break;
+
+                            case EventType.OnNetworkConnectedEvent:
+
+                                if (subscribe)
+                                    _OnNetworkConnectedEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    _OnNetworkConnectedEvent -= eventAction.TriggeredEventMethod;
 
                                 break;
 
