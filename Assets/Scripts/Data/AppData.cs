@@ -54,6 +54,19 @@ namespace Com.RedicalGames.Filar
             HDRI
         }
 
+        public enum CredentialStatusInfo
+        {
+            None,
+            Success,
+            UserNameError,
+            UserEmailError,
+            DatabaseError,
+            DeviceNetworkError,
+            CompilerError,
+            NullReferenceError,
+            NoRegisteredProfilesFound
+        }
+
         public enum LoadState
         {
             None,
@@ -6693,47 +6706,7 @@ namespace Com.RedicalGames.Filar
                                                                     if (callbackResults.Success())
                                                                         OnCompletition();
                                                                     else
-                                                                    {
-                                                                        callbackResults.SetResults(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName(), "App Database Manager Instance Is Not Yet Initialized."));
-
-                                                                        if (callbackResults.Success())
-                                                                        {
-                                                                            var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName()).GetData();
-
-                                                                            callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
-
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
-
-                                                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(ConfigMessageType.NetworkWarningMessage));
-
-                                                                                if (callbackResults.Success())
-                                                                                {
-                                                                                    var networkWarningMessage = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(ConfigMessageType.NetworkWarningMessage).GetData();
-
-                                                                                    screenUIManager.GetCurrentScreen().GetData().HideScreenWidget(WidgetType.LoadingWidget);
-
-                                                                                    SceneConfigDataPacket networkDataPackets = new SceneConfigDataPacket();
-
-                                                                                    networkDataPackets.SetReferencedScreenType(screenUIManager.GetCurrentScreenType().GetData());
-                                                                                    networkDataPackets.SetReferencedWidgetType(WidgetType.NetworkNotificationWidget);
-                                                                                    networkDataPackets.SetScreenBlurState(true);
-                                                                                    networkDataPackets.SetReferencedUIScreenPlacementType(ScreenUIPlacementType.ForeGround);
-
-                                                                                    screenUIManager.GetCurrentScreen().GetData().ShowWidget(networkDataPackets, networkWarningMessage);
-
-                                                                                    ActionEvents.OnNetworkFailedEvent();
-                                                                                }
-                                                                                else
-                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                            }
-                                                                            else
-                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        }
-                                                                        else
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                    }
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 }
                                                                 else
                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -11899,10 +11872,13 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                var validateduserName = localizationManagerInstance.UnRestricted(decryptedName).GetData();
+                                if (callbackResults.Success())
+                                {
+                                    var validateduserName = localizationManagerInstance.UnRestricted(decryptedName).GetData();
 
-                                callbackResults.result = $"Get User Name Success - User Name Value Is : {validateduserName}.";
-                                callbackResults.data = validateduserName;
+                                    callbackResults.result = $"Get User Name Success - User Name Value Is : {validateduserName}.";
+                                    callbackResults.data = validateduserName;
+                                }
                             }
                         }
                     }
@@ -11934,10 +11910,13 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            var validatedEmail = emailValidationCallbackResults.GetData();
+                            if (callbackResults.Success())
+                            {
+                                var validatedEmail = emailValidationCallbackResults.GetData();
 
-                            callbackResults.result = $"Get User Email Success - User Email Value Is : {validatedEmail}.";
-                            callbackResults.data = validatedEmail;
+                                callbackResults.result = $"Get User Email Success - User Email Value Is : {validatedEmail}.";
+                                callbackResults.data = validatedEmail;
+                            }
                         }
                     }
                 }
@@ -19194,6 +19173,43 @@ namespace Com.RedicalGames.Filar
                     {
                         callbackResults.SetResult(eventsRemovedCallbackResults);
                     });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void RegisterButtonActionListener(Action method, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(method, "Method", "Register Button Action Listener Failed - Method Parameter Value Is Null - Invalid Operation."));
+
+                    if(callbackResults.Success())
+                    {
+                        GetValue().GetData().onClick.AddListener(() => method.Invoke());
+                        GetValue().GetData().CancelInvoke();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void UnRegisterButtonActionListeners(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    GetValue().GetData().onClick.RemoveAllListeners();
+                    GetValue().GetData().CancelInvoke();
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -34618,6 +34634,8 @@ namespace Com.RedicalGames.Filar
                         //    else
                         //        Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
                         //});
+
+                        callback?.Invoke(callbackResults);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -41383,6 +41401,12 @@ namespace Com.RedicalGames.Filar
 
             private ScreenUIData parentScreen;
 
+            #region Action Button Listeners
+
+            private List<ActionButtonListener> registeredActionButtonListeners = new List<ActionButtonListener>();
+
+            #endregion
+
             #region Widgets 
 
             protected Dictionary<string, Widget> registeredWidgets = new Dictionary<string, Widget>();
@@ -41900,6 +41924,166 @@ namespace Com.RedicalGames.Filar
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+
+            #region Action Events
+
+            public void RegisterActionButtonListeners(Action<Callback> callback = null, params ActionButtonListener[] actionButtonListeners)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(actionButtonListeners, "Action Button Listeners", $"Register Action Button Listeners Failed For : {GetName()} - Action Button Listeners Params Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    for (int i = 0; i < actionButtonListeners.Length; i++)
+                    {
+                        var actionMethod = actionButtonListeners[i];
+
+                        callbackResults.SetResult(GetRegisteredActionButtonListeners());
+
+                        if (callbackResults.Success())
+                        {
+                            if (!GetRegisteredActionButtonListeners().GetData().Contains(actionMethod))
+                            {
+                                LogInfo($" _Log_Cat/: Find Button Of Type : {actionMethod.GetAction().GetData()} For Method - {actionMethod.GetMethod().GetData().Method.Name}", this);
+
+                                callbackResults.SetResult(GetActionButtonOfType(actionMethod.GetAction().GetData()));
+
+                                if (callbackResults.Success())
+                                {
+                                    var button = GetActionButtonOfType(actionMethod.GetAction().GetData()).GetData();
+
+                                    button.RegisterButtonActionListener(actionMethod.GetMethod().GetData(), actionRegisteredCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(actionRegisteredCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            GetRegisteredActionButtonListeners().GetData().Add(actionMethod);
+                                            callbackResults.result = $"Action button Of Type : {actionMethod.GetAction().GetData()} Has been Registred Successfully.";
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                {
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Action button Of Type : {actionMethod.GetAction().GetData()} Already Registered - Invalid Operation.";
+                                callbackResults.resultCode = Helpers.WarningCode;
+
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.SetResult(GetActionButtonOfType(actionMethod.GetAction().GetData()));
+
+                            if (callbackResults.Success())
+                            {
+                                var button = GetActionButtonOfType(actionMethod.GetAction().GetData()).GetData();
+
+                                button.RegisterButtonActionListener(actionMethod.GetMethod().GetData(), actionRegisteredCallbackResults =>
+                                {
+                                    callbackResults.SetResult(actionRegisteredCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        registeredActionButtonListeners = new List<ActionButtonListener> { actionMethod };
+                                        callbackResults.result = $"Action button Of Type : {actionMethod.GetAction().GetData()} Has been Registred Successfully.";
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                            {
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void UnRegisterActionButtonListeners(Action<Callback> callback = null, params ActionButtonListener[] actionButtonListeners)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(actionButtonListeners, "Action Button Listeners", $"Register Action Button Listeners Failed For : {GetName()} - Action Button Listeners Params Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    for (int i = 0; i < actionButtonListeners.Length; i++)
+                    {
+                        var actionMethod = actionButtonListeners[i];
+
+                        if (GetRegisteredActionButtonListeners().GetData().Contains(actionMethod))
+                        {
+                            callbackResults.SetResult(GetActionButtonOfType(actionMethod.GetAction().GetData()));
+
+                            if (callbackResults.Success())
+                            {
+                                var button = GetActionButtonOfType(actionMethod.GetAction().GetData()).GetData();
+
+                                button.UnRegisterButtonActionListeners(actionRegisteredCallbackResults =>
+                                {
+                                    callbackResults.SetResult(actionRegisteredCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        GetRegisteredActionButtonListeners().GetData().Remove(actionMethod);
+                                        callbackResults.result = $"Action button Of Type : {actionMethod.GetAction().GetData()} Has been Un-Registred Successfully.";
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                            {
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Action button Of Type : {actionMethod.GetAction().GetData()} Doesn't Exists In Registered Event Listeners - Invalid Operation.";
+                            callbackResults.resultCode = Helpers.WarningCode;
+
+                            break;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public CallbackDataList<ActionButtonListener> GetRegisteredActionButtonListeners()
+            {
+                var callbackResults = new CallbackDataList<ActionButtonListener>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(registeredActionButtonListeners, "Registered Action Button Listeners", $"Get Registered Action Button Listeners Failed - There Are No Registered Action Button Listeners Found For : {GetName()} - Of Type : {GetType().GetData()} - Invaild Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Registered Action Button Listeners Success - There Are {registeredActionButtonListeners.Count} Registered Action Button Listeners Found For : {GetName()} - Of Type : {GetType().GetData()}.";
+                    callbackResults.data = registeredActionButtonListeners;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
             }
 
             #endregion
@@ -52561,8 +52745,6 @@ namespace Com.RedicalGames.Filar
                     {
                         email = Regex.Replace(email, @"(@)(.+)$", DomainMapper, RegexOptions.None, TimeSpan.FromMilliseconds(200));
 
-                        Debug.Log($"_Logs/: Email - {email}");
-
                         string DomainMapper(Match match)
                         {
                             var idn = new IdnMapping();
@@ -57718,6 +57900,135 @@ namespace Com.RedicalGames.Filar
 
                 return callbackResults;
             }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Action Button Listener
+
+        [Serializable]
+        public class ActionButtonListener
+        {
+            #region Components
+
+            private Action method;
+            private InputActionButtonType action;
+            private bool registered;
+
+            #endregion
+
+            #region Main
+
+            public ActionButtonListener()
+            {
+
+            }
+
+            public ActionButtonListener(Action method, InputActionButtonType action, bool registered = false)
+            {
+                this.method = method;
+                this.action = action;
+                this.registered = registered;
+            }
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(GetAction());
+
+                if (callbackResults.Success())
+                    callbackResults.SetResult(GetMethod());
+
+                return callbackResults;
+            }
+
+            #region Data Setters
+
+            public void SetMethod(Action method, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(method, "Method", "Set Method Failed - Method Parameter Value Is Missing Null - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    this.method = method;
+                    callbackResults.result = $"Set Method Success - Method : {method.Method.Name} Has Been Assigned Successfully.";
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetAction(InputActionButtonType action, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(action, "Action", $"Set Action Failed - Action Parameter Value Is Set To Default : {action} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    this.action = action;
+                    callbackResults.result = $"Set Action Success - Action Has Been Successfully Set To : {action}.";
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetRegisteredState(bool registered, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                    this.registered = registered;
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<Action> GetMethod()
+            {
+                var callbackResults = new CallbackData<Action>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(method, "Method", "Get Method Failed - Method Is Not Assigned - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Method Success - Method : {method.Method.Name} Has Been successfully Found.";
+                    callbackResults.data = method;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<InputActionButtonType> GetAction()
+            {
+                var callbackResults = new CallbackData<InputActionButtonType>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(action, "Action", $"Get Action Failed - Action Value Is Set To Default : {action} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Action Success - Action Value Is Set To : {action}.";
+                    callbackResults.data = action;
+                }
+
+                return callbackResults;
+            }
+
+            public Callback Registered()
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = registered ? $"Action : {GetAction().GetData()} Is Registered" : $"Action : {GetAction().GetData()} Is Not Registered";
+                    callbackResults.resultCode = registered ? Helpers.SuccessCode : Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
 
             #endregion
         }

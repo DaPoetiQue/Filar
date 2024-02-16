@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using Firebase;
 using Firebase.Auth;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Com.RedicalGames.Filar
 {
@@ -12,7 +14,6 @@ namespace Com.RedicalGames.Filar
 
         [SerializeField]
         private string profileURL = "User Profile";
-
 
         [Space(5)]
         public AppData.StorageDirectoryData profileStorageData = new AppData.StorageDirectoryData();
@@ -25,6 +26,7 @@ namespace Com.RedicalGames.Filar
         #region Firebase
 
         FirebaseAuth authentication;
+
         public bool TermsAndConditionsAccepted { get; private set; }
 
         [SerializeField]
@@ -38,7 +40,227 @@ namespace Com.RedicalGames.Filar
 
         protected override void Init()
         {
+           
+        }
 
+        public async Task<AppData.CallbackData<(List<AppData.Profile> profiles, AppData.CredentialStatusInfo statusInfo)>> GetAppProfiles()
+        {
+            var callbackResults = new AppData.CallbackData<(List<AppData.Profile> profiles, AppData.CredentialStatusInfo statusInfo)>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "Get App Profiles Failed - App Database Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance", "Get App Profiles Failed - Network Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    var networkManagerInstance = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance").GetData();
+
+                    var networkStatusCallbackResultsTask = await networkManagerInstance.CheckConnectionStatus();
+
+                    callbackResults.SetResult(networkStatusCallbackResultsTask);
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(appDatabaseManagerInstance.GetDatabaseReference());
+
+                        if (callbackResults.Success())
+                        {
+                            var profileDatabase = await appDatabaseManagerInstance.GetDatabaseReference().GetData().Child("Filar Authentications").Child("User Profiles").GetValueAsync();
+
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(profileDatabase.Children.ToList(), "Profile Database", "Get App Profiles Failed - Profile Database Is Not Found - Please Check Profile Manager's Get App Profiles Method - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                var appInfoSnapshots = profileDatabase.Children.ToList();
+
+                                var registeredProfiles = new List<AppData.Profile>();
+
+                                foreach (var appInfoSnapshot in appInfoSnapshots)
+                                {
+                                    var resultsJson = (string)appInfoSnapshot.GetValue(true);
+                                    var appInfo = JsonUtility.FromJson<AppData.AppInfo>(resultsJson);
+
+                                    callbackResults.SetResult(appInfo.GetProfile());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        if(appInfo.GetProfile().GetData().GetStatus().GetData() == AppData.ProfileStatus.Registered)
+                                        {
+                                            if (!registeredProfiles.Contains(appInfo.GetProfile().GetData()))
+                                            {
+                                                registeredProfiles.Add(appInfo.GetProfile().GetData());
+
+                                                callbackResults.result = $"Profile For : {appInfo.GetProfile().GetData().GetUserName().GetData()} Has Been successfully Loaded.";
+                                            }
+                                            else
+                                            {
+                                                callbackResults.result = $"Profile For : {appInfo.GetProfile().GetData().GetUserName().GetData()} Already Loaded - Invalid Operation.";
+                                                callbackResults.resultCode = AppData.Helpers.WarningCode;
+
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        break;
+                                    }
+                                }
+
+                                callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(registeredProfiles, "Registered Profiles", "Get App Profiles Failed - Couldn't Find Registered Profiles From Database - Invalid Operation."));
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.result = $"Get App Profiles Success - {registeredProfiles.Count} Registered Profile(s) Have Been Found.";
+                                    callbackResults.data = callbackResults.data = (registeredProfiles, AppData.CredentialStatusInfo.Success);
+                                }
+                                else
+                                {
+                                    callbackResults.result = "There Are No Registered User Profiles Found - Continue Execution.";
+                                    callbackResults.data = (null, AppData.CredentialStatusInfo.NoRegisteredProfilesFound);
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.result = "Couldn't Find App Info Data From Database - Invalid Operation.";
+                                callbackResults.data = (null, AppData.CredentialStatusInfo.DatabaseError);
+                            }
+                        }
+                        else
+                        {
+                            callbackResults.result = "Database Couldn't Be Found.";
+                            callbackResults.data = (null, AppData.CredentialStatusInfo.DatabaseError);
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "Network Connection Failed.";
+                        callbackResults.data = (null, AppData.CredentialStatusInfo.DeviceNetworkError);
+                    }
+                }
+                else
+                    callbackResults.data = (null, AppData.CredentialStatusInfo.CompilerError);
+            }
+            else
+                callbackResults.data = (null, AppData.CredentialStatusInfo.CompilerError);
+
+            return callbackResults;
+        }
+
+        private async Task<AppData.CallbackData<(List<string> userNames, List<string> userEmails, AppData.CredentialStatusInfo statusInfo)>> GetAppUsers()
+        {
+            var callbackResults = new AppData.CallbackData<(List<string> userNames, List<string> userEmails, AppData.CredentialStatusInfo statusInfo)>();
+
+            var profilesCallbackResultsTask = await GetAppProfiles();
+
+            callbackResults.SetResult(profilesCallbackResultsTask);
+
+            if (callbackResults.Success())
+            {
+                var userNames = profilesCallbackResultsTask.GetData().profiles.FindAll(profile => profile.Initialized().Success()).Select(profile => profile.GetUserName().GetData()).ToList();
+
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(userNames, "User Names", "Get App User Names Failed - Couldn't Find Any User Names - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    var userEmails = profilesCallbackResultsTask.GetData().profiles.FindAll(profile => profile.Initialized().Success()).Select(profile => profile.GetUserEmail().GetData()).ToList();
+
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(userEmails, "User Emails", "Get App User Emails Failed - Couldn't Find Any User Emails - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get App Users Success - {userNames.Count} User(s) Have Been Found.";
+                        callbackResults.data = (userNames, userEmails, AppData.CredentialStatusInfo.Success);
+                    }
+                    else
+                    {
+                        callbackResults.result = "There Are No Users Found - User Names Could'nt Be Found.";
+                        callbackResults.data = (null, null, AppData.CredentialStatusInfo.NullReferenceError);
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "There Are No Users Found - User Names Could'nt Be Found.";
+                    callbackResults.data = (null, null, AppData.CredentialStatusInfo.NullReferenceError);
+                }
+            }
+            else
+            {
+                if (profilesCallbackResultsTask.GetData().statusInfo == AppData.CredentialStatusInfo.NoRegisteredProfilesFound)
+                    callbackResults.data = (null, null, AppData.CredentialStatusInfo.NoRegisteredProfilesFound);
+                else
+                    callbackResults.data = (null, null, profilesCallbackResultsTask.GetData().statusInfo);
+            }
+
+            return callbackResults;
+        }
+
+        public async Task<AppData.CallbackData<AppData.CredentialStatusInfo>> CredentialsAvailable(string userName, string userEmail)
+        {
+            var callbackResults = new AppData.CallbackData<AppData.CredentialStatusInfo>();
+
+            var getUsersCallbackResultsTask = await GetAppUsers();
+
+            callbackResults.SetResult(getUsersCallbackResultsTask);
+
+            if (callbackResults.Success())
+            {
+                var userNames = getUsersCallbackResultsTask.GetData().userNames;
+                var userEmails = getUsersCallbackResultsTask.GetData().userEmails;
+
+                #region User Name
+
+                if(!userNames.Contains(userName))
+                {
+                    callbackResults.result = $"User Name {userName} Is Available.";
+                    callbackResults.data = AppData.CredentialStatusInfo.Success;
+                }
+                else
+                {
+                    callbackResults.result = $"User Name {userName} Is Already In use.";
+                    callbackResults.data = AppData.CredentialStatusInfo.UserNameError;
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+
+                    return callbackResults;
+                }
+
+                #endregion
+
+                #region User Email
+
+                if (!userEmails.Contains(userEmail))
+                {
+                    callbackResults.result = $"User Email {userEmail} Is Available.";
+                    callbackResults.data = AppData.CredentialStatusInfo.Success;
+                }
+                else
+                {
+                    callbackResults.result = $"User Email {userEmail} Is Already In use.";
+                    callbackResults.data = AppData.CredentialStatusInfo.UserNameError;
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+
+                    return callbackResults;
+                }
+
+                #endregion
+            }
+
+            if(callbackResults.UnSuccessful())
+            {
+                if(getUsersCallbackResultsTask.GetData().statusInfo == AppData.CredentialStatusInfo.NoRegisteredProfilesFound)
+                {
+                    callbackResults.result = $"There Are No Registered Profiles Found In The Database - This Is The Initial Profile Registration - Proceeding To Register User : {userName} With Email ID : {userEmail}";
+                    callbackResults.data = AppData.CredentialStatusInfo.NoRegisteredProfilesFound;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                    callbackResults.data = getUsersCallbackResultsTask.GetData().statusInfo;
+            }
+
+            return callbackResults;
         }
 
         public void UpdateUserProfile(AppData.Profile referenceProfile, Action<AppData.Callback> callback = null)
@@ -91,7 +313,7 @@ namespace Com.RedicalGames.Filar
 
         public void GetUserProfile(Action<AppData.CallbackData<AppData.Profile>> callback)
         {
-            AppData.CallbackData<AppData.Profile> callbackResults = new AppData.CallbackData<AppData.Profile>(AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance", "App Services Manager Instance Is Not Yet Initialized."));
+            var callbackResults = new AppData.CallbackData<AppData.Profile>(AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance", "App Services Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {

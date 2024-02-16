@@ -8,6 +8,12 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
+        #region Events
+
+        private Action onRetryActionEvent, onCancelActionEvent;
+
+        #endregion
+
         #endregion
 
         #region Main
@@ -122,21 +128,21 @@ namespace Com.RedicalGames.Filar
             {
                 var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                switch (actionType)
+                screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
                 {
-                    case AppData.InputActionButtonType.RetryButton:
+                    callbackResults.SetResult(currentScreenCallbackResults);
 
-                        screenUIManager.GetCurrentScreen(async currentScreenCallbackResults =>
-                        {
-                            callbackResults.SetResult(currentScreenCallbackResults);
+                    var screen = currentScreenCallbackResults.GetData();
 
-                            var screen = currentScreenCallbackResults.GetData();
+                    switch (actionType)
+                    {
+                        case AppData.InputActionButtonType.RetryButton:
 
-                            screen.HideScreenWidget(GetType().GetData(), callback: async widgetHiddenCallbackResults => 
+                            screen.HideScreenWidget(GetType().GetData(), callback: async widgetHiddenCallbackResults =>
                             {
                                 callbackResults.SetResult(widgetHiddenCallbackResults);
 
-                                if(callbackResults.Success())
+                                if (callbackResults.Success())
                                 {
                                     await Task.Delay(1000);
 
@@ -169,10 +175,16 @@ namespace Com.RedicalGames.Filar
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             });
-                        });
 
-                        break;
-                }
+                            break;
+
+                        case AppData.InputActionButtonType.Cancel:
+
+                            screen.HideScreenWidget(this);
+
+                            break;
+                    }
+                });
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

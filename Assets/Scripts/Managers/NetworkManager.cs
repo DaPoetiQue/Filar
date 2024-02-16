@@ -50,24 +50,85 @@ namespace Com.RedicalGames.Filar
 
         public async Task<AppData.Callback> CheckConnectionStatus()
         {
-            AppData.Callback callbackResults = new AppData.Callback();
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI manager", "Check Connection Status Failed - Screen UI Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
-            float timeOut = DefaultTimeOut();  
-
-            status = Application.internetReachability;
-
-            await Task.Delay(NetworkConnectionDelay());
-
-            while (status == NetworkReachability.NotReachable || timeOut > 0.0f)
+            if (callbackResults.Success())
             {
-                timeOut -= 1 * Time.deltaTime; ;
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI manager").GetData();
 
-                if (status != NetworkReachability.NotReachable && timeOut > 0 || timeOut <= 0)
-                    break;
+                float timeOut = DefaultTimeOut();
+
+                status = Application.internetReachability;
+
+                await Task.Delay(NetworkConnectionDelay());
+
+                while (status == NetworkReachability.NotReachable || timeOut > 0.0f)
+                {
+                    timeOut -= 1 * Time.deltaTime; ;
+
+                    if (status != NetworkReachability.NotReachable && timeOut > 0 || timeOut <= 0)
+                        break;
+                }
+
+                string result = (status != NetworkReachability.NotReachable) ? "Network Connection Available." : "Network Connection Not Available.";
+                callbackResults.SetResults(result, (status != NetworkReachability.NotReachable) ? AppData.LogInfoChannel.Success : AppData.LogInfoChannel.Error);
+
+                if (callbackResults.UnSuccessful())
+                {
+                    callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName(), "App Database Manager Instance Is Not Yet Initialized."));
+
+                    if (callbackResults.Success())
+                    {
+                        var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName()).GetData();
+
+                        callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                        if (callbackResults.Success())
+                        {
+                            var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                            callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.NetworkWarningMessage));
+
+                            if (callbackResults.Success())
+                            {
+                                var networkWarningMessage = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.NetworkWarningMessage).GetData();
+
+                                screenUIManagerInstance.GetCurrentScreen().GetData().HideScreenWidget(AppData.WidgetType.LoadingWidget);
+
+                                var networkDataPackets = new AppData.SceneConfigDataPacket();
+
+                                networkDataPackets.SetReferencedScreenType(screenUIManagerInstance.GetCurrentScreenType().GetData());
+                                networkDataPackets.SetReferencedWidgetType(AppData.WidgetType.NetworkNotificationWidget);
+                                networkDataPackets.SetScreenBlurState(true);
+                                networkDataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.ForeGround);
+
+                                screenUIManagerInstance.GetCurrentScreen().GetData().ShowWidget(networkDataPackets, networkWarningMessage, widgetShownCallbackResults => 
+                                {
+                                    callbackResults.SetResult(widgetShownCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        AppData.ActionEvents.OnNetworkFailedEvent();
+
+                                        callbackResults.result = $"Network Failed With Status : {status}";
+                                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
             }
-
-            string result = (status != NetworkReachability.NotReachable) ? "Network Connection Available." : "Network Connection Not Available.";
-            callbackResults.SetResults(result, (status != NetworkReachability.NotReachable) ? AppData.LogInfoChannel.Success : AppData.LogInfoChannel.Error);
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             return callbackResults;
         }

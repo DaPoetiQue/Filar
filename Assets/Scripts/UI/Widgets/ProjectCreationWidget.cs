@@ -16,6 +16,9 @@ namespace Com.RedicalGames.Filar
 
         AppData.ProjectStructureData newProjectStructureData = new AppData.ProjectStructureData();
 
+        private AppData.ActionButtonListener onConfirmationButtonEvent = new AppData.ActionButtonListener();
+        private AppData.ActionButtonListener onCancelButtonEvent = new AppData.ActionButtonListener();
+
         #endregion
 
         #region Main
@@ -87,98 +90,208 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            confirmationWidget.ClearRegisteredEvents();
-
-                            var confirmationWidgetConfig = new AppData.SceneConfigDataPacket();
-
-                            confirmationWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.ConfirmationPopUpWidget);
-                            confirmationWidgetConfig.blurScreen = true;
-                            confirmationWidgetConfig.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.ForeGround);
-
-                            switch (actionType)
+                            confirmationWidget.UnRegisterActionButtonListeners(eventsUnregisteredCallbackResults => 
                             {
-                                case AppData.InputActionButtonType.CloseButton:
+                                callbackResults.SetResult(eventsUnregisteredCallbackResults);
 
-                                    confirmationWidget.RegisterConfirmationActionEvent(OnCancelledEvent, OnConfirmedEvent, onConfirmRegisteredCallbackResults =>
+                                if (callbackResults.Success())
+                                {
+                                    var confirmationWidgetConfig = new AppData.SceneConfigDataPacket();
+
+                                    confirmationWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.ConfirmationPopUpWidget);
+                                    confirmationWidgetConfig.blurScreen = true;
+                                    confirmationWidgetConfig.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.ForeGround);
+
+                                    switch (actionType)
                                     {
-                                        callbackResults.SetResult(onConfirmRegisteredCallbackResults);
+                                        case AppData.InputActionButtonType.CloseButton:
 
-                                        if (callbackResults.Success())
-                                            screen.ShowWidget(confirmationWidgetConfig);
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-
-                                    break;
-
-                                case AppData.InputActionButtonType.ConfirmationButton:
-
-                                    OnDataValidation(newProjectStructureData, dataValidCallbackResults =>
-                                    {
-                                        if (dataValidCallbackResults.Success())
-                                        {
-                                            OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Success, dataValidCallbackResults.data);
-
-                                            if (AppDatabaseManager.Instance != null)
+                                            confirmationWidget.UnRegisterActionButtonListeners(actionEventsUnRegisteredCallbackResults =>
                                             {
-                                                AppDatabaseManager.Instance.CreateNewProjectStructureData(newProjectStructureData, createNewProjectCallbackResults =>
+                                                callbackResults.SetResult(actionEventsUnRegisteredCallbackResults);
+
+                                                if (callbackResults.Success())
                                                 {
-                                                    if (createNewProjectCallbackResults.Success())
+                                                    onConfirmationButtonEvent.SetMethod(OnConfirmedEvent, methodSetCallbackResults =>
                                                     {
-                                                        if (AppDatabaseManager.Instance.GetProjectRootStructureData().Success())
+                                                        callbackResults.SetResult(methodSetCallbackResults);
+
+                                                        if (callbackResults.Success())
                                                         {
-                                                            if (ScreenUIManager.Instance.GetCurrentScreen().Success())
-                                                                ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
-
-                                                            StartCoroutine(OnCreatedAsync(createNewProjectCallbackResults.data.GetProjectInfo(), async createdCallbackResults =>
+                                                            onConfirmationButtonEvent.SetAction(AppData.InputActionButtonType.ConfirmationButton, actionSetCallbackResults =>
                                                             {
-                                                                if (createdCallbackResults.Success())
+                                                                callbackResults.SetResult(actionSetCallbackResults);
+
+                                                                if (callbackResults.Success())
                                                                 {
-                                                                    dataPackets.notification.message = createNewProjectCallbackResults.result;
+                                                                    onCancelButtonEvent.SetMethod(OnCancelledEvent, methodSetCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(methodSetCallbackResults);
 
-                                                                    if (dataPackets.notification.showNotifications)
-                                                                        NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            onCancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, actionSetCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(actionSetCallbackResults);
 
-                                                                    await ScreenUIManager.Instance.RefreshAsync();
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    confirmationWidget.RegisterActionButtonListeners(onConfirmRegisteredCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(onConfirmRegisteredCallbackResults);
+
+                                                                                        if (callbackResults.Success())
+                                                                                            screen.ShowWidget(confirmationWidgetConfig);
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                                                    }, onConfirmationButtonEvent, onCancelButtonEvent);
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    });
                                                                 }
                                                                 else
-                                                                    Log(createdCallbackResults.resultCode, createdCallbackResults.result, this);
-                                                            }));
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            });
                                                         }
                                                         else
-                                                            Log(AppDatabaseManager.Instance.GetProjectRootStructureData().resultCode, AppDatabaseManager.Instance.GetProjectRootStructureData().result, this);
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                            break;
+
+                                        case AppData.InputActionButtonType.ConfirmationButton:
+
+                                            OnDataValidation(newProjectStructureData, dataValidCallbackResults =>
+                                            {
+                                                if (dataValidCallbackResults.Success())
+                                                {
+                                                    OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Success, dataValidCallbackResults.data);
+
+                                                    if (AppDatabaseManager.Instance != null)
+                                                    {
+                                                        AppDatabaseManager.Instance.CreateNewProjectStructureData(newProjectStructureData, createNewProjectCallbackResults =>
+                                                        {
+                                                            if (createNewProjectCallbackResults.Success())
+                                                            {
+                                                                if (AppDatabaseManager.Instance.GetProjectRootStructureData().Success())
+                                                                {
+                                                                    if (ScreenUIManager.Instance.GetCurrentScreen().Success())
+                                                                        ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
+
+                                                                    StartCoroutine(OnCreatedAsync(createNewProjectCallbackResults.data.GetProjectInfo(), async createdCallbackResults =>
+                                                                    {
+                                                                        if (createdCallbackResults.Success())
+                                                                        {
+                                                                            dataPackets.notification.message = createNewProjectCallbackResults.result;
+
+                                                                            if (dataPackets.notification.showNotifications)
+                                                                                NotificationSystemManager.Instance.ScheduleNotification(dataPackets.notification);
+
+                                                                            await ScreenUIManager.Instance.RefreshAsync();
+                                                                        }
+                                                                        else
+                                                                            Log(createdCallbackResults.resultCode, createdCallbackResults.result, this);
+                                                                    }));
+                                                                }
+                                                                else
+                                                                    Log(AppDatabaseManager.Instance.GetProjectRootStructureData().resultCode, AppDatabaseManager.Instance.GetProjectRootStructureData().result, this);
+                                                            }
+                                                            else
+                                                                Log(createNewProjectCallbackResults.resultCode, createNewProjectCallbackResults.result, this);
+                                                        });
                                                     }
                                                     else
-                                                        Log(createNewProjectCallbackResults.resultCode, createNewProjectCallbackResults.result, this);
-                                                });
-                                            }
-                                            else
-                                                LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
-                                        }
-                                        else
-                                        {
-                                            OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Error, dataValidCallbackResults.data);
+                                                        LogError("Scene Assets Manager Instance Is Not Yet Initialized.", this);
+                                                }
+                                                else
+                                                {
+                                                    OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Error, dataValidCallbackResults.data);
 
-                                            Log(dataValidCallbackResults.resultCode, dataValidCallbackResults.result, this);
-                                        }
-                                    });
+                                                    Log(dataValidCallbackResults.resultCode, dataValidCallbackResults.result, this);
+                                                }
+                                            });
 
-                                    break;
+                                            break;
 
-                                case AppData.InputActionButtonType.Cancel:
+                                        case AppData.InputActionButtonType.Cancel:
 
-                                    confirmationWidget.RegisterConfirmationActionEvent(OnCancelledEvent, OnConfirmedEvent, onConfirmRegisteredCallbackResults =>
-                                    {
-                                        callbackResults.SetResult(onConfirmRegisteredCallbackResults);
+                                            confirmationWidget.UnRegisterActionButtonListeners(actionEventsUnRegisteredCallbackResults => 
+                                            {
+                                                callbackResults.SetResult(actionEventsUnRegisteredCallbackResults);
 
-                                        if (callbackResults.Success())
-                                            screen.ShowWidget(confirmationWidgetConfig);
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
+                                                if(callbackResults.Success())
+                                                {
+                                                    onConfirmationButtonEvent.SetMethod(OnConfirmedEvent, methodSetCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(methodSetCallbackResults);
 
-                                    break;
-                            }
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            onConfirmationButtonEvent.SetAction(AppData.InputActionButtonType.ConfirmationButton, actionSetCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(actionSetCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    onCancelButtonEvent.SetMethod(OnCancelledEvent, methodSetCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(methodSetCallbackResults);
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            onCancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, actionSetCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(actionSetCallbackResults);
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    confirmationWidget.RegisterActionButtonListeners(onConfirmRegisteredCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(onConfirmRegisteredCallbackResults);
+
+                                                                                        if (callbackResults.Success())
+                                                                                            screen.ShowWidget(confirmationWidgetConfig);
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                                                    }, onConfirmationButtonEvent, onCancelButtonEvent);
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    });
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                            break;
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

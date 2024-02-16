@@ -7,6 +7,8 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
+        private AppData.ActionButtonListener onConfirmationButtonEvent = new AppData.ActionButtonListener();
+
         #endregion
 
         #region Main
@@ -109,20 +111,49 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    confirmationWidget.ClearRegisteredEvents();
-
-                                    confirmationWidget.RegisterOnConfirmEvent(GoToHomeScreen, onConfirmRegisteredCallbackResults =>
+                                    confirmationWidget.UnRegisterActionButtonListeners(eventsUnregisteredCallbackResults => 
                                     {
-                                        callbackResults.SetResult(onConfirmRegisteredCallbackResults);
+                                        callbackResults.SetResult(eventsUnregisteredCallbackResults);
 
-                                        if (callbackResults.Success())
+                                        if(callbackResults.Success())
                                         {
-                                            var confirmationWidgetConfig = new AppData.SceneConfigDataPacket();
+                                            onConfirmationButtonEvent.SetMethod(GoToHomeScreen, methodSetCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(methodSetCallbackResults);
 
-                                            confirmationWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.ConfirmationPopUpWidget);
-                                            confirmationWidgetConfig.blurScreen = true;
+                                                if (callbackResults.Success())
+                                                {
+                                                    onConfirmationButtonEvent.SetAction(AppData.InputActionButtonType.ConfirmationButton, actionSetCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(actionSetCallbackResults);
 
-                                            screen.ShowWidget(confirmationWidgetConfig);
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            confirmationWidget.RegisterActionButtonListeners(onConfirmRegisteredCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(onConfirmRegisteredCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    var confirmationWidgetConfig = new AppData.SceneConfigDataPacket();
+
+                                                                    confirmationWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.ConfirmationPopUpWidget);
+                                                                    confirmationWidgetConfig.blurScreen = true;
+
+                                                                    screen.ShowWidget(confirmationWidgetConfig);
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                            }, onConfirmationButtonEvent);
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
                                         }
                                         else
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

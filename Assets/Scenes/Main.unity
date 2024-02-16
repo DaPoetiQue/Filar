@@ -11197,9 +11197,6 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  languageRestriction:
-    blackListedWords: []
-  generateLanguageRestriction: 1
 --- !u!1 &1204500052
 GameObject:
   m_ObjectHideFlags: 0
