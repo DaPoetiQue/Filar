@@ -10,6 +10,7 @@ namespace Com.RedicalGames.Filar
         #region Components
 
         private AppData.ActionButtonListener onRetryButtonEvent = new AppData.ActionButtonListener();
+        private AppData.ActionButtonListener onCancelButtonEvent = new AppData.ActionButtonListener();
 
         #endregion
 
@@ -373,23 +374,43 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        onRetryButtonEvent.SetMethod(OnUserSignUp, methodSetCallbackResults =>
+                                                                        onRetryButtonEvent.SetMethod(OnUserSignUp, retryMethodSetCallbackResults =>
                                                                         {
-                                                                            callbackResults.SetResult(methodSetCallbackResults);
+                                                                            callbackResults.SetResult(retryMethodSetCallbackResults);
 
                                                                             if (callbackResults.Success())
                                                                             {
-                                                                                onRetryButtonEvent.SetAction(AppData.InputActionButtonType.RetryButton, actionSetCallbackResults =>
+                                                                                onRetryButtonEvent.SetAction(AppData.InputActionButtonType.RetryButton, retryActionSetCallbackResults =>
                                                                                 {
-                                                                                    callbackResults.SetResult(actionSetCallbackResults);
+                                                                                    callbackResults.SetResult(retryActionSetCallbackResults);
 
                                                                                     if (callbackResults.Success())
                                                                                     {
-                                                                                        networkNotificationWidget.RegisterActionButtonListeners(registerActionEventsCallbackResults =>
+                                                                                        onCancelButtonEvent.SetMethod(OnNetworkFailedCancelEvent, cancelMethodSetCallbackResults => 
                                                                                         {
-                                                                                            callbackResults.SetResult(registerActionEventsCallbackResults);
+                                                                                            callbackResults.SetResult(cancelMethodSetCallbackResults);
 
-                                                                                        }, onRetryButtonEvent);
+                                                                                            if (callbackResults.Success())
+                                                                                            {
+                                                                                                onCancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, cancelActionSetCallbackResults =>
+                                                                                                {
+                                                                                                    callbackResults.SetResult(cancelActionSetCallbackResults);
+
+                                                                                                    if (callbackResults.Success())
+                                                                                                    {
+                                                                                                        networkNotificationWidget.RegisterActionButtonListeners(registerActionEventsCallbackResults =>
+                                                                                                        {
+                                                                                                            callbackResults.SetResult(registerActionEventsCallbackResults);
+
+                                                                                                        }, onRetryButtonEvent, onCancelButtonEvent);
+                                                                                                    }
+                                                                                                    else
+                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                });
+                                                                                            }
+                                                                                            else
+                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                        });
                                                                                     }
                                                                                     else
                                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -435,6 +456,32 @@ namespace Com.RedicalGames.Filar
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        private void OnNetworkFailedCancelEvent()
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    screen.Blur(AppData.ScreenUIPlacementType.Default, screenBluredCallbackResults => 
+                    {
+                        callbackResults.SetResult(screenBluredCallbackResults);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

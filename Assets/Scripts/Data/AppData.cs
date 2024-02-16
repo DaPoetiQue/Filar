@@ -35071,18 +35071,6 @@ namespace Com.RedicalGames.Filar
                         GetScreenBlur().GetData().Show(placementType);
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                    //if (dataPackets.blurScreen)
-                    //{
-
-
-                    //    if (dataPackets.screenViewState == ScreenViewState.None)
-                    //        dataPackets.screenViewState = ScreenViewState.Blurred;
-
-                    //    ActionEvents.OnScreenViewStateChangedEvent(dataPackets.screenViewState);
-                    //}
-                    //else
-                    //    screenBlur.Hide();
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
