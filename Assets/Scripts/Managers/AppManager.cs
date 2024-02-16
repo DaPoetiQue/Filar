@@ -423,13 +423,6 @@ namespace Com.RedicalGames.Filar
                 var downloadInitialPostContentAsyncCallbackResultsTask = await appDatabaseManagerInstance.DownloadInitialPostContentAsync(AppData.ScreenType.LandingPageScreen);
 
                 callbackResults.SetResult(downloadInitialPostContentAsyncCallbackResultsTask);
-
-                if(callbackResults.Success())
-                {
-                    LogInfo("", this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

@@ -6780,6 +6780,8 @@ namespace Com.RedicalGames.Filar
                                                                 else
                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                             break;
 
@@ -6787,21 +6789,42 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability));
+                                                                callbackResults.SetResult(screenUIManager.GetCurrentScreen());
 
-                                                                if (callbackResults.Success())
+                                                                if(callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).GetData().GetMessage());
-                                                                    callbackResults = await appManager.GetCompatibilityStatusAsync();
+                                                                    var screen = screenUIManager.GetCurrentScreen().GetData();
+
+                                                                    screen.ShowWidget(WidgetType.LoadingWidget, async widgetShownCallbackResults => 
+                                                                    {
+                                                                        callbackResults.SetResult(widgetShownCallbackResults);
+
+                                                                        if(callbackResults.Success())
+                                                                        {
+                                                                            callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability));
+
+                                                                            if (callbackResults.Success())
+                                                                            {
+                                                                                messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).GetData().GetMessage());
+                                                                                callbackResults = await appManager.GetCompatibilityStatusAsync();
+                                                                            }
+                                                                            else
+                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                                            if (callbackResults.Success())
+                                                                                OnCompletition();
+                                                                            else
+                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    });
                                                                 }
                                                                 else
                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                                                if (callbackResults.Success())
-                                                                    OnCompletition();
-                                                                else
-                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                             break;
 
@@ -6856,6 +6879,8 @@ namespace Com.RedicalGames.Filar
                                                                     LogInfo($" <+++++++++++++++++++++++++++++++++++++++++++++==========> App Sign In Failed  - Show Sign In Failed Error Pop Up", this);
                                                                 }
                                                             }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                             break;
 

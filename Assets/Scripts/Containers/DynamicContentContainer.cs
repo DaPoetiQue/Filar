@@ -144,10 +144,13 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            screen.ShowWidget(AppData.WidgetType.LoadingWidget,  widgetShownCallbackResults =>
+                                            if (showSpinner)
                                             {
-                                                callbackResults.SetResult(widgetShownCallbackResults);
-                                            });
+                                                screen.ShowWidget(AppData.WidgetType.LoadingWidget, widgetShownCallbackResults =>
+                                               {
+                                                   callbackResults.SetResult(widgetShownCallbackResults);
+                                               });
+                                            }
 
                                             await Task.Delay(AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(refreshDuration));
                                         }

@@ -4505,7 +4505,7 @@ namespace Com.RedicalGames.Filar
                     {
                         var container = containerCallbackResults.GetData();
 
-                        var clearContainerCallbackResultsTask = await container.ClearAsync();
+                        var clearContainerCallbackResultsTask = await container.ClearAsync(showSpinner: false);
 
                         callbackResults.SetResult(clearContainerCallbackResultsTask);
 
