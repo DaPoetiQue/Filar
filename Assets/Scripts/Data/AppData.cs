@@ -20893,19 +20893,22 @@ namespace Com.RedicalGames.Filar
                             callbackResults.SetResult(inputStateUpdatedCallbackResults);
                         });
 
-                        callbackResults.SetResult(GetFieldInput(InputActionButtonType.ConcealFieldButton));
+                        if (concealField)
+                        {
+                            callbackResults.SetResult(GetFieldInput(InputActionButtonType.ConcealFieldButton));
 
-                        if (callbackResults.Success())
-                        {
-                            GetFieldInput(InputActionButtonType.ConcealFieldButton).GetData().SetUIInputState(InputUIState.Enabled, inputStateUpdatedCallbackResults =>
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(inputStateUpdatedCallbackResults);
-                            });
-                        }
-                        else
-                        {
-                            callbackResults.result = $"Field Input : {GetName()} Doesn't Contain A Conceal Field Button - Continuing Execution.";
-                            callbackResults.resultCode = Helpers.SuccessCode;
+                                GetFieldInput(InputActionButtonType.ConcealFieldButton).GetData().SetUIInputState(InputUIState.Enabled, inputStateUpdatedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(inputStateUpdatedCallbackResults);
+                                });
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Field Input : {GetName()} Doesn't Contain A Conceal Field Button - Continuing Execution.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
                         }
                     }
                     else
@@ -20915,19 +20918,22 @@ namespace Com.RedicalGames.Filar
                             callbackResults.SetResult(inputStateUpdatedCallbackResults);
                         });
 
-                        callbackResults.SetResult(GetFieldInput(InputActionButtonType.ConcealFieldButton));
+                        if (concealField)
+                        {
+                            callbackResults.SetResult(GetFieldInput(InputActionButtonType.ConcealFieldButton));
 
-                        if (callbackResults.Success())
-                        {
-                            GetFieldInput(InputActionButtonType.ConcealFieldButton).GetData().SetUIInputState(InputUIState.Disabled, inputStateUpdatedCallbackResults =>
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(inputStateUpdatedCallbackResults);
-                            });
-                        }
-                        else
-                        {
-                            callbackResults.result = $"Field Input : {GetName()} Doesn't Contain A Conceal Field Button - Continuing Execution.";
-                            callbackResults.resultCode = Helpers.SuccessCode;
+                                GetFieldInput(InputActionButtonType.ConcealFieldButton).GetData().SetUIInputState(InputUIState.Disabled, inputStateUpdatedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(inputStateUpdatedCallbackResults);
+                                });
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Field Input : {GetName()} Doesn't Contain A Conceal Field Button - Continuing Execution.";
+                                callbackResults.resultCode = Helpers.SuccessCode;
+                            }
                         }
                     }
                 }
