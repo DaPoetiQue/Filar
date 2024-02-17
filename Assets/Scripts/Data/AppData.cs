@@ -26,6 +26,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using System.Globalization;
 
 namespace Com.RedicalGames.Filar
@@ -52,6 +53,12 @@ namespace Com.RedicalGames.Filar
             MTLFile,
             Image,
             HDRI
+        }
+
+        public enum SceneEnvironmentType
+        {
+            None,
+            Standard
         }
 
         public enum CredentialStatusInfo
@@ -1379,6 +1386,356 @@ namespace Com.RedicalGames.Filar
             All,
             EventActions,
             ParameterEventActions
+        }
+
+        #endregion
+
+        #region Scene Manager
+
+        [Serializable]
+        public class SceneEnvironment : DataDebugger
+        {
+            #region Components
+
+            [Space(5)]
+            [SerializeField]
+            public UnityEngine.Object environment;
+
+            [Space(5)]
+            [SerializeField]
+            private SceneEnvironmentType type = SceneEnvironmentType.None;
+
+            [Space(5)]
+            [SerializeField]
+            private ScreenType screenType = ScreenType.None;
+
+            [Space(5)]
+            [SerializeField]
+            private UIVisibilityState initialVisibilityState = UIVisibilityState.None;
+
+            [Space(5)]
+            [SerializeField]
+            private bool includeScene = false;
+
+            #endregion
+
+            #region Main
+
+            public Callback IsLoaded()
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetEnvironment());
+
+                    if(callbackResults.Success())
+                    {
+                        if(GetEnvironment().GetData().isLoaded)
+                        {
+                            callbackResults.result = $"Scene Environment : {GetName()} Is Loaded.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Scene Environment : {GetName()} Is Not Loaded.";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #region Data Getters
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(GetEnvironment());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetType());
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetInitialVisibilityState());
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<string> GetEnvironmentName()
+            {
+                var callbackResults = new CallbackData<string>(Initialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Environment Name Success - Environment Name For : {GetName()} Is Set To : {GetEnvironment().GetData().name}";
+                    callbackResults.data = GetEnvironment().GetData().name;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<int> GetEnvironemtBuildIndex()
+            {
+                var callbackResults = new CallbackData<int>(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Environment Build Index Success - Environment Build Index For : {GetEnvironmentName().GetData()} Is Set To : {GetEnvironment().GetData().buildIndex}";
+                    callbackResults.data = GetEnvironment().GetData().buildIndex;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public Callback IncludeScene()
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Include Scene Success - Include Scene State Is Set To : {includeScene}";
+                    callbackResults.resultCode = includeScene ? Helpers.SuccessCode : Helpers.WarningCode;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<UIVisibilityState> GetInitialVisibilityState()
+            {
+                var callbackResults = new CallbackData<UIVisibilityState>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(type, "Type", $"Get Initial Visibility State Failed - Initial Visibility State Is set To Default : {initialVisibilityState} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Initial Visibility State Success - Initial Visibility State Is set To : {initialVisibilityState}.";
+                    callbackResults.data = initialVisibilityState;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<Scene> GetEnvironment()
+            {
+                var callbackResults = new CallbackData<Scene>();
+
+                //if (scene.IsValid())
+                //{
+                //    callbackResults.result = $"Get Environment Success - Environment : {GetName()} Is Valid.";
+                //    callbackResults.data = scene;
+                //    callbackResults.resultCode = Helpers.SuccessCode;
+                //}
+                //else
+                //{
+                //    callbackResults.result = $"Get Environment Failed - Environment : {GetName()} Is Not Valid - Invalid Operation.";
+                //    callbackResults.data = default;
+                //    callbackResults.resultCode = Helpers.ErrorCode;
+                //}
+
+                return callbackResults;
+            }
+
+            public new CallbackData<SceneEnvironmentType> GetType()
+            {
+                var callbackResults = new CallbackData<SceneEnvironmentType>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(type, "Type", $"Get Type Failed - Type Is set To Default : {type} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Type Success - Type Is set To : {type}.";
+                    callbackResults.data = type;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public new CallbackData<ScreenType> GetScreenType()
+            {
+                var callbackResults = new CallbackData<ScreenType>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(screenType, "Screen Type", $"Get Screen Type Failed - Screen Type Is set To Default : {screenType} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Screen Type Success - Screen Type Is set To : {screenType}.";
+                    callbackResults.data = screenType;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class SceneEnvironmentLibrary : DataDebugger
+        {
+            #region Components
+
+            [SerializeField]
+            private List<SceneEnvironment> sceneEnvironments;
+
+            #endregion
+
+            #region Main
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(GetIncludedSceneEnvironments());
+
+                if (callbackResults.Success())
+                    callbackResults.result = $"Scene Environment Library Has Been Initialized With : {GetIncludedSceneEnvironments().GetData().Count} Scene Environments.";
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<SceneEnvironment> GetSceneEnvironment(SceneEnvironmentType type)
+            {
+                var callbackResults = new CallbackData<SceneEnvironment>(GetSceneEnvironments());
+
+                if (callbackResults.Success())
+                {
+                    var selectedEnvironment = GetSceneEnvironments().GetData().Find(environment => environment.GetType().GetData() == type);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(selectedEnvironment, "Selected Environment", $"Get Scene Environment Failed - Selected Environment Of Type : {type} Could Not Be Found In Selected Environments - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(selectedEnvironment.IncludeScene());
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.result = $"Get Scene Environment Success - Scene Environment Of Type : {type} Have Been Found.";
+                            callbackResults.data = selectedEnvironment;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Get Scene Environment Failed - Scene Environment Of Type : {type} Have Been Found But It Is Not Included.";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<SceneEnvironment> GetSceneEnvironments()
+            {
+                var callbackResults = new CallbackDataList<SceneEnvironment>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(sceneEnvironments, "Scene Environments", "Get Scene Environments Failed - There Are No Scene Environments Assigned In The Unity Editor Inspector Panel - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Scene Environments Success - {sceneEnvironments.Count} Scene Environments Have Been Found.";
+                    callbackResults.data = sceneEnvironments;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<SceneEnvironment> GetIncludedSceneEnvironments()
+            {
+                var callbackResults = new CallbackDataList<SceneEnvironment>(GetSceneEnvironments());
+
+                if (callbackResults.Success())
+                {
+                    var includedSceneEnvironments = GetSceneEnvironments().GetData().FindAll(environment => environment.IncludeScene().Success());
+
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(includedSceneEnvironments, "Included Scene Environments", "Get Included Scene Environments Failed - There Are No Included Scene Environments Assigned In The Unity Editor Inspector Panel - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Included Scene Environments Success - {includedSceneEnvironments.Count} Included Scene Environments Have Been Found.";
+                        callbackResults.data = includedSceneEnvironments;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<SceneEnvironment> GetLoadedSceneEnvironments()
+            {
+                var callbackResults = new CallbackDataList<SceneEnvironment>(GetIncludedSceneEnvironments());
+
+                if (callbackResults.Success())
+                {
+                    var includedSceneEnvironments = GetIncludedSceneEnvironments().GetData().FindAll(environment => environment.IsLoaded().Success());
+
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(includedSceneEnvironments, "Loaded Scene Environments", "Get Loaded Scene Environments Failed - There Are No Loaded Scene Environments Found - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Loaded Scene Environments Success - {includedSceneEnvironments.Count} Loaded Scene Environments Have Been Found.";
+                        callbackResults.data = includedSceneEnvironments;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<SceneEnvironment> GetSceneEnvironmentsForScreen(ScreenType screenType)
+            {
+                var callbackResults = new CallbackDataList<SceneEnvironment>(GetIncludedSceneEnvironments());
+
+                if (callbackResults.Success())
+                {
+                    var sceneEnvironmentsForScreen = GetIncludedSceneEnvironments().GetData().FindAll(environment => environment.GetScreenType().GetData() == screenType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(sceneEnvironmentsForScreen, "Scene Environments For Screen", $"Get Scene Environments For Screen Failed - There Are No Loaded Scene Environments For Screen : {screenType} Found - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Scene Environments For screen Success - There Are {sceneEnvironmentsForScreen.Count} Loaded Scene Environments For Screen : {screenType}.";
+                        callbackResults.data = sceneEnvironmentsForScreen;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
         }
 
         #endregion
