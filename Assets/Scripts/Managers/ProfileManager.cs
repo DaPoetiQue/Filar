@@ -25,6 +25,7 @@ namespace Com.RedicalGames.Filar
 
         #region Firebase
 
+        FirebaseUser user;
         FirebaseAuth authentication;
 
         public bool TermsAndConditionsAccepted { get; private set; }
@@ -436,8 +437,13 @@ namespace Com.RedicalGames.Filar
                     {
                         if (authDependencyStatus == DependencyStatus.Available)
                         {
+                            #region Auth
+
                             authentication = FirebaseAuth.DefaultInstance;
+                            user = authentication.CurrentUser;
                             authentication.StateChanged += AuthenticationStateChangeEvent;
+
+                            #endregion
                         }
                         else
                             LogInfo($"Authentication Dependency Is Not Available - Dependency Status : {authDependencyStatus}", this);
@@ -669,44 +675,113 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public async Task<AuthError> SignUpAsync(string userEmail, string userPassWord)
+        public async Task<AppData.CallbackData<AuthError>> SignUpAsync(AppData.Profile profile)
         {
-            AuthError authError = AuthError.None;
+            var callbackResults = new AppData.CallbackData<AuthError>(AppData.Helpers.GetAppComponentValid(profile, "Profile", "Sign Up async Failed - Profile Parameter Value Is Null - Invalid Operation."));
 
             try
             {
                 if (authDependencyStatus == DependencyStatus.Available)
                 {
-                    await authentication.CreateUserWithEmailAndPasswordAsync(userEmail, userPassWord).ContinueWith(async signedUpTaskCompletion =>
+                    await authentication.CreateUserWithEmailAndPasswordAsync(profile.GetUserEmail().GetData(), profile.GetUserPassword().GetData()).ContinueWith(async signedUpTaskCompletion =>
                     {
                         if (signedUpTaskCompletion.Exception == null)
                         {
                             if (signedUpTaskCompletion.Result.User.IsValid())
                             {
-                                LogSuccess($" <+++++++++++++++++++++> User : {userEmail} Has Been Created Successfully. Choose Varification Method.", this);
+                                await signedUpTaskCompletion.Result.User.SendEmailVerificationAsync().ContinueWith(emailVerificationCallbackResults => 
+                                {
+                                    if(emailVerificationCallbackResults.IsCompletedSuccessfully)
+                                    {
+                                        callbackResults.result = $"User : {profile.GetUserEmail().GetData()} Has Been Created Successfully. A Verification Email Has Been sent.";
+                                        callbackResults.data = default;
+                                    }
+                                    else
+                                    {
+                                        if (emailVerificationCallbackResults.IsCanceled)
+                                        {
+                                            callbackResults.result = $"User : {profile.GetUserEmail().GetData()} Sign Up Has Been Cancelled By User.";
+                                            callbackResults.data = default;
+                                            callbackResults.resultCode = AppData.Helpers.WarningCode;
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"User : {profile.GetUserEmail().GetData()} Is Not Valid";
+                                            callbackResults.data = default;
+                                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                        }
+                                    }
+                                });
+
+                                return callbackResults;
                             }
                             else
-                                LogWarning($"User : {userEmail} Is Not Valid", this);
+                            {
+                                callbackResults.result = $"User : {profile.GetUserEmail().GetData()} Is Not Valid";
+                                callbackResults.data = default;
+                                callbackResults.resultCode = AppData.Helpers.WarningCode;
+                            }
                         }
                         else
                         {
                             FirebaseException fbException = signedUpTaskCompletion.Exception.GetBaseException() as FirebaseException;
-                            authError = (AuthError)fbException.ErrorCode;
+
+                            callbackResults.result = $"Sign Up User Profile : {profile.GetUserEmail().GetData()} Failed With Exception : {fbException.Message}";
+                            callbackResults.data = (AuthError)fbException.ErrorCode;
+                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
                         }
 
-                        return authError;
+                        return callbackResults;
                     });
                 }
 
-                return authError;
+                return callbackResults;
             }
             catch (Exception exception)
             {
                 FirebaseException fbException = exception.GetBaseException() as FirebaseException;
                 var errorCode = (AuthError)fbException.ErrorCode;
 
-                return errorCode;
+                callbackResults.result = $"Sign Up User Profile : {profile.GetUserEmail().GetData()} Failed With Exception : {fbException.Message}";
+                callbackResults.data = errorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+
+                return callbackResults;
             }
+        }
+
+        public AppData.Callback UserEmailVerified()
+        {
+            var callbackResults = new AppData.Callback(GetCurrentUser());
+
+            if(callbackResults.Success())
+            {
+                if(GetCurrentUser().GetData().IsEmailVerified)
+                {
+                    callbackResults.result = $"User : {GetCurrentUser().GetData().Email} Has Been Successfully Verified.";
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"User : {GetCurrentUser().GetData().Email} Has Not Been Verified Yet.";
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+                }
+            }
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackData<FirebaseUser> GetCurrentUser()
+        {
+            var callbackResults = new AppData.CallbackData<FirebaseUser>(AppData.Helpers.GetAppComponentValid(user, "User", "Get Current Failed - User Is not Found - Invalid Operation"));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"User : {user.Email} Has Been Successfully Found.";
+                callbackResults.data = user;
+            }
+
+            return callbackResults;
         }
 
         public void SignOut()

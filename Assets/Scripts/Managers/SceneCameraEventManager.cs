@@ -364,8 +364,6 @@ namespace Com.RedicalGames.Filar
                 callbackResults.result = $"Get Focused Screen Success -Focused Screen : {screen.GetName()} - Of Typ : {screen.GetType().GetData()} Has Been Successfully Found.";
                 callbackResults.data = screen;
             }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             return callbackResults;
         }
