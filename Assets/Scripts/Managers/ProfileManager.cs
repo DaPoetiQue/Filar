@@ -750,22 +750,34 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-        public AppData.Callback UserEmailVerified()
+        public async Task<AppData.Callback> UserEmailVerified()
         {
             var callbackResults = new AppData.Callback(GetCurrentUser());
 
             if(callbackResults.Success())
             {
-                if(GetCurrentUser().GetData().IsEmailVerified)
+                await GetCurrentUser().GetData().ReloadAsync().ContinueWith(reloadedTaskResults => 
                 {
-                    callbackResults.result = $"User : {GetCurrentUser().GetData().Email} Has Been Successfully Verified.";
-                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                }
-                else
-                {
-                    callbackResults.result = $"User : {GetCurrentUser().GetData().Email} Has Not Been Verified Yet.";
-                    callbackResults.resultCode = AppData.Helpers.WarningCode;
-                }
+                    if (reloadedTaskResults.IsCompletedSuccessfully)
+                    {
+                        if (GetCurrentUser().GetData().IsEmailVerified)
+                        {
+
+                            callbackResults.result = $"User Email : {GetCurrentUser().GetData().Email} Has Been Successuffly Verified.";
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"User Email : {GetCurrentUser().GetData().Email} Has Not Been Verified Yet.";
+                            callbackResults.resultCode = AppData.Helpers.WarningCode;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = $"User Email Verified Failed - Couldn't Refresh : {GetCurrentUser().GetData().Email}.";
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                    }
+                });
             }
 
             return callbackResults;

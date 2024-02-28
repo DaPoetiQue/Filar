@@ -53,6 +53,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Widget
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 23b5671c6706dca428babdc1a95745a7
+    m_Address: Notifications Pop Up Widget
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Widget
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:

@@ -223,7 +223,8 @@ namespace Com.RedicalGames.Filar
             ImageDisplayerWidget,
             TitleDisplayerWidget,
             ProjectHubWidget,
-            ProjectCreationWidget
+            ProjectCreationWidget,
+            ScreenNotificationPopUpWidget
         }
 
         public enum UIComponentType

@@ -340,13 +340,15 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            screen.HideScreenWidget(AppData.WidgetType.LoadingWidget, false, widgtHiddenCallbackResults =>
+                                            screen.HideScreenWidget(AppData.WidgetType.LoadingWidget, false, async widgtHiddenCallbackResults =>
                                             {
                                                 callbackResults.SetResult(widgtHiddenCallbackResults);
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    callbackResults.SetResult(profileManagerInstance.UserEmailVerified());
+                                                    var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
+
+                                                    callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
 
                                                     if (callbackResults.UnSuccessful())
                                                     {
@@ -354,7 +356,7 @@ namespace Com.RedicalGames.Filar
 
                                                         var confirmationConfigDatapacket = new AppData.SceneConfigDataPacket();
 
-                                                        confirmationConfigDatapacket.SetReferencedWidgetType(AppData.WidgetType.ConfirmationPopUpWidget);
+                                                        confirmationConfigDatapacket.SetReferencedWidgetType(AppData.WidgetType.ScreenNotificationPopUpWidget);
                                                         confirmationConfigDatapacket.SetScreenBlurState(true);
                                                         confirmationConfigDatapacket.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.ForeGround);
 
@@ -366,11 +368,49 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.ConfirmationPopUpWidget));
+                                                                callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget));
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    var widget = screen.GetWidget(AppData.WidgetType.ConfirmationPopUpWidget).GetData();
+                                                                    var widget = screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget).GetData();
+
+                                                                    widget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, "Email Verification", verificationTitleSetCallbackResults => 
+                                                                    {
+                                                                        callbackResults.SetResult(verificationTitleSetCallbackResults);
+
+                                                                        if(callbackResults.Success())
+                                                                        {
+                                                                            string verificationMessage = $"A verification email has been sent to {userProfile.GetUserEmail().GetData()}. Please follow the link sent to your email address to complete.";
+
+                                                                            widget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, verificationMessage, verificationMessageSetCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(verificationMessageSetCallbackResults);
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
+
+                                                                                    if (callbackResults.Success())
+                                                                                    {
+                                                                                        var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name).GetData();
+
+                                                                                        timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                                                                                        timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
+                                                                                        {
+                                                                                            callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
+                                                                                        });
+                                                                                    }
+                                                                                    else
+                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    });
                                                                 }
                                                                 else
                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -418,7 +458,7 @@ namespace Com.RedicalGames.Filar
 
                                                             #endregion
 
-                                                            screen.ShowWidget(confirmationConfigDatapacket, showConfirmationWidgetCallbackResults =>
+                                                            screen.ShowWidget(confirmationConfigDatapacket, async showConfirmationWidgetCallbackResults =>
                                                             {
                                                                 callbackResults.SetResult(showConfirmationWidgetCallbackResults);
 
@@ -428,7 +468,9 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        callbackResults.SetResult(profileManagerInstance.UserEmailVerified());
+                                                                        var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
+
+                                                                        callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);;
 
                                                                         if (callbackResults.Success())
                                                                         {
@@ -607,6 +649,85 @@ namespace Com.RedicalGames.Filar
                     {
                         callbackResults.SetResult(screenBluredCallbackResults);
                     });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        private async void OnUserEmailVerificationCheckEvent()
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
+
+                callbackResults.SetResult(profileManagerInstance.GetCurrentUser());
+
+                if (callbackResults.Success())
+                {
+                    var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
+
+                    callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+
+                        if (callbackResults.Success())
+                        {
+                            var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                            callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                            if (callbackResults.Success())
+                            {
+                                var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                                screen.HideScreenWidget(AppData.WidgetType.ScreenNotificationPopUpWidget, false, screenNotificationHiddenCallbackResults => 
+                                {
+                                    callbackResults.SetResult(screenNotificationHiddenCallbackResults);
+
+                                    if(callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name).GetData();
+
+                                            timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                                            timeManager.CancelEvent("On User Email Verification Check Event", cancelUserEmailVerificationCheckEventCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(cancelUserEmailVerificationCheckEventCallbackResults);
+
+                                                if(callbackResults.Success())
+                                                {
+
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

@@ -288,7 +288,7 @@ RectTransform:
   - {fileID: 3621854200656159501}
   - {fileID: 3621854201068731505}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -352,6 +352,12 @@ MonoBehaviour:
     constriants: []
   - name: Network Warning pop up
     referenceType: 12
+    uIPlacementType: 2
+    containerType: 14
+    initialVisibilityState: 2
+    constriants: []
+  - name: Screen Notifications pop up
+    referenceType: 40
     uIPlacementType: 2
     containerType: 14
     initialVisibilityState: 2
