@@ -224,7 +224,8 @@ namespace Com.RedicalGames.Filar
             TitleDisplayerWidget,
             ProjectHubWidget,
             ProjectCreationWidget,
-            ScreenNotificationPopUpWidget
+            ScreenNotificationPopUpWidget,
+            SuccessNotificationPopUpWidget
         }
 
         public enum UIComponentType
@@ -283,8 +284,11 @@ namespace Com.RedicalGames.Filar
         {
             None,
             NetworkWarningMessage,
-            VarificationMessage,
-            UpdateMessage
+            EmailVerificationSentMessage,
+            ContactFilarMessage,
+            SignUpCompletedMessage,
+            NewAppUpdatesMessage,
+
         }
 
         public enum InputActionButtonType
@@ -27884,6 +27888,33 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            public void InvokeTransition(object transitionData, float eventTriggerDistance, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    SetTransitionDestination(transitionData);
+
+                    SubscribeToEvents(subscribedToEventCallbackResults =>
+                    {
+                        callbackResults.SetResult(subscribedToEventCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            SetTransitionEventTriggerDistance(eventTriggerDistance);
+                            SetCanTransition(true);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
             #region Invoke With Trigger Distance
 
             public void InvokeTransition(float eventTriggerDistance, Action<Callback> callback = null)
@@ -42279,20 +42310,37 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        GetTabViewComponent().GetData().SelectTab(viewType, tabSelectedCallbackResults =>
-                        {
-                            callbackResults.SetResult(tabSelectedCallbackResults);
+                        callbackResults.SetResult(GetTabViewComponent().GetData().GetActiveViewType());
 
-                            if(callbackResults.Success())
+                        if (callbackResults.Success())
+                        {
+                            var previousTabViewType = GetTabViewComponent().GetData().GetActiveViewType().GetData();
+
+                            GetTabViewComponent().GetData().SelectTab(viewType, tabSelectedCallbackResults =>
                             {
-                                GetTabViewComponent().GetData().SetActiveTabViewType(viewType, viewTypeSetCallbackResults => 
+                                callbackResults.SetResult(tabSelectedCallbackResults);
+
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(viewTypeSetCallbackResults);
-                                });
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
+                                    GetTabViewComponent().GetData().SetActiveTabViewType(viewType, viewTypeSetCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(viewTypeSetCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            GenericActionEvents<TabView<WidgetType>>.OnTabViewHiddenEvent(GetTabViewComponent().GetData().GetTabView(previousTabViewType).GetData());
+                                            GenericActionEvents<TabView<WidgetType>>.OnTabViewShownEvent(GetTabViewComponent().GetData().GetTabView(viewType).GetData());
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -42303,8 +42351,57 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            #endregion
+            protected async Task<Callback> SelectTabViewAsync(TabViewType viewType)
+            {
+                var callbackResults = new Callback(GetTabViewComponent());
 
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTabViewComponent().GetData().IsInitialized());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetTabViewComponent().GetData().GetActiveViewType());
+
+                        if (callbackResults.Success())
+                        {
+                            var previousTabViewType = GetTabViewComponent().GetData().GetActiveViewType().GetData();
+
+                            var selectTabAsyncCallbackResultsTask = await GetTabViewComponent().GetData().SelectTabAsync(viewType);
+
+                            callbackResults.SetResult(selectTabAsyncCallbackResultsTask);
+
+                            if (callbackResults.Success())
+                            {
+                                GetTabViewComponent().GetData().SetActiveTabViewType(viewType, viewTypeSetCallbackResults =>
+                                {
+                                    callbackResults.SetResult(viewTypeSetCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        GenericActionEvents<TabView<WidgetType>>.OnTabViewHiddenEvent(GetTabViewComponent().GetData().GetTabView(previousTabViewType).GetData());
+                                        GenericActionEvents<TabView<WidgetType>>.OnTabViewShownEvent(GetTabViewComponent().GetData().GetTabView(viewType).GetData());
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
 
             #region Action Events
 
@@ -45080,6 +45177,10 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
+            private float transitionEventTriggerDistance = 0.5f;
+
+            [Space(5)]
+            [SerializeField]
             private TabViewType activeTabViewType = TabViewType.None;
 
             [Space(5)]
@@ -45594,7 +45695,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-
             protected CallbackData<TransitionableUIComponent> GetTransitionableUIComponent()
             {
                 var callbackResults = new CallbackData<TransitionableUIComponent>(Helpers.GetAppComponentValid(transitionableUIComponent, "Transitionable UI Component", $"Transitionable UI Component For Tab View Component : {GetName()} - Has Not Been Initialized - Please Check Here - Invalid Operatione."));
@@ -45707,6 +45807,127 @@ namespace Com.RedicalGames.Filar
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
+            }
+
+            public async Task<Callback> SelectTabAsync(TabViewType viewType)
+            {
+                var callbackResults = new Callback(IsInitialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(IsNotActiveView(viewType));
+
+                    if (callbackResults.Success())
+                    {
+                        SetActiveTabViewType(viewType, activeViewSelectedCallbackResults =>
+                        {
+                            callbackResults.SetResult(activeViewSelectedCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                var tabViews = GetTabViewList().GetData();
+
+                                switch (GetTransitionType().GetData())
+                                {
+                                    case TransitionType.Default:
+
+                                        for (int i = 0; i < tabViews.Count; i++)
+                                        {
+                                            if (tabViews[i].GetType().GetData() == viewType)
+                                            {
+                                                tabViews[i].ShowTab(tabShownCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(tabShownCallbackResults);
+                                                });
+                                            }
+                                            else
+                                            {
+                                                tabViews[i].HideTab(tabHiddenCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(tabHiddenCallbackResults);
+                                                });
+                                            }
+                                        }
+
+                                        break;
+
+                                    case TransitionType.Translate:
+
+                                        callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                            callbackResults.SetResult(GetTabViewTransitionInfo(viewType));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var tabInfo = GetTabViewTransitionInfo(viewType).GetData();
+
+                                                callbackResults.SetResult(GetTabLayout());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        callbackResults.SetResult(GetTransitionEventTriggerDistance());
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            transitionalComponent.InvokeTransition(tabInfo, GetTransitionEventTriggerDistance().GetData(), invokedTransitionCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(invokedTransitionCallbackResults);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        break;
+                                }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(GetTransitionableUIComponent());
+
+                            if (callbackResults.Success())
+                            {
+                                while (GetTransitionableUIComponent().GetData().HasCompletedTransition(UITransitionType.Translate).UnSuccessful())
+                                    await Task.Yield();
+
+                                callbackResults.SetResult(GetTransitionableUIComponent().GetData().HasCompletedTransition(UITransitionType.Translate));
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
             }
 
             public void RegisterTab(TabView<T> tab, Action<Callback> callback = null)
@@ -45848,7 +46069,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-
             public CallbackData<TabViewType> GetActiveViewType()
             {
                 var callbackResults = new CallbackData<TabViewType>();
@@ -45921,7 +46141,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-
             public CallbackData<TabView<T>> GetTabView(TabViewType viewType)
             {
                 var callbackResults = new CallbackData<TabView<T>>(GetTabViewList());
@@ -45993,6 +46212,19 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private CallbackData<float> GetTransitionEventTriggerDistance()
+            {
+                var callbackResults = new CallbackData<float>(IsInitialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Transition Event Trigger Distance Is Set To : {transitionEventTriggerDistance}";
+                    callbackResults.data = transitionEventTriggerDistance;
+                }
 
                 return callbackResults;
             }
@@ -57331,7 +57563,11 @@ namespace Com.RedicalGames.Filar
             OnSelectableWidgetTransitionInProgressEvent,
             OnActionButtonPressedEvent,
             OnPostSelectedEvent,
-            OnNetworkConnectedEvent
+            OnNetworkConnectedEvent,
+            OnShowTabViewEvent,
+            OnShowTabViewAsyncEvent,
+            OnTabViewShownEvent,
+            OnTabViewHiddenEvent
         }
 
         public enum TransitionableEventType
@@ -58434,7 +58670,6 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<T> _OnWidgetHiddenEvent;
             public static event ParamVoid<T> _OnWidgetTransitionInProgressEvent;
 
-
             public static event ParamVoid<T> _OnTabViewShownEvent;
             public static event ParamVoid<T> _OnTabViewHiddenEvent;
             public static event ParamVoid<T> _OnTabViewTransitionInProgressEvent;
@@ -58568,6 +58803,9 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<FocusedSelectionData> _OnWidgetsSelectionDataEvent;
             public static event ParamVoid<FocusedSelectionInfo<SceneConfigDataPacket>> _OnWidgetSelectionDataEvent;
 
+            public static event ParamVoid<TabViewType> _OnShowTabViewEvent;
+            public static event ParamVoid<TabViewType, Action<Callback>> _OnShowTabViewAsyncEvent;
+
             public static event ParamVoid<ButtonConfigDataPacket> _OnActionButtonPressedEvent;
             public static event ParamVoid<string, InputFieldConfigDataPacket> _OnInputFieldValueChanged;          
             public static event ParamVoid<bool, CheckboxConfigDataPacket> _OnCheckboxValueChanged;
@@ -58654,6 +58892,9 @@ namespace Com.RedicalGames.Filar
             public static void OnAllWidgetsSelectionEvent(bool currentPage = false) => _OnAllWidgetsSelectionEvent?.Invoke(currentPage);
             public static void OnWidgetSelectionEvent(FocusedSelectionInfo<SceneConfigDataPacket> selectionInfo) => _OnWidgetSelectionDataEvent?.Invoke(selectionInfo);
             public static void OnWidgetsSelectionEvent(FocusedSelectionData selectionData) => _OnWidgetsSelectionDataEvent?.Invoke(selectionData);
+
+            public static void OnShowTabViewEvent(TabViewType viewType) => _OnShowTabViewEvent?.Invoke(viewType);
+            public static void OnShowTabViewAsyncEvent(TabViewType viewType, Action<Callback> callback = null) => _OnShowTabViewAsyncEvent?.Invoke(viewType, callback);
 
             public static void OnActionButtonPressedEvent(ButtonConfigDataPacket buttonConfig) => _OnActionButtonPressedEvent?.Invoke(buttonConfig);
             public static void OnInputFieldValueChanged(string value, InputFieldConfigDataPacket inputFieldConfig) => _OnInputFieldValueChanged?.Invoke(value, inputFieldConfig);

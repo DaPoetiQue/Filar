@@ -91,15 +91,26 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public AppData.CallbackData<string> GetMessage()
+        public AppData.CallbackData<string> GetMessage(string replace = null)
         {
             var callbackResults = new AppData.CallbackData<string>();
 
             if (!string.IsNullOrEmpty(message))
             {
-                callbackResults.result = $"Message For : {GetName()} - Has Been Successfully Set To : {message}";
-                callbackResults.data = message;
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                if (!string.IsNullOrEmpty(replace))
+                {
+                    var newMessage = message.Replace("[0]", replace);
+
+                    callbackResults.result = $"Message For : {GetName()} - Has Been Successfully Set To : {newMessage}";
+                    callbackResults.data = newMessage;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Message For : {GetName()} - Has Been Successfully Set To : {message}";
+                    callbackResults.data = message;
+                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                }
             }
             else
             {

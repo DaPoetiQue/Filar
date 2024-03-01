@@ -197,6 +197,86 @@ namespace Com.RedicalGames.Filar
                                 AppData.GenericActionEvents<T>._OnPostSelectedEvent -= eventMethod.Invoke;
 
                             break;
+
+                        case AppData.EventType.OnTabViewShownEvent:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnTabViewShownEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnTabViewShownEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnTabViewHiddenEvent:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnTabViewHiddenEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnTabViewHiddenEvent -= eventMethod.Invoke;
+
+                            break;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void OnEventSubscription(Action<AppData.TabViewType> eventMethod, AppData.EventType eventType, bool subscribe = true, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", "On Event Subscription Failed - Event Menthod Parameter Value Is Not Assigned."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(eventType, "Timed Event Type", $"On Event Subscription Failed - Typed Event Parameter Value Is Set To Default : {eventType}"));
+
+                if (callbackResults.Success())
+                {
+                    switch (eventType)
+                    {
+                        case AppData.EventType.OnShowTabViewEvent:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnShowTabViewEvent += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnShowTabViewEvent -= eventMethod.Invoke;
+
+                            break;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void OnEventSubscription(Action<AppData.TabViewType, Action<AppData.Callback>> eventMethod, AppData.EventType eventType, bool subscribe = true, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", "On Event Subscription Failed - Event Menthod Parameter Value Is Not Assigned."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(eventType, "Timed Event Type", $"On Event Subscription Failed - Typed Event Parameter Value Is Set To Default : {eventType}"));
+
+                if (callbackResults.Success())
+                {
+                    switch (eventType)
+                    {
+                        case AppData.EventType.OnShowTabViewAsyncEvent:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnShowTabViewAsyncEvent += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnShowTabViewAsyncEvent -= eventMethod.Invoke;
+
+                            break;
                     }
                 }
                 else

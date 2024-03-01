@@ -25,7 +25,6 @@ namespace Com.RedicalGames.Filar
 
         #region Firebase
 
-        FirebaseUser user;
         FirebaseAuth authentication;
 
         public bool TermsAndConditionsAccepted { get; private set; }
@@ -440,7 +439,6 @@ namespace Com.RedicalGames.Filar
                             #region Auth
 
                             authentication = FirebaseAuth.DefaultInstance;
-                            user = authentication.CurrentUser;
                             authentication.StateChanged += AuthenticationStateChangeEvent;
 
                             #endregion
@@ -785,12 +783,21 @@ namespace Com.RedicalGames.Filar
 
         public AppData.CallbackData<FirebaseUser> GetCurrentUser()
         {
-            var callbackResults = new AppData.CallbackData<FirebaseUser>(AppData.Helpers.GetAppComponentValid(user, "User", "Get Current Failed - User Is not Found - Invalid Operation"));
+            var callbackResults = new AppData.CallbackData<FirebaseUser>(AppData.Helpers.GetAppComponentValid(authentication, "User", "Get Current Failed - User Is not Found - Invalid Operation"));
 
             if (callbackResults.Success())
             {
-                callbackResults.result = $"User : {user.Email} Has Been Successfully Found.";
-                callbackResults.data = user;
+                if (authentication.CurrentUser.IsValid())
+                {
+                    callbackResults.result = $"User : {authentication.CurrentUser.Email} Has Been Successfully Found.";
+                    callbackResults.data = authentication.CurrentUser;
+                }
+                else
+                {
+                    callbackResults.result = $"User Is Not Valid.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
             }
 
             return callbackResults;

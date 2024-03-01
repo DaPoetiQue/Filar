@@ -20,6 +20,25 @@ namespace Com.RedicalGames.Filar
             Init(initializationCallbackResults =>
             {
                 callbackResults.SetResultsData(initializationCallbackResults);
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "On Initialize Failed - App Events Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                    if(callbackResults.Success())
+                    {
+                        var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+
+                        appEventsManagerInstance.OnEventSubscription(SwitchPageAsync, AppData.EventType.OnShowTabViewAsyncEvent, true, onTabViewSwitchCallbackResults => 
+                        {
+                            callbackResults.SetResult(onTabViewSwitchCallbackResults);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             });
 
             callback.Invoke(callbackResults);
@@ -158,13 +177,6 @@ namespace Com.RedicalGames.Filar
 
                                 case AppData.InputActionButtonType.SignInViewChangeButton:
 
-                                    isInitialView = !isInitialView;
-
-                                    //if (isInitialView)
-                                    //    GetTransitionableUIComponent().SetTransitionDestination(widgetContainer.visibleScreenPoint);
-                                    //else
-                                    //    GetTransitionableUIComponent().SetTransitionDestination(widgetContainer.hiddenScreenPoint);
-
                                     SwitchPage();
 
                                     break;
@@ -180,21 +192,36 @@ namespace Com.RedicalGames.Filar
 
         }
 
-        void SwitchPage()
+        private void SwitchPage(AppData.TabViewType viewType = AppData.TabViewType.None)
         {
+            var callbackResults = new AppData.Callback();
 
-            LogInfo(" <+++++++++++++> Go To Login Screen", this);
+            isInitialView = !isInitialView;
 
             SetActionButtonState(AppData.InputActionButtonType.SignInViewChangeButton, AppData.InputUIState.Disabled);
-
-            //await GetTransitionableUIComponent().InvokeTransition();
 
             string buttonTitle = (isInitialView) ? "Sign In" : "Sign Up";
 
             SetActionButtonTitle(AppData.InputActionButtonType.SignInViewChangeButton, buttonTitle);
             SetActionButtonState(AppData.InputActionButtonType.SignInViewChangeButton, AppData.InputUIState.Enabled);
+        }
 
-            LogInfo(" <+++++++++++++> Went To Login Screen", this);
+        public async void SwitchPageAsync(AppData.TabViewType viewType, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            var selectTabCallbackResultsTask = await SelectTabViewAsync(viewType);
+
+            callbackResults.SetResult(selectTabCallbackResultsTask);
+
+            if(callbackResults.Success())
+            {
+                isInitialView = !isInitialView;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)

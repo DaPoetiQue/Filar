@@ -350,14 +350,20 @@ MonoBehaviour:
     containerType: 14
     initialVisibilityState: 2
     constriants: []
-  - name: Network Warning pop up
+  - name: Network Warning Pop Up
     referenceType: 12
     uIPlacementType: 2
     containerType: 14
     initialVisibilityState: 2
     constriants: []
-  - name: Screen Notifications pop up
+  - name: Screen Notifications Pop Up
     referenceType: 40
+    uIPlacementType: 2
+    containerType: 14
+    initialVisibilityState: 2
+    constriants: []
+  - name: Success Notifications Pop Up
+    referenceType: 41
     uIPlacementType: 2
     containerType: 14
     initialVisibilityState: 2

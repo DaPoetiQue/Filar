@@ -1192,6 +1192,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -1666,6 +1667,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -2283,6 +2285,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -2522,6 +2525,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -2844,6 +2848,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -4198,6 +4203,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -7538,6 +7544,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -7777,6 +7784,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -8760,6 +8768,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -9580,6 +9589,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -10187,6 +10197,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -10727,6 +10738,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -11310,6 +11322,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -11549,6 +11562,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -12547,6 +12561,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -13622,6 +13637,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -14123,6 +14139,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -14793,6 +14810,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -15471,6 +15489,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -15802,6 +15821,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -16044,6 +16064,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -16566,6 +16587,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -16805,6 +16827,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -17044,6 +17067,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -17285,6 +17309,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -17797,6 +17822,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
@@ -19610,6 +19636,7 @@ MonoBehaviour:
     name: 
     tabLayout: {fileID: 0}
     transitionType: 0
+    transitionEventTriggerDistance: 1
     activeTabViewType: 0
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
