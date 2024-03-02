@@ -9,8 +9,26 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
-        private AppData.ActionButtonListener onRetryButtonEvent = new AppData.ActionButtonListener();
-        private AppData.ActionButtonListener onCancelButtonEvent = new AppData.ActionButtonListener();
+        #region Network Events
+
+        private AppData.ActionButtonListener onNetworkRetryButtonEvent = new AppData.ActionButtonListener();
+        private AppData.ActionButtonListener onNetworkCancelButtonEvent = new AppData.ActionButtonListener();
+
+        #endregion
+
+        #region Sign Up Verification Events
+
+        private AppData.ActionButtonListener onResendEmailButtonEvent = new AppData.ActionButtonListener();
+        private AppData.ActionButtonListener onIncorrectEmailButtonEvent = new AppData.ActionButtonListener();
+
+        #endregion
+
+
+        #region Sign Up Complete Events
+
+        private AppData.ActionButtonListener onCompletedSignUpConfirmButtonEvent = new AppData.ActionButtonListener();
+
+        #endregion
 
         #endregion
 
@@ -233,7 +251,38 @@ namespace Com.RedicalGames.Filar
 
                                                                                                     if (callbackResults.Success())
                                                                                                     {
-                                                                                                        // -- Subscribe To Confirm Button Event.
+                                                                                                        onCompletedSignUpConfirmButtonEvent.SetAction(AppData.InputActionButtonType.ConfirmationButton, onCompletedSignUpConfirmButtonEventActionCallbackResults => 
+                                                                                                        {
+                                                                                                            callbackResults.SetResult(onCompletedSignUpConfirmButtonEventActionCallbackResults);
+
+                                                                                                            if (callbackResults.Success())
+                                                                                                            {
+                                                                                                                onCompletedSignUpConfirmButtonEvent.SetMethod(OnUserInitialSignInEvent, onCompletedSignUpConfirmButtonEventMethodCallbackResults => 
+                                                                                                                {
+                                                                                                                    callbackResults.SetResult(onCompletedSignUpConfirmButtonEventMethodCallbackResults);
+
+                                                                                                                    if (callbackResults.Success())
+                                                                                                                    {
+                                                                                                                        successNotificationWidget.RegisterActionButtonListeners(registerActionEventsCallbackResults =>
+                                                                                                                        {
+                                                                                                                            callbackResults.SetResult(registerActionEventsCallbackResults);
+
+                                                                                                                            if(callbackResults.Success())
+                                                                                                                            {
+                                                                                                                                // Addd User Name Field Value And Highlight Password Field. 
+                                                                                                                            }
+                                                                                                                            else
+                                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                                                                                        }, onCompletedSignUpConfirmButtonEvent);
+                                                                                                                    }
+                                                                                                                    else
+                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                                });
+                                                                                                            }
+                                                                                                            else
+                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                        });
                                                                                                     }
                                                                                                     else
                                                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -386,7 +435,17 @@ namespace Com.RedicalGames.Filar
                                                             callbackResults.SetResult(userProfile.GetTermsAndConditionsAccepted());
 
                                                             if (callbackResults.Success())
-                                                                OnUserSignUp();
+                                                            {
+                                                                OnClearValidations(validationsClearedCallbackResults => 
+                                                                {
+                                                                    callbackResults.SetResult(validationsClearedCallbackResults);
+
+                                                                    if (callbackResults.Success())
+                                                                        OnUserSignUpEvent();
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                });
+                                                            }
                                                             else
                                                             {
                                                                 callbackResults.SetResult(userProfile.GetTermsAndConditionsRead());
@@ -466,7 +525,7 @@ namespace Com.RedicalGames.Filar
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);              
         }
 
-        private void OnUserSignUp()
+        private void OnUserSignUpEvent()
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
 
@@ -560,47 +619,119 @@ namespace Com.RedicalGames.Filar
 
                                                                             if (callbackResults.Success())
                                                                             {
-                                                                                var networkWarningMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.EmailVerificationSentMessage).GetData();
+                                                                                var emailVerificationMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.EmailVerificationSentMessage).GetData();
 
-                                                                                var widget = screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget).GetData();
+                                                                                var emailVerificationSentNotificationWidget = screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget).GetData();
 
-                                                                                callbackResults.SetResult(networkWarningMessageDataObject.GetTitle());
+                                                                                callbackResults.SetResult(emailVerificationMessageDataObject.GetTitle());
 
                                                                                 if(callbackResults.Success())
                                                                                 {
-                                                                                    widget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, networkWarningMessageDataObject.GetTitle().GetData(), verificationTitleSetCallbackResults =>
+                                                                                    emailVerificationSentNotificationWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, emailVerificationMessageDataObject.GetTitle().GetData(), verificationTitleSetCallbackResults =>
                                                                                     {
                                                                                         callbackResults.SetResult(verificationTitleSetCallbackResults);
 
                                                                                         if (callbackResults.Success())
                                                                                         {
-                                                                                            callbackResults.SetResult(networkWarningMessageDataObject.GetMessage());
+                                                                                            callbackResults.SetResult(emailVerificationMessageDataObject.GetMessage());
 
                                                                                             if (callbackResults.Success())
                                                                                             {
-                                                                                                string verificationMessage = networkWarningMessageDataObject.GetMessage($"{userProfile.GetUserEmail().GetData()}").GetData();
+                                                                                                string verificationMessage = emailVerificationMessageDataObject.GetMessage($"{userProfile.GetUserEmail().GetData()}").GetData();
 
-                                                                                                widget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, verificationMessage, verificationMessageSetCallbackResults =>
+                                                                                                emailVerificationSentNotificationWidget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, verificationMessage, verificationMessageSetCallbackResults =>
                                                                                                 {
                                                                                                     callbackResults.SetResult(verificationMessageSetCallbackResults);
 
                                                                                                     if (callbackResults.Success())
                                                                                                     {
-                                                                                                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
-
-                                                                                                        if (callbackResults.Success())
+                                                                                                        emailVerificationSentNotificationWidget.SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, "Resend Email", resendEmailButtonTitleUpdatedCallbackResults => 
                                                                                                         {
-                                                                                                            var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name).GetData();
+                                                                                                            callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
 
-                                                                                                            timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
-
-                                                                                                            timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
+                                                                                                            if (callbackResults.Success())
                                                                                                             {
-                                                                                                                callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
-                                                                                                            });
-                                                                                                        }
-                                                                                                        else
-                                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                                emailVerificationSentNotificationWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Incorrect Email", resendEmailButtonTitleUpdatedCallbackResults =>
+                                                                                                                {
+                                                                                                                    callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
+
+                                                                                                                    if (callbackResults.Success())
+                                                                                                                    {
+                                                                                                                        onResendEmailButtonEvent.SetAction(AppData.InputActionButtonType.ConfirmationButton, resendEmailRequestButtonActionCallbackResults => 
+                                                                                                                        {
+                                                                                                                            callbackResults.SetResult(resendEmailRequestButtonActionCallbackResults);
+
+                                                                                                                            if(callbackResults.Success())
+                                                                                                                            {
+                                                                                                                                onResendEmailButtonEvent.SetMethod(OnUserEmailResendRequestButtonPressedEvent, resendEmailRequestButtonMethodCallbackResults => 
+                                                                                                                                {
+                                                                                                                                    callbackResults.SetResult(resendEmailRequestButtonMethodCallbackResults);
+
+                                                                                                                                    if (callbackResults.Success())
+                                                                                                                                    {
+                                                                                                                                        onIncorrectEmailButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, incorrectEmailuttonActionCallbackResults =>
+                                                                                                                                        {
+                                                                                                                                            callbackResults.SetResult(incorrectEmailuttonActionCallbackResults);
+
+                                                                                                                                            if (callbackResults.Success())
+                                                                                                                                            {
+                                                                                                                                                onIncorrectEmailButtonEvent.SetMethod(OnIncorrectUserEmailButtonPressedEvent, incorrectEmailButtonMethodCallbackResults =>
+                                                                                                                                                {
+                                                                                                                                                    callbackResults.SetResult(incorrectEmailButtonMethodCallbackResults);
+
+                                                                                                                                                    if (callbackResults.Success())
+                                                                                                                                                    {
+                                                                                                                                                        emailVerificationSentNotificationWidget.RegisterActionButtonListeners(emailVerificationButtonsEventCallbackResults => 
+                                                                                                                                                        {
+                                                                                                                                                            callbackResults.SetResult(emailVerificationButtonsEventCallbackResults);
+
+                                                                                                                                                            if(callbackResults.Success())
+                                                                                                                                                            {
+                                                                                                                                                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
+
+                                                                                                                                                                if (callbackResults.Success())
+                                                                                                                                                                {
+                                                                                                                                                                    var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name).GetData();
+
+                                                                                                                                                                    timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                                                                                                                                                                    timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
+                                                                                                                                                                    {
+                                                                                                                                                                        callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
+
+                                                                                                                                                                    });
+                                                                                                                                                                }
+                                                                                                                                                                else
+                                                                                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                                                                            }
+                                                                                                                                                            else
+                                                                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                                                                                                                        }, onResendEmailButtonEvent, onIncorrectEmailButtonEvent);
+                                                                                                                                                    }
+                                                                                                                                                    else
+                                                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                                                                });
+                                                                                                                                            }
+                                                                                                                                            else
+                                                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                                                        });
+                                                                                                                                    }
+                                                                                                                                    else
+                                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                                                });
+                                                                                                                            }
+                                                                                                                            else
+                                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                                        });
+                                                                                                                    }
+                                                                                                                    else
+                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                                });
+                                                                                                            }
+                                                                                                            else
+                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                        });
                                                                                                     }
                                                                                                     else
                                                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -751,25 +882,25 @@ namespace Com.RedicalGames.Filar
 
                                                                             if (callbackResults.Success())
                                                                             {
-                                                                                onRetryButtonEvent.SetMethod(OnUserSignUp, retryMethodSetCallbackResults =>
+                                                                                onNetworkRetryButtonEvent.SetMethod(OnUserSignUpEvent, retryMethodSetCallbackResults =>
                                                                                 {
                                                                                     callbackResults.SetResult(retryMethodSetCallbackResults);
 
                                                                                     if (callbackResults.Success())
                                                                                     {
-                                                                                        onRetryButtonEvent.SetAction(AppData.InputActionButtonType.RetryButton, retryActionSetCallbackResults =>
+                                                                                        onNetworkRetryButtonEvent.SetAction(AppData.InputActionButtonType.RetryButton, retryActionSetCallbackResults =>
                                                                                         {
                                                                                             callbackResults.SetResult(retryActionSetCallbackResults);
 
                                                                                             if (callbackResults.Success())
                                                                                             {
-                                                                                                onCancelButtonEvent.SetMethod(OnNetworkFailedCancelEvent, cancelMethodSetCallbackResults =>
+                                                                                                onNetworkCancelButtonEvent.SetMethod(OnNetworkFailedCancelEvent, cancelMethodSetCallbackResults =>
                                                                                                 {
                                                                                                     callbackResults.SetResult(cancelMethodSetCallbackResults);
 
                                                                                                     if (callbackResults.Success())
                                                                                                     {
-                                                                                                        onCancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, cancelActionSetCallbackResults =>
+                                                                                                        onNetworkCancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, cancelActionSetCallbackResults =>
                                                                                                         {
                                                                                                             callbackResults.SetResult(cancelActionSetCallbackResults);
 
@@ -779,7 +910,7 @@ namespace Com.RedicalGames.Filar
                                                                                                                 {
                                                                                                                     callbackResults.SetResult(registerActionEventsCallbackResults);
 
-                                                                                                                }, onRetryButtonEvent, onCancelButtonEvent);
+                                                                                                                }, onNetworkRetryButtonEvent, onNetworkCancelButtonEvent);
                                                                                                             }
                                                                                                             else
                                                                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -844,6 +975,148 @@ namespace Com.RedicalGames.Filar
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
+        private void OnUserInitialSignInEvent()
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "On User Sign In Failed - Screen UI Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "On User Sign In Failed - Profile Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
+                        var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+                        var loadingConfigDatapacket = new AppData.SceneConfigDataPacket();
+
+                        loadingConfigDatapacket.SetReferencedWidgetType(AppData.WidgetType.LoadingWidget);
+                        loadingConfigDatapacket.SetScreenBlurState(true);
+                        loadingConfigDatapacket.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.ForeGround);
+
+                        callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.SuccessNotificationPopUpWidget));
+
+                        if (callbackResults.Success())
+                        {
+                            var successNotificationPopUpWidget = screen.GetWidget(AppData.WidgetType.SuccessNotificationPopUpWidget).GetData();
+
+                            successNotificationPopUpWidget.UnRegisterActionButtonListeners(actionsUnregisteredcallbackResults =>
+                            {
+                                callbackResults.SetResult(actionsUnregisteredcallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    screen.HideScreenWidget(successNotificationPopUpWidget, widgetHiddenCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(widgetHiddenCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            screen.ShowWidget(loadingConfigDatapacket, async showingLoadingCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(showingLoadingCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var registerUserProfileCallbackResultsTask = await profileManagerInstance.RegisterUserProfileAsync();
+
+                                                    callbackResults.SetResult(registerUserProfileCallbackResultsTask);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        var userProfile = registerUserProfileCallbackResultsTask.GetData();
+
+                                                        screen.HideScreenWidget(AppData.WidgetType.LoadingWidget, false, loadingWidgetHiddenCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(loadingWidgetHiddenCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                screen.Blur(AppData.ScreenUIPlacementType.Default, true, screenBluredCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(screenBluredCallbackResults);
+
+                                                                    if(callbackResults.Success())
+                                                                    {
+                                                                        callbackResults.SetResult(GetParentWidget());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            var signInWidget = GetParentWidget().GetData();
+
+                                                                            callbackResults.SetResult(signInWidget.GetTabViewComponent());
+
+                                                                            if (callbackResults.Success())
+                                                                            {
+                                                                                callbackResults.SetResult(signInWidget.GetTabViewComponent().GetData().GetTabView(AppData.TabViewType.SignInView));
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    var signInTabView = signInWidget.GetTabViewComponent().GetData().GetTabView(AppData.TabViewType.SignInView).GetData();
+
+                                                                                    signInTabView.SetActionInputFieldValueText(AppData.InputFieldActionType.UserEmailField, userProfile.GetUserEmail().GetData(), userPasswordValueSetCallbackResults => 
+                                                                                    {
+                                                                                        callbackResults.SetResult(userPasswordValueSetCallbackResults);
+
+                                                                                        if(callbackResults.Success())
+                                                                                        {
+                                                                                            signInTabView.HighlightInputField(AppData.InputFieldActionType.UserPasswordField, callback: fieldHighlightedCallbackResults =>
+                                                                                            {
+                                                                                                callbackResults.SetResult(fieldHighlightedCallbackResults);
+                                                                                            });
+                                                                                        }
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            }
+                                                                            else
+                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                });
+                                                            }
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
         private void OnNetworkFailedCancelEvent()
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
@@ -858,7 +1131,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
 
-                    screen.Blur(AppData.ScreenUIPlacementType.Default, screenBluredCallbackResults => 
+                    screen.Blur(AppData.ScreenUIPlacementType.Default, true, screenBluredCallbackResults => 
                     {
                         callbackResults.SetResult(screenBluredCallbackResults);
                     });
@@ -983,6 +1256,204 @@ namespace Com.RedicalGames.Filar
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
+
+        #region User Email Verification Button events
+
+        private void OnUserEmailResendRequestButtonPressedEvent()
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "On User Email Resend Request Button Pressed Event Failed - Screen UI Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "On User Email Resend Request Button Pressed Event Failed - Profile Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
+
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
+
+                        if (callbackResults.Success())
+                        {
+                            var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name).GetData();
+
+                            timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                            timeManager.CancelEvent("On User Email Verification Check Event", cancelUserEmailVerificationCheckEventCallbackResults =>
+                            {
+                                var loadingConfigDatapacket = new AppData.SceneConfigDataPacket();
+
+                                loadingConfigDatapacket.SetReferencedWidgetType(AppData.WidgetType.LoadingWidget);
+                                loadingConfigDatapacket.SetScreenBlurState(true);
+                                loadingConfigDatapacket.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.ForeGround);
+
+                                screen.HideScreenWidget(AppData.WidgetType.ScreenNotificationPopUpWidget, callback: screenNotificationPopUpWidgetHiddenCallbackResults =>
+                                {
+                                    callbackResults.SetResult(screenNotificationPopUpWidgetHiddenCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        screen.ShowWidget(loadingConfigDatapacket, async loadingWidgetShownCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(loadingWidgetShownCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
+
+                                                callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
+
+                                                if (callbackResults.UnSuccessful())
+                                                {
+                                                    var deleteAccountCallbackResultsTask = await profileManagerInstance.OnAccountDeleteRequestAsync();
+
+                                                    callbackResults.SetResult(deleteAccountCallbackResultsTask);
+
+                                                    if (callbackResults.Success())
+                                                        OnUserSignUpEvent();
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        private void OnIncorrectUserEmailButtonPressedEvent()
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "On Incorrect User Email Button Pressed Event Failed - Screen UI Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "On Incorrect User Email Button Pressed Event Failed - Profile Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
+
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
+
+                        if (callbackResults.Success())
+                        {
+                            var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name).GetData();
+
+                            timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                            timeManager.CancelEvent("On User Email Verification Check Event", cancelUserEmailVerificationCheckEventCallbackResults =>
+                            {
+                                callbackResults.SetResult(cancelUserEmailVerificationCheckEventCallbackResults);
+
+                                var loadingConfigDatapacket = new AppData.SceneConfigDataPacket();
+
+                                loadingConfigDatapacket.SetReferencedWidgetType(AppData.WidgetType.LoadingWidget);
+                                loadingConfigDatapacket.SetScreenBlurState(true);
+                                loadingConfigDatapacket.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.ForeGround);
+
+                                screen.HideScreenWidget(AppData.WidgetType.ScreenNotificationPopUpWidget, callback: screenNotificationPopUpWidgetHiddenCallbackResults =>
+                                {
+                                    callbackResults.SetResult(screenNotificationPopUpWidgetHiddenCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        screen.ShowWidget(loadingConfigDatapacket, async loadingWidgetShownCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(loadingWidgetShownCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var deleteAccountCallbackResultsTask = await profileManagerInstance.OnAccountDeleteRequestAsync();
+
+                                                callbackResults.SetResult(deleteAccountCallbackResultsTask);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    screen.HideScreenWidget(AppData.WidgetType.LoadingWidget, callback: screenLoadingWidgetHiddenCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(screenLoadingWidgetHiddenCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            screen.Blur(AppData.ScreenUIPlacementType.Default, true, screenBluredCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(screenBluredCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    OnInputFieldValidation(GetType().GetData(), AppData.ValidationResultsType.Warning, AppData.InputFieldActionType.UserEmailField, fieldValidatedCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(fieldValidatedCallbackResults);
+                                                                    });
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        #endregion
 
         public void ReadAndAcceptTermsAndConditions(Action<AppData.Callback> callback = null)
         {

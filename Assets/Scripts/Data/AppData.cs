@@ -11953,7 +11953,7 @@ namespace Com.RedicalGames.Filar
             None,
             Anonymous,
             Registered,
-            Varified
+            Verified
         }
 
         [Serializable]
@@ -11966,7 +11966,7 @@ namespace Com.RedicalGames.Filar
             public string userName;
             public string userEmail;
             public string userPassword;
-            private string userPasswordValidation;
+            public string userPasswordValidation;
 
             public bool termsAndConditionsRead;
             public bool termsAndConditionsAccepted;
@@ -11985,11 +11985,12 @@ namespace Com.RedicalGames.Filar
             {
             }
 
-            public Profile(ProfileStatus status = ProfileStatus.Anonymous, string userName = null, string userEmail = null, string userPassword = null)
+            public Profile(ProfileStatus status = ProfileStatus.Anonymous, string userName = null, string userEmail = null, string userPassword = null, string userPasswordValidation = null)
             {
                 this.userName = userName;
                 this.userEmail = userEmail;
                 this.userPassword = userPassword;
+                this.userPasswordValidation = userPasswordValidation;
                 this.status = status;
 
                 Initialize();
@@ -12160,6 +12161,42 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            public void SetProfileStatus(ProfileStatus status, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppEnumValueValid(status, "Profile Status", $"Set Profile Status Failed - Profile Status Parameter Value Is Set To Default : {status} - Invalid Operation."));
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.result = $"Set Profile Status Success - Profile Status Has Been Changed From : {this.status} To : {status}";
+                        this.status = status;
+                    }
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public Callback SetProfileStatus(ProfileStatus status)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppEnumValueValid(status, "Profile Status", $"Set Profile Status Failed - Profile Status Parameter Value Is Set To Default : {status} - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Set Profile Status Success - Profile Status Has Been Changed From : {this.status} To : {status}";
+                        this.status = status;
+                    }
+                }
+
+                return callbackResults;
+            }
+
             public void ReadTermsAndConditions(Action<Callback> callback = null)
             {
                 var callbackResults = new Callback();
@@ -12204,7 +12241,7 @@ namespace Com.RedicalGames.Filar
                                 callbacResults.SetResult(GetStatus());
                             else
                             {
-                                callbacResults.result = "User Password Verification.";
+                                callbacResults.result = "User Password Validation.";
                                 callbacResults.data = InputFieldActionType.UserPasswordValidationField;
                             }
                         }
@@ -12349,7 +12386,7 @@ namespace Com.RedicalGames.Filar
             {
                 var callbackResults = new CallbackData<string>();
 
-                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userPasswordValidation, "User Password Validation", "Get User Password Validation Failed - User Password Validation Value Is Null - Invalid Operation."));
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(userPasswordValidation, "User Password Validation", "Get User Password ValidationFailed - User Password Value Is Null - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
@@ -12362,7 +12399,7 @@ namespace Com.RedicalGames.Filar
                     {
                         var decryptedUserPasswordValidation = encrypedUserPasswordValidationCallbackResults.GetData();
 
-                          var passwordValidationCallbackResults = Helpers.PasswordRegExValidation(decryptedUserPasswordValidation);
+                        var passwordValidationCallbackResults = Helpers.PasswordRegExValidation(decryptedUserPasswordValidation);
 
                         callbackResults.SetResult(passwordValidationCallbackResults);
 
@@ -12370,7 +12407,7 @@ namespace Com.RedicalGames.Filar
                         {
                             var validatedUserPasswordValidation = passwordValidationCallbackResults.GetData();
 
-                            callbackResults.result = $"Get User Password Validation Success - User Password Value Is : {validatedUserPasswordValidation}.";
+                            callbackResults.result = $"Get User Password Validation Success - User Password Validation Value Is : {validatedUserPasswordValidation}.";
                             callbackResults.data = validatedUserPasswordValidation;
                         }
                     }
@@ -35479,7 +35516,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void Blur(ScreenUIPlacementType placementType, Action<Callback> callback = null)
+            public void Blur(ScreenUIPlacementType placementType, bool forceBlur = true, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(GetScreenBlur());
 
@@ -35487,10 +35524,28 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.SetResult(GetScreenBlur().GetData().IsScreenBlured());
 
-                    if(callbackResults.UnSuccessful())
-                        GetScreenBlur().GetData().Show(placementType);
+                    if (callbackResults.UnSuccessful())
+                    {
+                        GetScreenBlur().GetData().Show(placementType, callback: screenBluredCallbackResults => 
+                        {
+                            callbackResults.SetResult(screenBluredCallbackResults);
+                        });
+                    }
                     else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    {
+                        if (forceBlur)
+                        {
+                            GetScreenBlur().GetData().Show(placementType, callback: screenBluredCallbackResults =>
+                            {
+                                callbackResults.SetResult(screenBluredCallbackResults);
+                            });
+                        }
+                        else
+                        {
+                            callbackResults.result = "Blur Failed - Screen Is Already Blured";
+                            callbackResults.resultCode = Helpers.WarningCode;
+                        }
+                    }
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -39827,6 +39882,397 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            #region All Input Accessors
+
+            protected CallbackDataList<InputActionHandler> GetAllInputActions()
+            {
+                var callbackResults = new CallbackDataList<InputActionHandler>(GetInitializedInputActionGroup());
+
+                if (callbackResults.Success())
+                {
+                    var initializedActionGroup = GetInitializedInputActionGroup().GetData();
+
+                    var actionInputList = new List<InputActionHandler>();
+
+                    for (int i = 0; i < initializedActionGroup.Count; i++)
+                    {
+                        var group = initializedActionGroup[i];
+
+                        callbackResults.SetResult(group.Initialized());
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(group.GetInputActionGroup());
+
+                            if (callbackResults.Success())
+                            {
+                                for (int j = 0; j < group.GetInputActionGroup().GetData().Count; j++)
+                                {
+                                    if (!actionInputList.Contains(group.GetInputActionGroup().GetData()[j]))
+                                    {
+                                        actionInputList.Add(group.GetInputActionGroup().GetData()[j]);
+
+                                        callbackResults.result = $"Get All Input Actions Success - Input Action : {group.GetInputActionGroup().GetData()[j].GetName()} - Has Been Successfully Added To Action Input List";
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = $"Get All Input Actions Failed - Input Action : {group.GetInputActionGroup().GetData()[j].GetName()} - Already Exist In Action Input List - Invalid Operation.";
+                                        callbackResults.resultCode = Helpers.WarningCode;
+
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(Helpers.GetAppComponentsValid(actionInputList, "Action Input List", $"Get All Input Actions Failed - Couldn't Find Any Action Inputs For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.result = $"Get All Input Actions Success - {actionInputList.Count} : Action Input(s) Have Been Successfully Added To Action Input List.";
+                            callbackResults.data = actionInputList;
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            protected CallbackDataList<InputActionHandler> GetAllValidatedInputActions()
+            {
+                var callbackResults = new CallbackDataList<InputActionHandler>(GetAllInputActions());
+
+                if (callbackResults.Success())
+                {
+                    var actionInputs = GetAllInputActions().GetData();
+
+                    var validatedActionInputs = new List<InputActionHandler>();
+
+                    for (int i = 0; i < actionInputs.Count; i++)
+                    {
+                        switch (actionInputs[i].GetType().GetData())
+                        {
+                            case InputType.Button:
+
+                                var actionButton = actionInputs[i].GetButtonComponent().GetData();
+
+                                callbackResults.SetResult(actionButton.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    if (actionButton.GetValidationResults().GetData() != ValidationResultsType.Default || actionButton.GetValidationResults().GetData() != ValidationResultsType.None)
+                                    {
+                                        if (!validatedActionInputs.Contains(actionInputs[i]))
+                                        {
+                                            validatedActionInputs.Add(actionInputs[i]);
+
+                                            callbackResults.result = $"Get All Validated Input Actions Success - Validated Input Action : {actionInputs[i].GetName()} - Has Been Successfully Added To Validated Action Inputs";
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Get All Validated Input Actions Failed - Validated Input Action : {actionInputs[i].GetName()} - Already Exists In Validated Action Inputs - Invalid Operation.";
+                                            callbackResults.resultCode = Helpers.WarningCode;
+                                        }
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.InputField:
+
+                                var actionInputField = actionInputs[i].GetInputFieldComponent().GetData();
+
+                                callbackResults.SetResult(actionInputField.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    if (actionInputField.GetValidationResults().GetData() != ValidationResultsType.Default || actionInputField.GetValidationResults().GetData() != ValidationResultsType.None)
+                                    {
+                                        if (!validatedActionInputs.Contains(actionInputs[i]))
+                                        {
+                                            validatedActionInputs.Add(actionInputs[i]);
+
+                                            callbackResults.result = $"Get All Validated Input Actions Success - Validated Input Action : {actionInputs[i].GetName()} - Has Been Successfully Added To Validated Action Inputs";
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Get All Validated Input Actions Failed - Validated Input Action : {actionInputs[i].GetName()} - Already Exists In Validated Action Inputs - Invalid Operation.";
+                                            callbackResults.resultCode = Helpers.WarningCode;
+                                        }
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.InputSlider:
+
+                                var actionInputSlider = actionInputs[i].GetInputSliderComponent().GetData();
+
+                                callbackResults.SetResult(actionInputSlider.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    if (actionInputSlider.GetValidationResults().GetData() != ValidationResultsType.Default || actionInputSlider.GetValidationResults().GetData() != ValidationResultsType.None)
+                                    {
+                                        if (!validatedActionInputs.Contains(actionInputs[i]))
+                                        {
+                                            validatedActionInputs.Add(actionInputs[i]);
+
+                                            callbackResults.result = $"Get All Validated Input Actions Success - Validated Input Action : {actionInputs[i].GetName()} - Has Been Successfully Added To Validated Action Inputs";
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Get All Validated Input Actions Failed - Validated Input Action : {actionInputs[i].GetName()} - Already Exists In Validated Action Inputs - Invalid Operation.";
+                                            callbackResults.resultCode = Helpers.WarningCode;
+                                        }
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.Slider:
+
+                                var actionSlider = actionInputs[i].GetSliderComponent().GetData();
+
+                                callbackResults.SetResult(actionSlider.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    if (actionSlider.GetValidationResults().GetData() != ValidationResultsType.Default || actionSlider.GetValidationResults().GetData() != ValidationResultsType.None)
+                                    {
+                                        if (!validatedActionInputs.Contains(actionInputs[i]))
+                                        {
+                                            validatedActionInputs.Add(actionInputs[i]);
+
+                                            callbackResults.result = $"Get All Validated Input Actions Success - Validated Input Action : {actionInputs[i].GetName()} - Has Been Successfully Added To Validated Action Inputs";
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Get All Validated Input Actions Failed - Validated Input Action : {actionInputs[i].GetName()} - Already Exists In Validated Action Inputs - Invalid Operation.";
+                                            callbackResults.resultCode = Helpers.WarningCode;
+                                        }
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.DropDown:
+
+                                var actionDropdown= actionInputs[i].GetDropdownComponent().GetData();
+
+                                callbackResults.SetResult(actionDropdown.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    if (actionDropdown.GetValidationResults().GetData() != ValidationResultsType.Default || actionDropdown.GetValidationResults().GetData() != ValidationResultsType.None)
+                                    {
+                                        if (!validatedActionInputs.Contains(actionInputs[i]))
+                                        {
+                                            validatedActionInputs.Add(actionInputs[i]);
+
+                                            callbackResults.result = $"Get All Validated Input Actions Success - Validated Input Action : {actionInputs[i].GetName()} - Has Been Successfully Added To Validated Action Inputs";
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Get All Validated Input Actions Failed - Validated Input Action : {actionInputs[i].GetName()} - Already Exists In Validated Action Inputs - Invalid Operation.";
+                                            callbackResults.resultCode = Helpers.WarningCode;
+                                        }
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.Checkbox:
+
+                                var actionCheckbox = actionInputs[i].GetCheckboxComponent().GetData();
+
+                                callbackResults.SetResult(actionCheckbox.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    if (actionCheckbox.GetValidationResults().GetData() != ValidationResultsType.Default || actionCheckbox.GetValidationResults().GetData() != ValidationResultsType.None)
+                                    {
+                                        if (!validatedActionInputs.Contains(actionInputs[i]))
+                                        {
+                                            validatedActionInputs.Add(actionInputs[i]);
+
+                                            callbackResults.result = $"Get All Validated Input Actions Success - Validated Input Action : {actionInputs[i].GetName()} - Has Been Successfully Added To Validated Action Inputs";
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Get All Validated Input Actions Failed - Validated Input Action : {actionInputs[i].GetName()} - Already Exists In Validated Action Inputs - Invalid Operation.";
+                                            callbackResults.resultCode = Helpers.WarningCode;
+                                        }
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.Option:
+
+                                var actionOption = actionInputs[i].GetOptionComponent().GetData();
+
+                                callbackResults.SetResult(actionOption.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    if (actionOption.GetValidationResults().GetData() != ValidationResultsType.Default || actionOption.GetValidationResults().GetData() != ValidationResultsType.None)
+                                    {
+                                        if (!validatedActionInputs.Contains(actionInputs[i]))
+                                        {
+                                            validatedActionInputs.Add(actionInputs[i]);
+
+                                            callbackResults.result = $"Get All Validated Input Actions Success - Validated Input Action : {actionInputs[i].GetName()} - Has Been Successfully Added To Validated Action Inputs";
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Get All Validated Input Actions Failed - Validated Input Action : {actionInputs[i].GetName()} - Already Exists In Validated Action Inputs - Invalid Operation.";
+                                            callbackResults.resultCode = Helpers.WarningCode;
+                                        }
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.Toggle:
+
+                                var actionToggle= actionInputs[i].GetToggleComponent().GetData();
+
+                                callbackResults.SetResult(actionToggle.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    if (actionToggle.GetValidationResults().GetData() != ValidationResultsType.Default || actionToggle.GetValidationResults().GetData() != ValidationResultsType.None)
+                                    {
+                                        if (!validatedActionInputs.Contains(actionInputs[i]))
+                                        {
+                                            validatedActionInputs.Add(actionInputs[i]);
+
+                                            callbackResults.result = $"Get All Validated Input Actions Success - Validated Input Action : {actionInputs[i].GetName()} - Has Been Successfully Added To Validated Action Inputs";
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Get All Validated Input Actions Failed - Validated Input Action : {actionInputs[i].GetName()} - Already Exists In Validated Action Inputs - Invalid Operation.";
+                                            callbackResults.resultCode = Helpers.WarningCode;
+                                        }
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.Image:
+
+                                var actionImage = actionInputs[i].GetImageComponent().GetData();
+
+                                callbackResults.SetResult(actionImage.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    if (actionImage.GetValidationResults().GetData() != ValidationResultsType.Default || actionImage.GetValidationResults().GetData() != ValidationResultsType.None)
+                                    {
+                                        if (!validatedActionInputs.Contains(actionInputs[i]))
+                                        {
+                                            validatedActionInputs.Add(actionInputs[i]);
+
+                                            callbackResults.result = $"Get All Validated Input Actions Success - Validated Input Action : {actionInputs[i].GetName()} - Has Been Successfully Added To Validated Action Inputs";
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Get All Validated Input Actions Failed - Validated Input Action : {actionInputs[i].GetName()} - Already Exists In Validated Action Inputs - Invalid Operation.";
+                                            callbackResults.resultCode = Helpers.WarningCode;
+                                        }
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.Text:
+
+                                var actionText = actionInputs[i].GetTextComponent().GetData();
+
+                                callbackResults.SetResult(actionText.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    if (actionText.GetValidationResults().GetData() != ValidationResultsType.Default || actionText.GetValidationResults().GetData() != ValidationResultsType.None)
+                                    {
+                                        if (!validatedActionInputs.Contains(actionInputs[i]))
+                                        {
+                                            validatedActionInputs.Add(actionInputs[i]);
+
+                                            callbackResults.result = $"Get All Validated Input Actions Success - Validated Input Action : {actionInputs[i].GetName()} - Has Been Successfully Added To Validated Action Inputs";
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Get All Validated Input Actions Failed - Validated Input Action : {actionInputs[i].GetName()} - Already Exists In Validated Action Inputs - Invalid Operation.";
+                                            callbackResults.resultCode = Helpers.WarningCode;
+                                        }
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+                        }
+
+                        if (callbackResults.UnSuccessful())
+                            break;
+                    }
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(Helpers.GetAppComponentsValid(validatedActionInputs, "Validated Action Inputs", $"Get All Validated Input Actions Failed - Couldn't Find Any Validated Action Input(s) For Screen Widget : {GetName()} - Of Type : {GetType().GetData()} - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.result = $"Get All Validated Input Actions Success - {validatedActionInputs.Count} : Validated Action Input(s) Have Been Successfully Added To Validated Action Inputs.";
+                            callbackResults.data = validatedActionInputs;
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+
             #region Input Validation
 
             #region On Validations
@@ -40235,9 +40681,9 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                button.OnClearValidation(valdodationCLearedCallbackResults => 
+                                button.OnClearValidation(validationClearedCallbackResults => 
                                 {
-                                    callbackResults.SetResult(valdodationCLearedCallbackResults);
+                                    callbackResults.SetResult(validationClearedCallbackResults);
                                 });
                             }
                             else
@@ -40277,9 +40723,9 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                inputField.OnClearValidation(valdodationCLearedCallbackResults =>
+                                inputField.OnClearValidation(validationClearedCallbackResults =>
                                 {
-                                    callbackResults.SetResult(valdodationCLearedCallbackResults);
+                                    callbackResults.SetResult(validationClearedCallbackResults);
                                 });
                             }
                             else
@@ -40319,9 +40765,9 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                inputSlider.OnClearValidation(valdodationCLearedCallbackResults =>
+                                inputSlider.OnClearValidation(validationClearedCallbackResults =>
                                 {
-                                    callbackResults.SetResult(valdodationCLearedCallbackResults);
+                                    callbackResults.SetResult(validationClearedCallbackResults);
                                 });
                             }
                             else
@@ -40361,9 +40807,9 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                slider.OnClearValidation(valdodationCLearedCallbackResults =>
+                                slider.OnClearValidation(validationClearedCallbackResults =>
                                 {
-                                    callbackResults.SetResult(valdodationCLearedCallbackResults);
+                                    callbackResults.SetResult(validationClearedCallbackResults);
                                 });
                             }
                             else
@@ -40403,9 +40849,9 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                checkbox.OnClearValidation(valdodationCLearedCallbackResults =>
+                                checkbox.OnClearValidation(validationClearedCallbackResults =>
                                 {
-                                    callbackResults.SetResult(valdodationCLearedCallbackResults);
+                                    callbackResults.SetResult(validationClearedCallbackResults);
                                 });
                             }
                             else
@@ -40445,9 +40891,9 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                dropdown.OnClearValidation(valdodationCLearedCallbackResults =>
+                                dropdown.OnClearValidation(validationClearedCallbackResults =>
                                 {
-                                    callbackResults.SetResult(valdodationCLearedCallbackResults);
+                                    callbackResults.SetResult(validationClearedCallbackResults);
                                 });
                             }
                             else
@@ -40461,6 +40907,209 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            protected void OnClearValidations(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetAllValidatedInputActions());
+
+                if (callbackResults.Success())
+                {
+                    var validatedInputs = GetAllValidatedInputActions().GetData();
+
+                    for (int i = 0; i < validatedInputs.Count; i++)
+                    {
+                        switch(validatedInputs[i].GetType().GetData())
+                        {
+                            case InputType.Button:
+
+                                var button = validatedInputs[i].GetButtonComponent().GetData();
+
+                                callbackResults.SetResult(button.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    button.OnClearValidation(validationClearedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(validationClearedCallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.InputField:
+
+                                var inputField = validatedInputs[i].GetInputFieldComponent().GetData();
+
+                                callbackResults.SetResult(inputField.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    inputField.OnClearValidation(validationClearedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(validationClearedCallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.InputSlider:
+
+                                var inputSlider = validatedInputs[i].GetInputSliderComponent().GetData();
+
+                                callbackResults.SetResult(inputSlider.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    inputSlider.OnClearValidation(validationClearedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(validationClearedCallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.Slider:
+
+                                var slider = validatedInputs[i].GetSliderComponent().GetData();
+
+                                callbackResults.SetResult(slider.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    slider.OnClearValidation(validationClearedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(validationClearedCallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.DropDown:
+
+                                var dropdown = validatedInputs[i].GetDropdownComponent().GetData();
+
+                                callbackResults.SetResult(dropdown.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    dropdown.OnClearValidation(validationClearedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(validationClearedCallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.Checkbox:
+
+                                var checkbox = validatedInputs[i].GetCheckboxComponent().GetData();
+
+                                callbackResults.SetResult(checkbox.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    checkbox.OnClearValidation(validationClearedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(validationClearedCallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.Option:
+
+                                var option = validatedInputs[i].GetOptionComponent().GetData();
+
+                                callbackResults.SetResult(option.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    option.OnClearValidation(validationClearedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(validationClearedCallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.Toggle:
+
+                                var toggle = validatedInputs[i].GetToggleComponent().GetData();
+
+                                callbackResults.SetResult(toggle.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    toggle.OnClearValidation(validationClearedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(validationClearedCallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.Image:
+
+                                var image = validatedInputs[i].GetImageComponent().GetData();
+
+                                callbackResults.SetResult(image.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    image.OnClearValidation(validationClearedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(validationClearedCallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case InputType.Text:
+
+                                var text = validatedInputs[i].GetTextComponent().GetData();
+
+                                callbackResults.SetResult(text.GetValidationStateInfo().GetData().Validate());
+
+                                if (callbackResults.Success())
+                                {
+                                    text.OnClearValidation(validationClearedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(validationClearedCallbackResults);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    callbackResults.result = "There Are No Validated Inputs Found - Continuing Execution.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
 
                 callback?.Invoke(callbackResults);
             }
@@ -41117,64 +41766,144 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void SetActionInputFieldValueText(InputFieldActionType actionType, string value)
+            public void SetActionInputFieldValueText(InputFieldActionType actionType, string value, Action<Callback> callback = null)
             {
-                //if (inputFields.Count > 0)
-                //{
-                //    UIInputField<InputFieldDataPackets> inputField = inputFields.Find(inputField => inputField.dataPackets.action == actionType);
+                var callbackResults = new Callback(Initialized(InputType.InputField));
 
-                //    if (inputField != null)
-                //        inputField.SetValue(value);
-                //    else
-                //        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {inputFields.Count} Input Fields", this);
-                //}
-                //else
-                //    LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.InputField).GetData().Find(input => input.GetInputFieldComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetInputFieldComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var inputField = inputActionHandler.GetInputFieldComponent().GetData();
+
+                            inputField.SetValue(value, inputFieldValueSetcallbackResults => 
+                            {
+                                callbackResults.SetResult(inputFieldValueSetcallbackResults);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
-            public void SetActionInputFieldValueText(InputFieldActionType actionType, int value)
+            public void SetActionInputFieldValueText(InputFieldActionType actionType, int value, Action<Callback> callback = null)
             {
-                //if (inputFields.Count > 0)
-                //{
-                //    UIInputField<InputFieldDataPackets> inputField = inputFields.Find(inputField => inputField.dataPackets.action == actionType);
+                var callbackResults = new Callback(Initialized(InputType.InputField));
 
-                //    if (inputField != null)
-                //        inputField.SetValue(value.ToString());
-                //    else
-                //        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {inputFields.Count} Input Fields", this);
-                //}
-                //else
-                //    LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.InputField).GetData().Find(input => input.GetInputFieldComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetInputFieldComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var inputField = inputActionHandler.GetInputFieldComponent().GetData();
+
+                            inputField.SetValue(value.ToString(), inputFieldValueSetcallbackResults =>
+                            {
+                                callbackResults.SetResult(inputFieldValueSetcallbackResults);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
-            public void SetActionInputFieldPlaceHolderText(InputFieldActionType actionType, string placeholder)
+            public void SetActionInputFieldPlaceHolderText(InputFieldActionType actionType, string placeholder, Action<Callback> callback = null)
             {
-                //if (inputFields.Count > 0)
-                //{
-                //    UIInputField<InputFieldDataPackets> inputField = inputFields.Find(inputField => inputField.dataPackets.action == actionType);
+                var callbackResults = new Callback(Initialized(InputType.InputField));
 
-                //    if (inputField != null)
-                //        inputField.SetPlaceHolderText(placeholder);
-                //    else
-                //        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {inputFields.Count} Input Fields", this);
-                //}
-                //else
-                //    LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.InputField).GetData().Find(input => input.GetInputFieldComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetInputFieldComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var inputField = inputActionHandler.GetInputFieldComponent().GetData();
+
+                            inputField.SetPlaceHolderText(placeholder, inputFieldValueSetcallbackResults =>
+                            {
+                                callbackResults.SetResult(inputFieldValueSetcallbackResults);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
-            public void SetActionInputFieldPlaceHolderText(InputFieldActionType actionType, int placeholder)
+            public void SetActionInputFieldPlaceHolderText(InputFieldActionType actionType, int placeholder, Action<Callback> callback = null)
             {
-                //if (inputFields.Count > 0)
-                //{
-                //    UIInputField<InputFieldDataPackets> inputField = inputFields.Find(inputField => inputField.dataPackets.action == actionType);
+                var callbackResults = new Callback(Initialized(InputType.InputField));
 
-                //    if (inputField != null)
-                //        inputField.SetPlaceHolderText(placeholder);
-                //    else
-                //        LogWarning($"Failed : Input Field Of Type : {actionType} Not Found In Widget Type : {widgetType} With Input Field List With : {inputFields.Count} Input Fields", this);
-                //}
-                //else
-                //    LogWarning("SetActionInputState Failed : screenActionInputFieldList Is Null / Empty.", this);
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.InputField).GetData().Find(input => input.GetInputFieldComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetInputFieldComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var inputField = inputActionHandler.GetInputFieldComponent().GetData();
+
+                            inputField.SetPlaceHolderText(placeholder.ToString(), inputFieldValueSetcallbackResults =>
+                            {
+                                callbackResults.SetResult(inputFieldValueSetcallbackResults);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             #endregion

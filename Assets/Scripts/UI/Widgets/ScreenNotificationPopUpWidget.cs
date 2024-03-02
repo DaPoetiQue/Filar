@@ -87,7 +87,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
-            throw new System.NotImplementedException();
+           
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)

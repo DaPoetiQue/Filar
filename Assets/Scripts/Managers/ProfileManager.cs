@@ -342,6 +342,37 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        public AppData.CallbackData<AppData.Profile> GetUserProfile()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.Profile>(AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance", "App Services Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var appServicesManagerInstance = AppData.Helpers.GetAppComponentValid(AppServicesManager.Instance, "App Services Manager Instance").GetData();
+
+                appServicesManagerInstance.GetAppInfo(getAppInfoCallbackResults =>
+                {
+                    callbackResults.SetResult(getAppInfoCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(getAppInfoCallbackResults.GetData().GetProfile());
+
+                        if (callbackResults.Success())
+                            callbackResults.data = getAppInfoCallbackResults.GetData().GetProfile().GetData();
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
         private void SetSignInState(AppData.SignInState signInState) => this.signInState = signInState;
 
         public AppData.CallbackData<AppData.SignInState> GetSignInState()
@@ -748,6 +779,101 @@ namespace Com.RedicalGames.Filar
             }
         }
 
+        public async Task<AppData.Callback> ResendUserEmailVerificationAsync()
+        {
+            var callbackResults = new AppData.Callback(GetCurrentUser());
+
+            if (callbackResults.Success())
+            {
+                var checkIfUserIsVerifiedOrNotCallbackResultsTask = await UserEmailVerified();
+
+                callbackResults.SetResult(checkIfUserIsVerifiedOrNotCallbackResultsTask);
+
+                if(callbackResults.UnSuccessful())
+                {
+                    await GetCurrentUser().GetData().SendEmailVerificationAsync().ContinueWith(emailVerificationCallbackResults =>
+                    {
+                        if (emailVerificationCallbackResults.IsCompletedSuccessfully)
+                        {
+                            callbackResults.result = $"User : {GetCurrentUser().GetData().Email} Has Been Created Successfully. A Verification Email Has Been sent.";
+                            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                        }
+                        else
+                        {
+                            if (emailVerificationCallbackResults.IsCanceled)
+                            {
+                                callbackResults.result = $"User : {GetCurrentUser().GetData().Email} Sign Up Has Been Cancelled By User.";
+                                callbackResults.resultCode = AppData.Helpers.WarningCode;
+                            }
+                            else
+                            {
+                                callbackResults.result = $"User : {GetCurrentUser().GetData().Email} Is Not Valid";
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                            }
+                        }
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public async Task<AppData.CallbackData<AppData.Profile>> RegisterUserProfileAsync()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.Profile>(GetUserProfile());
+
+            if (callbackResults.Success())
+            {
+                var userProfile = GetUserProfile().GetData();
+
+                callbackResults.SetResult(userProfile.Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(userProfile.SetProfileStatus(AppData.ProfileStatus.Verified));
+
+                    if (callbackResults.Success())
+                    {
+                        await Task.Delay(1000);
+
+                        callbackResults.result = $"Register User Profile Async Success - {userProfile.GetUserName().GetData()}'s Profile Has Been Successfully Registered.";
+                        callbackResults.data = userProfile;
+                    }
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public async Task<AppData.Callback> OnAccountDeleteRequestAsync()
+        {
+            var callbackResults = new AppData.Callback(GetCurrentUser());
+
+            if(callbackResults.Success())
+            {
+                await GetCurrentUser().GetData().DeleteAsync().ContinueWith(userDeletedCallbackResults => 
+                {
+                    if(userDeletedCallbackResults.IsCompletedSuccessfully)
+                        callbackResults.result = "On Account Delete Request Async Success - User Account Has Been Deleted Successfully.";
+                    else
+                    {
+                        callbackResults.result = $"On Account Delete Request Async Failed - User Account Couldn't Be Deleted With Error : {userDeletedCallbackResults.Exception.Message}.";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
         public async Task<AppData.Callback> UserEmailVerified()
         {
             var callbackResults = new AppData.Callback(GetCurrentUser());
@@ -760,7 +886,6 @@ namespace Com.RedicalGames.Filar
                     {
                         if (GetCurrentUser().GetData().IsEmailVerified)
                         {
-
                             callbackResults.result = $"User Email : {GetCurrentUser().GetData().Email} Has Been Successuffly Verified.";
                             callbackResults.resultCode = AppData.Helpers.SuccessCode;
                         }

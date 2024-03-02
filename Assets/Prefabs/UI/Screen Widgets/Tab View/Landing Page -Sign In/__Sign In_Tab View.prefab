@@ -172,10 +172,10 @@ RectTransform:
   m_Father: {fileID: 2464518916696151723}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 149.375, y: -26.25}
+  m_SizeDelta: {x: 53.75, y: 52.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2464518915977806354
 CanvasRenderer:
@@ -6844,10 +6844,10 @@ RectTransform:
   m_Father: {fileID: 2464518916696151723}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 90.625, y: -26.25}
+  m_SizeDelta: {x: 53.75, y: 52.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2464518916246387773
 CanvasRenderer:
@@ -11586,10 +11586,10 @@ RectTransform:
   m_Father: {fileID: 2464518916696151723}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 208.125, y: -26.25}
+  m_SizeDelta: {x: 53.75, y: 52.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2464518916970556306
 CanvasRenderer:
@@ -13856,7 +13856,7 @@ MonoBehaviour:
       validationStates:
       - name: Default
         value: {fileID: 0}
-        color: {r: 0.16078432, g: 0.67058825, b: 0, a: 1}
+        color: {r: 1, g: 1, b: 1, a: 1}
         resultsType: 1
       - name: Success
         value: {fileID: 0}
@@ -20767,10 +20767,10 @@ RectTransform:
   m_Father: {fileID: 2464518916696151723}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 31.875, y: -26.25}
+  m_SizeDelta: {x: 53.75, y: 52.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2464518917824911222
 CanvasRenderer:
@@ -26244,7 +26244,7 @@ MonoBehaviour:
       validationStates:
       - name: Default
         value: {fileID: 0}
-        color: {r: 0.16078432, g: 0.67058825, b: 0, a: 1}
+        color: {r: 1, g: 1, b: 1, a: 1}
         resultsType: 1
       - name: Success
         value: {fileID: 0}
