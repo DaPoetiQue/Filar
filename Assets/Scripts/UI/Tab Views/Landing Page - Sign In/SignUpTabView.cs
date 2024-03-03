@@ -1295,43 +1295,63 @@ namespace Com.RedicalGames.Filar
                                 loadingConfigDatapacket.SetScreenBlurState(true);
                                 loadingConfigDatapacket.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.ForeGround);
 
-                                screen.HideScreenWidget(AppData.WidgetType.ScreenNotificationPopUpWidget, callback: screenNotificationPopUpWidgetHiddenCallbackResults =>
+                                callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget));
+
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(screenNotificationPopUpWidgetHiddenCallbackResults);
+                                    var screenNotificationPopUpWidget = screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget).GetData();
 
-                                    if (callbackResults.Success())
+                                    screenNotificationPopUpWidget.UnRegisterActionButtonListeners(actionButtonEventsClearedCallbackResults =>
                                     {
-                                        screen.ShowWidget(loadingConfigDatapacket, async loadingWidgetShownCallbackResults =>
+                                        callbackResults.SetResult(actionButtonEventsClearedCallbackResults);
+
+                                        if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(loadingWidgetShownCallbackResults);
-
-                                            if (callbackResults.Success())
+                                            screen.HideScreenWidget(screenNotificationPopUpWidget, screenNotificationPopUpWidgetHiddenCallbackResults =>
                                             {
-                                                var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
+                                                callbackResults.SetResult(screenNotificationPopUpWidgetHiddenCallbackResults);
 
-                                                callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
-
-                                                if (callbackResults.UnSuccessful())
+                                                if (callbackResults.Success())
                                                 {
-                                                    var deleteAccountCallbackResultsTask = await profileManagerInstance.OnAccountDeleteRequestAsync();
+                                                    screen.ShowWidget(loadingConfigDatapacket, async loadingWidgetShownCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(loadingWidgetShownCallbackResults);
 
-                                                    callbackResults.SetResult(deleteAccountCallbackResultsTask);
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
 
-                                                    if (callbackResults.Success())
-                                                        OnUserSignUpEvent();
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
+
+                                                            if (callbackResults.UnSuccessful())
+                                                            {
+                                                                var deleteAccountCallbackResultsTask = await profileManagerInstance.OnAccountDeleteRequestAsync();
+
+                                                                callbackResults.SetResult(deleteAccountCallbackResultsTask);
+
+                                                                if (callbackResults.Success())
+                                                                    OnUserSignUpEvent();
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
                                                 }
                                                 else
                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                });
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                    }, onResendEmailButtonEvent, onIncorrectEmailButtonEvent);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             });
                         }
                         else
