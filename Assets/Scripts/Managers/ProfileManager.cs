@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Firebase;
 using Firebase.Auth;
+using Firebase.Extensions;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.Collections.Generic;
@@ -589,38 +590,66 @@ namespace Com.RedicalGames.Filar
             {
                 if (authDependencyStatus == DependencyStatus.Available)
                 {
-                    var anonymousSignInTadk = await authentication.SignInAnonymouslyAsync().ContinueWith(async signedInTaskCompletion =>
+                    callbackResults.SetResult(GetCurrentUser());
+
+                    if (callbackResults.Success())
                     {
-                        if (signedInTaskCompletion.Exception == null)
+                        // Check If Annonymous Or Registered And Do Them Things.
+
+                        if(GetCurrentUser().GetData().IsAnonymous)
                         {
-                            if (signedInTaskCompletion.Result.User.IsValid())
-                            {
-                                SetSignInState(AppData.SignInState.GuestSignIn);
-
-                                callbackResults.result = "App Signed In Successgully.";
-                                callbackResults.data = default;
-                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-
-                                await Task.Delay(1000);
-                            }
-                            else
-                            {
-                                callbackResults.result = "App Sign In Failed - Please Check Here.";
-                                callbackResults.data = AuthError.Failure;
-                                callbackResults.resultCode = AppData.Helpers.WarningCode;
-                            }
+                            LogInfo(" __Log_Cats//: Sign In To An Annonymous Account", this);
                         }
                         else
                         {
-                            FirebaseException fbException = signedInTaskCompletion.Exception.GetBaseException() as FirebaseException;
+                            if (GetCurrentUser().GetData().IsEmailVerified)
+                            {
 
-                            callbackResults.result = $"Sign In Failed With Exception : {fbException.Message}";
-                            callbackResults.data = (AuthError)fbException.ErrorCode;
-                            callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                LogInfo($" __Log_Cats//: Signed In To A Verified Account : {GetCurrentUser().GetData().Email}", this);
+                            }
+                            else
+                            {
+                                LogInfo($" __Log_Cats//: Signed In To A Unverified Account : {GetCurrentUser().GetData().Email}", this);
+                            }
                         }
+                    }
+                    else
+                    {
+                        LogInfo($" __Log_Cats//: Init - Creating A New Annonymous account", this);
 
-                        return callbackResults;
-                    });
+                       var anonymousSignInTadk = await authentication.SignInAnonymouslyAsync().ContinueWith(async signedInTaskCompletion =>
+                        {
+                            if (signedInTaskCompletion.Exception == null)
+                            {
+                                if (signedInTaskCompletion.Result.User.IsValid())
+                                {
+                                    SetSignInState(AppData.SignInState.GuestSignIn);
+
+                                    callbackResults.result = "App Signed In Successgully.";
+                                    callbackResults.data = default;
+                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+                                    await Task.Delay(1000);
+                                }
+                                else
+                                {
+                                    callbackResults.result = "App Sign In Failed - Please Check Here.";
+                                    callbackResults.data = AuthError.Failure;
+                                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+                                }
+                            }
+                            else
+                            {
+                                FirebaseException fbException = signedInTaskCompletion.Exception.GetBaseException() as FirebaseException;
+
+                                callbackResults.result = $"Sign In Failed With Exception : {fbException.Message}";
+                                callbackResults.data = (AuthError)fbException.ErrorCode;
+                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                            }
+
+                            return callbackResults;
+                        });
+                    }
                 }
 
                 return callbackResults;
@@ -704,6 +733,61 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
+        public AppData.Callback IsAnnonymousAccount()
+        {
+            var callbackResults = new AppData.Callback(GetCurrentUser());
+
+            if (callbackResults.Success())
+            {
+                if (GetCurrentUser().GetData().IsAnonymous)
+                    callbackResults.result = $"Is Annonymous Account Success - This Is A Annonymous Account.";
+                else
+                {
+                    callbackResults.result = $"Is Annonymous Account Failed - This Is Not An Annonymous Account - Currently Signed In As : {GetCurrentUser().GetData().Email}.";
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackData<Credential> GetUserCredentials(AppData.Profile profile)
+        {
+            var callbackResults = new AppData.CallbackData<Credential>(AppData.Helpers.GetAppComponentValid(profile, "Profile", "SignInAsync In Async Failed - Profile Parameter Value Is Missing / Null - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.SetResult(profile.Initialized());
+
+                if (callbackResults.Success())
+                {
+                    var credentials = EmailAuthProvider.GetCredential(profile.GetUserEmail().GetData(), profile.GetUserPassword().GetData());
+
+                    if(credentials.IsValid())
+                    {
+                        callbackResults.result = $"Get User Credentials Success - User Credentials For : {profile.GetUserEmail().GetData()} Is Valid.";
+                        callbackResults.data = credentials;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Get User Credentials Failed - User Credentials For : {profile.GetUserEmail().GetData()} Is Not Valid - Invalid Operation.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        #region Account Linking
+
         public async Task<AppData.CallbackData<AuthError>> SignUpAsync(AppData.Profile profile)
         {
             var callbackResults = new AppData.CallbackData<AuthError>(AppData.Helpers.GetAppComponentValid(profile, "Profile", "Sign Up async Failed - Profile Parameter Value Is Null - Invalid Operation."));
@@ -763,6 +847,11 @@ namespace Com.RedicalGames.Filar
                         return callbackResults;
                     });
                 }
+                else
+                {
+                    callbackResults.result = $"Sign Up Failed -  Auth Dependency Status Is Not Available - Auth Dependency Status : {authDependencyStatus}";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
 
                 return callbackResults;
             }
@@ -778,6 +867,88 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
         }
+
+        public async Task<AppData.CallbackData<AuthError>> LinkUserAccount(AppData.Profile profile)
+        {
+            var callbackResults = new AppData.CallbackData<AuthError>(AppData.Helpers.GetAppComponentValid(profile, "Profile", "Sign Up async Failed - Profile Parameter Value Is Null - Invalid Operation."));
+
+            try
+            {
+                if (authDependencyStatus == DependencyStatus.Available)
+                {
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(profile.Initialized());
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(IsAnnonymousAccount());
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(GetCurrentUser());
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(GetUserCredentials(profile));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var credentials = GetUserCredentials(profile).GetData();
+
+                                        await GetCurrentUser().GetData().LinkWithCredentialAsync(credentials).ContinueWith(accountLinkingCallbackResults =>
+                                        {
+                                            if (accountLinkingCallbackResults.Exception == null)
+                                            {
+                                                callbackResults.result = $"{profile.GetUserName().GetData()}'s Account Linking Success - A New Account Has Been Successfully Linked With Email Address : {profile.GetUserEmail().GetData()}";
+                                            }
+                                            else
+                                            {
+                                                FirebaseException fbException = accountLinkingCallbackResults.Exception.GetBaseException() as FirebaseException;
+
+                                                callbackResults.result = $"Sign Up User Profile : {profile.GetUserEmail().GetData()} Failed With Exception : {fbException.Message}";
+                                                callbackResults.data = (AuthError)fbException.ErrorCode;
+                                                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                            }
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                {
+                    callbackResults.result = $"Sign Up Failed -  Auth Dependency Status Is Not Available - Auth Dependency Status : {authDependencyStatus}";
+                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
+
+                return callbackResults;
+            }
+            catch (Exception exception)
+            {
+                FirebaseException fbException = exception.GetBaseException() as FirebaseException;
+                var errorCode = (AuthError)fbException.ErrorCode;
+
+                callbackResults.result = $"Sign Up User Profile : {profile.GetUserEmail().GetData()} Failed With Exception : {fbException.Message}";
+                callbackResults.data = errorCode;
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+
+                return callbackResults;
+            }
+        }
+
+        #endregion
 
         public async Task<AppData.Callback> ResendUserEmailVerificationAsync()
         {
@@ -912,14 +1083,23 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                if (authentication.CurrentUser.IsValid())
+                if (authentication.CurrentUser != null)
                 {
-                    callbackResults.result = $"User : {authentication.CurrentUser.Email} Has Been Successfully Found.";
-                    callbackResults.data = authentication.CurrentUser;
+                    if(authentication.CurrentUser.IsValid())
+                    { 
+                        callbackResults.result = $"User : {authentication.CurrentUser.Email} Has Been Successfully Found.";
+                        callbackResults.data = authentication.CurrentUser;
+                    }
+                    else
+                    {
+                        callbackResults.result = $"User Is Not Valid.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                    }
                 }
                 else
                 {
-                    callbackResults.result = $"User Is Not Valid.";
+                    callbackResults.result = $"There Is  No User Found.";
                     callbackResults.data = default;
                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
                 }
@@ -928,22 +1108,20 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public async Task<AppData.Callback> UpdateUserEmail(AppData.Profile profile)
+        public async Task<AppData.Callback> OnUserAccountReloadAsync(AppData.Profile profile)
         {
             var callbackResults = new AppData.Callback(profile.Initialized());
 
             if(callbackResults.Success())
             {
-                await authentication.CurrentUser.UpdateEmailAsync(profile.GetUserEmail().GetData()).ContinueWith(emailUpdatedCallbackResults => 
+                var user = authentication.CurrentUser;
+
+                if(user != null)
                 {
-                    if(emailUpdatedCallbackResults.IsCompletedSuccessfully)
-                        callbackResults.result = $"Update User Email Success.";
-                    else
-                    {
-                        callbackResults.result = $"Update User Email Failed With Message : {emailUpdatedCallbackResults.Exception.Message}";
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
-                    }
-                });
+                    await Task.Delay(100);
+
+                    LogInfo($" -LOg_cat/: User Found : {user.Email} - Is annonymous {user.IsAnonymous} - User ID {user.UserId}");
+                }
             }
 
             return callbackResults;
