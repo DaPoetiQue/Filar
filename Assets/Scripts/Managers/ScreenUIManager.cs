@@ -825,8 +825,8 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback(appDatabaseManagerInstance.GetAssetBundlesLibrary());
 
-            if (dataPackets.blurScreen)
-                currentScreen.Blur(dataPackets);
+            //if (dataPackets.blurScreen)
+            //    currentScreen.Blur(dataPackets);
 
             if (currentScreen != null)
                 currentScreen.ShowLoadingItem(dataPackets.screenRefreshLoadingItemType, true);

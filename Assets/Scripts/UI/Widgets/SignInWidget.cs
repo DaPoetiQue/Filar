@@ -171,7 +171,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 case AppData.InputActionButtonType.Cancel:
 
-                                    screen.HideScreenWidget(this);
+                                    screen.HideWidget(this);
 
                                     break;
 

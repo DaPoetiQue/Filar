@@ -256,7 +256,10 @@ MonoBehaviour:
     tabNavigationButton: {fileID: 0}
     isInitialized: 0
   selectableAssetType: 0
-  blurScreen: 1
+  screenBlurConfig:
+    name: Success Notifications Widget
+    active: 1
+    blurScreenPlacementType: 2
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -360,6 +363,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -694,6 +701,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -879,6 +890,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -1066,6 +1081,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -1254,6 +1273,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -1440,6 +1463,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -1625,6 +1652,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -1808,6 +1839,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -1990,6 +2025,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -2170,6 +2209,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -2352,6 +2395,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -2906,6 +2953,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -3091,6 +3142,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -3278,6 +3333,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -3466,6 +3525,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -3652,6 +3715,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -3837,6 +3904,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -4020,6 +4091,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -4202,6 +4277,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -4382,6 +4461,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -4564,6 +4647,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -4984,6 +5071,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -5169,6 +5260,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -5356,6 +5451,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -5544,6 +5643,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -5730,6 +5833,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -5915,6 +6022,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -6098,6 +6209,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -6280,6 +6395,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -6460,6 +6579,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -6642,6 +6765,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []

@@ -4872,7 +4872,7 @@ namespace Com.RedicalGames.Filar
                     case AppData.PaginationViewType.Pager:
 
                         //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonUIImageValue(AppData.InputActionButtonType.PaginationButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.ScrollerIcon);
-                        ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(AppData.WidgetType.ScrollerNavigationWidget);
+                        ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(AppData.WidgetType.ScrollerNavigationWidget);
                         ScreenUIManager.Instance.GetCurrentScreen().GetData().ShowWidget(ScreenNavigationManager.Instance.GetPagerNavigationWidgetDataPackets());
 
                         break;
@@ -4880,7 +4880,7 @@ namespace Com.RedicalGames.Filar
                     case AppData.PaginationViewType.Scroller:
 
                         //ScreenUIManager.Instance.GetCurrentScreenData().value.SetActionButtonUIImageValue(AppData.InputActionButtonType.PaginationButton, AppData.UIImageDisplayerType.InputIcon, AppData.UIImageType.PagerIcon);
-                        ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(AppData.WidgetType.PagerNavigationWidget);
+                        ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(AppData.WidgetType.PagerNavigationWidget);
                         ScreenUIManager.Instance.GetCurrentScreen().GetData().ShowWidget(ScreenNavigationManager.Instance.GetScrollerNavigationWidgetDataPackets());
 
                         break;

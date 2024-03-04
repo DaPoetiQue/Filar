@@ -186,7 +186,7 @@ namespace Com.RedicalGames.Filar
                                                                 if (AppDatabaseManager.Instance.GetProjectRootStructureData().Success())
                                                                 {
                                                                     if (ScreenUIManager.Instance.GetCurrentScreen().Success())
-                                                                        ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
+                                                                        ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(dataPackets.widgetType);
 
                                                                     StartCoroutine(OnCreatedAsync(createNewProjectCallbackResults.data.GetProjectInfo(), async createdCallbackResults =>
                                                                     {
@@ -320,7 +320,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
 
-                    screen.HideScreenWidget(this, widgetHiddenCallbackResults => 
+                    screen.HideWidget(this, widgetHiddenCallbackResults => 
                     {
                         callbackResults.SetResult(widgetHiddenCallbackResults);
                     });

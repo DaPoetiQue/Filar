@@ -168,7 +168,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 await Task.Delay(500);
 
-                                var hideMenuCallbackResults = await screen.HideScreenWidgetAsync(GetParentWidget().GetData());
+                                var hideMenuCallbackResults = await screen.HideWidgetAsync(GetParentWidget().GetData());
 
                                 callbackResults.SetResult(hideMenuCallbackResults);
 

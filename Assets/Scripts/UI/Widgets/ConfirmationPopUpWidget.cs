@@ -343,22 +343,22 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+                        // var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
 
-                        switch (actionType)
-                        {
-                            case AppData.InputActionButtonType.ConfirmationButton:
+                        //switch (actionType)
+                        //{
+                        //    case AppData.InputActionButtonType.ConfirmationButton:
 
-                                screen.HideScreenWidget(this);
+                        //        screen.HideWidget(this);
 
-                                break;
+                        //        break;
 
-                            case AppData.InputActionButtonType.Cancel:
+                        //    case AppData.InputActionButtonType.Cancel:
 
-                                screen.HideScreenWidget(this);
+                        //        screen.HideWidget(this);
 
-                                break;
-                        }
+                        //        break;
+                        //}
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

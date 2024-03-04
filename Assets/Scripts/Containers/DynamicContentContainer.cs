@@ -47,7 +47,7 @@ namespace Com.RedicalGames.Filar
                         if (callbackResults.Success())
                         {
                             if (showSpinner)
-                                screen.ShowWidget(AppData.WidgetType.LoadingWidget, true);
+                                screen.ShowWidget(AppData.WidgetType.LoadingWidget);
 
                             for (int i = 0; i < GetContentCount().GetData(); i++)
                             {
@@ -78,7 +78,7 @@ namespace Com.RedicalGames.Filar
                             if (callbackResults.Success())
                             {
                                 if (showSpinner)
-                                    screen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                    screen.HideWidget(AppData.WidgetType.LoadingWidget);
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

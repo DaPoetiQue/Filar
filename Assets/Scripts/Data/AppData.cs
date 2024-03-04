@@ -287,8 +287,10 @@ namespace Com.RedicalGames.Filar
             EmailVerificationSentMessage,
             ContactFilarMessage,
             SignUpCompletedMessage,
+            EmailAlreadyInUseVerifiedMessage,
+            EmailAlreadyInUseUnverifiedMessage,
+            OnClosePopUpWarningMessage,
             NewAppUpdatesMessage,
-
         }
 
         public enum InputActionButtonType
@@ -5473,7 +5475,7 @@ namespace Com.RedicalGames.Filar
                                                     if (callbackResults.Success())
                                                     {
                                                         var screen = screenUIManager.GetCurrentScreen().GetData();
-                                                        screen.HideScreenWidget(WidgetType.LoadingWidget);
+                                                        screen.HideWidget(WidgetType.LoadingWidget);
                                                     }
                                                     else
                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -7157,7 +7159,14 @@ namespace Com.RedicalGames.Filar
                                                                 {
                                                                     var screen = screenUIManager.GetCurrentScreen().GetData();
 
-                                                                    screen.ShowWidget(WidgetType.LoadingWidget, async widgetShownCallbackResults => 
+                                                                    var loadingWidgetConfigDataPacket = new SceneConfigDataPacket();
+
+                                                                    loadingWidgetConfigDataPacket.SetReferencedScreenType(ScreenType.LoadingScreen);
+                                                                    loadingWidgetConfigDataPacket.SetReferencedWidgetType(WidgetType.LoadingWidget);
+                                                                    loadingWidgetConfigDataPacket.SetReferencedUIScreenPlacementType(ScreenUIPlacementType.ForeGround);
+                                                                    loadingWidgetConfigDataPacket.SetScreenBlurState(false);
+
+                                                                    screen.ShowWidget(loadingWidgetConfigDataPacket, async widgetShownCallbackResults => 
                                                                     {
                                                                         callbackResults.SetResult(widgetShownCallbackResults);
 
@@ -34339,7 +34348,7 @@ namespace Com.RedicalGames.Filar
                         {
                             case InputActionButtonType.CloseButton:
 
-                                HideScreenWidget(widgetType, dataPackets);
+                                HideWidget(widgetType);
 
                                 break;
 
@@ -34374,7 +34383,7 @@ namespace Com.RedicalGames.Filar
                         {
                             case InputActionButtonType.CloseButton:
 
-                                HideScreenWidget(widgetType, dataPackets);
+                                HideWidget(widgetType);
 
                                 break;
                         }
@@ -34388,7 +34397,7 @@ namespace Com.RedicalGames.Filar
                 if (screenType == ScreenType.ARViewScreen)
                 {
                     ActionEvents.OnSetCurrentActiveSceneCameraEvent(SceneEventCameraType.ARViewCamera);
-                    HideScreenWidget(WidgetType.SceneAssetPreviewWidget, new SceneConfigDataPacket());
+                    HideWidget(WidgetType.SceneAssetPreviewWidget);
                 }
                 else
                     ActionEvents.OnSetCurrentActiveSceneCameraEvent(SceneEventCameraType.AssetPreviewCamera);
@@ -34708,7 +34717,10 @@ namespace Com.RedicalGames.Filar
                     });
                 }
                 else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                {
+                    callbackResults.result = "Widget : {} Is Not A Focused Widget";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
             }
 
             #endregion
@@ -34950,41 +34962,6 @@ namespace Com.RedicalGames.Filar
 
             #region Show Screen Widget Functions
 
-            public void ShowWidget(WidgetType widgetType, bool blurScreen = false, string title = null, Action<Callback> callback = null)
-            {
-                Callback callbackResults = new Callback();
-
-                if (widgets.Count == 0)
-                    return;
-
-                var widget = widgets.Find(widget => widget.GetType().GetData() == widgetType);
-
-                if (widget)
-                {
-                    SceneConfigDataPacket dataPackets = new SceneConfigDataPacket
-                    {
-                        widgetTitle = title,
-                        widgetType = widgetType,
-                        blurScreen = blurScreen
-                    };
-
-                    if (blurScreen)
-                        Blur(dataPackets);
-
-                    widget.ResetScrollPosition(scrollerResetCallback =>
-                    {
-                        if (scrollerResetCallback.Success())
-                            widget.ShowScreenWidget(dataPackets);
-                        else
-                            Log(scrollerResetCallback.resultCode, scrollerResetCallback.result, this);
-                    });
-                }
-                else
-                    LogError($"Widget Of Type : {widgetType} - Missing / Not Found.", this);
-
-                callback?.Invoke(callbackResults);
-            }
-
             public void ShowWidget(WidgetType widgetType, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback(GetWidget(widgetType));
@@ -34993,9 +34970,9 @@ namespace Com.RedicalGames.Filar
                 {
                     var widget = GetWidget(widgetType).GetData();
 
-                    widget.ShowScreenWidget(widgetType, widgetShownCallbackResults => 
+                    ShowWidget(widget, callback: showWidgetWithConfigCallbackResults =>
                     {
-                        callbackResults.SetResult(widgetShownCallbackResults);
+                        callbackResults.SetResult(showWidgetWithConfigCallbackResults);
                     });
                 }
                 else
@@ -35003,6 +34980,147 @@ namespace Com.RedicalGames.Filar
 
                 callback?.Invoke(callbackResults);
             }
+
+            public void ShowWidget(SceneConfigDataPacket dataPacket, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(dataPacket, "Data Packet", "Show Widget Failed - Data Packet Parameter Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetWidget(dataPacket.GetReferencedWidgetType().GetData().GetValue().GetData()));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(dataPacket.GetScreenBlurConfig());
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(dataPacket.GetScreenBlurConfig().GetData().Initialized());
+
+                            if (callbackResults.Success())
+                            {
+                                var widget = GetWidget(dataPacket.GetReferencedWidgetType().GetData().GetValue().GetData()).GetData();
+
+                                Blur(dataPacket.GetScreenBlurConfig().GetData(), screenBluredCallbackResults =>
+                                {
+                                    callbackResults.SetResult(screenBluredCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        widget.ShowWidget(dataPacket, screenWidgetCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(screenWidgetCallbackResults);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void ShowWidget<T>(SceneConfigDataPacket dataPackets, ScriptableConfigDataPacket<T> scriptableConfigData, Action<Callback> callback = null) where T : Enum
+            {
+                var callbackResults = new Callback(GetWidget(dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData()));
+
+                if (callbackResults.Success())
+                {
+                    var widget = GetWidget(dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData()).GetData();
+
+                    callbackResults.SetResult(widget.WidgetReady());
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(scriptableConfigData, "Scriptable Config Data", "Show Widget Failed - Scriptable Config Data Parameter Value Is null - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(dataPackets.GetScreenBlurConfig());
+
+                            if (callbackResults.Success())
+                            {
+                                Blur(dataPackets.GetScreenBlurConfig().GetData(), screenBluredCallbackResults => 
+                                {
+                                    callbackResults.SetResult(screenBluredCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        widget.ShowWidget(dataPackets, scriptableConfigData, screenWidgetCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(screenWidgetCallbackResults);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void ShowWidget(Widget widget, Action<Callback> callback = null)
+            {
+                Callback callbackResults = new Callback(widget.WidgetReady());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(widget.GetScreenBlurConfig());
+
+                    if (callbackResults.Success())
+                    {
+                        Blur(widget.GetScreenBlurConfig().GetData(), screenBlurCallbackResults =>
+                        {
+                            callbackResults.SetResult(screenBlurCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                widget.ShowWidget(widget.GetType().GetData(), widgetShownCallbackResults =>
+                                {
+                                    callbackResults.SetResult(widgetShownCallbackResults);
+
+                                    if(callbackResults.UnSuccessful())
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.resultCode, callbackResults.result, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.resultCode, callbackResults.result, this);
+                }
+                else
+                    Log(callbackResults.resultCode, callbackResults.result, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #region Show Screen Widget Async Functions
 
             public async Task<Callback> ShowWidgetAsync(WidgetType widgetType)
             {
@@ -35010,8 +35128,39 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    var showWidgetCallbackResultsTask = await GetWidget(widgetType).GetData().ShowScreenWidgetAsync();
-                    callbackResults.SetResult(showWidgetCallbackResultsTask);
+                    var widget = GetWidget(widgetType).GetData();
+
+                    callbackResults.SetResult(widget.WidgetReady());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(widget.GetScreenBlurConfig());
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.SetResult(widget.GetScreenBlurConfig().GetData().Initialized());
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(Blur(widget.GetScreenBlurConfig().GetData()));
+
+                                if(callbackResults.Success())
+                                {
+                                    var showWidgetCallbackResultsTask = await widget.ShowScreenWidgetAsync();
+
+                                    callbackResults.SetResult(showWidgetCallbackResultsTask);
+                                }
+                                else
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                            }
+                            else
+                                Log(callbackResults.resultCode, callbackResults.result, this);
+                        }
+                        else
+                            Log(callbackResults.resultCode, callbackResults.result, this);
+                    }
+                    else
+                        Log(callbackResults.resultCode, callbackResults.result, this);
                 }
                 else
                     Log(callbackResults.resultCode, callbackResults.result, this);
@@ -35019,134 +35168,107 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public void ShowWidget(Widget widget)
+            public async Task<Callback> ShowWidgetAsync(SceneConfigDataPacket dataPacket)
             {
-                if (widgets.Count == 0)
-                    return;
-
-                var widgetToShow = widgets.Find(data => data.GetType().GetData() == widget.GetType().GetData());
-
-                if (widgetToShow)
-                {
-                    if (widget.GetBlurScreenState().GetData())
-                        Blur(ScreenUIPlacementType.Default);
-
-                    widget.ResetScrollPosition(scrollerResetCallback =>
-                    {
-                        if (scrollerResetCallback.Success())
-                            widget.ShowScreenWidget(widget.GetType().GetData());
-                        else
-                            Log(scrollerResetCallback.resultCode, scrollerResetCallback.result, this);
-                    });
-                }
-                else
-                    LogError($"Widget Of Type : {widget.GetType().GetData()} - Missing / Not Found.", this);
-            }
-
-            public void ShowWidget(SceneConfigDataPacket dataPackets, Action<Callback> callback = null)
-            {
-                var callbackResults = new Callback(GetWidgetOfType(dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData()));
+                Callback callbackResults = new Callback(GetWidget(dataPacket.GetReferencedWidgetType().GetData().GetValue().GetData()));
 
                 if (callbackResults.Success())
                 {
-                    var widget = GetWidgetOfType(dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData()).GetData();
+                    var widget = GetWidget(dataPacket.GetReferencedWidgetType().GetData().GetValue().GetData()).GetData();
 
-                    callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name, "Selectable Manager Is Not Yet Initialized - Invalid Operation"));
-
-                    if(callbackResults.Success())
-                    {
-                        var selectableManagerInstance = Helpers.GetAppComponentValid(SelectableManager.Instance, SelectableManager.Instance.name).GetData();
-
-                        if (dataPackets.blurScreen)
-                            Blur(dataPackets);
-
-                        widget.ShowScreenWidget(dataPackets, widgetShownCallbackResults =>
-                        {
-                            callbackResults.SetResult(widgetShownCallbackResults);
-
-                            if (callbackResults.UnSuccessful())
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
-
-                        // Fix Code Below Regarding Selectables - To Be Fixed In UI Branch.
-
-                        //selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
-                        //{
-                        //    if (selectionSystemCallbackResults.Success())
-                        //    {
-                        //        selectionSystemCallbackResults.GetData().OnClearInputSelection(dataPackets.GetReferencedScreenType().GetData().GetValue().GetData(), inputsClearedCallbackResults =>
-                        //        {
-                        //            if (inputsClearedCallbackResults.Success())
-                        //                widget.ShowScreenWidget(dataPackets, widgetShownCallbackResults => 
-                        //                {
-                        //                    callbackResults.SetResult(widgetShownCallbackResults);
-
-                        //                    if(callbackResults.UnSuccessful())
-                        //                        Log(inputsClearedCallbackResults.resultCode, inputsClearedCallbackResults.result, this);
-                        //                });
-                        //            else
-                        //                Log(inputsClearedCallbackResults.resultCode, inputsClearedCallbackResults.result, this);
-                        //        });
-                        //    }
-                        //    else
-                        //        Log(selectionSystemCallbackResults.resultCode, selectionSystemCallbackResults.result, this);
-                        //});
-
-                        callback?.Invoke(callbackResults);
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-            }
-
-            public void ShowWidget<T>(SceneConfigDataPacket dataPackets, ScriptableConfigDataPacket<T> scriptableConfigData, Action<Callback> callback = null) where T : Enum
-            {
-                var callbackResults = new Callback(Helpers.GetAppComponentsValid(widgets, "Widgets", "Widgets Are Not Yet Initialized."));
-
-                if (callbackResults.Success())
-                {
-                    var widget = widgets.Find(x => x.GetType().GetData() == dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData());
-
-                    callbackResults.SetResult(Helpers.GetAppComponentValid(widget, "Widget", $"Failed To Find Widget Of Type : {dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData()} - In Widgets. Widget Not Found."));
+                    callbackResults.SetResult(widget.WidgetReady());
 
                     if (callbackResults.Success())
                     {
-                        if (dataPackets.blurScreen)
-                            Blur(dataPackets);
+                        callbackResults.SetResult(dataPacket.GetScreenBlurConfig());
 
-                        widget.ShowScreenWidget(dataPackets, scriptableConfigData, screenWidgetCallbackResults => 
+                        if (callbackResults.Success())
                         {
-                            callbackResults.SetResult(screenWidgetCallbackResults);
-                        });
+                            callbackResults.SetResult(dataPacket.GetScreenBlurConfig().GetData().Initialized());
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(Blur(dataPacket.GetScreenBlurConfig().GetData()));
+
+                                if (callbackResults.Success())
+                                {
+                                    var showWidgetCallbackResultsTask = await widget.ShowScreenWidgetAsync();
+                                    callbackResults.SetResult(showWidgetCallbackResultsTask);
+                                }
+                                else
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                            }
+                            else
+                                Log(callbackResults.resultCode, callbackResults.result, this);
+                        }
+                        else
+                            Log(callbackResults.resultCode, callbackResults.result, this);
                     }
                     else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        Log(callbackResults.resultCode, callbackResults.result, this);
                 }
                 else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    Log(callbackResults.resultCode, callbackResults.result, this);
 
-                callback?.Invoke(callbackResults);
+                return callbackResults;
+            }
+
+            public async Task<Callback> ShowWidgetAsync(Widget widget)
+            {
+                Callback callbackResults = new Callback(widget.WidgetReady());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(widget.GetScreenBlurConfig());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(widget.GetScreenBlurConfig().GetData().Initialized());
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(Blur(widget.GetScreenBlurConfig().GetData()));
+
+                            if (callbackResults.Success())
+                            {
+                                var showWidgetCallbackResultsTask = await widget.ShowScreenWidgetAsync();
+
+                                callbackResults.SetResult(showWidgetCallbackResultsTask);
+                            }
+                            else
+                                Log(callbackResults.resultCode, callbackResults.result, this);
+                        }
+                        else
+                            Log(callbackResults.resultCode, callbackResults.result, this);
+                    }
+                    else
+                        Log(callbackResults.resultCode, callbackResults.result, this);
+                }
+                else
+                    Log(callbackResults.resultCode, callbackResults.result, this);
+
+                return callbackResults;
             }
 
             #endregion
 
-            #region Hide Screen Widget Functions
+            #region Hide Widget Functions
 
-            public void HideScreenWidget(WidgetType widgetType, bool canTransition = true, Action<Callback> callback = null)
+            public void HideWidget(WidgetType widgetType, Action<Callback> callback = null, ScreenBlurConfig blurConfig = null)
             {
-                var callbackResults = new Callback(GetWidgets());
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance", "Hide Widget Failed - Selectable Manager Instance Is Not Initialized Yet - Invalid Operation,"));
 
                 if (callbackResults.Success())
                 {
-                    var widget = widgets.Find(widget => widget.GetType().GetData() == widgetType);
+                    var selectableManagerInstance = Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance").GetData();
 
-                    callbackResults.SetResult(Helpers.GetAppComponentValid(widget, "Widget", $"Hide Screen Widget Failed - Screen Widget Of Type : {widgetType} Is Not Found In The Widgets List For : {GetName()} - Of Type : {GetType().GetData()}"));
+                    callbackResults.SetResult(GetWidget(widgetType));
 
                     if (callbackResults.Success())
                     {
-                        SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                        var widget = GetWidget(widgetType).GetData();
+
+                        selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
                         {
                             callbackResults.SetResult(selectionSystemCallbackResults);
 
@@ -35158,20 +35280,49 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        Focus(focusedCallbackResults =>
+                                        callbackResults.SetResult(Helpers.GetAppComponentValid(blurConfig, "blurConfig", "Hide Widget Failed - Blur Config Is Not Assigned - Continue Execution Normally."));
+
+                                        if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(focusedCallbackResults);
+                                            callbackResults.SetResult(blurConfig.Initialized());
 
                                             if(callbackResults.Success())
                                             {
-                                                widget.HideWidget(hideCallback =>
+                                                Blur(blurConfig, screenBluredCallbackResults => 
                                                 {
-                                                    callbackResults.SetResult(hideCallback);
+                                                    callbackResults.SetResult(screenBluredCallbackResults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        widget.HideWidget(hideCallback =>
+                                                        {
+                                                            callbackResults.SetResult(hideCallback);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                 });
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
+                                        }
+                                        else
+                                        {
+                                            Focus(focusedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(focusedCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    widget.HideWidget(hideCallback =>
+                                                    {
+                                                        callbackResults.SetResult(hideCallback);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
                                     }
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -35190,63 +35341,169 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public async Task<Callback> HideScreenWidgetAsync(WidgetType widgetType)
+            public void HideWidget(SceneConfigDataPacket dataPacket, Action<Callback> callback = null)
             {
-                Callback callbackResults = new Callback(GetWidget(widgetType));
+                Callback callbackResults = new Callback(Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance", "Hide Widget Failed - Selectable Manager Instance Is Not Initialized Yet - Invalid Operation"));
 
                 if (callbackResults.Success())
                 {
-                    var hideWidgetCallbackResultsTask = await GetWidget(widgetType).GetData().HideScreenWidgetAsync();
-                    callbackResults.SetResult(hideWidgetCallbackResultsTask);
-                }
-                else
-                    Log(callbackResults.resultCode, callbackResults.result, this);
+                    var selectableManagerInstance = Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance").GetData();
 
-                return callbackResults;
-            }
-
-            public async Task<Callback> HideScreenWidgetAsync(Widget widget)
-            {
-                Callback callbackResults = new Callback(Helpers.GetAppComponentValid(widget, "Widget", "Hide Screen Widget Async Failed - Widget Parameter Value Is Null - Invalid Operation."));
-
-                if (callbackResults.Success())
-                {
-                    var hideWidgetCallbackResultsTask = await widget.HideScreenWidgetAsync();
-                    callbackResults.SetResult(hideWidgetCallbackResultsTask);
-                }
-                else
-                    Log(callbackResults.resultCode, callbackResults.result, this);
-
-                return callbackResults;
-            }
-
-            public void HideScreenWidget(Widget widget, Action<Callback> callback = null)
-            {
-                var callbackResults = new Callback(GetWidgets());
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(Helpers.GetAppComponentValid(widget, "Widget", $"Hide Screen Widget Async Failed - Widget Parameter Value Invalid / Null For : {GetName()} - Of Type : {GetType().GetData()}."));
+                    callbackResults.SetResult(GetWidget(dataPacket.GetReferencedWidgetType().GetData().GetValue().GetData()));
 
                     if (callbackResults.Success())
                     {
-                        var loadedWidget = widgets.Find(widgetInstance => widgetInstance.GetType().GetData() == widget.GetType().GetData());
+                        var widget = GetWidget(dataPacket.GetReferencedWidgetType().GetData().GetValue().GetData()).GetData();
 
-                        callbackResults.SetResult(Helpers.GetAppComponentValid(loadedWidget, "Widget", $"Hide Screen Widget Failed - Screen Widget Not Found In The Widgets List For : {GetName()} - Of Type : {GetType().GetData()}"));
-
-                        if (callbackResults.Success())
+                        selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
                         {
-                            SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
-                            {
-                                callbackResults.SetResult(selectionSystemCallbackResults);
+                            callbackResults.SetResult(selectionSystemCallbackResults);
 
-                                if (callbackResults.Success())
+                            if (callbackResults.Success())
+                            {
+                                selectionSystemCallbackResults.GetData().OnClearInputSelection(dataPacket.GetReferencedWidgetType().GetData().GetValue().GetData(), selectionsClearedCallbackResults =>
                                 {
-                                    selectionSystemCallbackResults.GetData().OnClearInputSelection(loadedWidget.GetType().GetData(), selectionsClearedCallbackResults =>
+                                    callbackResults.SetResult(selectionsClearedCallbackResults);
+
+                                    if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(selectionsClearedCallbackResults);
+                                        callbackResults.SetResult(dataPacket.GetScreenBlurConfig());
 
                                         if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(dataPacket.GetScreenBlurConfig().GetData().BlurScreen());
+
+                                            Blur(dataPacket.GetScreenBlurConfig().GetData(), screenBluredCalledResults => 
+                                            {
+                                                callbackResults.SetResult(screenBluredCalledResults);
+
+                                                if(callbackResults.Success())
+                                                {
+                                                    widget.HideWidget(widgetHiddenCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(widgetHiddenCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            if (dataPacket.GetReferencedWidgetType().GetData().GetValue().GetData() == WidgetType.ConfirmationPopUpWidget)
+                                                            {
+                                                                if (!selectableManagerInstance.HasAssetSelected() && !selectableManagerInstance.HasSelection())
+                                                                    ActionEvents.OnTransitionSceneEventCamera(dataPacket);
+                                                            }
+
+                                                            if (widget.GetType().GetData() == WidgetType.SceneAssetPreviewWidget)
+                                                                if (selectableManagerInstance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
+                                                                    ActionEvents.OnResetCameraToDefaultPoseEvent();
+                                                        }
+                                                        else
+                                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                            });
+                                        }
+                                        else
+                                        {
+                                            Focus(focusedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(focusedCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    widget.HideWidget(widgetHiddenCallbackResults => 
+                                                    {
+                                                        callbackResults.SetResult(widgetHiddenCallbackResults);
+
+                                                        if(callbackResults.Success())
+                                                        {
+                                                            if (dataPacket.GetReferencedWidgetType().GetData().GetValue().GetData() == WidgetType.ConfirmationPopUpWidget)
+                                                            {
+                                                                if (!selectableManagerInstance.HasAssetSelected() && !selectableManagerInstance.HasSelection())
+                                                                    ActionEvents.OnTransitionSceneEventCamera(dataPacket);
+                                                            }
+
+                                                            if (widget.GetType().GetData() == WidgetType.SceneAssetPreviewWidget)
+                                                                if (selectableManagerInstance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
+                                                                    ActionEvents.OnResetCameraToDefaultPoseEvent();
+                                                        }
+                                                        else
+                                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                            });
+                                        }
+                                    }
+                                    else
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.resultCode, callbackResults.result, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.resultCode, callbackResults.result, this);
+                }
+                else
+                    Log(callbackResults.resultCode, callbackResults.result, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void HideWidget(Widget widget, Action<Callback> callback = null, ScreenBlurConfig blurConfig = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance", $"Hide Widget Failed - Selectable Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    var selectableManagerInstance = Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance").GetData();
+
+                    callbackResults.SetResult(widget.WidgetReady());
+
+                    if (callbackResults.Success())
+                    {
+                        selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                        {
+                            callbackResults.SetResult(selectionSystemCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                selectionSystemCallbackResults.GetData().OnClearInputSelection(widget.GetType().GetData(), selectionsClearedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(selectionsClearedCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(Helpers.GetAppComponentValid(blurConfig, "Blur Config", "Hide Widget With Blur Config Unssuccessful - Blur Config Parameter Value Is Null - Continuing Execution."));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(blurConfig.Initialized());
+
+                                            if(callbackResults.Success())
+                                            {
+                                                Blur(blurConfig, screenBluredCallbackResults => 
+                                                {
+                                                    callbackResults.SetResult(screenBluredCallbackResults);
+
+                                                    if(callbackResults.Success())
+                                                    {
+                                                        widget.HideWidget(hideCallback =>
+                                                        {
+                                                            callbackResults.SetResult(hideCallback);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
                                         {
                                             Focus(focusedCallbackResults =>
                                             {
@@ -35263,16 +35520,14 @@ namespace Com.RedicalGames.Filar
                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             });
                                         }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
-                                }
-                                else
-                                    Log(selectionSystemCallbackResults.GetResultCode, selectionSystemCallbackResults.GetResult, this);
-                            });
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(selectionSystemCallbackResults.GetResultCode, selectionSystemCallbackResults.GetResult, this);
+                        });
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -35283,74 +35538,252 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void HideScreenWidget(WidgetType widgetType, SceneConfigDataPacket dataPackets, Action<Callback> callback = null)
+            #endregion
+
+            #region Hide Widget Async Functions
+
+            public async Task<Callback> HideWidgetAsync(WidgetType widgetType, ScreenBlurConfig blurConfig = null)
             {
-                Callback callbackResults = new Callback(GetWidgets());
+                Callback callbackResults = new Callback(GetWidget(widgetType));
 
                 if (callbackResults.Success())
                 {
-                    var widget = widgets.Find(widget => widget.GetType().GetData() == widgetType);
+                    var widget = GetWidget(widgetType).GetData();
 
-                    Helpers.GetAppComponentValid(widget, "Widget", componentValidCallbackResults =>
+                    callbackResults.SetResult(widget.WidgetReady());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(componentValidCallbackResults);
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance", $"Hide Widget Failed - Selectable Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
                         if (callbackResults.Success())
                         {
-                            SelectableManager.Instance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(blurConfig, "Blur Config", "Hide Widget Async With Blur Config Unsuccessful - Blur Config Parameter Value Is Null - Continuing Execution."));
+
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(selectionSystemCallbackResults);
+                                callbackResults.SetResult(blurConfig.Initialized());
 
                                 if (callbackResults.Success())
                                 {
-                                    selectionSystemCallbackResults.data.OnClearInputSelection(widgetType, selectionsClearedCallbackResults =>
+                                    var hideWidgetCallbackResultsTask = await widget.HideScreenWidgetAsync();
+
+                                    callbackResults.SetResult(hideWidgetCallbackResultsTask);
+
+                                    if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(selectionsClearedCallbackResults);
+                                        callbackResults.SetResult(Blur(blurConfig));
+
+                                        if (callbackResults.UnSuccessful())
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                    }
+                                    else
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                }
+                                else
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                            }
+                            else
+                            {
+                                var hideWidgetCallbackResultsTask = await widget.HideScreenWidgetAsync();
+                                callbackResults.SetResult(hideWidgetCallbackResultsTask);
+                            }
+
+                            if (callbackResults.Success())
+                            {
+                                var selectableManagerInstance = Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance").GetData();
+
+                                if (callbackResults.Success())
+                                {
+                                    selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(selectionSystemCallbackResults);
 
                                         if (callbackResults.Success())
                                         {
-                                            Focus(focusedCallbackResults =>
+                                            selectionSystemCallbackResults.GetData().OnClearInputSelection(widget.GetType().GetData(), selectionsClearedCallbackResults =>
                                             {
-                                                callbackResults.SetResult(focusedCallbackResults);
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    widget.HideWidget();
-
-                                                    if (widgetType == WidgetType.ConfirmationPopUpWidget)
-                                                    {
-                                                        if (SelectableManager.Instance)
-                                                        {
-                                                            if (!SelectableManager.Instance.HasAssetSelected() && !SelectableManager.Instance.HasSelection())
-                                                                ActionEvents.OnTransitionSceneEventCamera(dataPackets);
-                                                            else
-                                                                LogWarning("There Is Still A Selection Active.", this, () => HideScreenWidget(widgetType, dataPackets));
-                                                        }
-                                                        else
-                                                            LogError("Selectable Manager Not Yet Initialized.", this, () => HideScreenWidget(widgetType, dataPackets));
-                                                    }
-
-                                                    if (widget.GetType().GetData() == WidgetType.SceneAssetPreviewWidget)
-                                                        if (SelectableManager.Instance.GetSceneAssetInteractableMode() == SceneAssetInteractableMode.Orbit)
-                                                            ActionEvents.OnResetCameraToDefaultPoseEvent();
-                                                }
-                                                else
-                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                                callbackResults.SetResult(selectionsClearedCallbackResults);
                                             });
                                         }
-                                        else
-                                            Log(callbackResults.resultCode, callbackResults.result, this);
                                     });
                                 }
                                 else
                                     Log(callbackResults.resultCode, callbackResults.result, this);
-                            });
+                            }
+                            else
+                                Log(callbackResults.resultCode, callbackResults.result, this);
                         }
-
-                    }, $"Widget Of Type : {widgetType} not Found For Screen : {GetName()} Of Type : {GetScreenType()}.", $"Widget : {widget.GetName()} Of Type : {widget.GetType()} Has been Successfully Found For Screen : {GetName()} Of Type : {GetScreenType()}.");
+                    }
+                    else
+                        Log(callbackResults.resultCode, callbackResults.result, this);
                 }
+                else
+                    Log(callbackResults.resultCode, callbackResults.result, this);
 
-                callback?.Invoke(callbackResults);
+                return callbackResults;
+            }
+
+            public async Task<Callback> HideWidgetAsync(SceneConfigDataPacket dataPacket)
+            {
+                Callback callbackResults = new Callback(GetWidget(dataPacket.GetReferencedWidgetType().GetData().GetValue().GetData()));
+
+                if (callbackResults.Success())
+                {
+                    var widget = GetWidget(dataPacket.GetReferencedWidgetType().GetData().GetValue().GetData()).GetData();
+
+                    callbackResults.SetResult(widget.WidgetReady());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance", $"Hide Widget Failed - Selectable Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(dataPacket.GetScreenBlurConfig());
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(dataPacket.GetScreenBlurConfig().GetData().Initialized());
+
+                                if (callbackResults.Success())
+                                {
+                                    var hideWidgetCallbackResultsTask = await widget.HideScreenWidgetAsync();
+
+                                    callbackResults.SetResult(hideWidgetCallbackResultsTask);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(Blur(dataPacket.GetScreenBlurConfig().GetData()));
+
+                                        if (callbackResults.UnSuccessful())
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                    }
+                                    else
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                }
+                                else
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                            }
+                            else
+                            {
+                                var hideWidgetCallbackResultsTask = await widget.HideScreenWidgetAsync();
+                                callbackResults.SetResult(hideWidgetCallbackResultsTask);
+                            }
+
+                            if (callbackResults.Success())
+                            {
+                                var selectableManagerInstance = Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance").GetData();
+
+                                if (callbackResults.Success())
+                                {
+                                    selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            selectionSystemCallbackResults.GetData().OnClearInputSelection(widget.GetType().GetData(), selectionsClearedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(selectionsClearedCallbackResults);
+                                            });
+                                        }
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                            }
+                            else
+                                Log(callbackResults.resultCode, callbackResults.result, this);
+                        }
+                    }
+                    else
+                        Log(callbackResults.resultCode, callbackResults.result, this);
+                }
+                else
+                    Log(callbackResults.resultCode, callbackResults.result, this);
+
+                return callbackResults;
+            }
+
+            public async Task<Callback> HideWidgetAsync(Widget widget, ScreenBlurConfig blurConfig = null)
+            {
+                Callback callbackResults = new Callback(Helpers.GetAppComponentValid(widget, "Widget", "Hide Screen Widget Async Failed - Widget Parameter Value Is Null - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(widget.WidgetReady());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance", $"Hide Widget Failed - Selectable Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(blurConfig, "Blur Config", "Hide Widget Async With Blur Config Unsuccessful - Blur Config Parameter Value Is Null - Continuing Execution."));
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(blurConfig.Initialized());
+
+                                if (callbackResults.Success())
+                                {
+                                    var hideWidgetCallbackResultsTask = await widget.HideScreenWidgetAsync();
+
+                                    callbackResults.SetResult(hideWidgetCallbackResultsTask);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(Blur(blurConfig));
+
+                                        if (callbackResults.UnSuccessful())
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                    }
+                                    else
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                }
+                                else
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                            }
+                            else
+                            {
+                                var hideWidgetCallbackResultsTask = await widget.HideScreenWidgetAsync();
+                                callbackResults.SetResult(hideWidgetCallbackResultsTask);
+                            }
+
+                            if(callbackResults.Success())
+                            {
+                                var selectableManagerInstance = Helpers.GetAppComponentValid(SelectableManager.Instance, "Selectable Manager Instance").GetData();
+
+                                if (callbackResults.Success())
+                                {
+                                    selectableManagerInstance.GetProjectStructureSelectionSystem(selectionSystemCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(selectionSystemCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            selectionSystemCallbackResults.GetData().OnClearInputSelection(widget.GetType().GetData(), selectionsClearedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(selectionsClearedCallbackResults);
+                                            });
+                                        }
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                            }
+                            else
+                                Log(callbackResults.resultCode, callbackResults.result, this);
+                        }
+                    }
+                    else
+                        Log(callbackResults.resultCode, callbackResults.result, this);
+                }
+                else
+                    Log(callbackResults.resultCode, callbackResults.result, this);
+
+                return callbackResults;
             }
 
             #endregion
@@ -35369,7 +35802,26 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<Widget> GetWidgetOfType(WidgetType widgetType)
+            public CallbackData<Widget> GetWidget(SceneConfigDataPacket dataPackets)
+            {
+                var callbackResults = new CallbackData<Widget>(dataPackets.GetReferencedWidgetType().GetData().GetValue());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetWidgetOfType(dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData()));
+
+                    if (callbackResults.Success())
+                        callbackResults.data = GetWidgetOfType(dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData()).GetData();
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private CallbackData<Widget> GetWidgetOfType(WidgetType widgetType)
             {
                 CallbackData<Widget> callbackResults = new CallbackData<Widget>(GetWidgets());
 
@@ -35405,11 +35857,6 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public Widget GetWidget(Widget widget)
-            {
-                return widgets.Find(data => data.GetType().GetData() == widget.GetType().GetData());
-            }
-
             public CallbackDataList<Widget> GetWidgets()
             {
                 CallbackDataList<Widget> callbackResults = new CallbackDataList<Widget>();
@@ -35424,27 +35871,6 @@ namespace Com.RedicalGames.Filar
                 }, $"Screen Widegts For Screen : {GetName()} Of type : {GetScreenType()} - Are Not Yet Initialized.");
 
                 return callbackResults;
-            }
-
-            public Widget GeWidget(WidgetType type)
-            {
-                Widget widget = null;
-
-                if (widgets != null)
-                {
-                    foreach (var widgetComponent in widgets)
-                    {
-                        if (widgetComponent.GetType().GetData() == type)
-                        {
-                            widget = widgetComponent;
-                            break;
-                        }
-                        else
-                            continue;
-                    }
-                }
-
-                return widget;
             }
 
             #endregion
@@ -35490,22 +35916,32 @@ namespace Com.RedicalGames.Filar
 
             #region Screen Blur Functions
 
-            public void Blur(SceneConfigDataPacket dataPackets, Action<Callback> callback = null)
+            public void Blur(ScreenBlurConfig config, Action<Callback> callback = null)
             {
-                var callbackResults = new Callback(GetScreenBlur());
+                var callbackResults = new Callback(Blur(config));
+
+                if(callbackResults.UnSuccessful())
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void Blur(ScreenUIPlacementType placementType, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(placementType, "Placement Type", $"Blur Failed - Placement Type Parameter Value Is Set To Default : {placementType} - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
-                    //callbackResults.SetResult(GetScreenBlur().GetData().IsScreenBlured());
+                    var config = new ScreenBlurConfig(true, placementType);
 
-                    if (dataPackets.blurScreen)
+                    callbackResults.SetResult(config.Initialized());
+
+                    if(callbackResults.Success())
                     {
-                        GetScreenBlur().GetData().Show(dataPackets.GetReferencedUIScreenPlacementType().GetData().GetValue().GetData());
+                        callbackResults.SetResult(Blur(config));
 
-                        if (dataPackets.screenViewState == ScreenViewState.None)
-                            dataPackets.screenViewState = ScreenViewState.Blurred;
-
-                        ActionEvents.OnScreenViewStateChangedEvent(dataPackets.screenViewState);
+                        if(callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -35516,41 +35952,59 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void Blur(ScreenUIPlacementType placementType, bool forceBlur = true, Action<Callback> callback = null)
+            public Callback Blur(ScreenBlurConfig config)
             {
                 var callbackResults = new Callback(GetScreenBlur());
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(GetScreenBlur().GetData().IsScreenBlured());
+                    var screenBlurObject = GetScreenBlur().GetData();
 
-                    if (callbackResults.UnSuccessful())
+                    callbackResults.SetResult(config.Initialized());
+
+                    if (callbackResults.Success())
                     {
-                        GetScreenBlur().GetData().Show(placementType, callback: screenBluredCallbackResults => 
+                        callbackResults.SetResult(config.BlurScreen());
+
+                        if (callbackResults.Success())
                         {
-                            callbackResults.SetResult(screenBluredCallbackResults);
-                        });
-                    }
-                    else
-                    {
-                        if (forceBlur)
-                        {
-                            GetScreenBlur().GetData().Show(placementType, callback: screenBluredCallbackResults =>
+                            callbackResults.SetResult(screenBlurObject.IsScreenBlured());
+
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(screenBluredCallbackResults);
-                            });
+                                screenBlurObject.OnSetBlurLayer(config.GetBlurScreenPlacementType().GetData(), blurLayerSetCallbackResults => 
+                                {
+                                    callbackResults.SetResult(blurLayerSetCallbackResults);
+                                });
+                            }
+                            else
+                            {
+                                screenBlurObject.Show(config.BlurScreen().GetData(), callback: screenBluredCallbackResults =>
+                                {
+                                    callbackResults.SetResult(screenBluredCallbackResults);
+
+                                    if (callbackResults.Success())
+                                        ActionEvents.OnScreenViewStateChangedEvent(ScreenViewState.Blurred);
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
                         }
                         else
                         {
-                            callbackResults.result = "Blur Failed - Screen Is Already Blured";
-                            callbackResults.resultCode = Helpers.WarningCode;
+                            Focus(screenFocusedCallbackResults =>
+                            {
+                                callbackResults.SetResult(screenFocusedCallbackResults);
+                            });
                         }
                     }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                callback?.Invoke(callbackResults);
+                return callbackResults;
             }
 
             #endregion
@@ -42484,7 +42938,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected bool blurScreen = false;
+            protected ScreenBlurConfig screenBlurConfig;
 
             #region Scroller
 
@@ -43649,7 +44103,7 @@ namespace Com.RedicalGames.Filar
                                     if (Helpers.IsSuccessCode(selectionCallback.resultCode))
                                     {
                                         if (ScreenUIManager.Instance.GetCurrentScreen().Success())
-                                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(WidgetType.SelectionOptionsWidget);
+                                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(WidgetType.SelectionOptionsWidget);
                                         else
                                             LogWarning("On Widget Action Event Screen Manager Get Current Screen Data Value Is Null", this);
 
@@ -43672,7 +44126,7 @@ namespace Com.RedicalGames.Filar
                                         if (widgetsContainer.GetContentCount().Success())
                                         {
                                             if (ScreenUIManager.Instance.GetCurrentScreen().Success())
-                                                ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(WidgetType.SelectionOptionsWidget);
+                                                ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(WidgetType.SelectionOptionsWidget);
                                             else
                                                 LogWarning("On Widget Action Event Screen Manager Get Current Screen Data Value Is Null", this);
 
@@ -43875,7 +44329,7 @@ namespace Com.RedicalGames.Filar
                 });
             }
 
-            void OnOpenFilePicker_ActionEvent(WidgetType popUpType, SceneConfigDataPacket dataPackets) => ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(popUpType, dataPackets);
+            void OnOpenFilePicker_ActionEvent(WidgetType popUpType, SceneConfigDataPacket dataPackets) => ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(popUpType);
 
             void OnPinItem_ActionEvent(SceneConfigDataPacket dataPackets)
             {
@@ -44083,7 +44537,7 @@ namespace Com.RedicalGames.Filar
                     }
 
                     if (ScreenUIManager.Instance.GetCurrentScreen().Success())
-                        ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(widgetType, dataPackets);
+                        ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(widgetType);
                     else
                         LogWarning("Failed To Close Pop Up Because Screen Manager's Get Current Screen Data Value Is Null.", this, () => OnHideScreenWidget_ActionEvent(widgetType, dataPackets));
 
@@ -44247,12 +44701,12 @@ namespace Com.RedicalGames.Filar
                     case WidgetType.ProjectCreationWarningWidget:
 
                         if (ScreenUIManager.Instance.GetCurrentScreen().Success())
-                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(dataPackets.widgetType);
                         else
                             LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this);
 
                         if (ScreenUIManager.Instance.GetCurrentScreen().Success())
-                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(WidgetType.CreateNewProjectWidget, dataPackets);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(WidgetType.CreateNewProjectWidget);
                         else
                             LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this);
 
@@ -44266,7 +44720,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (ScreenUIManager.Instance != null)
                 {
-                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(dataPackets.widgetType);
 
                     if (PublishingManager.Instance != null)
                         PublishingManager.Instance.Publish();
@@ -44281,7 +44735,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (ScreenUIManager.Instance != null)
                 {
-                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(dataPackets.widgetType);
 
                     if (PublishingManager.Instance != null)
                         PublishingManager.Instance.Publish();
@@ -44307,7 +44761,7 @@ namespace Com.RedicalGames.Filar
 
 
                 if (ScreenUIManager.Instance != null)
-                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(popUpType, dataPackets);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(popUpType);
                 else
                     LogWarning("Export Asset Failed : Screen UI Manager Instance Is Not Yet Initialized.", this, () => OnSceneAssetExport_ActionEvent(popUpType, dataPackets));
             }
@@ -44372,7 +44826,7 @@ namespace Com.RedicalGames.Filar
                                         if (Helpers.IsSuccessCode(deletedAssetsCallback.resultCode))
                                         {
                                             if (ScreenUIManager.Instance.GetCurrentScreen().Success())
-                                                ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
+                                                ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(dataPackets.widgetType);
                                             else
                                                 LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnDeleteAssetWidget_ActionEvent(dataPackets));
 
@@ -44417,7 +44871,7 @@ namespace Com.RedicalGames.Filar
             {
                 if (ScreenUIManager.Instance != null)
                 {
-                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(dataPackets.widgetType);
 
                     AppDatabaseManager.Instance.CreateNewProjectFolder((folderCreated) =>
                     {
@@ -44491,7 +44945,7 @@ namespace Com.RedicalGames.Filar
                             SelectableManager.Instance.OnDeselectAll();
 
                         if (ScreenUIManager.Instance.GetCurrentScreen().Success())
-                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(dataPackets.widgetType);
                         else
                             LogWarning("Failed To Close Pop Up Because Screen Manager Is Not Yet Initialized.", this, () => OnCancel_ActionEvent(dataPackets));
 
@@ -44516,7 +44970,7 @@ namespace Com.RedicalGames.Filar
                     case WidgetType.ProjectCreationWarningWidget:
 
                         if (ScreenUIManager.Instance.GetCurrentScreen().Success())
-                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(dataPackets.widgetType);
 
                         SceneConfigDataPacket projectDataPackets = new SceneConfigDataPacket();
 
@@ -44535,7 +44989,7 @@ namespace Com.RedicalGames.Filar
                     case WidgetType.SignInWarningWidget:
 
                         if (ScreenUIManager.Instance.GetCurrentScreen().Success())
-                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType, dataPackets);
+                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(dataPackets.widgetType);
 
                         SceneConfigDataPacket loginViewDataPackets = new SceneConfigDataPacket();
 
@@ -44730,7 +45184,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         if (dataPacketCallbackResults.Success())
                                         {
-                                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(WidgetType.UITextDisplayerWidget);
+                                            ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(WidgetType.UITextDisplayerWidget);
                                             ScreenUIManager.Instance.GetCurrentScreen().GetData().ShowWidget(dataPacketCallbackResults.GetData().GetWidgetConfigDataPacket().GetData().GetType().GetData(), showLoadingWidgetCallbackResults => { });
                                         }
                                         else
@@ -44744,7 +45198,7 @@ namespace Com.RedicalGames.Filar
 
                                 if (dataPackets.folderStructureType == FolderStructureType.RootFolder)
                                 {
-                                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(WidgetType.UITextDisplayerWidget);
+                                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(WidgetType.UITextDisplayerWidget);
 
                                     SceneConfigDataPacket packets = dataPackets;
                                     packets.widgetType = WidgetType.FolderCreationWidget;
@@ -44806,7 +45260,7 @@ namespace Com.RedicalGames.Filar
                     if (ScreenUIManager.Instance.GetCurrentScreen().Success())
                     {
                         SelectableManager.Instance.DeselectAll();
-                        ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(dataPackets.widgetType);
+                        ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(dataPackets.widgetType);
                     }
                     else
                         LogWarning("On Widget Action Event Screen Manager Get Current Screen Data Value Is Null", this);
@@ -45159,7 +45613,7 @@ namespace Com.RedicalGames.Filar
 
             #region Sync Functions
 
-            public void ShowScreenWidget(SceneConfigDataPacket dataPackets, Action<Callback> callback = null, bool ignoreScreenData = false)
+            public void ShowWidget(SceneConfigDataPacket dataPackets, Action<Callback> callback = null, bool ignoreScreenData = false)
             {
                 var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
 
@@ -45206,7 +45660,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void ShowScreenWidget(WidgetType widgetType, Action<Callback> callback = null, bool ignoreScreenData = false)
+            public void ShowWidget(WidgetType widgetType, Action<Callback> callback = null, bool ignoreScreenData = false)
             {
                 var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
 
@@ -45245,7 +45699,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public void ShowScreenWidget<T>(SceneConfigDataPacket dataPackets, ScriptableConfigDataPacket<T> scriptableConfigData, Action<Callback> callback = null, bool ignoreScreenData = false) where T : Enum
+            public void ShowWidget<T>(SceneConfigDataPacket dataPackets, ScriptableConfigDataPacket<T> scriptableConfigData, Action<Callback> callback = null, bool ignoreScreenData = false) where T : Enum
             {
                 var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
 
@@ -45307,10 +45761,13 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        OnScreenWidget();
-
                         var showSelectedLayoutAsyncCallbackResultsTask = await ShowSelectedLayoutAsync(GetDefaultLayoutType().GetData());
                         callbackResults.SetResult(showSelectedLayoutAsyncCallbackResultsTask);
+
+                        if(callbackResults.Success())
+                            OnScreenWidget();
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -45338,16 +45795,24 @@ namespace Com.RedicalGames.Filar
                         {
                             if (dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData() == GetType().GetData())
                             {
-                                SubscribeToEvents(callback: subscriptionCallbackResults =>
-                                {
-                                    if (subscriptionCallbackResults.UnSuccessful())
-                                        Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                                });
-
-                                OnScreenWidget(dataPackets);
-
                                 var showSelectedLayoutAsyncCallbackResultsTask = await ShowSelectedLayoutAsync(GetDefaultLayoutType().GetData());
+
                                 callbackResults.SetResult(showSelectedLayoutAsyncCallbackResultsTask);
+
+                                if(callbackResults.Success())
+                                {
+                                    SubscribeToEvents(callback: subscriptionCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(subscriptionCallbackResults);
+
+                                        if (callbackResults.Success())
+                                            OnScreenWidget(dataPackets);
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
                             else
                             {
@@ -45417,37 +45882,37 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            protected void ShowWidget(WidgetType widgetType, Action<Callback> callback = null, bool ignoreScreenData = false)
-            {
-                var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
+            //protected void ShowWidget(WidgetType widgetType, Action<Callback> callback = null, bool ignoreScreenData = false)
+            //{
+            //    var callbackResults = new Callback(WidgetReady(ignoreScreenData: ignoreScreenData));
 
-                if (callbackResults.Success())
-                {
-                    callbackResults.SetResult(GetTransitionType());
+            //    if (callbackResults.Success())
+            //    {
+            //        callbackResults.SetResult(GetTransitionType());
 
-                    if (callbackResults.Success())
-                    {
-                        SubscribeToEvents(callback: subscriptionCallbackResults =>
-                        {
-                            if (subscriptionCallbackResults.UnSuccessful())
-                                Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
-                        });
+            //        if (callbackResults.Success())
+            //        {
+            //            SubscribeToEvents(callback: subscriptionCallbackResults =>
+            //            {
+            //                if (subscriptionCallbackResults.UnSuccessful())
+            //                    Log(subscriptionCallbackResults.GetResultCode, subscriptionCallbackResults.GetResult, this);
+            //            });
 
-                        //OnScreenWidget();
+            //            //OnScreenWidget();
 
-                        //ShowSelectedLayout(GetDefaultLayoutType().GetData(), showLayoutCallbackResults =>
-                        //{
-                        //    callbackResults.SetResult(showLayoutCallbackResults);
-                        //});
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //            //ShowSelectedLayout(GetDefaultLayoutType().GetData(), showLayoutCallbackResults =>
+            //            //{
+            //            //    callbackResults.SetResult(showLayoutCallbackResults);
+            //            //});
+            //        }
+            //        else
+            //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //    }
+            //    else
+            //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                callback?.Invoke(callbackResults);
-            }
+            //    callback?.Invoke(callbackResults);
+            //}
 
             #endregion
 
@@ -45679,6 +46144,32 @@ namespace Com.RedicalGames.Filar
                 return isTransitionState;
             }
 
+            #region Screen Blur Configuration
+
+            public CallbackData<ScreenBlurConfig> GetScreenBlurConfig()
+            {
+                var callbackResults = new CallbackData<ScreenBlurConfig>(Helpers.GetAppComponentValid(screenBlurConfig, "Screen Blur Config", $"Get Screen Blur Config Failed - Screen Blur Config Is Not Created For Widget : {GetName()} - of Type : {GetType().GetData()} - Invalid Operation"));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(screenBlurConfig.Initialized());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Screen Blur Config Success - Screen Blur Config For Widget : {GetName()} - of Type : {GetType().GetData()} - Has been Successfully Found.";
+                        callbackResults.data = screenBlurConfig;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+
             #region UI States
 
             #region Widget Positions
@@ -45859,23 +46350,6 @@ namespace Com.RedicalGames.Filar
                         callbackResults.data = default;
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
-                }
-
-                return callbackResults;
-            }
-
-            public CallbackData<bool> GetBlurScreenState()
-            {
-                var callbackResults = new CallbackData<bool>(GetType());
-
-                if(callbackResults.Success())
-                {
-                    callbackResults.data = blurScreen;
-
-                    if (blurScreen)
-                        callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().GetData()} - Has Screen Blur Enabled.";
-                    else
-                        callbackResults.result = $"Screen Blur Is Not Enabled For Widget : {GetName()} - Of Type : {GetType().GetData()}.";
                 }
 
                 return callbackResults;
@@ -51246,6 +51720,10 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region Screen Blur Data Classes
+
+        #region Screen Blur Object
+
         [Serializable]
         public class ScreenBlurObject : DataDebugger
         {
@@ -51309,6 +51787,41 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            private CallbackData<ScreenBlurObjectContainer> GetDisplayLayerContainer(ScreenUIPlacementType layerType)
+            {
+                var callbackResults = new CallbackData<ScreenBlurObjectContainer>(GetDisplayLayerContainerList());
+
+                if (callbackResults.Success())
+                {
+                    var displayLayerContainer = GetDisplayLayerContainerList().GetData().Find(container => container.containerLayerType == layerType);
+
+                    if (displayLayerContainer.HasValueAssigned())
+                    {
+                        callbackResults.result = $"Get Display Layer Container Success - Displayer Layer Container Of Type : {layerType} Has Been Successfully Found.";
+                        callbackResults.data = displayLayerContainer;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private CallbackDataList<ScreenBlurObjectContainer> GetDisplayLayerContainerList()
+            {
+                var callbackResults = new CallbackDataList<ScreenBlurObjectContainer>(Helpers.GetAppStructComponentsValid(displayLayerContainerList, "Display Layer Container List", "Get Display Layer Container List Failed - There Are No Display Layer Containers Found - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Display Layer Container List Success - There Are : {displayLayerContainerList.Count} Display Layer Container(s) Found.";
+                    callbackResults.data = displayLayerContainerList;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
             public Callback IsScreenBlured()
             {
                 Callback callbackResults = new Callback(Initialized());
@@ -51334,14 +51847,13 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-
             public void Show(ScreenUIPlacementType layerType, bool fade = false, Action<Callback> callback = null)
             {
                 Callback callbackResults = new Callback(Initialized());
 
                 if (callbackResults.Success())
                 {
-                    AddToSelectedContainer(layerType, addedToContainerCallback => 
+                    OnSetBlurLayer(layerType, addedToContainerCallback => 
                     {
                         callbackResults.SetResult(addedToContainerCallback);
 
@@ -51366,7 +51878,12 @@ namespace Com.RedicalGames.Filar
                     OnSetBlurObjectVisibilityState(false);
 
                     if (resetDisplayLayer)
-                        AddToSelectedContainer(ScreenUIPlacementType.Default);
+                    {
+                        OnSetBlurLayer(ScreenUIPlacementType.Default, blurLayerSetCallbackResults => 
+                        {
+                            callbackResults.SetResult(blurLayerSetCallbackResults);
+                        });
+                    }
 
                     SetUIVisibilityState(UIVisibilityState.Hidden);
                 }
@@ -51376,32 +51893,19 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            void AddToSelectedContainer(ScreenUIPlacementType layerType, Action<Callback> callback = null)
+            public void OnSetBlurLayer(ScreenUIPlacementType layerType, Action<Callback> callback = null)
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(GetDisplayLayerContainer(layerType));
 
-                if (displayLayerContainerList != null)
+                if (callbackResults.Success())
                 {
-                    ScreenBlurObjectContainer container = displayLayerContainerList.Find((x) => x.containerLayerType == layerType);
-
-                    if (container.HasValueAssigned())
+                    OnSetBlurObjectContainer(GetDisplayLayerContainer(layerType).GetData().GetValueAssigned(), true, screenBlurLayerSetCallbackResults => 
                     {
-                        OnSetBlurObjectContainer(container.GetValueAssigned(), true);
-
-                        callbackResults.result = $"Setting Blur Object : {value.name} To Container : {container.value.name} Of Type : {layerType}.";
-                        callbackResults.resultCode = Helpers.SuccessCode;
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Container Of Type : {layerType} Value Is Missing Null.";
-                        callbackResults.resultCode = Helpers.ErrorCode;
-                    }
+                        callbackResults.SetResult(screenBlurLayerSetCallbackResults);
+                    });
                 }
                 else
-                {
-                    callbackResults.result = $"Add To Selected Container Of Type : {layerType} Failed : Display Layer Container List Is Null.";
-                    callbackResults.resultCode = Helpers.ErrorCode;
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 callback?.Invoke(callbackResults);
             }
@@ -51447,10 +51951,158 @@ namespace Com.RedicalGames.Filar
 
             public void OnSetBlurObjectAlphaValue(float value) => canvasGroup.alpha = value;
 
-            public void OnSetBlurObjectContainer(Transform value, bool keepWorldPos) => this.value.transform.SetParent(value, keepWorldPos);
+            public void OnSetBlurObjectContainer(Transform value, bool keepWorldPos, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if (callbackResults.Success())
+                    this.value.transform.SetParent(value, keepWorldPos);
+
+                callback?.Invoke(callbackResults);
+            }
 
             #endregion
         }
+
+        #endregion
+
+        #region Screen Blur Config
+
+        [Serializable]
+        public class ScreenBlurConfig : DataDebugger
+        {
+            #region Components
+
+            [Space(5)]
+            [SerializeField]
+            protected bool active = false;
+
+            [Space(5)]
+            [SerializeField]
+            protected ScreenUIPlacementType blurScreenPlacementType = ScreenUIPlacementType.None;
+
+            #endregion
+
+            #region Main
+
+            public ScreenBlurConfig()
+            {
+
+            }
+
+            public ScreenBlurConfig(bool active = false, ScreenUIPlacementType blurScreenPlacementType = ScreenUIPlacementType.Default)
+            {
+                this.active = active;
+                this.blurScreenPlacementType = blurScreenPlacementType;
+            }
+
+            public Callback Initialized()
+            {
+                var callbackResults = new CallbackData<ScreenUIPlacementType>(GetBlurScreenPlacementType());
+
+                if(callbackResults.Success())
+                    callbackResults.result = $"Initialized Success - Screen Blur Config : {GetName()} Has Been Initialized Successfully - With Blur Screen Placement Type Set To : {blurScreenPlacementType}.";
+                else
+                    callbackResults.result = $"Initialized Failed - Screen Blur Config : {GetName()} Has Not Been Initialized Yet - Initialization Failed with Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}.";
+
+                return callbackResults;
+            }
+
+            #region Data Setters
+
+            public void SetBlurActiveState(bool active, Action<Callback> callback = null)
+            {
+                var callbackResults = new CallbackData<ScreenUIPlacementType>(Helpers.GetAppEnumValueValid(blurScreenPlacementType, "Blur Screen Placement Type", $"Set Blur Active State Failed - Blur Screen Placement Type Value For : {GetName()} Is Set To Default : {blurScreenPlacementType} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    this.active = active;
+                    callbackResults.result = $"Set Blur Active State Success - Blur Screen State  For : {GetName()} Is Set To : {active} And The Placement Type Value Is Set To : {blurScreenPlacementType} - From A Parameter Value.";
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetBlurPlacementType(ScreenUIPlacementType blurScreenPlacementType, Action<Callback> callback = null)
+            {
+                var callbackResults = new CallbackData<ScreenUIPlacementType>(Helpers.GetAppEnumValueValid(blurScreenPlacementType, "Blur Screen Placement Type", $"Set Blur Screen Placement Type Failed - Blur Screen Placement Type Parameter Value For : {GetName()} Is Set To Default : {blurScreenPlacementType} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    this.blurScreenPlacementType = blurScreenPlacementType;
+                    callbackResults.result = $"Set Blur Screen Placement Type Success - Blur Screen Placement Type Value For : {GetName()} Is Set To : {blurScreenPlacementType} - From A Parameter Value.";
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            public CallbackData<ScreenUIPlacementType> BlurScreen()
+            {
+                var callbackResults = new CallbackData<ScreenUIPlacementType>(GetBlurScreenPlacementType());
+
+                if (callbackResults.Success())
+                {
+                    if (active)
+                    {
+                        callbackResults.result = $"Blur Screen Success - Blur Screen : {GetName()} Is Active And The Placement Type Is Set To : {GetBlurScreenPlacementType().GetData()}";
+                        callbackResults.data = GetBlurScreenPlacementType().GetData();
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Blur Screen Unsuccessful - Blur Screen : {GetName()} Is Not Set To Active And The Placement Type Is Set To : {GetBlurScreenPlacementType().GetData()}";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            #region Data Getters
+
+            public Callback GetActiveState()
+            {
+                var callbackResults = new Callback(GetBlurScreenPlacementType());
+
+                if (callbackResults.Success())
+                {
+                    if (active)
+                    {
+                        callbackResults.result = $"Get Active State Success - Screen Blur Config : {GetName()} Is Active And The Placement Type Is Set To : {GetBlurScreenPlacementType().GetData()}";
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Get Active State Unsuccessful - Screen Blur Config : {GetName()} Is Not Set To Active And The Placement Type Is Set To : {GetBlurScreenPlacementType().GetData()}";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ScreenUIPlacementType> GetBlurScreenPlacementType()
+            {
+                var callbackResults = new CallbackData<ScreenUIPlacementType>(Helpers.GetAppEnumValueValid(blurScreenPlacementType, "Blur Screen Placement Type", $"Blur Screen Failed - Blur Screen Placement Type Value For : {GetName()} Is Set To Default : {blurScreenPlacementType} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Blur Screen Placement Type Success - Blur Screen : {GetName()}'s Placement Type Is Set To : {blurScreenPlacementType}";
+                    callbackResults.data = blurScreenPlacementType;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        #endregion
+
+        #endregion
 
         [Serializable]
         public class RenderingSettingsData
@@ -52488,11 +53140,14 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public DataPacketEnum<ObjectStateOverrideType> overrideStateType = new DataPacketEnum<ObjectStateOverrideType>();
 
+            [Space(5)]
+            public ScreenBlurConfig screenBlurConfig = new ScreenBlurConfig();
+
             #endregion
 
             #region Togglable Options (Booleans)
 
-            [Space(5)]
+           [Space(5)]
             public SceneDataPacketStructGroup<bool> booleanOptionsGroup;
 
             [Space(5)]
@@ -52619,7 +53274,20 @@ namespace Com.RedicalGames.Filar
 
             #region Data Setters
 
-            public void SetScreenBlurState(bool blurScreen) => this.blurScreen = blurScreen;
+            public void SetScreenBlurState(bool blurScreen)
+            {
+                var callbackResults = new Callback();
+
+                screenBlurConfig.SetBlurActiveState(blurScreen, screenBlurSetCallbackResults =>
+                {
+                    callbackResults.SetResult(screenBlurSetCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        this.blurScreen = blurScreen;
+                    }
+                });
+            }
 
             public void SetReferencedScreenType(ScreenType referencedScreenType, Action<Callback> callback = null)
             {
@@ -52669,8 +53337,15 @@ namespace Com.RedicalGames.Filar
                 {
                     this.referencedUIScreenPlacementType.SetValue(referencedUIScreenPlacementType);
 
-                    callbackResults.result = $"Data Packets Referenced Referenced UI Screen Placement Type Has Been Successfully Set To : {referencedUIScreenPlacementType} - Changes Applied";
-                    callbackResults.resultCode = Helpers.SuccessCode;
+                    this.screenBlurConfig.SetBlurPlacementType(referencedUIScreenPlacementType, screenBlurSetCallbackResults => 
+                    {
+                        callbackResults.SetResult(screenBlurSetCallbackResults);
+
+                        if(callbackResults.Success())
+                        {
+
+                        }
+                    });
                 }
                 else
                 {
@@ -52720,6 +53395,16 @@ namespace Com.RedicalGames.Filar
                     callbackResults.result = $"Data Packet Get Referenced UI Screen Placement Type Success - UI Screen Placement Type : {referencedUIScreenPlacementType.GetValue().GetData()}";
                     callbackResults.data = referencedUIScreenPlacementType;
                 }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ScreenBlurConfig> GetScreenBlurConfig()
+            {
+                var callbackResults = new CallbackData<ScreenBlurConfig>(screenBlurConfig.Initialized());
+
+                if(callbackResults.Success())
+                    callbackResults.data = screenBlurConfig;
 
                 return callbackResults;
             }
@@ -56507,7 +57192,6 @@ namespace Com.RedicalGames.Filar
                 callback.Invoke(callbackResults);
             }
 
-
             public static CallbackDataList<T> GetAppComponentsValid<T>(List<T> components, string componentsIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
             {
                 CallbackDataList<T> callbackResults = new CallbackDataList<T>();
@@ -56531,6 +57215,37 @@ namespace Com.RedicalGames.Filar
                                 callbackResults.resultCode = ErrorCode;
                             }
                         } 
+                    }
+                    else
+                    {
+                        callbackResults.result = "Component Is Not Null - There Are No Values Assigned - List Empty.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = WarningCode;
+                    }
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static CallbackDataList<T> GetAppStructComponentsValid<T>(List<T> components, string componentsIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : struct
+            {
+                CallbackDataList<T> callbackResults = new CallbackDataList<T>();
+
+                if (components != null)
+                {
+                    if (components.Count > 0)
+                    {
+                        callbackResults.result = successOperationFallbackResults ?? $"Component : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
+                        callbackResults.data = components;
+                        callbackResults.resultCode = SuccessCode;
                     }
                     else
                     {
@@ -58133,7 +58848,8 @@ namespace Com.RedicalGames.Filar
 
             void Focus(Action<Callback> callback = null);
 
-            void Blur(SceneConfigDataPacket dataPacket, Action<Callback> callback = null);
+            void Blur(ScreenBlurConfig config, Action<Callback> callback = null);
+            Callback Blur(ScreenBlurConfig config);
 
             string GetScreenTitle();
 

@@ -982,7 +982,7 @@ namespace Com.RedicalGames.Filar
 
                 if (ScreenUIManager.Instance)
                 {
-                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(AppData.WidgetType.AssetImportWidget, inspectorModeDataPackets);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(AppData.WidgetType.AssetImportWidget);
                     inspectorModeDataPackets.sceneAssetMode = AppData.EventCameraState.InspectorMode;
 
                     if (assetWidgetRoutine != null)
@@ -1001,7 +1001,7 @@ namespace Com.RedicalGames.Filar
 
                 if (ScreenUIManager.Instance)
                 {
-                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(AppData.WidgetType.SceneAssetPropertiesWidget, inspectorModeDataPackets);
+                    ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(AppData.WidgetType.SceneAssetPropertiesWidget);
                     inspectorModeDataPackets.sceneAssetMode = AppData.EventCameraState.FocusedMode;
 
                     if (eventCameraTransition)
@@ -1035,7 +1035,7 @@ namespace Com.RedicalGames.Filar
         {
             if (ScreenUIManager.Instance)
             {
-                yield return new WaitUntil(() => ScreenUIManager.Instance.GetCurrentScreen().GetData().GeWidget(AppData.WidgetType.AssetImportWidget).IsTransitionState() == false);
+                yield return new WaitUntil(() => ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.AssetImportWidget).GetData().IsTransitionState() == false);
                 yield return new WaitForSecondsRealtime(widgetsTransitionDelayDuration);
 
                 AppData.ActionEvents.OnTransitionSceneEventCamera(inspectorModeDataPackets);
@@ -1053,7 +1053,7 @@ namespace Com.RedicalGames.Filar
         {
             if (ScreenUIManager.Instance)
             {
-                yield return new WaitUntil(() => ScreenUIManager.Instance.GetCurrentScreen().GetData().GeWidget(AppData.WidgetType.SceneAssetPropertiesWidget).IsTransitionState() == false);
+                yield return new WaitUntil(() => ScreenUIManager.Instance.GetCurrentScreen().GetData().GetWidget(AppData.WidgetType.SceneAssetPropertiesWidget).GetData().IsTransitionState() == false);
                 AppData.ActionEvents.OnTransitionSceneEventCamera(focusedModeDataPackets);
 
                 yield return new WaitForSecondsRealtime(widgetsTransitionDelayDuration);
@@ -1525,7 +1525,7 @@ namespace Com.RedicalGames.Filar
             yield return new WaitForSeconds(AppDatabaseManager.Instance.GetDefaultExecutionValue(AppData.RuntimeExecution.ScreenWidgetHideDelayValue).value);
 
             if (ScreenUIManager.Instance != null)
-                ScreenUIManager.Instance.GetCurrentScreen().GetData().HideScreenWidget(AppData.WidgetType.FileSelectionOptionsWidget);
+                ScreenUIManager.Instance.GetCurrentScreen().GetData().HideWidget(AppData.WidgetType.FileSelectionOptionsWidget);
             else
                 Debug.LogWarning("--> Select Failed : ScreenUIManager.Instance Is Not Yet Initialized.");
 

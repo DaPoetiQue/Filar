@@ -90,41 +90,43 @@ namespace Com.RedicalGames.Filar
                                 }
                                 else
                                 {
-                                    callbackResults.SetResult(screen.GetWidgetOfType(AppData.WidgetType.SignInWidget));
+                                    callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.SignInWidget));
 
                                     if (callbackResults.Success())
                                     {
-                                        var widget = screen.GetWidgetOfType(AppData.WidgetType.SignInWidget).GetData();
+                                        var widget = screen.GetWidget(AppData.WidgetType.SignInWidget).GetData();
 
                                         callbackResults.SetResult(screen.IsFocusedWidget(AppData.WidgetType.PostsWidget));
 
                                         if (callbackResults.Success())
                                         {
-                                            var hideWidgetAsyncCallbackResultsTask = await screen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
+                                            var hideWidgetAsyncCallbackResultsTask = await screen.HideWidgetAsync(AppData.WidgetType.PostsWidget);
                                             callbackResults.SetResult(hideWidgetAsyncCallbackResultsTask);
 
                                             if (callbackResults.Success())
                                             {
                                                 await Task.Delay(500);
 
-                                                var loginScreenConfig = new AppData.SceneConfigDataPacket();
+                                                screen.ShowWidget(AppData.WidgetType.SignInWidget, signInWidgetShownCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(signInWidgetShownCallbackResults);
 
-                                                loginScreenConfig.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
-                                                loginScreenConfig.blurScreen = true;
-
-                                                screen.ShowWidget(loginScreenConfig);
+                                                    if (callbackResults.UnSuccessful())
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         }
                                         else
                                         {
-                                            var loginScreenConfig = new AppData.SceneConfigDataPacket();
+                                            screen.ShowWidget(AppData.WidgetType.SignInWidget, signInWidgetShownCallbackResults => 
+                                            {
+                                                callbackResults.SetResult(signInWidgetShownCallbackResults);
 
-                                            loginScreenConfig.SetReferencedWidgetType(AppData.WidgetType.SignInWidget);
-                                            loginScreenConfig.blurScreen = true;
-
-                                            screen.ShowWidget(loginScreenConfig);
+                                                if(callbackResults.UnSuccessful())
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
                                         }
                                     }
                                     else
@@ -204,17 +206,17 @@ namespace Com.RedicalGames.Filar
 
         private async void OpenMainMenu(AppData.MenuType menuType, Screen screen, Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback(screen.GetWidgetOfType(AppData.WidgetType.PostsWidget));
+            var callbackResults = new AppData.Callback(screen.GetWidget(AppData.WidgetType.PostsWidget));
 
             if (callbackResults.Success())
             {
-                var widget = screen.GetWidgetOfType(AppData.WidgetType.PostsWidget).GetData();
+                var widget = screen.GetWidget(AppData.WidgetType.PostsWidget).GetData();
 
                 callbackResults.SetResult(screen.IsFocusedWidget(AppData.WidgetType.PostsWidget));
 
                 if (callbackResults.Success())
                 {
-                    var hideWidgetAsyncCallbackResultsTask = await screen.HideScreenWidgetAsync(AppData.WidgetType.PostsWidget);
+                    var hideWidgetAsyncCallbackResultsTask = await screen.HideWidgetAsync(AppData.WidgetType.PostsWidget);
                     callbackResults.SetResult(hideWidgetAsyncCallbackResultsTask);
 
                     if (callbackResults.Success())

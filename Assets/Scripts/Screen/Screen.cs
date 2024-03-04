@@ -92,7 +92,7 @@ namespace Com.RedicalGames.Filar
             {
                 var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name).GetData();
 
-                callbackResults.SetResult(GetWidgetOfType(AppData.WidgetType.TitleDisplayerWidget));
+                callbackResults.SetResult(GetWidget(AppData.WidgetType.TitleDisplayerWidget));
 
                 if (callbackResults.Success())
                 {
@@ -100,7 +100,7 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        var titleWidget = GetWidgetOfType(AppData.WidgetType.TitleDisplayerWidget).GetData();
+                        var titleWidget = GetWidget(AppData.WidgetType.TitleDisplayerWidget).GetData();
                         titleWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, appManagerInstance.GetApplicationName().GetData());
                     }
                     else

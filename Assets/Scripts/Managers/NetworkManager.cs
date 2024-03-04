@@ -98,7 +98,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 var networkWarningMessage = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.NetworkWarningMessage).GetData();
 
-                                screenUIManagerInstance.GetCurrentScreen().GetData().HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                screenUIManagerInstance.GetCurrentScreen().GetData().HideWidget(AppData.WidgetType.LoadingWidget);
 
                                 var networkDataPackets = new AppData.SceneConfigDataPacket();
 

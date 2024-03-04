@@ -255,7 +255,7 @@ namespace Com.RedicalGames.Filar
 
                                                 AppData.ActionEvents.OnInitializationCompletedEvent();
 
-                                                referencedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                                referencedScreen.HideWidget(AppData.WidgetType.LoadingWidget);
 
                                                 await screenUIManager.HideScreenAsync(loadingScreenDataPacketsCallbackResults.GetData());
 
@@ -266,7 +266,7 @@ namespace Com.RedicalGames.Filar
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    referencedScreen.HideScreenWidget(AppData.WidgetType.ImageDisplayerWidget);
+                                                    referencedScreen.HideWidget(AppData.WidgetType.ImageDisplayerWidget);
                                                     await screenUIManager.ShowScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
                                                 }
                                             }
@@ -414,7 +414,7 @@ namespace Com.RedicalGames.Filar
 
                                                                         AppData.ActionEvents.OnInitializationCompletedEvent();
 
-                                                                        referencedScreen.HideScreenWidget(AppData.WidgetType.LoadingWidget);
+                                                                        referencedScreen.HideWidget(AppData.WidgetType.LoadingWidget);
 
                                                                         await screenUIManager.HideScreenAsync(loadingScreenDataPacketsCallbackResults.GetData());
 
@@ -425,7 +425,7 @@ namespace Com.RedicalGames.Filar
 
                                                                         if (callbackResults.Success())
                                                                         {
-                                                                            referencedScreen.HideScreenWidget(AppData.WidgetType.ImageDisplayerWidget);
+                                                                            referencedScreen.HideWidget(AppData.WidgetType.ImageDisplayerWidget);
                                                                             await screenUIManager.ShowScreenAsync(screenLoadInfoInstance.GetScreenConfigDataPacket().GetData());
                                                                         }
                                                                         else

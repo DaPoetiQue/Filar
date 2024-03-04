@@ -774,7 +774,7 @@ namespace Com.RedicalGames.Filar
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    screen.HideScreenWidget(AppData.WidgetType.LoadingWidget, callback: screenHiddenCallbackResults => 
+                                                    screen.HideWidget(AppData.WidgetType.LoadingWidget, callback: screenHiddenCallbackResults => 
                                                     {
                                                         callbackResults.SetResult(screenHiddenCallbackResults);
                                                     });

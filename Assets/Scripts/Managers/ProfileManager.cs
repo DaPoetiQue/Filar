@@ -928,6 +928,27 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
+        public async Task<AppData.Callback> UpdateUserEmail(AppData.Profile profile)
+        {
+            var callbackResults = new AppData.Callback(profile.Initialized());
+
+            if(callbackResults.Success())
+            {
+                await authentication.CurrentUser.UpdateEmailAsync(profile.GetUserEmail().GetData()).ContinueWith(emailUpdatedCallbackResults => 
+                {
+                    if(emailUpdatedCallbackResults.IsCompletedSuccessfully)
+                        callbackResults.result = $"Update User Email Success.";
+                    else
+                    {
+                        callbackResults.result = $"Update User Email Failed With Message : {emailUpdatedCallbackResults.Exception.Message}";
+                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                    }
+                });
+            }
+
+            return callbackResults;
+        }
+
         public void SignOut()
         {
             if (authDependencyStatus == DependencyStatus.Available)

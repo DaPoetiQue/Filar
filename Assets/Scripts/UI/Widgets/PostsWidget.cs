@@ -79,7 +79,7 @@ namespace Com.RedicalGames.Filar
                                     if (screen.IsFocusedWidget(AppData.WidgetType.HomeMenuWidget).Success())
                                     {
                                         SetActionButtonTitle(AppData.InputActionButtonType.ShowPostsButton, "Posts");
-                                        screen.HideScreenWidget(AppData.WidgetType.HomeMenuWidget);
+                                        screen.HideWidget(AppData.WidgetType.HomeMenuWidget);
                                     }
                                     else
                                     {
@@ -98,7 +98,7 @@ namespace Com.RedicalGames.Filar
 
                                     SetActionButtonTitle(AppData.InputActionButtonType.ShowPostsButton, "Posts");
 
-                                    screen.HideScreenWidget(this);
+                                    screen.HideWidget(this);
 
                                     break;
                             }

@@ -138,7 +138,7 @@ namespace Com.RedicalGames.Filar
                     {
                         case AppData.InputActionButtonType.RetryButton:
 
-                            screen.HideScreenWidget(GetType().GetData(), callback: async widgetHiddenCallbackResults =>
+                            screen.HideWidget(GetType().GetData(), callback: async widgetHiddenCallbackResults =>
                             {
                                 callbackResults.SetResult(widgetHiddenCallbackResults);
 
@@ -180,7 +180,7 @@ namespace Com.RedicalGames.Filar
 
                         case AppData.InputActionButtonType.Cancel:
 
-                            screen.HideScreenWidget(this);
+                            screen.HideWidget(this);
 
                             break;
                     }

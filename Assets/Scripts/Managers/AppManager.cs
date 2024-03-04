@@ -101,7 +101,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     splashScreenLoadInfo.SetReferencedScreen(currentScreenView);
 
-                                                                    var splashDisplayerWidgetCallbackResults = currentScreenView.GetWidgetOfType(AppData.WidgetType.ImageDisplayerWidget);
+                                                                    var splashDisplayerWidgetCallbackResults = currentScreenView.GetWidget(AppData.WidgetType.ImageDisplayerWidget);
 
                                                                     callbackResults.SetResults(splashDisplayerWidgetCallbackResults);
 
