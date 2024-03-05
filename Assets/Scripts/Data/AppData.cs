@@ -6120,6 +6120,41 @@ namespace Com.RedicalGames.Filar
             PermanentlyBanned
         }
 
+        public enum SurfacingResults
+        {
+            None,
+            Shown,
+            RestrictedByUser,
+            Hidden,
+            Failed
+        }
+
+        public enum MessageLevelType
+        {
+            None,
+            Info,
+            Notice,
+            Success,
+            Warning,
+            Error,
+            Restriction,
+            Blocker,
+            Notification,
+            Log
+        }
+
+        [Serializable]
+        public class SurfacingData
+        {
+            #region Components
+
+            #endregion
+
+            #region Main
+
+            #endregion
+        }
+
         [Serializable]
         public class LicenseKey : DataDebugger
         {
@@ -59972,9 +60007,9 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            private Action method;
-            private InputActionButtonType action;
-            private bool registered;
+            public Action method;
+            public InputActionButtonType action;
+            public bool registered;
 
             #endregion
 

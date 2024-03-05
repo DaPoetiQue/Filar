@@ -122,6 +122,37 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
+        public AppData.CallbackData<string> GetMessage(params string[] messageOverrides)
+        {
+            var callbackResults = new AppData.CallbackData<string>();
+
+            //if (!string.IsNullOrEmpty(message))
+            //{
+            //    if (!string.IsNullOrEmpty(replace))
+            //    {
+            //        var newMessage = message.Replace("[0]", replace);
+
+            //        callbackResults.result = $"Message For : {GetName()} - Has Been Successfully Set To : {newMessage}";
+            //        callbackResults.data = newMessage;
+            //        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            //    }
+            //    else
+            //    {
+            //        callbackResults.result = $"Message For : {GetName()} - Has Been Successfully Set To : {message}";
+            //        callbackResults.data = message;
+            //        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            //    }
+            //}
+            //else
+            //{
+            //    callbackResults.result = $"Failed To Get Message For : {GetName()} - Message Value Is Not Assigned.";
+            //    callbackResults.data = default;
+            //    callbackResults.resultCode = AppData.Helpers.WarningCode;
+            //}
+
+            return callbackResults;
+        }
+
 
         public AppData.CallbackData<AppData.ConfigMessageType> GetConfigType()
         {
