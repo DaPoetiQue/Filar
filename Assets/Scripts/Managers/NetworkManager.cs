@@ -50,6 +50,70 @@ namespace Com.RedicalGames.Filar
 
         public async Task<AppData.Callback> CheckConnectionStatus()
         {
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager", "Check Connection Status Failed - Surfacing Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing manager").GetData();
+
+                float timeOut = DefaultTimeOut();
+
+                status = Application.internetReachability;
+
+                await Task.Delay(NetworkConnectionDelay());
+
+                while (status == NetworkReachability.NotReachable || timeOut > 0.0f)
+                {
+                    timeOut -= 1 * Time.deltaTime; ;
+
+                    if (status != NetworkReachability.NotReachable && timeOut > 0 || timeOut <= 0)
+                        break;
+                }
+
+                string result = (status != NetworkReachability.NotReachable) ? "Network Connection Available." : "Network Connection Not Available.";
+                callbackResults.SetResults(result, (status != NetworkReachability.NotReachable) ? AppData.LogInfoChannel.Success : AppData.LogInfoChannel.Error);
+
+                if (callbackResults.Success())
+                {
+                    AppData.ActionEvents.OnNetworkConnectedEvent();
+                    callbackResults.result = $"Network Successfully Connected For Device : [{AppData.Helpers.GetDeviceInfo().deviceName}] - Model : [{AppData.Helpers.GetDeviceInfo().deviceModel}] - ID : [{AppData.Helpers.GetDeviceInfo().deviceID}]";
+                }
+                else
+                {
+                    surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.NetworkNotificationPopUp, popUpShownCallbackResults => 
+                    {
+                        callbackResults.SetResult(popUpShownCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            AppData.ActionEvents.OnNetworkFailedEvent();
+
+                            callbackResults.result = $"Network Failed With Status : {status}";
+                            callbackResults.resultCode = AppData.Helpers.WarningCode;
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    
+                    }, OnNetworkRetryButtonOverrideEvent, OnCancelButtonOverrideEvent);
+                }
+            }
+
+            return callbackResults;
+        }
+
+        private void OnNetworkRetryButtonOverrideEvent()
+        {
+            LogInfo("Log_Cat/: On Retry Button Pressed Event.", this);
+        }
+
+        private void OnCancelButtonOverrideEvent()
+        {
+
+        }
+
+
+        public async Task<AppData.Callback> OnCheckConnectionStatus()
+        {
             AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI manager", "Check Connection Status Failed - Screen UI Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
             if (callbackResults.Success())
@@ -92,11 +156,11 @@ namespace Com.RedicalGames.Filar
                         {
                             var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                            callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.NetworkWarningMessage));
+                            callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.NetworkWarningMessage));
 
                             if (callbackResults.Success())
                             {
-                                var networkWarningMessage = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.NetworkWarningMessage).GetData();
+                                var networkWarningMessage = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.NetworkWarningMessage).GetData();
 
                                 screenUIManagerInstance.GetCurrentScreen().GetData().HideWidget(AppData.WidgetType.LoadingWidget);
 

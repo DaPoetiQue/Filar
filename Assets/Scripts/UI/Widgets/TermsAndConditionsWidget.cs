@@ -419,6 +419,10 @@ namespace Com.RedicalGames.Filar
 
                             case AppData.InputActionButtonType.CloseButton:
 
+
+
+
+
                                 callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName(), "App Database Manager Instance Is Not Yet Initialized."));
 
                                 if (callbackResults.Success())
@@ -435,11 +439,11 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.OnClosePopUpWarningMessage));
+                                            callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.OnClosePopUpWarningMessage));
 
                                             if (callbackResults.Success())
                                             {
-                                                var closePopUpnMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.OnClosePopUpWarningMessage).GetData();
+                                                var closePopUpnMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.OnClosePopUpWarningMessage).GetData();
 
                                                 var confirmationPopUpWidget = screen.GetWidget(AppData.WidgetType.ConfirmationPopUpWidget).GetData();
 
@@ -579,85 +583,6 @@ namespace Com.RedicalGames.Filar
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-            //AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, screenManagerComponentCallbackResults => 
-            //{
-            //    if(screenManagerComponentCallbackResults.Success())
-            //    {
-            //        var screenManager = screenManagerComponentCallbackResults.data;
-
-            //        screenManager.GetScreen(screenManager.GetCurrentScreenType().GetData(), loadedScreenCallbacResults =>
-            //        {
-            //            if (loadedScreenCallbacResults.Success())
-            //            {
-            //                var loadedScreen = loadedScreenCallbacResults.data;
-
-            //                switch (actionType)
-            //                {
-            //                    case AppData.InputActionButtonType.GoToWebsiteLinkButton:
-
-            //                        AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, async networkManagerCallbackResults =>
-            //                        {
-            //                            if (networkManagerCallbackResults.Success())
-            //                            {
-            //                                var success = await networkManagerCallbackResults.data.CheckConnectionStatus();
-
-            //                                if (success.Success())
-            //                                {
-            //                                    if (!string.IsNullOrEmpty(dataPackets.externalLinkURL))
-            //                                        Application.OpenURL(dataPackets.externalLinkURL);
-            //                                    else
-            //                                        LogError("Open Terms And Conditions Website Failed - External URL Is Not Assigned.", this);
-            //                                }
-            //                                else
-            //                                {
-            //                                    AppData.SceneConfigDataPacket networkDataPackets = new AppData.SceneConfigDataPacket();
-
-            //                                    dataPackets.SetReferencedScreenType(AppData.ScreenType.LandingPageScreen);
-            //                                    dataPackets.SetReferencedWidgetType(AppData.WidgetType.NetworkNotificationWidget);
-            //                                    dataPackets.SetScreenBlurState(true);
-            //                                    dataPackets.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.Default);
-
-            //                                    loadedScreen.ShowWidget(networkDataPackets);
-            //                                    LogError("Network Connection Failed : Show Network Error Pop-Up", this);
-            //                                }
-            //                            }
-            //                            else
-            //                                Log(networkManagerCallbackResults.resultCode, networkManagerCallbackResults.result, this);
-
-            //                        }, "Network Manager Instance Is Not Yet Initialized");
-
-            //                        break;
-
-            //                    case AppData.InputActionButtonType.ConfirmationButton:
-
-            //                        AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, ProfileManager.Instance.name, profileManagerCallbackResults =>
-            //                        {
-            //                            if(profileManagerCallbackResults.Success())
-            //                            {
-            //                                var profileManager = profileManagerCallbackResults.data;
-            //                                profileManager.AcceptTermsAndConditions();
-            //                            }
-            //                            else
-            //                                Log(profileManagerCallbackResults.resultCode, profileManagerCallbackResults.result, this);
-
-            //                        }, "Profile Manager Instance Is Not Yet Initialized");
-
-            //                        break;
-
-            //                    case AppData.InputActionButtonType.CloseButton:
-
-            //                        loadedScreen.HideScreenWidget(type);
-
-            //                        break;
-            //                }
-            //            }
-            //        });
-            //    }
-            //    else
-            //        Log(screenManagerComponentCallbackResults.resultCode, screenManagerComponentCallbackResults.result, this);
-
-            //}, "Screen UI Manager Instance Is Not Yet Initialized.");
         }
 
         private void OnConfirmButtonPressedEvent()

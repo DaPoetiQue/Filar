@@ -370,5 +370,6 @@ MonoBehaviour:
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
   initializeTabs: 0
+  interuptable: 1
   dontShowAgain: 0
   isWidgetVisible: 0

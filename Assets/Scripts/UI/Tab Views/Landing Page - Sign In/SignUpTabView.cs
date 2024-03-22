@@ -161,11 +161,11 @@ namespace Com.RedicalGames.Filar
                         {
                             var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                            callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.SignUpCompletedMessage));
+                            callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.SignUpCompletedMessage));
 
                             if (callbackResults.Success())
                             {
-                                var successMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.SignUpCompletedMessage).GetData();
+                                var successMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.SignUpCompletedMessage).GetData();
 
                                 callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "On Tab View Shown Event Failed - Profile Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
@@ -604,11 +604,11 @@ namespace Com.RedicalGames.Filar
 
                                                                             if (callbackResults.Success())
                                                                             {
-                                                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.EmailVerificationSentMessage));
+                                                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailVerificationSentMessage));
 
                                                                                 if (callbackResults.Success())
                                                                                 {
-                                                                                    var emailVerificationMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.EmailVerificationSentMessage).GetData();
+                                                                                    var emailVerificationMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailVerificationSentMessage).GetData();
 
                                                                                     var emailVerificationSentNotificationWidget = screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget).GetData();
 
@@ -790,11 +790,11 @@ namespace Com.RedicalGames.Filar
 
                                                                             if (callbackResults.Success())
                                                                             {
-                                                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.EmailVerificationSentMessage));
+                                                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailVerificationSentMessage));
 
                                                                                 if (callbackResults.Success())
                                                                                 {
-                                                                                    var emailVerificationMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.EmailVerificationSentMessage).GetData();
+                                                                                    var emailVerificationMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailVerificationSentMessage).GetData();
 
                                                                                     var emailVerificationSentNotificationWidget = screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget).GetData();
 
@@ -973,11 +973,11 @@ namespace Com.RedicalGames.Filar
 
                                                                             if (callbackResults.Success())
                                                                             {
-                                                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.EmailAlreadyInUseVerifiedMessage));
+                                                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailAlreadyInUseVerifiedMessage));
 
                                                                                 if (callbackResults.Success())
                                                                                 {
-                                                                                    var emailAlreadyInUseVerifiedMessageObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.EmailAlreadyInUseVerifiedMessage).GetData();
+                                                                                    var emailAlreadyInUseVerifiedMessageObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailAlreadyInUseVerifiedMessage).GetData();
 
                                                                                     callbackResults.SetResult(emailAlreadyInUseVerifiedMessageObject.GetTitle());
 
@@ -1060,11 +1060,11 @@ namespace Com.RedicalGames.Filar
 
                                                                                 if (callbackResults.Success())
                                                                                 {
-                                                                                    callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.EmailAlreadyInUseUnverifiedMessage));
+                                                                                    callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailAlreadyInUseUnverifiedMessage));
 
                                                                                     if (callbackResults.Success())
                                                                                     {
-                                                                                        var emailAlreadyInUseUnverifiedMessageObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.ConfigMessageType.EmailAlreadyInUseUnverifiedMessage).GetData();
+                                                                                        var emailAlreadyInUseUnverifiedMessageObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailAlreadyInUseUnverifiedMessage).GetData();
 
                                                                                         callbackResults.SetResult(emailAlreadyInUseUnverifiedMessageObject.GetTitle());
 

@@ -73,7 +73,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget<T>(AppData.ScriptableConfigDataPacket<T> scriptableConfigData, Action<AppData.Callback> callback = null)
         {
-            var networkWarningConfigMessage = scriptableConfigData as ConfigMessageDataPacket;
+            var networkWarningConfigMessage = scriptableConfigData as SurfacingTemplateContentConfigDataPacket;
 
             SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, networkWarningConfigMessage.GetTitle().GetData(), titleSetCallbackResults => { });
             SetUITextDisplayerValue(AppData.ScreenTextType.InfoDisplayer, networkWarningConfigMessage.GetMessage().GetData(), messageSetCallbackResults => { });

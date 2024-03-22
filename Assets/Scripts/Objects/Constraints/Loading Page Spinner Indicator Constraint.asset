@@ -19,3 +19,7 @@ MonoBehaviour:
     value: {x: 0, y: -100, z: 0}
     type: 1
     initialize: 1
+  - name: Scale
+    value: {x: 5, y: 5, z: 5}
+    type: 2
+    initialize: 1

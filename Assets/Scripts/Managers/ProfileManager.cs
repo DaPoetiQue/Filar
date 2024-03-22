@@ -424,16 +424,16 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                #region Feature Blocker
+                                //#region Feature Blocker
 
-                                var featureBlockerWidgetConfig = new AppData.SceneConfigDataPacket();
+                                //var featureBlockerWidgetConfig = new AppData.SceneConfigDataPacket();
 
-                                featureBlockerWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.FeatureBlockerPopUpWidget);
-                                featureBlockerWidgetConfig.blurScreen = true;
+                                //featureBlockerWidgetConfig.SetReferencedWidgetType(AppData.WidgetType.FeatureBlockerPopUpWidget);
+                                //featureBlockerWidgetConfig.blurScreen = true;
 
-                                screen.ShowWidget(featureBlockerWidgetConfig);
+                                //screen.ShowWidget(featureBlockerWidgetConfig);
 
-                                #endregion
+                                //#endregion
                             }
 
                             callbackResults.result = $"On Check Profile Sign In Unsuccessful - Profile Is Not Signed In.";

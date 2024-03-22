@@ -231,8 +231,8 @@ MonoBehaviour:
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets:
-  - name: Network Warning Notification pop Up
-    referenceType: 12
+  - name: Screen Notification pop Up
+    referenceType: 40
     uIPlacementType: 2
     containerType: 14
     initialVisibilityState: 2
@@ -241,7 +241,7 @@ MonoBehaviour:
     referenceType: 24
     uIPlacementType: 0
     containerType: 16
-    initialVisibilityState: 1
+    initialVisibilityState: 2
     constriants:
     - {fileID: 11400000, guid: 355aa5a83796a0e4f8eaf2cde7beee0e, type: 2}
   - name: Message Displayer

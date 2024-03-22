@@ -15,6 +15,6 @@ MonoBehaviour:
   type: 1
   configType: 5
   title: Account Exists With Entered Email!
-  message: An account already exits with the entered email address [0]. Please select
+  message: An account already exits with the entered email address {0}. Please select
     the sign in button to login to your account. You can also request for a password
     reset.

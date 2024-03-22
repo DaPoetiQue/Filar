@@ -1,15 +1,25 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
-    public class SurfacingManager : AppData.SingletonBaseComponent<ProfileManager>
+    public class SurfacingManager : AppData.SingletonBaseComponent<SurfacingManager>
     {
         #region Components
 
-        private List<AppData.Widget> shownPopUpWidgets = new List<AppData.Widget>();
+        [Space(10)]
+        [Header("Surfacing Templates")]
+
+        [SerializeField]
+        private AppData.SurfacingTemplateLibrary surfacingTemplateLibrary = new AppData.SurfacingTemplateLibrary();
+
+        [Space(10)]
+        [Header("Surfaced Widgets")]
+
+        [Space(5)]
+        [SerializeField]
+        private List<AppData.Widget> surfacedWidgetList = new List<AppData.Widget>();
 
         #endregion
 
@@ -36,9 +46,9 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        if(!shownPopUpWidgets.Contains(shownPopUpWidget))
+                        if(!surfacedWidgetList.Contains(shownPopUpWidget))
                         {
-                            shownPopUpWidgets.Add(shownPopUpWidget);
+                            surfacedWidgetList.Add(shownPopUpWidget);
 
                             callbackResults.result = $"Add Shown Pop Up Widget Success - Pop Up : {shownPopUpWidget.GetName()} - Of Type : {shownPopUpWidget.GetType().GetData()} Has Been Successfully Added To Shown Pop Up Widgets.";
                         }
@@ -74,9 +84,9 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        if (shownPopUpWidgets.Contains(shownPopUpWidget))
+                        if (surfacedWidgetList.Contains(shownPopUpWidget))
                         {
-                            shownPopUpWidgets.Remove(shownPopUpWidget);
+                            surfacedWidgetList.Remove(shownPopUpWidget);
 
                             callbackResults.result = $"Remove Shown Pop Up Widget Success - Pop Up : {shownPopUpWidget.GetName()} - Of Type : {shownPopUpWidget.GetType().GetData()} Has Been Successfully Removed From Shown Pop Up Widgets.";
                         }
@@ -111,11 +121,109 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region Surface Widgets
+
+        public void SurfaceWidget(AppData.WidgetType widgetType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null)
+        {
+            var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    callbackResults.SetResult(screen.GetWidget(widgetType));
+
+                    if (callbackResults.Success())
+                    {
+                        var popUpWidget = screen.GetWidget(widgetType).GetData();
+
+                        screen.ShowWidget(popUpWidget, widgetShownCallbackResults =>
+                        {
+                            callbackResults.SetResult(widgetShownCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                AddShownPopUpWidget(popUpWidget, widgetShownSetCallbackResults =>
+                                {
+                                    callbackResults.SetResult(widgetShownSetCallbackResults);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void SurfaceWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null)
+        {
+            var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    callbackResults.SetResult(screen.GetWidget(configDataPacket.GetReferencedWidgetType().GetData().GetValue().GetData()));
+
+                    if (callbackResults.Success())
+                    {
+                        var popUpWidget = screen.GetWidget(configDataPacket.GetReferencedWidgetType().GetData().GetValue().GetData()).GetData();
+
+                        screen.ShowWidget(configDataPacket, widgetShownCallbackResults =>
+                        {
+                            callbackResults.SetResult(widgetShownCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                AddShownPopUpWidget(popUpWidget, widgetShownSetCallbackResults =>
+                                {
+                                    callbackResults.SetResult(widgetShownSetCallbackResults);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        #endregion
+
         #region Pop Up System
 
         #region Action Button Listener
 
-        public void ShowPopUp(AppData.WidgetType popUpType, ConfigMessageDataPacket configMessageData, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, AppData.ActionButtonListener primaryButton = null, AppData.ActionButtonListener secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
+        public void ShowPopUp(AppData.WidgetType popUpType, SurfacingTemplateContentConfigDataPacket configMessageData, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, AppData.ActionButtonListener primaryButton = null, AppData.ActionButtonListener secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
         {
             var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -140,7 +248,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void ShowPopUp(AppData.Widget popUp, ConfigMessageDataPacket configMessageData, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, AppData.ActionButtonListener primaryButton = null, AppData.ActionButtonListener secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
+        public void ShowPopUp(AppData.Widget popUp, SurfacingTemplateContentConfigDataPacket configMessageData, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, AppData.ActionButtonListener primaryButton = null, AppData.ActionButtonListener secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
         {
             var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -165,7 +273,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void ShowPopUp(AppData.SceneConfigDataPacket popUpConfig, ConfigMessageDataPacket configMessageData, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, AppData.ActionButtonListener primaryButton = null, AppData.ActionButtonListener secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
+        public void ShowPopUp(AppData.SceneConfigDataPacket popUpConfig, SurfacingTemplateContentConfigDataPacket configMessageData, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, AppData.ActionButtonListener primaryButton = null, AppData.ActionButtonListener secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
         {
             var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -209,7 +317,7 @@ namespace Com.RedicalGames.Filar
 
         #region Action Method
 
-        public void ShowPopUp(AppData.WidgetType popUpType, ConfigMessageDataPacket configMessageData, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButton = null, Action secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
+        public void ShowPopUp(AppData.WidgetType popUpType, SurfacingTemplateContentConfigDataPacket configMessageData, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButton = null, Action secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
         {
             var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -234,7 +342,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void ShowPopUp(AppData.Widget popUp, ConfigMessageDataPacket configMessageData, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButton = null, Action secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
+        public void ShowPopUp(AppData.Widget popUp, SurfacingTemplateContentConfigDataPacket configMessageData, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButton = null, Action secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
         {
             var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -259,7 +367,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void ShowPopUp(AppData.SceneConfigDataPacket popUpConfig, ConfigMessageDataPacket configMessageData, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButton = null, Action secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
+        public void ShowPopUp(AppData.SceneConfigDataPacket popUpConfig, SurfacingTemplateContentConfigDataPacket configMessageData, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButton = null, Action secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
         {
             var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -303,7 +411,7 @@ namespace Com.RedicalGames.Filar
 
         #region Action Message Types
 
-        public void ShowPopUp(AppData.WidgetType popUpType, AppData.ConfigMessageType messageType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, (string buttonTitle, Action method) primaryButtonEvent = default, (string buttonTitle, Action method) secondaryButtonEvent = default, params string[] messageOverrides)
+        public void ShowPopUp(AppData.WidgetType popUpType, AppData.SurfacingContentType messageType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, (string buttonTitle, Action method) primaryButtonEvent = default, (string buttonTitle, Action method) secondaryButtonEvent = default, params string[] messageOverrides)
         {
             var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -349,7 +457,7 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResult(messageDataObject.GetMessage());
+                                            callbackResults.SetResult(messageDataObject.GetMessage(messageOverrides));
 
                                             if (callbackResults.Success())
                                             {
@@ -375,69 +483,69 @@ namespace Com.RedicalGames.Filar
 
                                                         } : null;
 
-                                                        popUpWidget.RegisterActionButtonListeners(actionButtonEventsRegisteredCallbackResults =>
-                                                        {
-                                                            callbackResults.SetResult(actionButtonEventsRegisteredCallbackResults);
+                                                        //popUpWidget.RegisterActionButtonListeners(actionButtonEventsRegisteredCallbackResults =>
+                                                        //{
+                                                        //    callbackResults.SetResult(actionButtonEventsRegisteredCallbackResults);
 
-                                                            if (callbackResults.Success())
-                                                            {
-                                                                callbackResults.SetResult(primaryButtonReference.Initialized());
+                                                        //    if (callbackResults.Success())
+                                                        //    {
+                                                        //        callbackResults.SetResult(primaryButtonReference.Initialized());
 
-                                                                if (callbackResults.Success())
-                                                                {
-                                                                    callbackResults.SetResult(AppData.Helpers.GetAppStringValueNotNullOrEmpty(primaryButtonEvent.buttonTitle, "Button Title", "Show Pop Up Set button Title Unsuccessful - Continuing Execution."));
+                                                        //        if (callbackResults.Success())
+                                                        //        {
+                                                        //            callbackResults.SetResult(AppData.Helpers.GetAppStringValueNotNullOrEmpty(primaryButtonEvent.buttonTitle, "Button Title", "Show Pop Up Set button Title Unsuccessful - Continuing Execution."));
 
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        popUpWidget.SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, primaryButtonEvent.buttonTitle, buttonTitleUpdatedCallbackResults => 
-                                                                        {
-                                                                            callbackResults.SetResult(buttonTitleUpdatedCallbackResults);
-                                                                        });
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        callbackResults.result = $"There Are No Action Events Registered - Results Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Continuing Execution.";
-                                                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                                                                    }
-                                                                }
-                                                                else
-                                                                {
-                                                                    callbackResults.result = $"There Are No Action Events Registered - Results Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Continuing Execution.";
-                                                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                                                                }
+                                                        //            if (callbackResults.Success())
+                                                        //            {
+                                                        //                popUpWidget.SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, primaryButtonEvent.buttonTitle, buttonTitleUpdatedCallbackResults => 
+                                                        //                {
+                                                        //                    callbackResults.SetResult(buttonTitleUpdatedCallbackResults);
+                                                        //                });
+                                                        //            }
+                                                        //            else
+                                                        //            {
+                                                        //                callbackResults.result = $"There Are No Action Events Registered - Results Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Continuing Execution.";
+                                                        //                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                        //            }
+                                                        //        }
+                                                        //        else
+                                                        //        {
+                                                        //            callbackResults.result = $"There Are No Action Events Registered - Results Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Continuing Execution.";
+                                                        //            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                        //        }
 
-                                                                callbackResults.SetResult(secondaryButtonReference.Initialized());
+                                                        //        callbackResults.SetResult(secondaryButtonReference.Initialized());
 
-                                                                if (callbackResults.Success())
-                                                                {
-                                                                    callbackResults.SetResult(AppData.Helpers.GetAppStringValueNotNullOrEmpty(secondaryButtonEvent.buttonTitle, "Button Title", "Show Pop Up Set button Title Unsuccessful - Continuing Execution."));
+                                                        //        if (callbackResults.Success())
+                                                        //        {
+                                                        //            callbackResults.SetResult(AppData.Helpers.GetAppStringValueNotNullOrEmpty(secondaryButtonEvent.buttonTitle, "Button Title", "Show Pop Up Set button Title Unsuccessful - Continuing Execution."));
 
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        popUpWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, secondaryButtonEvent.buttonTitle, buttonTitleUpdatedCallbackResults =>
-                                                                        {
-                                                                            callbackResults.SetResult(buttonTitleUpdatedCallbackResults);
-                                                                        });
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        callbackResults.result = $"There Are No Action Events Registered - Results Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Continuing Execution.";
-                                                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                                                                    }
-                                                                }
-                                                                else
-                                                                {
-                                                                    callbackResults.result = $"There Are No Action Events Registered - Results Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Continuing Execution.";
-                                                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                                callbackResults.result = $"There Are No Action Events Registered - Results Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Continuing Execution.";
-                                                                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-                                                            }
+                                                        //            if (callbackResults.Success())
+                                                        //            {
+                                                        //                popUpWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, secondaryButtonEvent.buttonTitle, buttonTitleUpdatedCallbackResults =>
+                                                        //                {
+                                                        //                    callbackResults.SetResult(buttonTitleUpdatedCallbackResults);
+                                                        //                });
+                                                        //            }
+                                                        //            else
+                                                        //            {
+                                                        //                callbackResults.result = $"There Are No Action Events Registered - Results Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Continuing Execution.";
+                                                        //                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                        //            }
+                                                        //        }
+                                                        //        else
+                                                        //        {
+                                                        //            callbackResults.result = $"There Are No Action Events Registered - Results Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Continuing Execution.";
+                                                        //            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                        //        }
+                                                        //    }
+                                                        //    else
+                                                        //    {
+                                                        //        callbackResults.result = $"There Are No Action Events Registered - Results Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult} - Continuing Execution.";
+                                                        //        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                                        //    }
 
-                                                        }, primaryButtonReference, secondaryButtonReference);
+                                                        //}, primaryButtonReference, secondaryButtonReference);
 
                                                         if(callbackResults.Success())
                                                         {
@@ -491,7 +599,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void ShowPopUp(AppData.Widget popUp, AppData.ConfigMessageType messageType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButton = null, Action secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
+        public void ShowPopUp(AppData.Widget popUp, AppData.SurfacingContentType messageType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButton = null, Action secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
         {
             var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -516,7 +624,7 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void ShowPopUp(AppData.SceneConfigDataPacket popUpConfig, AppData.ConfigMessageType messageType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButton = null, Action secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
+        public void ShowPopUp(AppData.SceneConfigDataPacket popUpConfig, AppData.SurfacingContentType messageType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButton = null, Action secondaryButton = null, AppData.LogInfoChannel infoChannel = AppData.LogInfoChannel.None)
         {
             var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -546,6 +654,292 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        #endregion
+
+        #region Surfacing Templates
+
+        public void ShowPopUp(AppData.SurfacingTemplateType templateType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButtonMethodOverride = null, Action secondaryButtonMethodOverride = null)
+        {
+            var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    HideInteruptableWidgets(widgetsHiddencallbackResults => 
+                    {
+                        callbackResults.SetResult(widgetsHiddencallbackResults);
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.SetResult(GetSurfacingTemplateLibrary());
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(GetSurfacingTemplateLibrary().GetData().GetSurfacingTemplate(templateType));
+
+                                if (callbackResults.Success())
+                                {
+                                    var surfacingTemplate = GetSurfacingTemplateLibrary().GetData().GetSurfacingTemplate(templateType).GetData();
+
+                                    callbackResults.SetResult(screen.GetWidget(surfacingTemplate.GetTemplateWidgetType().GetData()));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var popUpWidget = screen.GetWidget(surfacingTemplate.GetTemplateWidgetType().GetData()).GetData();
+
+                                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "On Tab View Shown Event Failed - App Database Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                                            callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(surfacingTemplate.GetTemplateContentType().GetData()));
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var surfacingTemplateConfigDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(surfacingTemplate.GetTemplateContentType().GetData()).GetData();
+
+                                                    callbackResults.SetResult(surfacingTemplateConfigDataObject.Initialized());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        callbackResults.SetResult(surfacingTemplateConfigDataObject.GetTitle());
+
+                                                        popUpWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, surfacingTemplateConfigDataObject.GetTitle().GetData(), widgetTitleSetCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(widgetTitleSetCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                var popUpMessage = string.Empty;
+
+                                                                callbackResults.SetResult(surfacingTemplate.GetMessageOverrides());
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    callbackResults.SetResult(surfacingTemplateConfigDataObject.GetMessage(surfacingTemplate.GetMessageOverrides().GetData()));
+
+                                                                    if (callbackResults.Success())
+                                                                        popUpMessage = surfacingTemplateConfigDataObject.GetMessage(surfacingTemplate.GetMessageOverrides().GetData()).GetData();
+                                                                }
+                                                                else
+                                                                    popUpMessage = surfacingTemplateConfigDataObject.GetMessage().GetData();
+
+                                                                popUpWidget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, popUpMessage, widgetTitleSetCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(widgetTitleSetCallbackResults);
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        #region Set Icon
+
+                                                                        callbackResults.SetResult(surfacingTemplateConfigDataObject.GetIcon());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            popUpWidget.SetUIImageDisplayer(AppData.ScreenImageType.Icon, surfacingTemplateConfigDataObject.GetIcon().GetData(), true, iconSetCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(iconSetCallbackResults);
+                                                                            });
+                                                                        }
+
+                                                                        #endregion
+
+                                                                        #region Set Background image
+
+                                                                        callbackResults.SetResult(surfacingTemplateConfigDataObject.GetBackgroundImage());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            popUpWidget.SetUIImageDisplayer(AppData.ScreenImageType.Background, surfacingTemplateConfigDataObject.GetBackgroundImage().GetData(), true, backgroundSetCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(backgroundSetCallbackResults);
+                                                                            });
+                                                                        }
+
+                                                                        #endregion
+
+                                                                        #region Set Buttons Overrides
+
+                                                                        callbackResults.SetResult(surfacingTemplate.GetPrimaryButtonOverride());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            popUpWidget.SetActionButtonState(AppData.InputActionButtonType.ConfirmationButton, AppData.InputUIState.Shown, buttonShownCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(buttonShownCallbackResults);
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    popUpWidget.SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, surfacingTemplate.GetPrimaryButtonOverride().GetData().GetTitleTextOverride().GetData(), buttonTitleSetCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(buttonTitleSetCallbackResults);
+
+                                                                                        if (callbackResults.Success())
+                                                                                        {
+                                                                                            callbackResults.SetResult(surfacingTemplate.GetPrimaryButtonOverride().GetData().GetColorOverride());
+
+                                                                                            if (callbackResults.Success())
+                                                                                            {
+                                                                                                popUpWidget.SetActionButtonColor(AppData.InputActionButtonType.ConfirmationButton, surfacingTemplate.GetPrimaryButtonOverride().GetData().GetColorOverride().GetData(), colorSetCallbackResults =>
+                                                                                                {
+                                                                                                    callbackResults.SetResult(colorSetCallbackResults);
+                                                                                                });
+                                                                                            }
+
+                                                                                            var primaryButtonReference = primaryButtonMethodOverride != null ? new AppData.ActionButtonListener()
+                                                                                            {
+                                                                                                method = primaryButtonMethodOverride,
+                                                                                                action = AppData.InputActionButtonType.ConfirmationButton
+
+                                                                                            } : null;
+
+                                                                                            popUpWidget.RegisterActionButtonListeners(buttonOverrideRegisteredCallbackResults =>
+                                                                                            {
+                                                                                                callbackResults.SetResult(buttonOverrideRegisteredCallbackResults);
+
+                                                                                            }, primaryButtonReference);
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            popUpWidget.SetActionButtonState(AppData.InputActionButtonType.ConfirmationButton, AppData.InputUIState.Hidden, buttonHiddenCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(buttonHiddenCallbackResults);
+                                                                            });
+                                                                        }
+
+                                                                        callbackResults.SetResult(surfacingTemplate.GetSecondaryButtonOverride());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            popUpWidget.SetActionButtonState(AppData.InputActionButtonType.Cancel, AppData.InputUIState.Shown, buttonShownCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(buttonShownCallbackResults);
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    popUpWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, surfacingTemplate.GetSecondaryButtonOverride().GetData().GetTitleTextOverride().GetData(), buttonTitleSetCallbackResults =>
+                                                                                    {
+                                                                                        callbackResults.SetResult(buttonTitleSetCallbackResults);
+
+                                                                                        if (callbackResults.Success())
+                                                                                        {
+                                                                                            callbackResults.SetResult(surfacingTemplate.GetPrimaryButtonOverride().GetData().GetColorOverride());
+
+                                                                                            if (callbackResults.Success())
+                                                                                            {
+                                                                                                popUpWidget.SetActionButtonColor(AppData.InputActionButtonType.Cancel, surfacingTemplate.GetSecondaryButtonOverride().GetData().GetColorOverride().GetData(), colorSetCallbackResults =>
+                                                                                                {
+                                                                                                    callbackResults.SetResult(colorSetCallbackResults);
+                                                                                                });
+                                                                                            }
+
+                                                                                            var secondaryButtonReference = secondaryButtonMethodOverride != null ? new AppData.ActionButtonListener
+                                                                                            {
+                                                                                                method = secondaryButtonMethodOverride,
+                                                                                                action = AppData.InputActionButtonType.Cancel
+
+                                                                                            } : null;
+
+                                                                                            popUpWidget.RegisterActionButtonListeners(buttonOverrideRegisteredCallbackResults =>
+                                                                                            {
+                                                                                                callbackResults.SetResult(buttonOverrideRegisteredCallbackResults);
+
+                                                                                            }, secondaryButtonReference);
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            });
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            popUpWidget.SetActionButtonState(AppData.InputActionButtonType.Cancel, AppData.InputUIState.Hidden, buttonHiddenCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(buttonHiddenCallbackResults);
+                                                                            });
+                                                                        }
+
+                                                                        #endregion
+
+                                                                        screen.ShowWidget(popUpWidget, popUpShownCallbackResults =>
+                                                                        {
+                                                                            callbackResults.SetResult(popUpShownCallbackResults);
+
+                                                                            if (callbackResults.Success())
+                                                                            {
+                                                                                AddShownPopUpWidget(popUpWidget, popUpShownSetCallbackResults =>
+                                                                                {
+                                                                                    callbackResults.SetResult(popUpShownSetCallbackResults);
+                                                                                });
+                                                                            }
+                                                                            else
+                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                        });
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                });
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                 
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -616,13 +1010,145 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
+        
+        public AppData.Callback HideInteruptableWidgets()
+        {
+            var callbackResults = new AppData.Callback(GetSurfacedInteruptableWidgets());
+
+            if (callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    for (int i = 0; i < GetSurfacedInteruptableWidgets().GetData().Count; i++)
+                    {
+                        screen.HideWidget(GetSurfacedInteruptableWidgets().GetData()[i], widgetHiddenCallbackResults =>
+                        {
+                            callbackResults.SetResult(widgetHiddenCallbackResults);
+                        });
+
+                        if (callbackResults.UnSuccessful())
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+            {
+                callbackResults.result = "There Are No Interuptable Widgets Found - Successfully Continuing Execution.";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+
+            return callbackResults;
+        }
+
+        public void HideInteruptableWidgets(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(GetSurfacedInteruptableWidgets());
+
+            if(callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    for (int i = 0; i < GetSurfacedInteruptableWidgets().GetData().Count; i++)
+                    {
+                        screen.HideWidget(GetSurfacedInteruptableWidgets().GetData()[i], widgetHiddenCallbackResults => 
+                        {
+                            callbackResults.SetResult(widgetHiddenCallbackResults);
+                        });
+
+                        if(callbackResults.UnSuccessful())
+                        {
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            break;
+                        }
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+            {
+                callbackResults.result = "There Are No Interuptable Widgets Found - Successfully Continuing Execution.";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+
+        public AppData.CallbackDataList<AppData.Widget> GetSurfacedWidgetList()
+        {
+            var callbackResults = new AppData.CallbackDataList<AppData.Widget>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(surfacedWidgetList, "Surfaced Widget List", "Get Surfaced Widget List Failed - There Are No Surfaced Widget List Items Found - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.result = $"Get Surfaced Widget List Success - There Are : {surfacedWidgetList.Count} Surfaced Widget List Items Found.";
+                callbackResults.data = surfacedWidgetList;
+            }
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackDataList<AppData.Widget> GetSurfacedInteruptableWidgets()
+        {
+            var callbackResults = new AppData.CallbackDataList<AppData.Widget>(GetSurfacedWidgetList());
+
+            if (callbackResults.Success())
+            {
+                var interuptableWidgets = GetSurfacedWidgetList().GetData().FindAll(widget => widget.Interuptable().Success());
+
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(interuptableWidgets, "Interuptable Widgets", "Get Surfaced Interuptable Widgets Failed - There Are No Found Interuptable Widgets - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Surfaced Interuptable Widgets Success - There Are : {interuptableWidgets.Count} Interuptable Widgets Found.";
+                    callbackResults.data = interuptableWidgets;
+                }
+            }
+
+            return callbackResults;
+        }
+
         #endregion
 
         #region Surfacing Data
 
-        private AppData.CallbackData<AppData.SurfacingData> GetSurfacingData()
+        private AppData.CallbackData<AppData.SurfacingTemplateLibrary> GetSurfacingTemplateLibrary()
         {
-            var callbackResults = new AppData.CallbackData<AppData.SurfacingData>();
+            var callbackResults = new AppData.CallbackData<AppData.SurfacingTemplateLibrary>(AppData.Helpers.GetAppComponentValid(surfacingTemplateLibrary, "Surfacing Template Library", "Get Surfacing Template Library Failed - Surfacing Template Library Is Not Assigned - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.SetResult(surfacingTemplateLibrary.Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = "Get Surfacing Template Library Success - Surfacing Template Library Has Been Successfully initialized.";
+                    callbackResults.data = surfacingTemplateLibrary;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             return callbackResults;
         }

@@ -17,3 +17,9 @@ MonoBehaviour:
   title: Connection Error!
   message: There Was An Error Connecting To The Internet. Please Make Sure You Have
     Internet Access And Try Again.
+  icon:
+    value: {fileID: 21300000, guid: 33d474bf03b206c46a8f117231af7031, type: 3}
+    color: {r: 0.8490566, g: 0.6568906, b: 0, a: 1}
+  backgroundImage:
+    value: {fileID: 0}
+    color: {r: 1, g: 1, b: 1, a: 1}

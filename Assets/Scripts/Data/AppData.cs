@@ -280,7 +280,7 @@ namespace Com.RedicalGames.Filar
             Rotation
         }
 
-        public enum ConfigMessageType
+        public enum SurfacingContentType
         {
             None,
             NetworkWarningMessage,
@@ -645,7 +645,9 @@ namespace Com.RedicalGames.Filar
             Thumbnail,
             ScreenSnap,
             Splash,
-            SelectionFrame
+            SelectionFrame,
+            Icon,
+            Background
         }
 
         public enum UIStateType
@@ -1393,6 +1395,378 @@ namespace Com.RedicalGames.Filar
             All,
             EventActions,
             ParameterEventActions
+        }
+
+        #endregion
+
+        #region Surfacing
+
+        [Serializable]
+        public class ImageComponent
+        {
+            #region Components
+
+            public Sprite value;
+
+            [Space(5)]
+            public Color color = Color.white;
+
+            #endregion
+
+            #region Main
+
+            public CallbackData<(Sprite value, Color color)> GetImageInfo()
+            {
+                var callbackResults = new CallbackData<(Sprite value, Color color)>();
+
+                if(value != null)
+                {
+                    callbackResults.result = "Get Image Info Success.";
+                    callbackResults.data = (value, color);
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = "Get Image Info Failed - Image Value Is not Assigned - Invalid Operation.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
+        public enum SurfacingTemplateType
+        {
+            None,
+            NetworkNotificationPopUp
+        }
+
+        [Serializable]
+        public class ButtonOverrideConfigDataPacket : DataDebugger
+        {
+            #region Components
+
+            [Space(5)]
+            [SerializeField]
+            private string titleTextOverride = string.Empty;
+
+            [Space(5)]
+            [SerializeField]
+            private Sprite imageOverride = null;
+
+            [Space(5)]
+            [SerializeField]
+            private Color colorOverride = Color.white;
+
+            #endregion
+
+            #region Main
+
+            public CallbackData<string> GetTitleTextOverride()
+            {
+                var callbackResults = new CallbackData<string>();
+
+                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(titleTextOverride, "Title Text Override", "Get Title Text Override Failed - Title Text Override Value Is Not Assigned - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Title Text Override Success - Title Text Override Value Is Set To : {titleTextOverride}";
+                    callbackResults.data = titleTextOverride;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<Sprite> GetImageOverride()
+            {
+                var callbackResults = new CallbackData<Sprite>();
+
+                if (imageOverride != null)
+                {
+                    callbackResults.result = "Get Image Override Success - Image Override Has Been Successfully Assigned.";
+                    callbackResults.data = imageOverride;
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = "Get Image Override Failed - Image Override Value Has Not Been Assigned.";
+                    callbackResults.data = default;
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<Color> GetColorOverride()
+            {
+                var callbackResults = new CallbackData<Color>(GetTitleTextOverride());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = "Get Color Override Success - Color Override Has Been Successfully Assigned.";
+                    callbackResults.data = colorOverride;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
+
+        [Serializable]
+        public class SurfacingTemplate : DataDebugger
+        {
+            #region Components
+
+            [SerializeField]
+            private SurfacingTemplateType templateType;
+
+            [Space(5)]
+            [SerializeField]
+            private WidgetType templateWidgetType;
+
+            [Space(5)]
+            [SerializeField]
+            private SurfacingContentType templateContentType;
+
+            [Space(5)]
+            [SerializeField]
+            private ButtonOverrideConfigDataPacket primaryButtonOverride = new ButtonOverrideConfigDataPacket(), 
+                                                   secondaryButtonOverride = new ButtonOverrideConfigDataPacket();
+
+            [Space(5)]
+            [SerializeField]
+            private string[] messageOverrides = new string[0];
+
+            [Space(5)]
+            [SerializeField]
+            private bool active;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public SurfacingTemplate()
+            {
+
+            }
+
+            public SurfacingTemplate(SurfacingTemplateType templateType, WidgetType templateWidgetType, SurfacingContentType templateContentType, bool active, ButtonOverrideConfigDataPacket primaryButtonTitle = null, ButtonOverrideConfigDataPacket secondaryButtonTitle = null, params string[] messageOverrides)
+            {
+                this.templateType = templateType;
+                this.templateWidgetType = templateWidgetType;
+                this.templateContentType = templateContentType;
+                this.active = active;
+                this.primaryButtonOverride = primaryButtonTitle;
+                this.secondaryButtonOverride = secondaryButtonTitle;
+                this.messageOverrides = messageOverrides;
+            }
+
+            #endregion
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(GetTemplateType());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTemplateWidgetType());
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetTemplateContentType());
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(Active());
+                        }
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            #region Data Getters
+
+            public CallbackData<SurfacingTemplateType> GetTemplateType()
+            {
+                var callbackResults = new CallbackData<SurfacingTemplateType>(Helpers.GetAppEnumValueValid(templateType, "Template Type", $"Get Template Type Failed - Template Type Is Set To Default : {templateType} - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Template Type Success - Template Type Is Set To : {templateType}.";
+                    callbackResults.data = templateType;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<WidgetType> GetTemplateWidgetType()
+            {
+                var callbackResults = new CallbackData<WidgetType>(Helpers.GetAppEnumValueValid(templateType, "Template Widget Type", $"Get Template Widget Type Failed - Template Widget Type Is Set To Default : {templateWidgetType} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Template Widget Type Success - Template Widget Type Is Set To : {templateWidgetType}.";
+                    callbackResults.data = templateWidgetType;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<SurfacingContentType> GetTemplateContentType()
+            {
+                var callbackResults = new CallbackData<SurfacingContentType>(Helpers.GetAppEnumValueValid(templateContentType, "Template Content Type", $"Get Template Content Type Failed - Template Content Type Is Set To Default : {templateContentType} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Template Content Type Success - Template Content Type Is Set To : {templateContentType}.";
+                    callbackResults.data = templateContentType;
+                }
+
+                return callbackResults;
+            }
+
+            public Callback Active()
+            {
+                var callbackResults = new Callback();
+
+                if(active)
+                {
+                    callbackResults.result = $"Surfacing Template : {GetName()} Is Active.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Surfacing Template : {GetName()} Is Not Active.";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackDataArray<string> GetMessageOverrides()
+            {
+                var callbackResults = new CallbackDataArray<string>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentsValid(messageOverrides, "Message Overrides", $"Get Message Overrides Failed - There are No Message Overrides Found For Surfacing Template : {GetName()} - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Message Overrides Success - There are : {messageOverrides.Length} Message Overrides Found For Surfacing Template : {GetName()}";
+                    callbackResults.data = messageOverrides;
+                }
+                else
+                    callbackResults.data = default;
+
+                return callbackResults;
+            }
+
+            public CallbackData<ButtonOverrideConfigDataPacket> GetPrimaryButtonOverride()
+            {
+                var callbackResults = new CallbackData<ButtonOverrideConfigDataPacket>(primaryButtonOverride.GetTitleTextOverride());
+
+                callbackResults.SetResults();
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Primary Button Override Success - Primary Button Override Is set To : {primaryButtonOverride}.";
+                    callbackResults.data = primaryButtonOverride;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ButtonOverrideConfigDataPacket> GetSecondaryButtonOverride()
+            {
+                var callbackResults = new CallbackData<ButtonOverrideConfigDataPacket>(secondaryButtonOverride.GetTitleTextOverride());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Secondary Button Override Success - Secondary Button Override Is set To : {secondaryButtonOverride}.";
+                    callbackResults.data = secondaryButtonOverride;
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
+        public class SurfacingTemplateLibrary
+        {
+            #region Components
+
+            [Space(5)]
+            [SerializeField]
+            private List<SurfacingTemplate> surfacingTemplates = new List<SurfacingTemplate>();
+
+            #endregion
+
+            #region Main
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(GetSurfacingTemplates());
+
+                if(callbackResults.Success())
+                {
+                    var activeTemplates = GetSurfacingTemplates().GetData().FindAll(template => template.Initialized().Success());
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(activeTemplates, "Surfacing Templates", "Get Surfacing Templates Failed - There Are No Initialized Surfacing Templates Found - Invalid Operation."));
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<SurfacingTemplate> GetSurfacingTemplate(SurfacingTemplateType templateType)
+            {
+                var callbackResults = new CallbackData<SurfacingTemplate>(GetSurfacingTemplates());
+
+                if (callbackResults.Success())
+                {
+                    var surfacingTemplate = GetSurfacingTemplates().GetData().Find(template => template.GetTemplateType().GetData() == templateType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(surfacingTemplate, "Surfacing Template", $"Get Surfacing Template Failed - Couldn't Find A Surfacing Template Of Type : {templateType}"));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Surfacing Template Success - Surfacing Template : {surfacingTemplate.GetName()} Has Been Successfully Found.";
+                        callbackResults.data = surfacingTemplate;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<SurfacingTemplate> GetSurfacingTemplates()
+            {
+                var callbackResults = new CallbackDataList<SurfacingTemplate>(Helpers.GetAppComponentsValid(surfacingTemplates, "Surfacing Templates", "Get Surfacing Templates Failed - There Are No Surfacing Templates Found - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    var initializedSurfacingTemplates = surfacingTemplates.FindAll(templates => templates.Initialized().Success());
+
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(initializedSurfacingTemplates, "Surfacing Templates", "Get Surfacing Templates Failed - There Are No Initialized Surfacing Templates Found - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Surfacing Templates Success - There Are : {initializedSurfacingTemplates.Count} Surfacing Templates Found.";
+                        callbackResults.data = initializedSurfacingTemplates;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
         }
 
         #endregion
@@ -3855,9 +4229,9 @@ namespace Com.RedicalGames.Filar
 
             #region Config Message Data
 
-            public CallbackData<ConfigMessageDataPacket> GetLoadedConfigMessageDataPacket(ConfigMessageType messageType)
+            public CallbackData<SurfacingTemplateContentConfigDataPacket> GetLoadedConfigMessageDataPacket(SurfacingContentType messageType)
             {
-                var callbackResults = new CallbackData<ConfigMessageDataPacket>(GetLoadedConfigData(ConfigDataType.infoConfigData));
+                var callbackResults = new CallbackData<SurfacingTemplateContentConfigDataPacket>(GetLoadedConfigData(ConfigDataType.infoConfigData));
 
                 if(callbackResults.Success())
                 {
@@ -3865,7 +4239,7 @@ namespace Com.RedicalGames.Filar
 
                     foreach (var configMessageDataPacket in configMessageDataPackets)
                     {
-                        var configMessageData = configMessageDataPacket as ConfigMessageDataPacket;
+                        var configMessageData = configMessageDataPacket as SurfacingTemplateContentConfigDataPacket;
 
                         callbackResults.SetResult(Helpers.GetAppComponentValid(configMessageData, "Config Message Data Packet", "Failed To Cast Config Message Data Packet From Scriptable Config Data Packet."));
 
@@ -6144,18 +6518,6 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class SurfacingData
-        {
-            #region Components
-
-            #endregion
-
-            #region Main
-
-            #endregion
-        }
-
-        [Serializable]
         public class LicenseKey : DataDebugger
         {
             #region Components
@@ -7098,12 +7460,38 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).GetData().GetMessage());
+                                                                    callbackResults.SetResults(Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance", "Surfacing Manager Instance Is Not Yet Initialized."));
 
-                                                                    callbackResults = await networkManager.CheckConnectionStatus();
+                                                                    if(callbackResults.Success())
+                                                                    {
+                                                                        var surfacingManagerInstance = Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
 
-                                                                    if (callbackResults.Success())
-                                                                        OnCompletition();
+                                                                        var loadingWidgetConfigDataPacket = new SceneConfigDataPacket();
+
+                                                                        loadingWidgetConfigDataPacket.SetReferencedScreenType(ScreenType.LoadingScreen);
+                                                                        loadingWidgetConfigDataPacket.SetReferencedWidgetType(WidgetType.LoadingWidget);
+                                                                        loadingWidgetConfigDataPacket.SetReferencedUIScreenPlacementType(ScreenUIPlacementType.ForeGround);
+                                                                        loadingWidgetConfigDataPacket.SetScreenBlurState(false);
+
+                                                                        surfacingManagerInstance.SurfaceWidget(loadingWidgetConfigDataPacket, async loadingSpinnerShownCallbackResults => 
+                                                                        {
+                                                                            callbackResults.SetResult(loadingSpinnerShownCallbackResults);
+
+                                                                            if(callbackResults.Success())
+                                                                            {
+                                                                                messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).GetData().GetMessage());
+
+                                                                                callbackResults = await networkManager.CheckConnectionStatus();
+
+                                                                                if (callbackResults.Success())
+                                                                                    OnCompletition();
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                            }
+                                                                            else
+                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                        });
+                                                                    }
                                                                     else
                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 }
@@ -23937,6 +24325,22 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Debug.LogWarning("SetImageData Failed - Displayer Value Missing.");
+            }
+
+            public void SetImageData(ImageComponent image, bool preserveAspectRatio = true, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetValue());
+
+                if (callbackResults.Success())
+                {
+                    GetValue().GetData().sprite = image?.value;
+                    GetValue().GetData().color = image.color;
+                    GetValue().GetData().preserveAspect = preserveAspectRatio;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public void SetImageData(Texture2D image, bool preserveAspectRatio = true)
@@ -41985,51 +42389,39 @@ namespace Com.RedicalGames.Filar
                 Debug.LogError($"--> Button : {buttonType} State - : {state}");
             }
 
-            public void SetActionButtonColor(InputActionButtonType buttonType, Color color)
+            public void SetActionButtonColor(InputActionButtonType buttonType, Color color, Action<Callback> callback = null)
             {
-                //var callbackResults = new Callback();
+                var callbackResults = new Callback(Initialized(InputType.Button));
 
-                //if (callbackResults.Success())
-                //{
-                //    if (actionGroup != null && actionGroup.Count > 0)
-                //    {
-                //        var initialized = actionGroup.FindAll(input => input.Initialized().Success());
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.Button).GetData().Find(input => input.GetButtonComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == buttonType);
 
-                //        if (initialized != null && initialized.Count > 0)
-                //        {
-                //            foreach (var item in initialized)
-                //            {
-                //                foreach (var widget in item.GetInputActionGroup().GetData())
-                //                {
-                //                    if (widget.inputType == InputType.Button)
-                //                    {
-                //                        widget.GetInputDataPacket<TextDataPacket>(dataPacketsCallback =>
-                //                        {
-                //                            if (dataPacketsCallback.Success())
-                //                            {
-                //                                var button = widget.GetButtonComponent();
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {buttonType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
 
-                //                                if (button != null)
-                //                                {
-                //                                    if (button.value)
-                //                                        button.SetUIColor(color);
-                //                                    else
-                //                                        LogError($"Set Action Button Event Failed - Action Button : {button.name} Of Type : {buttonType} Found With Missing Value - For Screen Widget : {name}.", this);
-                //                                }
-                //                                else
-                //                                    LogError("Action Group Button Component Not Found", this);
-                //                            }
-                //                            else
-                //                                Log(dataPacketsCallback.resultCode, dataPacketsCallback.result, this);
-                //                        });
-                //                    }
-                //    }
-                //}
-                //                }
-                //            }
-                //        }
-                //else
-                //    LogError($"Set Action Button Event Failed For UI Screen Widget : {name} Of Selectable Type : {selectableComponent.selectableWidgetType} - This UI Screen Widget Is Not Yet Active.", this);
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetButtonComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var button = inputActionHandler.GetButtonComponent().GetData();
+
+                            button.SetUIColor(color, colorSetCallbackResults => 
+                            {
+                                callbackResults.SetResult(colorSetCallbackResults);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             protected void CancelActionButtonInvoke(InputActionButtonType buttonType)
@@ -42762,6 +43154,25 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public void SetUIImageDisplayer(ScreenImageType displayerType, ImageComponent imageComponent, bool preserveAspectRatio = true, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetUIImageDisplayer(displayerType));
+
+                if (callbackResults.Success())
+                {
+                    var initializedAction = GetUIImageDisplayer(displayerType).GetData();
+
+                    initializedAction.SetImageData(imageComponent, preserveAspectRatio, imageSetCallbackResults => 
+                    {
+                        callbackResults.SetResult(imageSetCallbackResults);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
             public void SetUIImageDisplayer(ScreenImageType displayerType, ImageData screenCaptureData, ImageConfigDataPacket dataPacket, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(GetUIImageDisplayer(displayerType));
@@ -43013,6 +43424,10 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             [SerializeField]
             protected bool initializeTabs = false;
+
+            [Space(5)]
+            [SerializeField]
+            protected bool interuptable = false;
 
             //[HideInInspector]
             public bool dontShowAgain;
@@ -43779,6 +44194,26 @@ namespace Com.RedicalGames.Filar
             }
 
             #endregion
+
+            public Callback Interuptable()
+            {
+                var callbackResults = new Callback(WidgetReady());
+
+                if (callbackResults.Success())
+                {
+                    if (interuptable)
+                        callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().GetData()} Is Interuptable.";
+                    else
+                    {
+                        callbackResults.result = $"Widget : {GetName()} - Of Type : {GetType().GetData()} Is not Interuptable.";
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
 
             public void SetParentScreen(ScreenUIData parentHandler, Action<CallbackData<ScreenUIData>> callback = null)
             {
@@ -57417,7 +57852,6 @@ namespace Com.RedicalGames.Filar
                         callbackResults.data = default;
                         callbackResults.resultCode = WarningCode;
                     }
-                    callbackResults.resultCode = SuccessCode;
                 }
                 else
                 {
