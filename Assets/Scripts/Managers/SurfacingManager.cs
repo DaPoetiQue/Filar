@@ -756,11 +756,11 @@ namespace Com.RedicalGames.Filar
                                                                     {
                                                                         #region Set Icon
 
-                                                                        callbackResults.SetResult(surfacingTemplateConfigDataObject.GetIcon());
+                                                                        callbackResults.SetResult(surfacingTemplate.GetIcon());
 
                                                                         if (callbackResults.Success())
                                                                         {
-                                                                            popUpWidget.SetUIImageDisplayer(AppData.ScreenImageType.Icon, surfacingTemplateConfigDataObject.GetIcon().GetData(), true, iconSetCallbackResults =>
+                                                                            popUpWidget.SetUIImageDisplayer(AppData.ScreenImageType.Icon, surfacingTemplate.GetIcon().GetData(), true, iconSetCallbackResults =>
                                                                             {
                                                                                 callbackResults.SetResult(iconSetCallbackResults);
                                                                             });
@@ -770,11 +770,11 @@ namespace Com.RedicalGames.Filar
 
                                                                         #region Set Background image
 
-                                                                        callbackResults.SetResult(surfacingTemplateConfigDataObject.GetBackgroundImage());
+                                                                        callbackResults.SetResult(surfacingTemplate.GetBackgroundImage());
 
                                                                         if (callbackResults.Success())
                                                                         {
-                                                                            popUpWidget.SetUIImageDisplayer(AppData.ScreenImageType.Background, surfacingTemplateConfigDataObject.GetBackgroundImage().GetData(), true, backgroundSetCallbackResults =>
+                                                                            popUpWidget.SetUIImageDisplayer(AppData.ScreenImageType.Background, surfacingTemplate.GetBackgroundImage().GetData(), true, backgroundSetCallbackResults =>
                                                                             {
                                                                                 callbackResults.SetResult(backgroundSetCallbackResults);
                                                                             });
@@ -892,6 +892,24 @@ namespace Com.RedicalGames.Filar
 
                                                                         #endregion
 
+
+                                                                        #region Constraints
+
+                                                                        callbackResults.SetResult(surfacingTemplate.GetSurfacingTemplateConstraints());
+
+                                                                        if(callbackResults.Success())
+                                                                        {
+                                                                            popUpWidget.ApplyConstraints(constraintsAppliedCallbackResults =>
+                                                                            {
+                                                                                callbackResults.SetResult(constraintsAppliedCallbackResults);
+
+                                                                            }, AppData.Helpers.GetArray(surfacingTemplate.GetSurfacingTemplateConstraints().GetData()));
+                                                                        }
+
+                                                                        #endregion
+
+                                                                        #region Surface Popup
+
                                                                         screen.ShowWidget(popUpWidget, popUpShownCallbackResults =>
                                                                         {
                                                                             callbackResults.SetResult(popUpShownCallbackResults);
@@ -906,6 +924,8 @@ namespace Com.RedicalGames.Filar
                                                                             else
                                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                         });
+
+                                                                        #endregion
                                                                     }
                                                                     else
                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

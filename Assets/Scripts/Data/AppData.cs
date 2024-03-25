@@ -1521,6 +1521,10 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
+            [Space(5)]
+            [Header("Template Config")]
+
+            [Space(5)]
             [SerializeField]
             private SurfacingTemplateType templateType;
 
@@ -1533,9 +1537,33 @@ namespace Com.RedicalGames.Filar
             private SurfacingContentType templateContentType;
 
             [Space(5)]
+            [Header("Template Constraints")]
+
+            [Space(5)]
             [SerializeField]
-            private ButtonOverrideConfigDataPacket primaryButtonOverride = new ButtonOverrideConfigDataPacket(), 
-                                                   secondaryButtonOverride = new ButtonOverrideConfigDataPacket();
+            private List<ConfigWidgetConstraintPositionDataPacket> constriants = new List<ConfigWidgetConstraintPositionDataPacket>();
+
+            [Space(5)]
+            [Header("Template Visualization")]
+
+            [Space(5)]
+            [SerializeField]
+            private ImageComponent icon = null;
+
+            [Space(5)]
+            [SerializeField]
+            private ImageComponent backgroundImage = null;
+
+            [Space(5)]
+            [Header("Template Overrides")]
+
+            [Space(5)]
+            [SerializeField]
+            private ButtonOverrideConfigDataPacket primaryButtonOverride = new ButtonOverrideConfigDataPacket();
+
+            [Space(5)]
+            [SerializeField]
+            private ButtonOverrideConfigDataPacket secondaryButtonOverride = new ButtonOverrideConfigDataPacket();
 
             [Space(5)]
             [SerializeField]
@@ -1556,7 +1584,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public SurfacingTemplate(SurfacingTemplateType templateType, WidgetType templateWidgetType, SurfacingContentType templateContentType, bool active, ButtonOverrideConfigDataPacket primaryButtonTitle = null, ButtonOverrideConfigDataPacket secondaryButtonTitle = null, params string[] messageOverrides)
+            public SurfacingTemplate(SurfacingTemplateType templateType, WidgetType templateWidgetType, SurfacingContentType templateContentType, bool active, ButtonOverrideConfigDataPacket primaryButtonTitle = null, ButtonOverrideConfigDataPacket secondaryButtonTitle = null, ImageComponent icon = null, ImageComponent backgroundImage = null, params string[] messageOverrides)
             {
                 this.templateType = templateType;
                 this.templateWidgetType = templateWidgetType;
@@ -1564,6 +1592,8 @@ namespace Com.RedicalGames.Filar
                 this.active = active;
                 this.primaryButtonOverride = primaryButtonTitle;
                 this.secondaryButtonOverride = secondaryButtonTitle;
+                this.icon = icon;
+                this.backgroundImage = backgroundImage;
                 this.messageOverrides = messageOverrides;
             }
 
@@ -1690,6 +1720,69 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.result = $"Get Secondary Button Override Success - Secondary Button Override Is set To : {secondaryButtonOverride}.";
                     callbackResults.data = secondaryButtonOverride;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ImageComponent> GetIcon()
+            {
+                var callbackResults = new CallbackData<ImageComponent>(Helpers.GetAppComponentValid(icon, "Icon", "Get Icon Failed - Icon Is Not Assigned."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(icon.GetImageInfo());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Icon For : {GetName()} - Has Been Successfully Assigned.";
+                        callbackResults.data = icon;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<ImageComponent> GetBackgroundImage()
+            {
+                var callbackResults = new CallbackData<ImageComponent>(Helpers.GetAppComponentValid(backgroundImage, "Background Image", "Get Background Imag Failed - Background Imag Is Not Assigned."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(backgroundImage.GetImageInfo());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Background Image For : {GetName()} - Has Been Successfully Assigned.";
+                        callbackResults.data = backgroundImage;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackDataList<ConfigWidgetConstraintPositionDataPacket> GetSurfacingTemplateConstraints()
+            {
+                var callbackResults = new CallbackDataList<ConfigWidgetConstraintPositionDataPacket>(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(constriants, "Constriants", $"Get Template Constraints Failed - There Are No Constraints Assigned For Surfacing Template : {GetName()}."));
+
+                    if (callbackResults.Success())
+                    {
+                        var initializedConstraints = constriants.FindAll(constraint => constraint.Initialized().Success());
+
+                        callbackResults.SetResult(Helpers.GetAppComponentsValid(initializedConstraints, "Initialized Constriants", "Find All Initialized Constraints Failed - There Are No Initialized Constriants Found"));
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.result = $"{initializedConstraints.Count} Initialized Constraints Were Successfully Found.";
+                            callbackResults.data = initializedConstraints;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
 
                 return callbackResults;

@@ -23,12 +23,6 @@ namespace Com.RedicalGames.Filar
         [TextArea]
         public string message;
 
-        [Space(5)]
-        public AppData.ImageComponent icon;
-
-        [Space(5)]
-        public AppData.ImageComponent backgroundImage;
-
         #endregion
 
         #region Main
@@ -183,42 +177,6 @@ namespace Com.RedicalGames.Filar
                 callbackResults.result = $"Get Config Data Packet For : {GetName()} Failed  - Config Type Is Set To Default : {configType}";
                 callbackResults.data = default;
                 callbackResults.resultCode = AppData.Helpers.ErrorCode;
-            }
-
-            return callbackResults;
-        }
-
-        public AppData.CallbackData<AppData.ImageComponent> GetIcon()
-        {
-            var callbackResults = new AppData.CallbackData<AppData.ImageComponent>(AppData.Helpers.GetAppComponentValid(icon, "Icon", "Get Icon Failed - Icon Is Not Assigned."));
-
-            if (callbackResults.Success())
-            {
-                callbackResults.SetResult(icon.GetImageInfo());
-
-                if(callbackResults.Success())
-                {
-                    callbackResults.result = $"Icon For : {GetName()} - Has Been Successfully Assigned.";
-                    callbackResults.data = icon;
-                }
-            }
-
-            return callbackResults;
-        }
-
-        public AppData.CallbackData<AppData.ImageComponent> GetBackgroundImage()
-        {
-            var callbackResults = new AppData.CallbackData<AppData.ImageComponent>(AppData.Helpers.GetAppComponentValid(backgroundImage, "Background Image", "Get Background Imag Failed - Background Imag Is Not Assigned."));
-
-            if (callbackResults.Success())
-            {
-                callbackResults.SetResult(backgroundImage.GetImageInfo());
-
-                if (callbackResults.Success())
-                {
-                    callbackResults.result = $"Background Image For : {GetName()} - Has Been Successfully Assigned.";
-                    callbackResults.data = backgroundImage;
-                }
             }
 
             return callbackResults;
