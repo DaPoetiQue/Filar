@@ -14,6 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   configType: 2
-  title: Email Verification Sent!
-  message: A verification email has been sent to {0}. Please follow the link sent
-    to your email address to proceed.
+  title:
+    m_TableReference:
+      m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+    m_TableEntryReference:
+      m_KeyId: 177872035434496
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  message:
+    m_TableReference:
+      m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+    m_TableEntryReference:
+      m_KeyId: 177965463556096
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []

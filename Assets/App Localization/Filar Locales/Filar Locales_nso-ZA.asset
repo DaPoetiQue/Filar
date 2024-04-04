@@ -17,7 +17,28 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: c54446c62aef44c48b5776aed3a803f0, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 166006508802048
+    m_Localized: Phoso ea Khokahano!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166475788505088
+    m_Localized: Ho bile le Phoso ho Hokela Marang-rang. Ka kopo, Etsa bonnete ba
+      hore u na le Inthanete 'me u leke hape.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26230968320
+    m_Localized: Netefatsa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26769604005888
+    m_Localized: Hlakola
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26833156100096
+    m_Localized: Leka hape
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Filar Loading Sequence Locales_nso-ZA
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: nso-ZA
+  m_SharedData: {fileID: 11400000, guid: d0b9865b7ad79a44e8dfd231446b3e7e, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 52319539200
+    m_Localized: Boemo Ba Marang-rang
+    m_Metadata:
+      m_Items: []
+  - m_Id: 685843992576
+    m_Localized: E hlahloba Boemo ba ho ba Teng ha Khokahano ea Sesebediswa...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1366277541888
+    m_Localized: Ho Qala
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1399479652352
+    m_Localized: E leka Khokahano ea Seva...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2168803086336
+    m_Localized: Ho Fumana Boitsebiso ka Tshebediso le Sesebediswa - Ho Amahanya
+      Seva... Database Files...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2272347869184
+    m_Localized: E Qala Sebaka sa ho Kena ha Seva le ho Lata Liprofaele...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2433555943424
+    m_Localized: E khoasolla Boitsebiso ba Pele ba Poso ea App...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2625504071680
+    m_Localized: "T\u0161ebelisano Ea Lisebelisoa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2720735744000
+    m_Localized: "Ho Lekola Lintlafatso le T\u0161ebelisano ea Sesebelisoa sa XR."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2921861009408
+    m_Localized: Ho Saena App - Ho Qala
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2983177539584
+    m_Localized: Ho Fumana le ho Kopanya Lintlha tsa Li-profaele tsa Basebelisi ba
+      Seva...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3332105883648
+    m_Localized: Filar Initialization e phethetsoe, Motsotsoana Feela - Ho qala App
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

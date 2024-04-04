@@ -14,7 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   configType: 6
-  title: Unverified Account Found!
-  message: An unverified account already exits with the entered email address {0}.
-    If this email address belongs to you. Please select verify to recieve a new verification
-    link on your inbox.
+  title:
+    m_TableReference:
+      m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+    m_TableEntryReference:
+      m_KeyId: 177081484627968
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  message:
+    m_TableReference:
+      m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+    m_TableEntryReference:
+      m_KeyId: 177099188785152
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []

@@ -17,7 +17,28 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: c54446c62aef44c48b5776aed3a803f0, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 166006508802048
+    m_Localized: Xihoxo Xa Nhlanganiso!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166475788505088
+    m_Localized: Kuve Na Xihoxo Xa Ku Hlanganisa Na Internet. Hi Kombela U Tiyisisa
+      Leswaku U Na Internet U Ringeta Nakambe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26833156100096
+    m_Localized: Ringeta Nakambe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26769604005888
+    m_Localized: Khansela
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26230968320
+    m_Localized: Tiyisisa
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

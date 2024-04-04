@@ -22,6 +22,18 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0b9865b7ad79a44e8dfd231446b3e7e
+    m_Address: Assets/App Localization/Filar Locales/Loading Sequence/Filar Loading
+      Sequence Locales Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 12346a79f2c58094abaa18d9e87c4289
+    m_Address: Assets/App Localization/Filar Locales/General/App General Locales
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:

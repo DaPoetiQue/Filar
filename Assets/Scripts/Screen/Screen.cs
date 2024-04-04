@@ -86,11 +86,13 @@ namespace Com.RedicalGames.Filar
 
         private void InitializeSplashScreen(Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name, "App Manager Instance Is Not Yet Initialized - Invalid Operation."));
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance", "App Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
             if (callbackResults.Success())
             {
-                var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, AppManager.Instance.name).GetData();
+                var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance").GetData();
+
+                #region Screen Title Text Displayer Setup
 
                 callbackResults.SetResult(GetWidget(AppData.WidgetType.TitleDisplayerWidget));
 
@@ -105,6 +107,74 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                #endregion
+
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "Localization Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    var localizationManagerInstance = AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
+
+                    #region License Message Text Displayer Setup
+
+                    callbackResults.SetResult(GetWidget(AppData.WidgetType.MessageDisplayerWidget));
+
+                    if (callbackResults.Success())
+                    {
+                        var licenseDisplayerWidget = GetWidget(AppData.WidgetType.MessageDisplayerWidget).GetData();
+
+                        callbackResults.SetResult(localizationManagerInstance.GetLocaleFromKey(AppData.LocalizationKey.info_AppLicense));
+
+                        if (callbackResults.Success())
+                        {
+                            licenseDisplayerWidget.SetUITextDisplayerValue(AppData.ScreenTextType.InfoDisplayer, localizationManagerInstance.GetLocaleFromKey(AppData.LocalizationKey.info_AppLicense).GetData(), licenseTextSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(licenseTextSetCallbackResults);
+
+                                if (callbackResults.UnSuccessful())
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                    #endregion
+
+                    #region Copyright Text Displayer Setup
+
+                    callbackResults.SetResult(GetWidget(AppData.WidgetType.UITextDisplayerWidget));
+
+                    if (callbackResults.Success())
+                    {
+                        var licenseDisplayerWidget = GetWidget(AppData.WidgetType.UITextDisplayerWidget).GetData();
+
+                        callbackResults.SetResult(localizationManagerInstance.GetLocaleFromKey(AppData.LocalizationKey.tag_Copyright));
+
+                        if (callbackResults.Success())
+                        {
+                            licenseDisplayerWidget.SetUITextDisplayerValue(AppData.ScreenTextType.InfoDisplayer, localizationManagerInstance.GetLocaleFromKey(AppData.LocalizationKey.tag_Copyright).GetData(), licenseTextSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(licenseTextSetCallbackResults);
+
+                                if (callbackResults.UnSuccessful())
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                    #endregion
+
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

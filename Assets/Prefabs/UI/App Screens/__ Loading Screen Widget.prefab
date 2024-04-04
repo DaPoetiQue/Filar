@@ -231,11 +231,11 @@ MonoBehaviour:
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets:
-  - name: Screen Notification pop Up
-    referenceType: 40
-    uIPlacementType: 2
+  - name: Image Displayer Widget
+    referenceType: 36
+    uIPlacementType: 1
     containerType: 14
-    initialVisibilityState: 2
+    initialVisibilityState: 1
     constriants: []
   - name: Page Loading Spinner
     referenceType: 24
@@ -244,11 +244,11 @@ MonoBehaviour:
     initialVisibilityState: 2
     constriants:
     - {fileID: 11400000, guid: 355aa5a83796a0e4f8eaf2cde7beee0e, type: 2}
-  - name: Message Displayer
-    referenceType: 30
-    uIPlacementType: 0
+  - name: Screen Notification pop Up
+    referenceType: 40
+    uIPlacementType: 2
     containerType: 14
-    initialVisibilityState: 1
+    initialVisibilityState: 2
     constriants: []
   dynamicContainerList:
   - {fileID: 788115758341435691}

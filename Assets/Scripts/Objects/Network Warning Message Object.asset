@@ -14,12 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   configType: 1
-  title: Connection Error!
-  message: There Was An Error Connecting To The Internet. Please Make Sure You Have
-    Internet Access And Try Again.
-  icon:
-    value: {fileID: 21300000, guid: 33d474bf03b206c46a8f117231af7031, type: 3}
-    color: {r: 0.8490566, g: 0.6568906, b: 0, a: 1}
-  backgroundImage:
-    value: {fileID: 0}
-    color: {r: 1, g: 1, b: 1, a: 1}
+  title:
+    m_TableReference:
+      m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+    m_TableEntryReference:
+      m_KeyId: 166006508802048
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  message:
+    m_TableReference:
+      m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+    m_TableEntryReference:
+      m_KeyId: 166475788505088
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []

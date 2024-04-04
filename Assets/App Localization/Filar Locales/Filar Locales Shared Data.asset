@@ -27,6 +27,46 @@ MonoBehaviour:
     m_Key: btn-Retry
     m_Metadata:
       m_Items: []
+  - m_Id: 166006508802048
+    m_Key: title-Network Warning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166475788505088
+    m_Key: message-Network Warning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 176679078907904
+    m_Key: title-Verified Email Exists
+    m_Metadata:
+      m_Items: []
+  - m_Id: 176829419540480
+    m_Key: message-Verified Email Exists
+    m_Metadata:
+      m_Items: []
+  - m_Id: 177081484627968
+    m_Key: title-Unverified Email Exists
+    m_Metadata:
+      m_Items: []
+  - m_Id: 177099188785152
+    m_Key: message-Unverified Email Exists
+    m_Metadata:
+      m_Items: []
+  - m_Id: 177872035434496
+    m_Key: title-Email Verification Sent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 177965463556096
+    m_Key: message-Email Verification Sent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 178382465454080
+    m_Key: title-Sign Up Completed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 178509653528576
+    m_Key: message-Sign Up Completed
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

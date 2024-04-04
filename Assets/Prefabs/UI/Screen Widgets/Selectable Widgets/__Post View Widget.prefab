@@ -342,6 +342,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -527,6 +531,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -574,7 +582,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -714,6 +722,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -902,6 +914,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -1088,6 +1104,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -1273,6 +1293,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -1456,6 +1480,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -1638,6 +1666,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -1818,6 +1850,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -2000,6 +2036,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -2362,6 +2402,8 @@ GameObject:
   - component: {fileID: 3079849902301085536}
   - component: {fileID: 3079849902301085567}
   - component: {fileID: 4597557962471122315}
+  - component: {fileID: 7340053106779466629}
+  - component: {fileID: 7832227643946184407}
   m_Layer: 5
   m_Name: __Post Heading Text Displayer
   m_TagString: Untagged
@@ -2642,6 +2684,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -2827,6 +2873,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -2874,7 +2924,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -3014,6 +3064,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -3202,6 +3256,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -3388,6 +3446,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -3573,6 +3635,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -3756,6 +3822,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -3938,6 +4008,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -4031,7 +4105,7 @@ MonoBehaviour:
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
-    value: {fileID: 3079849902301085567}
+    value: {fileID: 7832227643946184407}
     dataPackets:
       name: 
       externalLinkURL: 
@@ -4118,6 +4192,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -4300,6 +4378,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -4351,6 +4433,63 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
   transitionableUIMounts: []
+--- !u!114 &7340053106779466629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3079849902301085565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3079849902301085567}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &7832227643946184407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3079849902301085565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3b6b5bd674c44f40bf754765b633795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
 --- !u!1 &3079849902528060640
 GameObject:
   m_ObjectHideFlags: 0
@@ -4465,7 +4604,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -15, y: -15}
+  m_AnchoredPosition: {x: -15, y: -23.6}
   m_SizeDelta: {x: 15, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3079849902652891640
@@ -4496,7 +4635,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6bc684b82409d54f81ec119a13eee62, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e8c455e24cab7104c91bf4b56763a2d6, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -4662,6 +4801,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -4847,6 +4990,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -4894,7 +5041,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -5034,6 +5181,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -5222,6 +5373,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -5408,6 +5563,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -5593,6 +5752,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -5776,6 +5939,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -5958,6 +6125,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -6138,6 +6309,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -6320,6 +6495,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -6784,6 +6963,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -6969,6 +7152,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -7016,7 +7203,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -7156,6 +7343,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -7344,6 +7535,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -7530,6 +7725,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -7715,6 +7914,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -7898,6 +8101,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -8080,6 +8287,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -8260,6 +8471,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -8442,6 +8657,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -8895,6 +9114,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -9080,6 +9303,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -9127,7 +9354,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -9267,6 +9494,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -9455,6 +9686,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -9641,6 +9876,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -9826,6 +10065,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -10009,6 +10252,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -10191,6 +10438,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -10371,6 +10622,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -10553,6 +10808,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -10980,6 +11239,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -11165,6 +11428,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -11212,7 +11479,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -11352,6 +11619,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -11540,6 +11811,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -11726,6 +12001,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -11911,6 +12190,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -12094,6 +12377,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -12276,6 +12563,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -12456,6 +12747,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -12638,6 +12933,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -12701,6 +13000,8 @@ GameObject:
   - component: {fileID: 3079849903360569825}
   - component: {fileID: 3079849903360569824}
   - component: {fileID: 5232370638753608818}
+  - component: {fileID: 1742808134024481059}
+  - component: {fileID: 1901229885911816011}
   m_Layer: 5
   m_Name: __Post Caption Text Displayer
   m_TagString: Untagged
@@ -12842,7 +13143,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  name: 
+  name: Post Caption Text Displayer
   inputType: 7
   textView: 12
   imagenView: 12
@@ -12981,6 +13282,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -13166,6 +13471,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -13213,7 +13522,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -13353,6 +13662,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -13541,6 +13854,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -13727,6 +14044,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -13912,6 +14233,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -14095,6 +14420,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -14277,6 +14606,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -14323,7 +14656,7 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
   textComponentConfig:
-    name: Post Caption Text Displayer
+    name: Post Caption Text Displayer Config
     selectionStatesInfo:
       name: 
       states:
@@ -14370,7 +14703,7 @@ MonoBehaviour:
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
-    value: {fileID: 3079849903360569824}
+    value: {fileID: 1901229885911816011}
     dataPackets:
       name: 
       externalLinkURL: 
@@ -14457,6 +14790,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -14639,6 +14976,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -14690,6 +15031,63 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
   transitionableUIMounts: []
+--- !u!114 &1742808134024481059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3079849903360569854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3079849903360569824}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &1901229885911816011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3079849903360569854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3b6b5bd674c44f40bf754765b633795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
 --- !u!1 &3079849903398797090
 GameObject:
   m_ObjectHideFlags: 0
@@ -14702,6 +15100,8 @@ GameObject:
   - component: {fileID: 3079849903398797093}
   - component: {fileID: 3079849903398797092}
   - component: {fileID: 3714669051969464914}
+  - component: {fileID: 3511998199149288889}
+  - component: {fileID: 1552930029517197476}
   m_Layer: 5
   m_Name: __Date Time Displayer
   m_TagString: Untagged
@@ -14982,6 +15382,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -15167,6 +15571,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -15214,7 +15622,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -15354,6 +15762,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -15542,6 +15954,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -15728,6 +16144,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -15913,6 +16333,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -16096,6 +16520,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -16278,6 +16706,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -16371,7 +16803,7 @@ MonoBehaviour:
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
-    value: {fileID: 3079849903398797092}
+    value: {fileID: 1552930029517197476}
     dataPackets:
       name: 
       externalLinkURL: 
@@ -16458,6 +16890,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -16640,6 +17076,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -16691,6 +17131,63 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
   transitionableUIMounts: []
+--- !u!114 &3511998199149288889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3079849903398797090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3079849903398797092}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &1552930029517197476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3079849903398797090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3b6b5bd674c44f40bf754765b633795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
 --- !u!1 &3079849903403660679
 GameObject:
   m_ObjectHideFlags: 0
@@ -17114,6 +17611,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -17299,6 +17800,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -17346,7 +17851,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -17486,6 +17991,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -17674,6 +18183,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -17860,6 +18373,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -18045,6 +18562,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -18228,6 +18749,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -18410,6 +18935,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -18590,6 +19119,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -18772,6 +19305,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -19114,6 +19651,8 @@ GameObject:
   - component: {fileID: 3106036618452708109}
   - component: {fileID: 3106036618452708106}
   - component: {fileID: 7652521140273436396}
+  - component: {fileID: 948470894195923613}
+  - component: {fileID: 3912115294245055820}
   m_Layer: 5
   m_Name: __Like Count Text Displayer
   m_TagString: Untagged
@@ -19394,6 +19933,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -19579,6 +20122,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -19626,7 +20173,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -19766,6 +20313,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -19954,6 +20505,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -20140,6 +20695,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -20325,6 +20884,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -20508,6 +21071,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -20690,6 +21257,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -20783,7 +21354,7 @@ MonoBehaviour:
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
-    value: {fileID: 3106036618452708106}
+    value: {fileID: 3912115294245055820}
     dataPackets:
       name: 
       externalLinkURL: 
@@ -20870,6 +21441,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -21052,6 +21627,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -21103,6 +21682,63 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
   transitionableUIMounts: []
+--- !u!114 &948470894195923613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3106036618452708104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3106036618452708106}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &3912115294245055820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3106036618452708104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3b6b5bd674c44f40bf754765b633795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
 --- !u!1 &3106036618634028537
 GameObject:
   m_ObjectHideFlags: 0
@@ -21115,6 +21751,8 @@ GameObject:
   - component: {fileID: 3106036618634028538}
   - component: {fileID: 3106036618634028539}
   - component: {fileID: 5878449984867783413}
+  - component: {fileID: 8438678869820589592}
+  - component: {fileID: 5874916821104359364}
   m_Layer: 5
   m_Name: __Comments Count Text Displayer
   m_TagString: Untagged
@@ -21395,6 +22033,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -21580,6 +22222,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -21627,7 +22273,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -21767,6 +22413,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -21955,6 +22605,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -22141,6 +22795,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -22326,6 +22984,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -22509,6 +23171,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -22691,6 +23357,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -22784,7 +23454,7 @@ MonoBehaviour:
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
-    value: {fileID: 3106036618634028539}
+    value: {fileID: 5874916821104359364}
     dataPackets:
       name: 
       externalLinkURL: 
@@ -22871,6 +23541,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -23053,6 +23727,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -23104,6 +23782,63 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
   transitionableUIMounts: []
+--- !u!114 &8438678869820589592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3106036618634028537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3106036618634028539}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &5874916821104359364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3106036618634028537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3b6b5bd674c44f40bf754765b633795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
 --- !u!1 &3106036618891253712
 GameObject:
   m_ObjectHideFlags: 0
@@ -23116,6 +23851,8 @@ GameObject:
   - component: {fileID: 3106036618891253717}
   - component: {fileID: 3106036618891253714}
   - component: {fileID: 4198545871348934761}
+  - component: {fileID: 4727314588064611726}
+  - component: {fileID: 2896957502238078008}
   m_Layer: 5
   m_Name: __Dislike Count Text Displayer
   m_TagString: Untagged
@@ -23396,6 +24133,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -23581,6 +24322,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -23628,7 +24373,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -23768,6 +24513,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -23956,6 +24705,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -24142,6 +24895,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -24327,6 +25084,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -24510,6 +25271,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -24692,6 +25457,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -24785,7 +25554,7 @@ MonoBehaviour:
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
-    value: {fileID: 3106036618891253714}
+    value: {fileID: 2896957502238078008}
     dataPackets:
       name: 
       externalLinkURL: 
@@ -24872,6 +25641,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -25054,6 +25827,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -25105,6 +25882,63 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
   transitionableUIMounts: []
+--- !u!114 &4727314588064611726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3106036618891253712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3106036618891253714}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &2896957502238078008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3106036618891253712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3b6b5bd674c44f40bf754765b633795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
 --- !u!1 &3106036619408600489
 GameObject:
   m_ObjectHideFlags: 0
@@ -25383,6 +26217,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -25568,6 +26406,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -25615,7 +26457,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -25755,6 +26597,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -25943,6 +26789,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -26129,6 +26979,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -26314,6 +27168,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -26497,6 +27355,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -26679,6 +27541,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -26859,6 +27725,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -27041,6 +27911,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -27370,6 +28244,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -27555,6 +28433,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -27602,7 +28484,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-    clearButton: {fileID: 0}
+    fieldActionInputs: []
     placeHolderText: 
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
@@ -27742,6 +28624,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -27930,6 +28816,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -28116,6 +29006,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -28301,6 +29195,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -28484,6 +29382,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -28666,6 +29568,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -28846,6 +29752,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []
@@ -29028,6 +29938,10 @@ MonoBehaviour:
       overrideStateType:
         name: 
         value: 0
+      screenBlurConfig:
+        name: 
+        active: 0
+        blurScreenPlacementType: 3
       booleanOptionsGroup:
         name: 
         confiGroupDatas: []

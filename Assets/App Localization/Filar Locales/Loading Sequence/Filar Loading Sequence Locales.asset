@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5be51871efa6c3e4eae1703925c8f5ac, type: 3}
+  m_Name: Filar Loading Sequence Locales
+  m_EditorClassIdentifier: 
+  m_SharedTableData: {fileID: 11400000, guid: d0b9865b7ad79a44e8dfd231446b3e7e, type: 2}
+  m_Tables:
+  - {fileID: 11400000, guid: 7f58f89524ef98a4c9fc6329e08aa07e, type: 2}
+  - {fileID: 11400000, guid: 2bf252cd242096a42adf04227255e7cb, type: 2}
+  - {fileID: 11400000, guid: 2aeeb1f683393614a9a783797c8399af, type: 2}
+  - {fileID: 11400000, guid: 5de3619b89b561d4c8abaf577e006412, type: 2}
+  - {fileID: 11400000, guid: bdbdd48ea8a7ce64baf8d9328b1714d5, type: 2}
+  - {fileID: 11400000, guid: 180ffc9d2dd06114cb31d9a5cc3a2ae8, type: 2}
+  - {fileID: 11400000, guid: a760c58e91eb2114794dbccc4e20afef, type: 2}
+  - {fileID: 11400000, guid: dbb1557f4aebf5643add9779e7afb83f, type: 2}
+  - {fileID: 11400000, guid: ffefe7f6ddb0fe540b88126d78659154, type: 2}
+  - {fileID: 11400000, guid: 4ed034cfcfa0e9f41bf4770620117c74, type: 2}
+  - {fileID: 11400000, guid: a24a14408c46d174ea24df9550b4a9a7, type: 2}
+  m_Extensions: []
+  m_Group: String Table
+  references:
+    version: 2
+    RefIds: []

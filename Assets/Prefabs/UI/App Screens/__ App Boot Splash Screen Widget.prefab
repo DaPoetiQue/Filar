@@ -284,12 +284,25 @@ MonoBehaviour:
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets:
-  - name: Title Displayer Widget
+  - name: App Name Displayer Widget
     referenceType: 37
     uIPlacementType: 0
     containerType: 15
     initialVisibilityState: 1
     constriants: []
+  - name: App License Info Displayer Widget
+    referenceType: 30
+    uIPlacementType: 2
+    containerType: 14
+    initialVisibilityState: 1
+    constriants: []
+  - name: Copyright Tag Displayer Widget
+    referenceType: 18
+    uIPlacementType: 2
+    containerType: 14
+    initialVisibilityState: 1
+    constriants:
+    - {fileID: 11400000, guid: 3cf48579d23ecc84cbd2b14661a1a0a3, type: 2}
   dynamicContainerList:
   - {fileID: 1207815466596216749}
   - {fileID: 4343902750515389455}

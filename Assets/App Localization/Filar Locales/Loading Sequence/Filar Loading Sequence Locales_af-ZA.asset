@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Filar Loading Sequence Locales_af-ZA
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: af-ZA
+  m_SharedData: {fileID: 11400000, guid: d0b9865b7ad79a44e8dfd231446b3e7e, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 52319539200
+    m_Localized: Netwerk Status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 685843992576
+    m_Localized: Gaan tans toestel netwerk verbinding-beskikbaarheid status na...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1366277541888
+    m_Localized: Inisialisering
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1399479652352
+    m_Localized: "Probeer tans bedienerverbinding\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2168803086336
+    m_Localized: "Kry toepassing- En Toestelinligting - Sinkroniseer Bedienerdatabasisl\xEAers..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2272347869184
+    m_Localized: Inisialiseer tans bedienertoegangspunt en haal profiele...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2433555943424
+    m_Localized: Laai tans aanvanklike programplasing-inhouddata af
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2625504071680
+    m_Localized: Toestelversoenbaarheid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2720735744000
+    m_Localized: Soek Vir Opdaterings En Toestel XR-Versoenbaarheid.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2921861009408
+    m_Localized: Teken-toepassing - Begin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2983177539584
+    m_Localized: Kry en sinkroniseer bediener- en plaaslike gebruikersprofieldata...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3332105883648
+    m_Localized: Filar-initialisasie voltooi, net 'n sekonde - begin-app
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

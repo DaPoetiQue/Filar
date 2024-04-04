@@ -14,7 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   configType: 5
-  title: Account Exists With Entered Email!
-  message: An account already exits with the entered email address {0}. Please select
-    the sign in button to login to your account. You can also request for a password
-    reset.
+  title:
+    m_TableReference:
+      m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+    m_TableEntryReference:
+      m_KeyId: 176679078907904
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  message:
+    m_TableReference:
+      m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+    m_TableEntryReference:
+      m_KeyId: 176829419540480
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []

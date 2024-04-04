@@ -461,7 +461,7 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
-                                                            string closePopUpnMessage = closePopUpnMessageDataObject.GetMessage("App Terms And Conditions Screen").GetData();
+                                                                var closePopUpnMessage = closePopUpnMessageDataObject.GetMessage("App Terms And Conditions Screen").GetData();
 
                                                                 confirmationPopUpWidget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, closePopUpnMessage, verificationMessageSetCallbackResults =>
                                                                 {

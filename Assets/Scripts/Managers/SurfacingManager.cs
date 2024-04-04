@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization;
 
 namespace Com.RedicalGames.Filar
 {
@@ -791,7 +792,7 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                var popUpMessage = string.Empty;
+                                                                LocalizedString popUpMessage = null;
 
                                                                 callbackResults.SetResult(surfacingTemplate.GetMessageOverrides());
 

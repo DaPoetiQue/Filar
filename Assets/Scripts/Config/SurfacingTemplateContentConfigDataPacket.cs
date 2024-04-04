@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Localization;
 
 namespace Com.RedicalGames.Filar
 {
@@ -17,11 +18,10 @@ namespace Com.RedicalGames.Filar
         [Header("Content Info")]
 
         [Space(5)]
-        public string title;
+        public LocalizedString title;
 
         [Space(5)]
-        [TextArea]
-        public string message;
+        public LocalizedString message;
 
         #endregion
 
@@ -46,9 +46,6 @@ namespace Com.RedicalGames.Filar
 
         #region Data Setters
 
-        public void SetTitle(string title) => this.title = title;
-        public void SetMessage(string message) => this.message = message;
-
         public void SetConfigType(AppData.SurfacingContentType configType, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback();
@@ -71,13 +68,13 @@ namespace Com.RedicalGames.Filar
 
         #region Data Getters
 
-        public AppData.CallbackData<string> GetTitle()
+        public AppData.CallbackData<LocalizedString> GetTitle()
         {
-            var callbackResults = new AppData.CallbackData<string>();
+            var callbackResults = new AppData.CallbackData<LocalizedString>();
 
-            if (!string.IsNullOrEmpty(title))
+            if (title?.TableReference != null)
             {
-                callbackResults.result = $"Title For : {GetName()} - Has Been Successfully Set To : {title}";
+                callbackResults.result = $"Title For : {GetName()} - Has Been Successfully Found";
                 callbackResults.data = title;
                 callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
@@ -91,19 +88,19 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public AppData.CallbackData<string> GetMessage(string replace = null)
+        public AppData.CallbackData<LocalizedString> GetMessage(string replace = null)
         {
-            var callbackResults = new AppData.CallbackData<string>();
+            var callbackResults = new AppData.CallbackData<LocalizedString>();
 
-            if (!string.IsNullOrEmpty(message))
+            if (message.TableReference != null)
             {
                 if (!string.IsNullOrEmpty(replace))
                 {
-                    var newMessage = message.Replace("[0]", replace);
+                    //var newMessage = message.Replace("[0]", replace);
 
-                    callbackResults.result = $"Message For : {GetName()} - Has Been Successfully Set To : {newMessage}";
-                    callbackResults.data = newMessage;
-                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    //callbackResults.result = $"Message For : {GetName()} - Has Been Successfully Set To : {newMessage}";
+                    //callbackResults.data = newMessage;
+                    //callbackResults.resultCode = AppData.Helpers.SuccessCode;
                 }
                 else
                 {
@@ -122,9 +119,9 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public AppData.CallbackData<string> GetMessage(params string[] messageOverrides)
+        public AppData.CallbackData<LocalizedString> GetMessage(params string[] messageOverrides)
         {
-            var callbackResults = new AppData.CallbackData<string>(Initialized());
+            var callbackResults = new AppData.CallbackData<LocalizedString>(Initialized());
 
             if(callbackResults.Success())
             {
@@ -141,8 +138,9 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.result = $"Message For : {GetName()} - Has Been Successfully Set To : {newMessage}";
-                        callbackResults.data = newMessage;
+
+                        //callbackResults.result = $"Message For : {GetName()} - Has Been Successfully Set To : {newMessage}";
+                        //callbackResults.data = newMessage;
                     }
                     else
                     {

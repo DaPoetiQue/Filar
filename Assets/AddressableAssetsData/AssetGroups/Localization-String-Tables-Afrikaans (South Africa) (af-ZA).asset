@@ -24,6 +24,20 @@ MonoBehaviour:
     - Locale-af-ZA
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f58f89524ef98a4c9fc6329e08aa07e
+    m_Address: Filar Loading Sequence Locales_af-ZA
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-af-ZA
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2dc7346e97738ae4cbe7289ba82c520d
+    m_Address: App General Locales_af-ZA
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-af-ZA
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:

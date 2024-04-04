@@ -17,7 +17,28 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: c54446c62aef44c48b5776aed3a803f0, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 166006508802048
+    m_Localized: Impazamo yoQhagamshelwano!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166475788505088
+    m_Localized: Kubekho impazamo ekuDikeni kwi-Intanethi. Nceda uqinisekise ukuba
+      unokufikelela kwi-Intanethi kwaye uzame kwakhona.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26230968320
+    m_Localized: Qinisekisa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26769604005888
+    m_Localized: Rhoxisa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26833156100096
+    m_Localized: Zama kwakhona
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

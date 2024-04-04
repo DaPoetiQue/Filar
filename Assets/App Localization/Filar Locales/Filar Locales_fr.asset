@@ -30,6 +30,15 @@ MonoBehaviour:
     m_Localized: Recommencez
     m_Metadata:
       m_Items: []
+  - m_Id: 166006508802048
+    m_Localized: Erreur de connexion!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166475788505088
+    m_Localized: "Une erreur s'est produite lors de la connexion \xE0 Internet. Veuillez
+      vous assurer que vous disposez d'un acc\xE8s Internet et r\xE9essayer."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

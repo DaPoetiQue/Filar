@@ -17,7 +17,28 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: c54446c62aef44c48b5776aed3a803f0, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 166006508802048
+    m_Localized: Iphutha Lokuxhuma!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166475788505088
+    m_Localized: Kube nephutha ekuxhumekeni ku-inthanethi. Sicela Uqinisekise Ukufinyelela
+      I-inthanethi Futhi Zama Futhi.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26230968320
+    m_Localized: Qinisekisa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26769604005888
+    m_Localized: Khansela
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26833156100096
+    m_Localized: Zama Futhi
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

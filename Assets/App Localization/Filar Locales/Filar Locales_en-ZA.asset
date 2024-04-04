@@ -32,6 +32,31 @@ MonoBehaviour:
     m_Localized: Retry
     m_Metadata:
       m_Items: []
+  - m_Id: 166006508802048
+    m_Localized: Connection Error!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166475788505088
+    m_Localized: There Was An Error Connecting To The Internet. Please Make Sure
+      You Have Internet Access And Try Again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 176679078907904
+    m_Localized: A Verified Email Found!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 177081484627968
+    m_Localized: A Unverified Email Found!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 177872035434496
+    m_Localized: Email Verification Sent!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 178382465454080
+    m_Localized: Sign Up Completed!
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

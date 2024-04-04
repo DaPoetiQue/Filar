@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Filar Loading Sequence Locales_xh-ZA
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: xh-ZA
+  m_SharedData: {fileID: 11400000, guid: d0b9865b7ad79a44e8dfd231446b3e7e, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 3332105883648
+    m_Localized: Ukuqaliswa kwe-Filar kugqityiwe, okwesibini nje-Ukuqalisa usetyenziso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2983177539584
+    m_Localized: Ukufumana kunye nokuNgqamanisa iSeva kunye neeProfayile zoMsebenzisi
+      wasekuhlaleni...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2921861009408
+    m_Localized: ISayina i-App-Ukuqala
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2720735744000
+    m_Localized: Kujongwa uHlaziyo kunye nokuhambelana kwesixhobo XR...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2625504071680
+    m_Localized: Ukuhambelana kwesixhobo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2433555943424
+    m_Localized: Kuthotywa iData yokuQala yePosi yoMxholo...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2272347869184
+    m_Localized: Kuqaliswa Indawo yokuNgena kwiseva kunye nokulanda iiprofayili...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2168803086336
+    m_Localized: Ukufumana usetyenziso kunye nolwazi lweSixhobo-Ungqamaniso lweseva...
+      Iifayile zeDatha yeDatha...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1399479652352
+    m_Localized: Izama uQhakamshelwano lweSeva...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1366277541888
+    m_Localized: Ukuqaliswa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 685843992576
+    m_Localized: Ihlola Isimo Sokutholakala Kokuxhumeka Kwenethiwekhi Yedivayisi...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52319539200
+    m_Localized: Ubume Be Nethiwekhi
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

@@ -32,6 +32,15 @@ MonoBehaviour:
     m_Localized: Probeer Weer
     m_Metadata:
       m_Items: []
+  - m_Id: 166006508802048
+    m_Localized: Konneksie fout!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166475788505088
+    m_Localized: Daar was 'n fout om aan die internet te koppel. Maak asseblief seker
+      dat jy internettoegang het en probeer weer.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

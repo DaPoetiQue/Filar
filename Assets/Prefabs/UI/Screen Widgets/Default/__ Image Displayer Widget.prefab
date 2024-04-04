@@ -2327,7 +2327,7 @@ GameObject:
   - component: {fileID: 2803885941087977293}
   - component: {fileID: 7374042135323048747}
   m_Layer: 5
-  m_Name: __ Splash Displayer Widget
+  m_Name: __ Image Displayer Widget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2473,7 +2473,7 @@ MonoBehaviour:
     inputActionGroup:
     - {fileID: 2803885940288519432}
     initialize: 1
-  screenType: 8
+  screenType: 1
   tabViewComponent:
     name: 
     tabLayout: {fileID: 0}
@@ -2646,6 +2646,7 @@ MonoBehaviour:
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
   initializeTabs: 0
+  interuptable: 0
   dontShowAgain: 0
   isWidgetVisible: 0
   transitionableSplashImageComponent:

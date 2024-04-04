@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Filar Loading Sequence Locales_zu-ZA
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: zu-ZA
+  m_SharedData: {fileID: 11400000, guid: d0b9865b7ad79a44e8dfd231446b3e7e, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 3332105883648
+    m_Localized: Ukuqaliswa kwe-Filar Kuqediwe, Okwesibili Nje - Ukuqala Uhlelo Lokusebenza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2983177539584
+    m_Localized: Ukuthola Nokuvumelanisa Iseva Nedatha Yamaphrofayili Womsebenzisi
+      Wasendaweni...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2921861009408
+    m_Localized: Isayinda Uhlelo Lokusebenza - Iyaqala
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2720735744000
+    m_Localized: Ihlolela Izibuyekezo Nokuhambisana Kwedivayisi XR...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2625504071680
+    m_Localized: Ukuhambisana Kwedivayisi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2433555943424
+    m_Localized: Ilanda Idatha Yokuqukethwe Kokuthunyelwe Kohlelo Lokusebenza Lokuqala...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2272347869184
+    m_Localized: Iqala Indawo Yokungena Kweseva Futhi Ilanda Amaphrofayili...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2168803086336
+    m_Localized: Ithola Uhlelo Lokusebenza Nolwazi Lwedivayisi - Iseva Yokuvumelanisa...
+      Amafayela Wesizindalwazi...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1399479652352
+    m_Localized: Izama ukuxhumanisa iseva...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1366277541888
+    m_Localized: Ukuqaliswa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 685843992576
+    m_Localized: Ihlola Isimo Sokutholakala Kokuxhumeka Kwenethiwekhi Yedivayisi...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52319539200
+    m_Localized: Isimo Senethiwekhi
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

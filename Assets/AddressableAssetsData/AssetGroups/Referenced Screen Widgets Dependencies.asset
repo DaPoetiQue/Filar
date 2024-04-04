@@ -35,6 +35,24 @@ MonoBehaviour:
     m_SerializedLabels:
     - Widget
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0b50eb62cfe35694895b3b92c2455036
+    m_Address: UI Text Displayer Widget
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Widget
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 528a05888bf334c49b0ef0f39bde3071
+    m_Address: Message Displayer Widget
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Widget
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1acba0d110f39c49b605fba6e922357
+    m_Address: Image Displayer Widget
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Widget
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:

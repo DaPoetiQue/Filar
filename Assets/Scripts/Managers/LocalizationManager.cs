@@ -5,12 +5,16 @@ using System.IO;
 using UnityEngine;
 using Firebase.Database;
 using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 
 namespace Com.RedicalGames.Filar
 {
     public class LocalizationManager : AppData.SingletonBaseComponent<LocalizationManager>
     {
         #region Components
+
+        [SerializeField]
+        private AppData.LocaleType currentLanguage = AppData.LocaleType.English_en;
 
         private AppData.LanguageRestriction  languageRestriction;
         private bool generateLanguageRestriction;
@@ -57,6 +61,18 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
+                                    ChangeLanguage(GetCurrentLanguage().GetData(), languageChangedCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(languageChangedCallbackResults);
+
+                                        if(callbackResults.Success())
+                                        {
+
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+
                                     callbackResults.result = "Init Success - Local Config Data Packet Found.";
 
                                     this.localeConfigDataPacket = localeConfigDataPacket;
@@ -197,6 +213,37 @@ namespace Com.RedicalGames.Filar
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public async void ChangeLanguage(AppData.LocaleType LocaleType, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            await LocalizationSettings.InitializationOperation.Task;
+
+            if(LocalizationSettings.InitializationOperation.Task.IsCompleted && LocalizationSettings.InitializationOperation.Task.Exception == null)
+            {
+                LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[(int)LocaleType];
+
+                // Save Language To Data
+            }
+            else
+            {
+                callbackResults.result = $"Change Language Failed With Exception : {LocalizationSettings.InitializationOperation.Task.Exception.Message}";
+                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackData<AppData.LocaleType> GetCurrentLanguage()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.LocaleType>();
+
+            callbackResults.data = currentLanguage;
+            callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
             return callbackResults;
         }

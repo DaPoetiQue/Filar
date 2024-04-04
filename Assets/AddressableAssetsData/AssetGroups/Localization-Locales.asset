@@ -41,20 +41,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: cec2dcdcea18c114cbea27fdf139ca48
-    m_Address: Southern Sotho (South Africa) (st-ZA)
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fefa5183b8bbf8c4790cb7faa059744e
     m_Address: Tsonga (South Africa) (ts-ZA)
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 50a5365e771b0c94ca9dc217d535e257
-    m_Address: Tswana (South Africa) (tn-ZA)
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale

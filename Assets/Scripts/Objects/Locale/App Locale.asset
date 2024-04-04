@@ -47,6 +47,28 @@ MonoBehaviour:
       m_FallbackState: 0
       m_WaitForCompletion: 0
       m_LocalVariables: []
+  - name: App License Info Locale Key
+    key: 10
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 5015233941504
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Copyright Tag Locale Key
+    key: 11
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 17519398912
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
   references:
     version: 2
     RefIds: []

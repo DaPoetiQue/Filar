@@ -30,6 +30,15 @@ MonoBehaviour:
     m_Localized: Confirmar
     m_Metadata:
       m_Items: []
+  - m_Id: 166006508802048
+    m_Localized: "\xA1Error de conexi\xF3n!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166475788505088
+    m_Localized: "Hubo un error al conectarse a Internet. Aseg\xFArese de tener acceso
+      a Internet e int\xE9ntelo nuevamente."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

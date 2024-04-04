@@ -2013,53 +2013,183 @@ MonoBehaviour:
     sequenceDataList:
     - name: Network Check Sequence
       content:
-        header: Network Status
+        header:
+          m_TableReference:
+            m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+          m_TableEntryReference:
+            m_KeyId: 52319539200
+            m_Key: 
+          m_FallbackState: 0
+          m_WaitForCompletion: 0
+          m_LocalVariables: []
         messageList:
         - name: Network Check Message
-          message: Checking Device Network Connection Availability Status...
+          message:
+            m_TableReference:
+              m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+            m_TableEntryReference:
+              m_KeyId: 685843992576
+              m_Key: 
+            m_FallbackState: 0
+            m_WaitForCompletion: 0
+            m_LocalVariables: []
           sequenceState: 1
-        footer: 
+        footer:
+          m_TableReference:
+            m_TableCollectionName: 
+          m_TableEntryReference:
+            m_KeyId: 0
+            m_Key: 
+          m_FallbackState: 0
+          m_WaitForCompletion: 0
+          m_LocalVariables: []
       sequenceID: 1
     - name: App Initialization Sequence
       content:
-        header: Initialization
+        header:
+          m_TableReference:
+            m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+          m_TableEntryReference:
+            m_KeyId: 1366277541888
+            m_Key: 
+          m_FallbackState: 0
+          m_WaitForCompletion: 0
+          m_LocalVariables: []
         messageList:
         - name: Server Connection Status
-          message: Attempting Server Connection...
+          message:
+            m_TableReference:
+              m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+            m_TableEntryReference:
+              m_KeyId: 1399479652352
+              m_Key: 
+            m_FallbackState: 0
+            m_WaitForCompletion: 0
+            m_LocalVariables: []
           sequenceState: 2
         - name: App Info Status
-          message: Getting Application And Device Info - Synchronizing Server Database
-            Files...
+          message:
+            m_TableReference:
+              m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+            m_TableEntryReference:
+              m_KeyId: 2168803086336
+              m_Key: 
+            m_FallbackState: 0
+            m_WaitForCompletion: 0
+            m_LocalVariables: []
           sequenceState: 3
         - name: Server Entry
-          message: Initializing Server Entry Point And Fetching Profiles...
+          message:
+            m_TableReference:
+              m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+            m_TableEntryReference:
+              m_KeyId: 2272347869184
+              m_Key: 
+            m_FallbackState: 0
+            m_WaitForCompletion: 0
+            m_LocalVariables: []
           sequenceState: 4
         - name: App Posts
-          message: Downloading Initial App Post Content Data
+          message:
+            m_TableReference:
+              m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+            m_TableEntryReference:
+              m_KeyId: 2433555943424
+              m_Key: 
+            m_FallbackState: 0
+            m_WaitForCompletion: 0
+            m_LocalVariables: []
           sequenceState: 8
-        footer: 
+        footer:
+          m_TableReference:
+            m_TableCollectionName: 
+          m_TableEntryReference:
+            m_KeyId: 0
+            m_Key: 
+          m_FallbackState: 0
+          m_WaitForCompletion: 0
+          m_LocalVariables: []
       sequenceID: 2
     - name: Device Compitability Sequence
       content:
-        header: Compitability
+        header:
+          m_TableReference:
+            m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+          m_TableEntryReference:
+            m_KeyId: 2625504071680
+            m_Key: 
+          m_FallbackState: 0
+          m_WaitForCompletion: 0
+          m_LocalVariables: []
         messageList:
         - name: Device Compitability
-          message: Checking For Updates And Device XR Compitability.
+          message:
+            m_TableReference:
+              m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+            m_TableEntryReference:
+              m_KeyId: 2720735744000
+              m_Key: 
+            m_FallbackState: 0
+            m_WaitForCompletion: 0
+            m_LocalVariables: []
           sequenceState: 5
-        footer: 
+        footer:
+          m_TableReference:
+            m_TableCollectionName: 
+          m_TableEntryReference:
+            m_KeyId: 0
+            m_Key: 
+          m_FallbackState: 0
+          m_WaitForCompletion: 0
+          m_LocalVariables: []
       sequenceID: 3
     - name: App Signing Sequence
       content:
-        header: Signing App - Starting
+        header:
+          m_TableReference:
+            m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+          m_TableEntryReference:
+            m_KeyId: 2921861009408
+            m_Key: 
+          m_FallbackState: 0
+          m_WaitForCompletion: 0
+          m_LocalVariables: []
         messageList:
         - name: Synchronizing Profile Data
-          message: Getting And Synchronizing Server And Local User Profiles Data...
+          message:
+            m_TableReference:
+              m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+            m_TableEntryReference:
+              m_KeyId: 2983177539584
+              m_Key: 
+            m_FallbackState: 0
+            m_WaitForCompletion: 0
+            m_LocalVariables: []
           sequenceState: 6
         - name: Signing App
-          message: Filar Initialization Completed, Just A Second - Starting App
+          message:
+            m_TableReference:
+              m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+            m_TableEntryReference:
+              m_KeyId: 3332105883648
+              m_Key: 
+            m_FallbackState: 0
+            m_WaitForCompletion: 0
+            m_LocalVariables: []
           sequenceState: 7
-        footer: 
+        footer:
+          m_TableReference:
+            m_TableCollectionName: 
+          m_TableEntryReference:
+            m_KeyId: 0
+            m_Key: 
+          m_FallbackState: 0
+          m_WaitForCompletion: 0
+          m_LocalVariables: []
       sequenceID: 4
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &263306657
 GameObject:
   m_ObjectHideFlags: 0
@@ -11427,43 +11557,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  localizationKeyValuePairs:
-  - name: Confirm Button Localized Text Key
-    key: 1
-    value:
-      m_TableReference:
-        m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
-      m_TableEntryReference:
-        m_KeyId: 26230968320
-        m_Key: 
-      m_FallbackState: 0
-      m_WaitForCompletion: 0
-      m_LocalVariables: []
-  - name: Cancel Button Localized Text Key
-    key: 2
-    value:
-      m_TableReference:
-        m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
-      m_TableEntryReference:
-        m_KeyId: 26769604005888
-        m_Key: 
-      m_FallbackState: 0
-      m_WaitForCompletion: 0
-      m_LocalVariables: []
-  - name: Retry Button Localized Text Key
-    key: 3
-    value:
-      m_TableReference:
-        m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
-      m_TableEntryReference:
-        m_KeyId: 26833156100096
-        m_Key: 
-      m_FallbackState: 0
-      m_WaitForCompletion: 0
-      m_LocalVariables: []
-  references:
-    version: 2
-    RefIds: []
+  currentLanguage: 8
 --- !u!1 &1204500052
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,6 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   configType: 4
-  title: Sign Up Completed!
-  message: Welcome @{0}. Your Filar profile has been successfully created. Please
-    press continue to sign in.
+  title:
+    m_TableReference:
+      m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+    m_TableEntryReference:
+      m_KeyId: 178382465454080
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  message:
+    m_TableReference:
+      m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+    m_TableEntryReference:
+      m_KeyId: 178509653528576
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []

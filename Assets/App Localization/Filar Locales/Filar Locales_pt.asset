@@ -30,6 +30,15 @@ MonoBehaviour:
     m_Localized: Confirme
     m_Metadata:
       m_Items: []
+  - m_Id: 166006508802048
+    m_Localized: "Erro de conex\xE3o!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166475788505088
+    m_Localized: "Ocorreu um erro ao conectar-se \xE0 Internet. Certifique-se de
+      ter acesso \xE0 Internet e tente novamente."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

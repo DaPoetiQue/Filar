@@ -1409,6 +1409,21 @@ namespace Com.RedicalGames.Filar
             UnverifiedEmailAlreadyInUsePopUp
         }
 
+        public enum LocaleType : int
+        {
+            Afrikaans_AF_ZA = 0,
+            Chinesse_simplified = 1,
+            English_en = 2,
+            English_za = 3,
+            French_fr=4,
+            Sesotho_nso_za = 5,
+            Portuguese_pt = 6,
+            Spanish_es = 7,
+            Tsonga_ts_za = 8,
+            Xhosa_xh_za = 9,
+            Zulu_zn_za = 10
+        }
+
         public enum LocalizationKey
         {
             None,
@@ -1420,7 +1435,9 @@ namespace Com.RedicalGames.Filar
             btn_SignIn,
             btn_VerifyEmail,
             btn_ResendEmail,
-            btn_IncorrectEmail
+            btn_IncorrectEmail,
+            info_AppLicense,
+            tag_Copyright
         }
 
         #endregion
@@ -4030,17 +4047,27 @@ namespace Com.RedicalGames.Filar
 
             public CallbackDataList<Widget> GetLoadedWidgets(ScreenType screenType)
             {
-                var callbackResults = new CallbackDataList<Widget>(loadedWidgets.GetCachedAssets(screenType));
+                var callbackResults = new CallbackDataList<Widget>();
 
-                if (callbackResults.Success())
+                if(loadedWidgets != null)
                 {
-                    var widgets = loadedWidgets.GetCachedAssets(screenType).GetData();
+                    callbackResults.SetResult(loadedWidgets.GetCachedAssets(screenType));
 
-                    widgets.Sort((widgetA, widgetB) => widgetA.GetInstantiationOrderID().GetData().CompareTo(widgetB.GetInstantiationOrderID().GetData()));
-                    callbackResults.data = widgets;
+                    if (callbackResults.Success())
+                    {
+                        var widgets = loadedWidgets.GetCachedAssets(screenType).GetData();
+
+                        widgets.Sort((widgetA, widgetB) => widgetA.GetInstantiationOrderID().GetData().CompareTo(widgetB.GetInstantiationOrderID().GetData()));
+                        callbackResults.data = widgets;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                {
+                    callbackResults.result = $"Get Loaded Widgets Failed - There Are No Loaded Widgets Found For Screen : {screenType}";
+                    callbackResults.resultCode = Helpers.WarningCode;
+                }
 
                 return callbackResults;
             }
@@ -7605,7 +7632,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 if (screenUIManager.GetCurrentScreenType().GetData() == ScreenType.LoadingScreen)
                                 {
-                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.TitleDisplayer, GetContent().GetHeader());
+                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.TitleDisplayer, GetContent().GetHeader().GetData());
 
                                     Run();
 
@@ -7639,12 +7666,19 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).GetData().GetMessage());
-
-                                                                    callbackResults = await networkManager.CheckConnectionStatus();
+                                                                    callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).GetData().GetMessage());
 
                                                                     if (callbackResults.Success())
-                                                                        OnCompletition();
+                                                                    {
+                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).GetData().GetMessage().GetData());
+
+                                                                        callbackResults = await networkManager.CheckConnectionStatus();
+
+                                                                        if (callbackResults.Success())
+                                                                            OnCompletition();
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    }
                                                                     else
                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 }
@@ -7672,10 +7706,21 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection).GetData().GetMessage());
-                                                                        callbackResults = await networkManager.ServerConnected();
+                                                                        callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection).GetData().GetMessage());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerConnection).GetData().GetMessage().GetData());
+                                                                            callbackResults = await networkManager.ServerConnected();
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                     }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                                 #endregion
 
@@ -7685,9 +7730,18 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).GetData().GetMessage());
-                                                                    callbackResults = await appManager.SynchronizingAppInfo();
+                                                                    callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).GetData().GetMessage());
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.AppInfoSynchronization).GetData().GetMessage().GetData());
+                                                                        callbackResults = await appManager.SynchronizingAppInfo();
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                                 #endregion
 
@@ -7697,9 +7751,18 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerEntryPoint).GetData().GetMessage());
-                                                                    callbackResults = await appManager.CheckEntryPointAsync();
+                                                                    callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ServerEntryPoint).GetData().GetMessage());
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ServerEntryPoint).GetData().GetMessage().GetData());
+                                                                        callbackResults = await appManager.CheckEntryPointAsync();
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                                 #endregion
 
@@ -7709,9 +7772,18 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ContentDownload).GetData().GetMessage());
-                                                                    callbackResults = await appManager.DownloadPostEntryDataAsync();
+                                                                    callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ContentDownload).GetData().GetMessage());
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ContentDownload).GetData().GetMessage().GetData());
+                                                                        callbackResults = await appManager.DownloadPostEntryDataAsync();
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                                 #endregion
 
@@ -7752,8 +7824,15 @@ namespace Com.RedicalGames.Filar
 
                                                                             if (callbackResults.Success())
                                                                             {
-                                                                                messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).GetData().GetMessage());
-                                                                                callbackResults = await appManager.GetCompatibilityStatusAsync();
+                                                                                callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).GetData().GetMessage());
+
+                                                                                if (callbackResults.Success())
+                                                                                {
+                                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.DeviceCompitability).GetData().GetMessage().GetData());
+                                                                                    callbackResults = await appManager.GetCompatibilityStatusAsync();
+                                                                                }
+                                                                                else
+                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                             }
                                                                             else
                                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -7791,8 +7870,15 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).GetData().GetMessage());
-                                                                        callbackResults = await profileManager.SynchronizingProfile();
+                                                                        callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).GetData().GetMessage());
+
+                                                                        if (callbackResults.Success())
+                                                                        {
+                                                                            messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.ProfileSynchronization).GetData().GetMessage().GetData());
+                                                                            callbackResults = await profileManager.SynchronizingProfile();
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                     }
                                                                     else
                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -7807,8 +7893,15 @@ namespace Com.RedicalGames.Filar
 
                                                                         if (callbackResults.Success())
                                                                         {
-                                                                            messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).GetData().GetMessage());
-                                                                            callbackResults = await profileManager.AppSignInAsync();
+                                                                            callbackResults.SetResult(GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).GetData().GetMessage());
+
+                                                                            if (callbackResults.Success())
+                                                                            {
+                                                                                messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.SigningApp).GetData().GetMessage().GetData());
+                                                                                callbackResults = await profileManager.AppSignInAsync();
+                                                                            }
+                                                                            else
+                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                         }
                                                                         else
                                                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -17475,7 +17568,7 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
-            public string message;
+            public LocalizedString message;
 
             [Space(5)]
             public LoadingSequenceMessageType sequenceState;
@@ -17484,7 +17577,21 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public string GetMessage() => message;
+            public CallbackData<LocalizedString> GetMessage()
+            {
+                var callbackResults = new CallbackData<LocalizedString>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(message, "Message", "Get Message Failed - Message Value Is Not Assigned - Invalid Operation"));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = "Get Message Success - Message Value Is Assigned";
+                    callbackResults.data = message;
+                }
+
+                return callbackResults;
+            }
+
             public LoadingSequenceMessageType GetSequenceMessageType() => sequenceState;
 
             #endregion
@@ -17496,13 +17603,13 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             [Space(5)]
-            public string header;
+            public LocalizedString header;
 
             [Space(5)]
             public List<LoadingSequenceMessage> messageList;
 
             [Space(5)]
-            public string footer;
+            public LocalizedString footer;
 
             #endregion
 
@@ -17512,16 +17619,26 @@ namespace Com.RedicalGames.Filar
             {
             }
 
-            public MessageFormat(string header, List<LoadingSequenceMessage> messageList, string footer = null)
+            public MessageFormat(LocalizedString header, List<LoadingSequenceMessage> messageList, LocalizedString footer = null)
             {
                 this.header = header;
                 this.messageList = messageList;
                 this.footer = footer;
             }
 
-            public string GetHeader()
+            public CallbackData<LocalizedString> GetHeader()
             {
-                return header;
+                var callbackResults = new CallbackData<LocalizedString>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(header, "Header", "Get Header Failed - Header Value Is Not Assigned - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = "Get Header Success - Header Value Has Been Assigned.";
+                    callbackResults.data = header;
+                }
+
+                return callbackResults;
             }
 
             public void GetMessage(LoadingSequenceMessageType messageType, Action<CallbackData<LoadingSequenceMessage>> callback)
@@ -17618,23 +17735,27 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public string GetFooter()
+            public CallbackData<LocalizedString> GetFooter()
             {
-                return footer;
+                var callbackResults = new CallbackData<LocalizedString>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(footer, "Footer", "Get Footer Failed - Footer Value Is Not Assigned - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = "Get Footer Success - Footer Value Has Been Assigned.";
+                    callbackResults.data = footer;
+                }
+
+                return callbackResults;
             }
 
             public Callback Initialized()
             {
-                Callback callbackResults = new Callback();
+                Callback callbackResults = new Callback(GetHeader());
 
-                Helpers.StringValueValid(validDataCallbackResults => 
-                {
-                    callbackResults.SetResult(validDataCallbackResults);
-
-                    if (callbackResults.Success())
-                        callbackResults.SetResult(GetMessageList());
-
-                }, GetHeader());
+                if (callbackResults.Success())
+                    callbackResults.SetResult(GetMessageList());
 
                 return callbackResults;
             }
@@ -24399,12 +24520,70 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning(InputValueAssigned().results);
             }
 
-            public void SetScreenUITextValue(string value)
+            public void SetScreenUITextValue(string value, Action<Callback> callback = null)
             {
                 if (this.value)
                     this.value.GetTextComponent().GetData().text = value;
                 else
                     Debug.LogWarning("--> SetScreenUITextValue Failed - Value Is Missing / Null.");
+            }
+
+            public void SetScreenUITextValue(LocalizationKey key, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "Set Title Localized Failed - Localization Manager Instance Is Not Initializaed Yet - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    var localizationManagerInstance = Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
+
+                    callbackResults.SetResult(GetValue());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(localizationManagerInstance.GetLocaleFromKey(key));
+
+                        if (callbackResults.Success())
+                        {
+                            var localizationKeyValuePair = localizationManagerInstance.GetLocaleFromKey(key).GetData();
+
+                            SetScreenUITextValue(localizationKeyValuePair, localizationsetCallbackResults =>
+                            {
+                                callbackResults.SetResult(localizationsetCallbackResults);
+
+                                if (callbackResults.UnSuccessful())
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetScreenUITextValue(LocalizedString value, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetValue());
+
+                if (callbackResults.Success())
+                {
+                    GetValue().GetData().SetLocalizedString(value, valueSetCallbackResults => 
+                    {
+                        callbackResults.SetResult(valueSetCallbackResults);
+
+                        if(callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
 
@@ -43381,6 +43560,50 @@ namespace Com.RedicalGames.Filar
                 {
                     var initializedAction = GetUITextDisplayer(textType).GetData();
                     initializedAction.SetScreenUITextValue(value);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetUITextDisplayerValue(ScreenTextType textType, LocalizationKey key, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetUITextDisplayer(textType));
+
+                if (callbackResults.Success())
+                {
+                    var initializedAction = GetUITextDisplayer(textType).GetData();
+
+                    initializedAction.SetScreenUITextValue(key, localizationKeySetCallbackResults => 
+                    {
+                        callbackResults.SetResult(localizationKeySetCallbackResults);
+
+                        if(callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetUITextDisplayerValue(ScreenTextType textType, LocalizedString value, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetUITextDisplayer(textType));
+
+                if (callbackResults.Success())
+                {
+                    var initializedAction = GetUITextDisplayer(textType).GetData();
+
+                    initializedAction.SetScreenUITextValue(value, localizationValueSetCallbackResults => 
+                    {
+                        callbackResults.SetResult(localizationValueSetCallbackResults);
+
+                        if (callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
