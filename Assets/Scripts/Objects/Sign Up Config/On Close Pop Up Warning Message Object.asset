@@ -15,4 +15,4 @@ MonoBehaviour:
   type: 1
   configType: 7
   title: Screen Warning!
-  message: Are you sure you want to close the [0]?
+  message: Are you sure you want to close the {0}?

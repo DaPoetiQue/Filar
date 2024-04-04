@@ -15,5 +15,5 @@ MonoBehaviour:
   type: 1
   configType: 2
   title: Email Verification Sent!
-  message: A verification email has been sent to [0]. Please follow the link sent
+  message: A verification email has been sent to {0}. Please follow the link sent
     to your email address to proceed.

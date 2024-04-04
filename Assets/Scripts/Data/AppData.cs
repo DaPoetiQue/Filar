@@ -28,6 +28,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using System.Globalization;
+using UnityEngine.Localization;
 
 namespace Com.RedicalGames.Filar
 {
@@ -702,9 +703,10 @@ namespace Com.RedicalGames.Filar
         public enum ConfigDataType
         {
             None,
-            infoConfigData,
-            sceneConfigData,
-            screenConfigData
+            InfoConfigData,
+            SceneConfigData,
+            ScreenConfigData,
+            LocaleConfigData
         }
 
         public enum SceneModelType
@@ -1397,6 +1399,30 @@ namespace Com.RedicalGames.Filar
             ParameterEventActions
         }
 
+        public enum SurfacingTemplateType
+        {
+            None,
+            NetworkNotificationPopUp,
+            EmailVerificationPopUp,
+            EmailVerificationSentPopUp,
+            VerifiedEmailAlreadyInUsePopUp,
+            UnverifiedEmailAlreadyInUsePopUp
+        }
+
+        public enum LocalizationKey
+        {
+            None,
+            btn_Confirm,
+            btn_Cancel,
+            btn_Retry,
+            btn_Submit,
+            btn_SignUp,
+            btn_SignIn,
+            btn_VerifyEmail,
+            btn_ResendEmail,
+            btn_IncorrectEmail
+        }
+
         #endregion
 
         #region Surfacing
@@ -1438,12 +1464,6 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        public enum SurfacingTemplateType
-        {
-            None,
-            NetworkNotificationPopUp
-        }
-
         [Serializable]
         public class ButtonOverrideConfigDataPacket : DataDebugger
         {
@@ -1451,7 +1471,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            private string titleTextOverride = string.Empty;
+            private LocalizationKey titleTextOverride = LocalizationKey.None;
 
             [Space(5)]
             [SerializeField]
@@ -1465,11 +1485,11 @@ namespace Com.RedicalGames.Filar
 
             #region Main
 
-            public CallbackData<string> GetTitleTextOverride()
+            public CallbackData<LocalizationKey> GetTitleTextOverride()
             {
-                var callbackResults = new CallbackData<string>();
+                var callbackResults = new CallbackData<LocalizationKey>();
 
-                callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(titleTextOverride, "Title Text Override", "Get Title Text Override Failed - Title Text Override Value Is Not Assigned - Invalid Operation."));
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(titleTextOverride, "Title Text Override", $"Get Title Text Override Failed - Title Text Override Value Is Set To default : {titleTextOverride} - Invalid Operation."));
 
                 if(callbackResults.Success())
                 {
@@ -2215,6 +2235,72 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Localization
+
+        [Serializable]
+        public class LocalizationKeyValuePair : DataDebugger
+        {
+            #region Components
+
+            [SerializeField]
+            private LocalizationKey key;
+
+            [Space(5)]
+            [SerializeField]
+            private LocalizedString value;
+
+            #endregion
+
+            #region Main
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(GetKey());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetValue());
+
+                    if(callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<LocalizationKey> GetKey()
+            {
+                var callbackResults = new CallbackData<LocalizationKey>(Helpers.GetAppEnumValueValid(key, "Key", $"Get Key Failed - Key Value Is set To Default : {key} - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Key Success - Key Value Is set To : {key}";
+                    callbackResults.data = key;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<LocalizedString> GetValue()
+            {
+                var callbackResults = new CallbackData<LocalizedString>(Helpers.GetAppComponentValid(value, "Value", "Get Value Failed - The Value Field Is Not Assigned - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Value Success - The Localization String Value Field Is Assigned.";
+                    callbackResults.data = value;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+        }
 
         [Serializable]
         public class LanguageRestriction 
@@ -4324,11 +4410,11 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<SurfacingTemplateContentConfigDataPacket> GetLoadedConfigMessageDataPacket(SurfacingContentType messageType)
             {
-                var callbackResults = new CallbackData<SurfacingTemplateContentConfigDataPacket>(GetLoadedConfigData(ConfigDataType.infoConfigData));
+                var callbackResults = new CallbackData<SurfacingTemplateContentConfigDataPacket>(GetLoadedConfigData(ConfigDataType.InfoConfigData));
 
                 if(callbackResults.Success())
                 {
-                    var configMessageDataPackets = GetLoadedConfigData(ConfigDataType.infoConfigData).GetData();
+                    var configMessageDataPackets = GetLoadedConfigData(ConfigDataType.InfoConfigData).GetData();
 
                     foreach (var configMessageDataPacket in configMessageDataPackets)
                     {
@@ -7553,38 +7639,12 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    callbackResults.SetResults(Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance", "Surfacing Manager Instance Is Not Yet Initialized."));
+                                                                    messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).GetData().GetMessage());
 
-                                                                    if(callbackResults.Success())
-                                                                    {
-                                                                        var surfacingManagerInstance = Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
+                                                                    callbackResults = await networkManager.CheckConnectionStatus();
 
-                                                                        var loadingWidgetConfigDataPacket = new SceneConfigDataPacket();
-
-                                                                        loadingWidgetConfigDataPacket.SetReferencedScreenType(ScreenType.LoadingScreen);
-                                                                        loadingWidgetConfigDataPacket.SetReferencedWidgetType(WidgetType.LoadingWidget);
-                                                                        loadingWidgetConfigDataPacket.SetReferencedUIScreenPlacementType(ScreenUIPlacementType.ForeGround);
-                                                                        loadingWidgetConfigDataPacket.SetScreenBlurState(false);
-
-                                                                        surfacingManagerInstance.SurfaceWidget(loadingWidgetConfigDataPacket, async loadingSpinnerShownCallbackResults => 
-                                                                        {
-                                                                            callbackResults.SetResult(loadingSpinnerShownCallbackResults);
-
-                                                                            if(callbackResults.Success())
-                                                                            {
-                                                                                messageDisplayerWidget.GetData().SetUITextDisplayerValue(ScreenTextType.InfoDisplayer, GetContent().GetMessage(LoadingSequenceMessageType.NetworkCheck).GetData().GetMessage());
-
-                                                                                callbackResults = await networkManager.CheckConnectionStatus();
-
-                                                                                if (callbackResults.Success())
-                                                                                    OnCompletition();
-                                                                                else
-                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                            }
-                                                                            else
-                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        });
-                                                                    }
+                                                                    if (callbackResults.Success())
+                                                                        OnCompletition();
                                                                     else
                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 }
@@ -17989,12 +18049,12 @@ namespace Com.RedicalGames.Filar
             public void SetNotificationScreenData(Notification notification, UIScreenWidgetContainer widgetContainer)
             {
                 if (titleDisplayer.value != null)
-                    titleDisplayer.value.text = notification.title;
+                    titleDisplayer.value.GetTextComponent().GetData().text = notification.title;
                 else
                     AppMonoDebugManager.Instance.LogWarning($"Title Displayer Value Missing / Not Assigned In The Editor --> For Widget Named : {name}.", "NotificationWidget", () => SetNotificationScreenData(notification, widgetContainer));
 
                 if (messageDisplayer.value != null)
-                    messageDisplayer.value.text = notification.message;
+                    messageDisplayer.value.GetTextComponent().GetData().text = notification.message;
                 else
                     AppMonoDebugManager.Instance.LogWarning($"Message Displayer Value Missing / Not Assigned In The Editor --> For Widget Named : {name}.", "NotificationWidget", () => SetNotificationScreenData(notification, widgetContainer));
 
@@ -19806,7 +19866,7 @@ namespace Com.RedicalGames.Filar
             #region Components
 
             [Space(5)]
-            public TMP_Text title;
+            public TMPLocalizationHandler title;
 
             [Space(5)]
             public List<UIImageDisplayer> fieldUIImageList;
@@ -19917,6 +19977,57 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+
+            public void SetTitleLocalized(LocalizedString localizedString, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTitleLocalizationHandler());
+
+                if (callbackResults.Success())
+                    GetTitleLocalizationHandler().GetData().SetLocalizedString(localizedString, localizedStringSetCallbackResults =>
+                    {
+                        callbackResults.SetResult(localizedStringSetCallbackResults);
+
+                        if (callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetTitleLocalized(LocalizationKey key, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "Set Title Localized Failed - Localization Manager Instance Is Not Initializaed Yet - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    var localizationManagerInstance = Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
+
+                    callbackResults.SetResult(localizationManagerInstance.GetLocaleFromKey(key));
+
+                    if (callbackResults.Success())
+                    {
+                        var localizationKeyValuePair = localizationManagerInstance.GetLocaleFromKey(key).GetData();
+
+                        SetTitleLocalized(localizationKeyValuePair, localizationsetCallbackResults => 
+                        {
+                            callbackResults.SetResult(localizationsetCallbackResults);
+
+                            if(callbackResults.UnSuccessful())
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+
             /// <summary>
             /// Returns A Title Component For The Button.
             /// </summary>
@@ -19929,7 +20040,31 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.result = $"Get Title Success - Title Is Assigned.";
+                    callbackResults.SetResult(title.GetTextComponent());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Title Success - Title Is Assigned.";
+                        callbackResults.data = title.GetTextComponent().GetData();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<TMPLocalizationHandler> GetTitleLocalizationHandler()
+            {
+                var callbackResults = new CallbackData<TMPLocalizationHandler>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(title, "Title", "Get Title Localization Handle Failed - Title Localization Handle Is Not Assigned - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Title Localization Handler Success - Title Localization Handle Is Assigned.";
                     callbackResults.data = title;
                 }
                 else
@@ -24140,7 +24275,7 @@ namespace Com.RedicalGames.Filar
         #region Displayer Components
 
         [Serializable]
-        public class UITextDisplayer<T> : UIInputComponent<TMP_Text, T, UITextDisplayer<T>>
+        public class UITextDisplayer<T> : UIInputComponent<TMPLocalizationHandler, T, UITextDisplayer<T>>
         {
             #region Main
 
@@ -24259,7 +24394,7 @@ namespace Com.RedicalGames.Filar
             public override void SetUIColor(Color color, Action<Callback> callback = null)
             {
                 if (InputValueAssigned().success)
-                    value.color = color;
+                    value.GetTextComponent().GetData().color = color;
                 else
                     Debug.LogWarning(InputValueAssigned().results);
             }
@@ -24267,7 +24402,7 @@ namespace Com.RedicalGames.Filar
             public void SetScreenUITextValue(string value)
             {
                 if (this.value)
-                    this.value.text = value;
+                    this.value.GetTextComponent().GetData().text = value;
                 else
                     Debug.LogWarning("--> SetScreenUITextValue Failed - Value Is Missing / Null.");
             }
@@ -24339,7 +24474,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public override RectTransform GetWidgetRect() => value.rectTransform;
+            public override RectTransform GetWidgetRect() => value.GetTextComponent().GetData().rectTransform;
 
             public override void SetUIScale(Vector2 scale) => GetWidgetRect().SetWidgetScale(scale);
             public override void SetUIScale(int width, int height) => GetWidgetRect().SetWidgetScale(width, height);
@@ -42386,6 +42521,44 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            public void SetActionButtonTitle(InputActionButtonType actionType, LocalizationKey key, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized(InputType.Button));
+
+                if (callbackResults.Success())
+                {
+                    var inputActionHandler = Initialized(InputType.Button).GetData().Find(input => input.GetButtonComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == actionType);
+
+                    callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {actionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(inputActionHandler.GetButtonComponent());
+
+                        if (callbackResults.Success())
+                        {
+                            var button = inputActionHandler.GetButtonComponent().GetData();
+
+                            button.SetTitleLocalized(key, localizedKeySetcallbackResults => 
+                            {
+                                callbackResults.SetResult(localizedKeySetcallbackResults);
+
+                                if(callbackResults.UnSuccessful())
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
             public void SetActionButtonState(InputActionButtonType actionType, InputUIState state, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized(InputType.Button));
@@ -43208,6 +43381,25 @@ namespace Com.RedicalGames.Filar
                 {
                     var initializedAction = GetUITextDisplayer(textType).GetData();
                     initializedAction.SetScreenUITextValue(value);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetUITextDisplayerState(ScreenTextType textType, InputUIState state, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetUITextDisplayer(textType));
+
+                if (callbackResults.Success())
+                {
+                    var initializedAction = GetUITextDisplayer(textType).GetData();
+
+                    initializedAction.SetUIInputState(state, stateSetCallbackResults => 
+                    {
+                        callbackResults.SetResult(stateSetCallbackResults);
+                    });
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -44219,7 +44411,7 @@ namespace Com.RedicalGames.Filar
 
             public void UnRegisterActionButtonListeners(Action<Callback> callback = null, params ActionButtonListener[] actionButtonListeners)
             {
-                var callbackResults = new Callback(Helpers.GetAppComponentsValid(actionButtonListeners, "Action Button Listeners", $"Register Action Button Listeners Failed For : {GetName()} - Action Button Listeners Params Value Is Null - Invalid Operation."));
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(actionButtonListeners, "Action Button Listeners", $"Un-Register Action Button Listeners Failed For : {GetName()} - Action Button Listeners Params Value Is Null - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
@@ -44264,7 +44456,10 @@ namespace Com.RedicalGames.Filar
                     }
                 }
                 else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                {
+                    callbackResults.result = $"Un-Register Action Button Listeners Unsuccessfull For : {GetName()} - There Are No Registered Action Buttons Found - Continuing Execution.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
 
                 callback?.Invoke(callbackResults);
             }

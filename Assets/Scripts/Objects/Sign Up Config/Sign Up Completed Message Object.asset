@@ -15,5 +15,5 @@ MonoBehaviour:
   type: 1
   configType: 4
   title: Sign Up Completed!
-  message: Welcome @[0]. Your Filar profile has been successfully created. Please
+  message: Welcome @{0}. Your Filar profile has been successfully created. Please
     press continue to sign in.

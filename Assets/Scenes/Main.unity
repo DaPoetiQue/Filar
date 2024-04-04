@@ -11427,6 +11427,43 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  localizationKeyValuePairs:
+  - name: Confirm Button Localized Text Key
+    key: 1
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+      m_TableEntryReference:
+        m_KeyId: 26230968320
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Cancel Button Localized Text Key
+    key: 2
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+      m_TableEntryReference:
+        m_KeyId: 26769604005888
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Retry Button Localized Text Key
+    key: 3
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:c54446c62aef44c48b5776aed3a803f0
+      m_TableEntryReference:
+        m_KeyId: 26833156100096
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1204500052
 GameObject:
   m_ObjectHideFlags: 0
@@ -17374,7 +17411,8 @@ MonoBehaviour:
       templateType: 1
       templateWidgetType: 40
       templateContentType: 1
-      constriants: []
+      constriants:
+      - {fileID: 11400000, guid: 7a013dedb6409254ba67f759bfe024bb, type: 2}
       icon:
         value: {fileID: 21300000, guid: 33d474bf03b206c46a8f117231af7031, type: 3}
         color: {r: 0.8509804, g: 0.65882355, b: 0, a: 1}
@@ -17383,14 +17421,83 @@ MonoBehaviour:
         color: {r: 1, g: 1, b: 1, a: 1}
       primaryButtonOverride:
         name: Retry Button
-        titleTextOverride: Retry
+        titleTextOverride: 3
         imageOverride: {fileID: 0}
         colorOverride: {r: 0.8679245, g: 0.012281928, b: 0.012281928, a: 1}
       secondaryButtonOverride:
         name: 
-        titleTextOverride: 
+        titleTextOverride: 0
         imageOverride: {fileID: 0}
-        colorOverride: {r: 0, g: 0, b: 0, a: 0}
+        colorOverride: {r: 0.0036044943, g: 0.764151, b: 0.015921045, a: 1}
+      messageOverrides: []
+      active: 1
+    - name: Email Verification Sent Popup Template
+      templateType: 3
+      templateWidgetType: 40
+      templateContentType: 2
+      constriants: []
+      icon:
+        value: {fileID: 21300000, guid: 33d474bf03b206c46a8f117231af7031, type: 3}
+        color: {r: 1, g: 1, b: 1, a: 1}
+      backgroundImage:
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+      primaryButtonOverride:
+        name: Resend Email button
+        titleTextOverride: 8
+        imageOverride: {fileID: 0}
+        colorOverride: {r: 0, g: 0.32866883, b: 1, a: 1}
+      secondaryButtonOverride:
+        name: Incorrect Email Button
+        titleTextOverride: 9
+        imageOverride: {fileID: 0}
+        colorOverride: {r: 0.0754717, g: 0.0736917, b: 0.0736917, a: 1}
+      messageOverrides: []
+      active: 1
+    - name: Verified Email Already In Use Popup Template
+      templateType: 4
+      templateWidgetType: 40
+      templateContentType: 5
+      constriants: []
+      icon:
+        value: {fileID: 21300000, guid: 33d474bf03b206c46a8f117231af7031, type: 3}
+        color: {r: 1, g: 1, b: 1, a: 1}
+      backgroundImage:
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+      primaryButtonOverride:
+        name: Sign In button
+        titleTextOverride: 6
+        imageOverride: {fileID: 0}
+        colorOverride: {r: 0, g: 0.32866883, b: 1, a: 1}
+      secondaryButtonOverride:
+        name: Try Different Email Button
+        titleTextOverride: 9
+        imageOverride: {fileID: 0}
+        colorOverride: {r: 0.0754717, g: 0.0736917, b: 0.0736917, a: 1}
+      messageOverrides: []
+      active: 1
+    - name: Unverified Email Already In Use Popup Template
+      templateType: 5
+      templateWidgetType: 40
+      templateContentType: 6
+      constriants: []
+      icon:
+        value: {fileID: 21300000, guid: 33d474bf03b206c46a8f117231af7031, type: 3}
+        color: {r: 1, g: 1, b: 1, a: 1}
+      backgroundImage:
+        value: {fileID: 0}
+        color: {r: 1, g: 1, b: 1, a: 1}
+      primaryButtonOverride:
+        name: Verify Email button
+        titleTextOverride: 7
+        imageOverride: {fileID: 0}
+        colorOverride: {r: 0, g: 0.32866883, b: 1, a: 1}
+      secondaryButtonOverride:
+        name: Incorrect Email Button
+        titleTextOverride: 9
+        imageOverride: {fileID: 0}
+        colorOverride: {r: 0.0754717, g: 0.0736917, b: 0.0736917, a: 1}
       messageOverrides: []
       active: 1
   surfacedWidgetList: []

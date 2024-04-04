@@ -917,8 +917,8 @@ MonoBehaviour:
     containerType: 14
     initialVisibilityState: 2
     constriants: []
-  - name: Confirmation Pop Up Widget
-    referenceType: 1
+  - name: Screen Pop Up Widget
+    referenceType: 40
     uIPlacementType: 2
     containerType: 14
     initialVisibilityState: 2

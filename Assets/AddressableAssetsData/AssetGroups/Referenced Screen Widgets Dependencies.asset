@@ -17,20 +17,8 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 1dfe01e281f57b14f9f98779b0e9aa78
   m_SerializeEntries:
-  - m_GUID: d4e581edca68aab4f8fe12628877bd6b
-    m_Address: Network Notification Widget
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Widget
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f843af94970aabd4294feebcde9f6f92
     m_Address: Page Refresh Loader Widget
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Widget
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 32777faf63cd0a74c8e92b3179a39995
-    m_Address: Permissions Widget
     m_ReadOnly: 0
     m_SerializedLabels:
     - Widget
@@ -41,26 +29,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - Widget
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c76e1d207036fd743b44206e7f9098cf
-    m_Address: Confirmation Widget
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Widget
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c3fd54dca65ee0b4fa629bf930b33f08
-    m_Address: Feature Blocker Widget
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Widget
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 23b5671c6706dca428babdc1a95745a7
     m_Address: Notifications Pop Up Widget
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Widget
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b34f5489dfbe8d04f959b84f46afb0c3
-    m_Address: Success Notification Pop Up Widget
     m_ReadOnly: 0
     m_SerializedLabels:
     - Widget

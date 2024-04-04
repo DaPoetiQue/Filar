@@ -440,7 +440,7 @@ namespace Com.RedicalGames.Filar
                                                                     callbackResults.SetResult(validationsClearedCallbackResults);
 
                                                                     if (callbackResults.Success())
-                                                                        OnUserSignUpEvent();
+                                                                        SignUpButtonEvent();
                                                                     else
                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                 });
@@ -524,6 +524,252 @@ namespace Com.RedicalGames.Filar
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);              
         }
 
+        /// <summary>
+        /// This Function Is Executed When The User Sign Up. 
+        /// </summary>
+        private async void SignUpButtonEvent()
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance", "Network Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
+            {
+                var networkManagerInstance = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance").GetData();
+
+                var networkCheckTaskCallbackResults = await networkManagerInstance.CheckConnectionStatus(true);
+
+                callbackResults.SetResult(networkCheckTaskCallbackResults);
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager", "Check Connection Status Failed - Surfacing Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager").GetData();
+
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
+
+                        if (callbackResults.Success())
+                        {
+                            var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name).GetData();
+
+                            callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
+
+                            if (callbackResults.Success())
+                            {
+                                var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
+
+                                profileManagerInstance.GetUserProfile(async userProfileCallbackResults =>
+                                {
+                                    var userProfile = userProfileCallbackResults.GetData();
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var checkCredentialsCallbackResults = await profileManagerInstance.CredentialsAvailable(userProfile.GetUserName().GetData(), userProfile.GetUserEmail().GetData());
+
+                                        callbackResults.SetResult(checkCredentialsCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.SetResult(profileManagerInstance.IsAnnonymousAccount());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var linkUserAccountAsyncTask = await profileManagerInstance.LinkUserAccount(userProfile);
+
+                                                callbackResults.SetResult(linkUserAccountAsyncTask);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
+
+                                                    callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
+
+                                                    if (callbackResults.UnSuccessful())
+                                                    {
+                                                        surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.EmailVerificationSentPopUp, popUpShownCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(popUpShownCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                                                                timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
+
+                                                                });
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                        }, OnUserEmailResendRequestButtonPressedEvent, OnIncorrectUserEmailButtonPressedEvent, userProfile.GetUserEmail().GetData());
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                {
+                                                    switch(linkUserAccountAsyncTask.GetData())
+                                                    {
+                                                        case Firebase.Auth.AuthError.AccountExistsWithDifferentCredentials:
+
+                                                            break;
+
+                                                        case Firebase.Auth.AuthError.AdminRestrictedOperation:
+
+                                                            break;
+
+                                                        case Firebase.Auth.AuthError.EmailAlreadyInUse:
+
+                                                            var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
+
+                                                            callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.VerifiedEmailAlreadyInUsePopUp, popUpShownCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(popUpShownCallbackResults);
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                                                                        timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
+                                                                        {
+                                                                            callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
+
+                                                                        });
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                                }, OnUserEmailResendRequestButtonPressedEvent, OnIncorrectUserEmailButtonPressedEvent, userProfile.GetUserEmail().GetData());
+                                                            }
+                                                            else
+                                                            {
+                                                                surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.UnverifiedEmailAlreadyInUsePopUp, popUpShownCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(popUpShownCallbackResults);
+
+                                                                    if (callbackResults.Success())
+                                                                    {
+                                                                        timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                                                                        timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
+                                                                        {
+                                                                            callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
+
+                                                                        });
+                                                                    }
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                                }, OnUserEmailResendRequestButtonPressedEvent, OnIncorrectUserEmailButtonPressedEvent, userProfile.GetUserEmail().GetData());
+                                                            }
+
+                                                            break;
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var signUpUserProfileAsyncTask = await profileManagerInstance.SignUpAsync(userProfile);
+
+                                                callbackResults.SetResult(signUpUserProfileAsyncTask);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
+
+                                                    callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
+
+                                                    if (callbackResults.UnSuccessful())
+                                                    {
+                                                        surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.EmailVerificationSentPopUp, popUpShownCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(popUpShownCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                                                                timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
+
+                                                                });
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                        }, OnUserEmailResendRequestButtonPressedEvent, OnIncorrectUserEmailButtonPressedEvent, userProfile.GetUserEmail().GetData());
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    switch (signUpUserProfileAsyncTask.GetData())
+                                                    {
+                                                        case Firebase.Auth.AuthError.AccountExistsWithDifferentCredentials:
+
+                                                            break;
+
+                                                        case Firebase.Auth.AuthError.AdminRestrictedOperation:
+
+                                                            break;
+
+                                                        case Firebase.Auth.AuthError.EmailAlreadyInUse:
+
+                                                            surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.UnverifiedEmailAlreadyInUsePopUp, popUpShownCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(popUpShownCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                                                                    timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
+
+                                                                    });
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                            }, OnUserEmailResendRequestButtonPressedEvent, OnIncorrectUserEmailButtonPressedEvent, userProfile.GetUserEmail().GetData());
+
+                                                            break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+
         private void OnUserSignUpEvent()
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized."));
@@ -532,777 +778,808 @@ namespace Com.RedicalGames.Filar
             {
                 var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
 
-                profileManagerInstance.GetUserProfile(userProfileCallbackResults => 
+                profileManagerInstance.GetUserProfile(async userProfileCallbackResults => 
                 {
                     var userProfile = userProfileCallbackResults.GetData();
 
-                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Screen UI Manager Instance Is Not Yet Initialized."));
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager", "Check Connection Status Failed - Surfacing Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
                     if (callbackResults.Success())
                     {
-                        var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+                        var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager").GetData();
 
-                        callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+                        callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance", "Network Manager Instance Is Not Yet Initialized."));
 
                         if (callbackResults.Success())
                         {
-                            callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName(), "App Database Manager Instance Is Not Yet Initialized."));
+                            var networkManagerInstance = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance").GetData();
+
+                            var networkCheckTaskCallbackResults = await networkManagerInstance.CheckConnectionStatus(true);
+
+                            callbackResults.SetResult(networkCheckTaskCallbackResults);
 
                             if (callbackResults.Success())
                             {
-                                var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName()).GetData();
-
-                                callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+                                callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName(), "App Database Manager Instance Is Not Yet Initialized."));
 
                                 if (callbackResults.Success())
                                 {
-                                    var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
-                                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
-                                    var loadingConfigDatapacket = new AppData.SceneConfigDataPacket();
+                                    var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName()).GetData();
 
-                                    screen.ShowWidget(AppData.WidgetType.LoadingWidget, async showingLoadingCallbackResults =>
+                                    callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                                    if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(showingLoadingCallbackResults);
+                                        var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                                        var checkCredentialsCallbackResults = await profileManagerInstance.CredentialsAvailable(userProfile.GetUserName().GetData(), userProfile.GetUserEmail().GetData());
+
+                                        callbackResults.SetResult(checkCredentialsCallbackResults);
 
                                         if (callbackResults.Success())
                                         {
-                                            var checkCredentialsCallbackResults = await profileManagerInstance.CredentialsAvailable(userProfile.GetUserName().GetData(), userProfile.GetUserEmail().GetData());
-
-                                            callbackResults.SetResult(checkCredentialsCallbackResults);
+                                            callbackResults.SetResult(profileManagerInstance.IsAnnonymousAccount());
 
                                             if (callbackResults.Success())
                                             {
-                                                callbackResults.SetResult(profileManagerInstance.IsAnnonymousAccount());
+                                                var linkUserAccountAsyncTask = await profileManagerInstance.LinkUserAccount(userProfile);
+
+                                                callbackResults.SetResult(linkUserAccountAsyncTask);
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    var linkUserAccountAsyncTask = await profileManagerInstance.LinkUserAccount(userProfile);
+                                                    var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
 
-                                                    callbackResults.SetResult(linkUserAccountAsyncTask);
+                                                    callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
 
-                                                    if (callbackResults.Success())
+                                                    if (callbackResults.UnSuccessful())
                                                     {
-                                                        var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
+                                                        #region Surface Popup
 
-                                                        callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
-
-                                                        if (callbackResults.UnSuccessful())
+                                                        surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.EmailVerificationSentPopUp, popUpShownCallbackResults =>
                                                         {
-                                                            screen.HideWidget(AppData.WidgetType.LoadingWidget, widgtHiddenCallbackResults =>
-                                                            {
-                                                                callbackResults.SetResult(widgtHiddenCallbackResults);
-
-                                                                if (callbackResults.Success())
-                                                                {
-                                                                    screen.ShowWidget(AppData.WidgetType.ScreenNotificationPopUpWidget, showVarificationEmailSentWidgetCallbackResults =>
-                                                                    {
-                                                                        callbackResults.SetResult(showVarificationEmailSentWidgetCallbackResults);
-
-                                                                        if (callbackResults.Success())
-                                                                        {
-                                                                            callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget));
-
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailVerificationSentMessage));
-
-                                                                                if (callbackResults.Success())
-                                                                                {
-                                                                                    var emailVerificationMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailVerificationSentMessage).GetData();
-
-                                                                                    var emailVerificationSentNotificationWidget = screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget).GetData();
-
-                                                                                    callbackResults.SetResult(emailVerificationMessageDataObject.GetTitle());
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        emailVerificationSentNotificationWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, emailVerificationMessageDataObject.GetTitle().GetData(), verificationTitleSetCallbackResults =>
-                                                                                        {
-                                                                                            callbackResults.SetResult(verificationTitleSetCallbackResults);
-
-                                                                                            if (callbackResults.Success())
-                                                                                            {
-                                                                                                callbackResults.SetResult(emailVerificationMessageDataObject.GetMessage());
-
-                                                                                                if (callbackResults.Success())
-                                                                                                {
-                                                                                                    string verificationMessage = emailVerificationMessageDataObject.GetMessage($"{userProfile.GetUserEmail().GetData()}").GetData();
-
-                                                                                                    emailVerificationSentNotificationWidget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, verificationMessage, verificationMessageSetCallbackResults =>
-                                                                                                    {
-                                                                                                        callbackResults.SetResult(verificationMessageSetCallbackResults);
-
-                                                                                                        if (callbackResults.Success())
-                                                                                                        {
-                                                                                                            emailVerificationSentNotificationWidget.SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, "Resend Email", resendEmailButtonTitleUpdatedCallbackResults =>
-                                                                                                            {
-                                                                                                                callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
-
-                                                                                                                if (callbackResults.Success())
-                                                                                                                {
-                                                                                                                    emailVerificationSentNotificationWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Incorrect Email", resendEmailButtonTitleUpdatedCallbackResults =>
-                                                                                                                    {
-                                                                                                                        callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
-
-                                                                                                                        if (callbackResults.Success())
-                                                                                                                        {
-                                                                                                                            confirmationButtonEvent.SetAction(AppData.InputActionButtonType.ConfirmationButton, resendEmailRequestButtonActionCallbackResults =>
-                                                                                                                            {
-                                                                                                                                callbackResults.SetResult(resendEmailRequestButtonActionCallbackResults);
-
-                                                                                                                                if (callbackResults.Success())
-                                                                                                                                {
-                                                                                                                                    confirmationButtonEvent.SetMethod(OnUserEmailResendRequestButtonPressedEvent, resendEmailRequestButtonMethodCallbackResults =>
-                                                                                                                                    {
-                                                                                                                                        callbackResults.SetResult(resendEmailRequestButtonMethodCallbackResults);
-
-                                                                                                                                        if (callbackResults.Success())
-                                                                                                                                        {
-                                                                                                                                            cancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, incorrectEmailuttonActionCallbackResults =>
-                                                                                                                                            {
-                                                                                                                                                callbackResults.SetResult(incorrectEmailuttonActionCallbackResults);
-
-                                                                                                                                                if (callbackResults.Success())
-                                                                                                                                                {
-                                                                                                                                                    cancelButtonEvent.SetMethod(OnIncorrectUserEmailButtonPressedEvent, incorrectEmailButtonMethodCallbackResults =>
-                                                                                                                                                    {
-                                                                                                                                                        callbackResults.SetResult(incorrectEmailButtonMethodCallbackResults);
-
-                                                                                                                                                        if (callbackResults.Success())
-                                                                                                                                                        {
-                                                                                                                                                            emailVerificationSentNotificationWidget.RegisterActionButtonListeners(emailVerificationButtonsEventCallbackResults =>
-                                                                                                                                                            {
-                                                                                                                                                                callbackResults.SetResult(emailVerificationButtonsEventCallbackResults);
-
-                                                                                                                                                                if (callbackResults.Success())
-                                                                                                                                                                {
-                                                                                                                                                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
-
-                                                                                                                                                                    if (callbackResults.Success())
-                                                                                                                                                                    {
-                                                                                                                                                                        var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name).GetData();
-
-                                                                                                                                                                        timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
-
-                                                                                                                                                                        timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
-                                                                                                                                                                        {
-                                                                                                                                                                            callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
-
-                                                                                                                                                                        });
-                                                                                                                                                                    }
-                                                                                                                                                                    else
-                                                                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                                                }
-                                                                                                                                                                else
-                                                                                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                                                                                                                                            }, confirmationButtonEvent, cancelButtonEvent);
-                                                                                                                                                        }
-                                                                                                                                                        else
-                                                                                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                                    });
-                                                                                                                                                }
-                                                                                                                                                else
-                                                                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                            });
-                                                                                                                                        }
-                                                                                                                                        else
-                                                                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                    });
-                                                                                                                                }
-                                                                                                                                else
-                                                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                            });
-                                                                                                                        }
-                                                                                                                        else
-                                                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                    });
-                                                                                                                }
-                                                                                                                else
-                                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                            });
-                                                                                                        }
-                                                                                                        else
-                                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                    });
-                                                                                                }
-                                                                                                else
-                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                            }
-                                                                                            else
-                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                        });
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                }
-                                                                                else
-                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                            }
-                                                                            else
-                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        }
-                                                                        else
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                    });
-                                                                }
-                                                                else
-                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                            });
-                                                        }
-                                                        else
-                                                        {
-                                                            LogSuccess($" __Log_Cat/: Sign Up : {userProfile.GetUserName().GetData()} With Profile ID : {userProfile.GetUniqueIdentifier().GetData()} - Sending Email varification To : {userProfile.GetUserEmail().GetData()}", this);
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    var signUpUserProfileAsyncTask = await profileManagerInstance.SignUpAsync(userProfile);
-
-                                                    callbackResults.SetResult(signUpUserProfileAsyncTask);
-
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
-
-                                                        callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
-
-                                                        if (callbackResults.UnSuccessful())
-                                                        {
-                                                            screen.HideWidget(AppData.WidgetType.LoadingWidget, widgtHiddenCallbackResults =>
-                                                            {
-                                                                callbackResults.SetResult(widgtHiddenCallbackResults);
-
-                                                                if (callbackResults.Success())
-                                                                {
-                                                                    screen.ShowWidget(AppData.WidgetType.ScreenNotificationPopUpWidget, showVarificationEmailSentWidgetCallbackResults =>
-                                                                    {
-                                                                        callbackResults.SetResult(showVarificationEmailSentWidgetCallbackResults);
-
-                                                                        if (callbackResults.Success())
-                                                                        {
-                                                                            callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget));
-
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailVerificationSentMessage));
-
-                                                                                if (callbackResults.Success())
-                                                                                {
-                                                                                    var emailVerificationMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailVerificationSentMessage).GetData();
-
-                                                                                    var emailVerificationSentNotificationWidget = screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget).GetData();
-
-                                                                                    callbackResults.SetResult(emailVerificationMessageDataObject.GetTitle());
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        emailVerificationSentNotificationWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, emailVerificationMessageDataObject.GetTitle().GetData(), verificationTitleSetCallbackResults =>
-                                                                                        {
-                                                                                            callbackResults.SetResult(verificationTitleSetCallbackResults);
-
-                                                                                            if (callbackResults.Success())
-                                                                                            {
-                                                                                                callbackResults.SetResult(emailVerificationMessageDataObject.GetMessage());
-
-                                                                                                if (callbackResults.Success())
-                                                                                                {
-                                                                                                    string verificationMessage = emailVerificationMessageDataObject.GetMessage($"{userProfile.GetUserEmail().GetData()}").GetData();
-
-                                                                                                    emailVerificationSentNotificationWidget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, verificationMessage, verificationMessageSetCallbackResults =>
-                                                                                                    {
-                                                                                                        callbackResults.SetResult(verificationMessageSetCallbackResults);
-
-                                                                                                        if (callbackResults.Success())
-                                                                                                        {
-                                                                                                            emailVerificationSentNotificationWidget.SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, "Resend Email", resendEmailButtonTitleUpdatedCallbackResults =>
-                                                                                                            {
-                                                                                                                callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
-
-                                                                                                                if (callbackResults.Success())
-                                                                                                                {
-                                                                                                                    emailVerificationSentNotificationWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Incorrect Email", resendEmailButtonTitleUpdatedCallbackResults =>
-                                                                                                                    {
-                                                                                                                        callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
-
-                                                                                                                        if (callbackResults.Success())
-                                                                                                                        {
-                                                                                                                            confirmationButtonEvent.SetAction(AppData.InputActionButtonType.ConfirmationButton, resendEmailRequestButtonActionCallbackResults =>
-                                                                                                                            {
-                                                                                                                                callbackResults.SetResult(resendEmailRequestButtonActionCallbackResults);
-
-                                                                                                                                if (callbackResults.Success())
-                                                                                                                                {
-                                                                                                                                    confirmationButtonEvent.SetMethod(OnUserEmailResendRequestButtonPressedEvent, resendEmailRequestButtonMethodCallbackResults =>
-                                                                                                                                    {
-                                                                                                                                        callbackResults.SetResult(resendEmailRequestButtonMethodCallbackResults);
-
-                                                                                                                                        if (callbackResults.Success())
-                                                                                                                                        {
-                                                                                                                                            cancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, incorrectEmailuttonActionCallbackResults =>
-                                                                                                                                            {
-                                                                                                                                                callbackResults.SetResult(incorrectEmailuttonActionCallbackResults);
-
-                                                                                                                                                if (callbackResults.Success())
-                                                                                                                                                {
-                                                                                                                                                    cancelButtonEvent.SetMethod(OnIncorrectUserEmailButtonPressedEvent, incorrectEmailButtonMethodCallbackResults =>
-                                                                                                                                                    {
-                                                                                                                                                        callbackResults.SetResult(incorrectEmailButtonMethodCallbackResults);
-
-                                                                                                                                                        if (callbackResults.Success())
-                                                                                                                                                        {
-                                                                                                                                                            emailVerificationSentNotificationWidget.RegisterActionButtonListeners(emailVerificationButtonsEventCallbackResults =>
-                                                                                                                                                            {
-                                                                                                                                                                callbackResults.SetResult(emailVerificationButtonsEventCallbackResults);
-
-                                                                                                                                                                if (callbackResults.Success())
-                                                                                                                                                                {
-                                                                                                                                                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
-
-                                                                                                                                                                    if (callbackResults.Success())
-                                                                                                                                                                    {
-                                                                                                                                                                        var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name).GetData();
-
-                                                                                                                                                                        timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
-
-                                                                                                                                                                        timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
-                                                                                                                                                                        {
-                                                                                                                                                                            callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
-
-                                                                                                                                                                        });
-                                                                                                                                                                    }
-                                                                                                                                                                    else
-                                                                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                                                }
-                                                                                                                                                                else
-                                                                                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                                                                                                                                            }, confirmationButtonEvent, cancelButtonEvent);
-                                                                                                                                                        }
-                                                                                                                                                        else
-                                                                                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                                    });
-                                                                                                                                                }
-                                                                                                                                                else
-                                                                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                            });
-                                                                                                                                        }
-                                                                                                                                        else
-                                                                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                    });
-                                                                                                                                }
-                                                                                                                                else
-                                                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                            });
-                                                                                                                        }
-                                                                                                                        else
-                                                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                    });
-                                                                                                                }
-                                                                                                                else
-                                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                            });
-                                                                                                        }
-                                                                                                        else
-                                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                    });
-                                                                                                }
-                                                                                                else
-                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                            }
-                                                                                            else
-                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                        });
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                }
-                                                                                else
-                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                            }
-                                                                            else
-                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        }
-                                                                        else
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                    });
-                                                                }
-                                                                else
-                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                            });
-                                                        }
-                                                        else
-                                                        {
-                                                            LogSuccess($" __Log_Cat/: Sign Up : {userProfile.GetUserName().GetData()} With Profile ID : {userProfile.GetUniqueIdentifier().GetData()} - Sending Email varification To : {userProfile.GetUserEmail().GetData()}", this);
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        switch (signUpUserProfileAsyncTask.GetData())
-                                                        {
-                                                            case Firebase.Auth.AuthError.AccountExistsWithDifferentCredentials:
-
-                                                                break;
-
-                                                            case Firebase.Auth.AuthError.AdminRestrictedOperation:
-
-                                                                break;
-
-                                                            case Firebase.Auth.AuthError.EmailAlreadyInUse:
-
-                                                                callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget));
-
-                                                                if (callbackResults.Success())
-                                                                {
-                                                                    var emailAlreadyInUseWidget = screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget).GetData();
-
-                                                                    var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
-
-                                                                    callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
-
-                                                                    if (callbackResults.Success())
-                                                                    {
-                                                                        screen.HideWidget(AppData.WidgetType.LoadingWidget, widgtHiddenCallbackResults =>
-                                                                        {
-                                                                            callbackResults.SetResult(widgtHiddenCallbackResults);
-
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailAlreadyInUseVerifiedMessage));
-
-                                                                                if (callbackResults.Success())
-                                                                                {
-                                                                                    var emailAlreadyInUseVerifiedMessageObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailAlreadyInUseVerifiedMessage).GetData();
-
-                                                                                    callbackResults.SetResult(emailAlreadyInUseVerifiedMessageObject.GetTitle());
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        emailAlreadyInUseWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, emailAlreadyInUseVerifiedMessageObject.GetTitle().GetData(), emailAlreadyInUseVerifiedTitleSetCallbackResults =>
-                                                                                        {
-                                                                                            callbackResults.SetResult(emailAlreadyInUseVerifiedTitleSetCallbackResults);
-
-                                                                                            if (callbackResults.Success())
-                                                                                            {
-                                                                                                callbackResults.SetResult(emailAlreadyInUseVerifiedMessageObject.GetMessage());
-
-                                                                                                if (callbackResults.Success())
-                                                                                                {
-                                                                                                    string emailAlreadyInUseVerifiedMessage = emailAlreadyInUseVerifiedMessageObject.GetMessage($"{userProfile.GetUserEmail().GetData()}").GetData();
-
-                                                                                                    emailAlreadyInUseWidget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, emailAlreadyInUseVerifiedMessage, emailAlreadyInUseVerifiedMessageSetCallbackResults =>
-                                                                                                    {
-                                                                                                        callbackResults.SetResult(emailAlreadyInUseVerifiedMessageSetCallbackResults);
-
-                                                                                                        if (callbackResults.Success())
-                                                                                                        {
-                                                                                                            emailAlreadyInUseWidget.SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, "Sign In", resendEmailButtonTitleUpdatedCallbackResults =>
-                                                                                                            {
-                                                                                                                callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
-
-                                                                                                                if (callbackResults.Success())
-                                                                                                                {
-                                                                                                                    emailAlreadyInUseWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Cancel", async resendEmailButtonTitleUpdatedCallbackResults =>
-                                                                                                                    {
-                                                                                                                        callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
-
-                                                                                                                        if (callbackResults.Success())
-                                                                                                                        {
-
-
-
-                                                                                                                        }
-                                                                                                                        else
-                                                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                    });
-                                                                                                                }
-                                                                                                                else
-                                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                            });
-                                                                                                        }
-                                                                                                        else
-                                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                    });
-                                                                                                }
-                                                                                                else
-                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                            }
-                                                                                            else
-                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                        });
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                }
-                                                                                else
-                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                            }
-                                                                            else
-                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        });
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        var updateUserEmailCallbackResultsTask = await profileManagerInstance.OnUserAccountReloadAsync(userProfile);
-
-                                                                        callbackResults.SetResult(updateUserEmailCallbackResultsTask);
-
-                                                                        if (callbackResults.Success())
-                                                                        {
-                                                                            screen.HideWidget(AppData.WidgetType.LoadingWidget, widgtHiddenCallbackResults =>
-                                                                            {
-                                                                                callbackResults.SetResult(widgtHiddenCallbackResults);
-
-                                                                                if (callbackResults.Success())
-                                                                                {
-                                                                                    callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailAlreadyInUseUnverifiedMessage));
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        var emailAlreadyInUseUnverifiedMessageObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailAlreadyInUseUnverifiedMessage).GetData();
-
-                                                                                        callbackResults.SetResult(emailAlreadyInUseUnverifiedMessageObject.GetTitle());
-
-                                                                                        if (callbackResults.Success())
-                                                                                        {
-                                                                                            emailAlreadyInUseWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, emailAlreadyInUseUnverifiedMessageObject.GetTitle().GetData(), emailAlreadyInUseUnverifiedTitleSetCallbackResults =>
-                                                                                            {
-                                                                                                callbackResults.SetResult(emailAlreadyInUseUnverifiedTitleSetCallbackResults);
-
-                                                                                                if (callbackResults.Success())
-                                                                                                {
-                                                                                                    callbackResults.SetResult(emailAlreadyInUseUnverifiedMessageObject.GetMessage());
-
-                                                                                                    if (callbackResults.Success())
-                                                                                                    {
-                                                                                                        string emailAlreadyInUseUnerifiedMessage = emailAlreadyInUseUnverifiedMessageObject.GetMessage($"{userProfile.GetUserEmail().GetData()}").GetData();
-
-                                                                                                        emailAlreadyInUseWidget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, emailAlreadyInUseUnerifiedMessage, emailAlreadyInUseUnverifiedMessageSetCallbackResults =>
-                                                                                                        {
-                                                                                                            callbackResults.SetResult(emailAlreadyInUseUnverifiedMessageSetCallbackResults);
-
-                                                                                                            if (callbackResults.Success())
-                                                                                                            {
-                                                                                                                emailAlreadyInUseWidget.SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, "Verify Email", resendEmailButtonTitleUpdatedCallbackResults =>
-                                                                                                                {
-                                                                                                                    callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
-
-                                                                                                                    if (callbackResults.Success())
-                                                                                                                    {
-                                                                                                                        emailAlreadyInUseWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Incorrect Email", resendEmailButtonTitleUpdatedCallbackResults =>
-                                                                                                                        {
-                                                                                                                            callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
-
-                                                                                                                            if (callbackResults.Success())
-                                                                                                                            {
-                                                                                                                                confirmationButtonEvent.SetAction(AppData.InputActionButtonType.ConfirmationButton, confirmationButtonActionCallbackResults =>
-                                                                                                                                {
-                                                                                                                                    callbackResults.SetResult(confirmationButtonActionCallbackResults);
-
-                                                                                                                                    if (callbackResults.Success())
-                                                                                                                                    {
-                                                                                                                                        confirmationButtonEvent.SetMethod(OnUserEmailResendRequestButtonPressedEvent, confirmationButtonMethodCallbackResults =>
-                                                                                                                                        {
-                                                                                                                                            callbackResults.SetResult(confirmationButtonMethodCallbackResults);
-
-                                                                                                                                            if (callbackResults.Success())
-                                                                                                                                            {
-                                                                                                                                                cancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, cancelButtonActionCallbackResults =>
-                                                                                                                                                {
-                                                                                                                                                    callbackResults.SetResult(cancelButtonActionCallbackResults);
-
-                                                                                                                                                    if (callbackResults.Success())
-                                                                                                                                                    {
-                                                                                                                                                        cancelButtonEvent.SetMethod(OnIncorrectUserEmailButtonPressedEvent, cancelButtonMethodCallbackResults =>
-                                                                                                                                                        {
-                                                                                                                                                            callbackResults.SetResult(cancelButtonMethodCallbackResults);
-
-                                                                                                                                                            if (callbackResults.Success())
-                                                                                                                                                            {
-                                                                                                                                                                emailAlreadyInUseWidget.RegisterActionButtonListeners(buttonEventRegisteredCallbackResults =>
-                                                                                                                                                                {
-                                                                                                                                                                    callbackResults.SetResult(buttonEventRegisteredCallbackResults);
-
-                                                                                                                                                                    if (callbackResults.Success())
-                                                                                                                                                                    {
-                                                                                                                                                                        screen.ShowWidget(emailAlreadyInUseWidget, async showConfirmationWidgetCallbackResults =>
-                                                                                                                                                                        {
-                                                                                                                                                                            callbackResults.SetResult(showConfirmationWidgetCallbackResults);
-
-                                                                                                                                                                            if (callbackResults.UnSuccessful())
-                                                                                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                                                        });
-                                                                                                                                                                    }
-                                                                                                                                                                    else
-                                                                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                                                                                                                                                }, confirmationButtonEvent, cancelButtonEvent);
-                                                                                                                                                            }
-                                                                                                                                                            else
-                                                                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                                        });
-                                                                                                                                                    }
-                                                                                                                                                    else
-                                                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                                });
-                                                                                                                                            }
-                                                                                                                                            else
-                                                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                        });
-                                                                                                                                    }
-                                                                                                                                    else
-                                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                                });
-                                                                                                                            }
-                                                                                                                            else
-                                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                        });
-                                                                                                                    }
-                                                                                                                    else
-                                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                                });
-                                                                                                            }
-                                                                                                            else
-                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                        });
-                                                                                                    }
-                                                                                                    else
-                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                }
-                                                                                                else
-                                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                            });
-                                                                                        }
-                                                                                        else
-                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                }
-                                                                                else
-                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                            });
-                                                                        }
-                                                                        else
-                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                    }
-                                                                }
-                                                                else
-                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                                                break;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            else
-                                            {
-                                                callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(checkCredentialsCallbackResults.GetData()));
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    switch (checkCredentialsCallbackResults.GetData())
-                                                    {
-                                                        case AppData.CredentialStatusInfo.DeviceNetworkError:
-
-                                                            callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.NetworkNotificationWidget));
+                                                            callbackResults.SetResult(popUpShownCallbackResults);
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                var networkNotificationWidget = screen.GetWidget(AppData.WidgetType.NetworkNotificationWidget).GetData();
+                                                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
 
-                                                                networkNotificationWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Cancel", buttonTitleSetCallbackResults =>
+                                                                if (callbackResults.Success())
                                                                 {
-                                                                    callbackResults.SetResult(buttonTitleSetCallbackResults);
+                                                                    var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name).GetData();
 
-                                                                    if (callbackResults.Success())
+                                                                    timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                                                                    timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
                                                                     {
-                                                                        networkNotificationWidget.UnRegisterActionButtonListeners(actionEventsUnregisteredCallbackResults =>
-                                                                        {
-                                                                            callbackResults.SetResult(actionEventsUnregisteredCallbackResults);
+                                                                        callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
 
-                                                                            if (callbackResults.Success())
-                                                                            {
-                                                                                onNetworkRetryButtonEvent.SetMethod(OnUserSignUpEvent, retryMethodSetCallbackResults =>
-                                                                                {
-                                                                                    callbackResults.SetResult(retryMethodSetCallbackResults);
-
-                                                                                    if (callbackResults.Success())
-                                                                                    {
-                                                                                        onNetworkRetryButtonEvent.SetAction(AppData.InputActionButtonType.RetryButton, retryActionSetCallbackResults =>
-                                                                                        {
-                                                                                            callbackResults.SetResult(retryActionSetCallbackResults);
-
-                                                                                            if (callbackResults.Success())
-                                                                                            {
-                                                                                                onNetworkCancelButtonEvent.SetMethod(OnNetworkFailedCancelEvent, cancelMethodSetCallbackResults =>
-                                                                                                {
-                                                                                                    callbackResults.SetResult(cancelMethodSetCallbackResults);
-
-                                                                                                    if (callbackResults.Success())
-                                                                                                    {
-                                                                                                        onNetworkCancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, cancelActionSetCallbackResults =>
-                                                                                                        {
-                                                                                                            callbackResults.SetResult(cancelActionSetCallbackResults);
-
-                                                                                                            if (callbackResults.Success())
-                                                                                                            {
-                                                                                                                networkNotificationWidget.RegisterActionButtonListeners(registerActionEventsCallbackResults =>
-                                                                                                                {
-                                                                                                                    callbackResults.SetResult(registerActionEventsCallbackResults);
-
-                                                                                                                }, onNetworkRetryButtonEvent, onNetworkCancelButtonEvent);
-                                                                                                            }
-                                                                                                            else
-                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                        });
-                                                                                                    }
-                                                                                                    else
-                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                                });
-                                                                                            }
-                                                                                            else
-                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                        });
-                                                                                    }
-                                                                                    else
-                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                });
-                                                                            }
-                                                                            else
-                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        });
-                                                                    }
-                                                                    else
-                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                });
+                                                                    });
+                                                                }
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }
                                                             else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
+                                                        }, OnUserEmailResendRequestButtonPressedEvent, OnIncorrectUserEmailButtonPressedEvent);
+
+
+                                                        #endregion
+
+                                                        #region Delete This
+
+                                                        //if (callbackResults.Success())
+                                                        //{
+
+
+                                                        //    var emailVerificationSentNotificationWidget = screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget).GetData();
+
+                                                        //    callbackResults.SetResult(emailVerificationMessageDataObject.GetTitle());
+
+                                                        //    if (callbackResults.Success())
+                                                        //    {
+                                                        //        emailVerificationSentNotificationWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, emailVerificationMessageDataObject.GetTitle().GetData(), verificationTitleSetCallbackResults =>
+                                                        //        {
+                                                        //            callbackResults.SetResult(verificationTitleSetCallbackResults);
+
+                                                        //            if (callbackResults.Success())
+                                                        //            {
+                                                        //                callbackResults.SetResult(emailVerificationMessageDataObject.GetMessage());
+
+                                                        //                if (callbackResults.Success())
+                                                        //                {
+                                                        //                    string verificationMessage = emailVerificationMessageDataObject.GetMessage($"{userProfile.GetUserEmail().GetData()}").GetData();
+
+                                                        //                    emailVerificationSentNotificationWidget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, verificationMessage, verificationMessageSetCallbackResults =>
+                                                        //                    {
+                                                        //                        callbackResults.SetResult(verificationMessageSetCallbackResults);
+
+                                                        //                        if (callbackResults.Success())
+                                                        //                        {
+                                                        //                            emailVerificationSentNotificationWidget.SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, "Resend Email", resendEmailButtonTitleUpdatedCallbackResults =>
+                                                        //                            {
+                                                        //                                callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
+
+                                                        //                                if (callbackResults.Success())
+                                                        //                                {
+                                                        //                                    emailVerificationSentNotificationWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Incorrect Email", resendEmailButtonTitleUpdatedCallbackResults =>
+                                                        //                                    {
+                                                        //                                        callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
+
+                                                        //                                        if (callbackResults.Success())
+                                                        //                                        {
+                                                        //                                            confirmationButtonEvent.SetAction(AppData.InputActionButtonType.ConfirmationButton, resendEmailRequestButtonActionCallbackResults =>
+                                                        //                                            {
+                                                        //                                                callbackResults.SetResult(resendEmailRequestButtonActionCallbackResults);
+
+                                                        //                                                if (callbackResults.Success())
+                                                        //                                                {
+                                                        //                                                    confirmationButtonEvent.SetMethod(OnUserEmailResendRequestButtonPressedEvent, resendEmailRequestButtonMethodCallbackResults =>
+                                                        //                                                    {
+                                                        //                                                        callbackResults.SetResult(resendEmailRequestButtonMethodCallbackResults);
+
+                                                        //                                                        if (callbackResults.Success())
+                                                        //                                                        {
+                                                        //                                                            cancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, incorrectEmailuttonActionCallbackResults =>
+                                                        //                                                            {
+                                                        //                                                                callbackResults.SetResult(incorrectEmailuttonActionCallbackResults);
+
+                                                        //                                                                if (callbackResults.Success())
+                                                        //                                                                {
+                                                        //                                                                    cancelButtonEvent.SetMethod(OnIncorrectUserEmailButtonPressedEvent, incorrectEmailButtonMethodCallbackResults =>
+                                                        //                                                                    {
+                                                        //                                                                        callbackResults.SetResult(incorrectEmailButtonMethodCallbackResults);
+
+                                                        //                                                                        if (callbackResults.Success())
+                                                        //                                                                        {
+                                                        //                                                                            emailVerificationSentNotificationWidget.RegisterActionButtonListeners(emailVerificationButtonsEventCallbackResults =>
+                                                        //                                                                            {
+                                                        //                                                                                callbackResults.SetResult(emailVerificationButtonsEventCallbackResults);
+
+                                                        //                                                                                if (callbackResults.Success())
+                                                        //                                                                                {
+                                                        //                                                                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
+
+                                                        //                                                                                    if (callbackResults.Success())
+                                                        //                                                                                    {
+                                                        //                                                                                        var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name).GetData();
+
+                                                        //                                                                                        timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                                                        //                                                                                        timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
+                                                        //                                                                                        {
+                                                        //                                                                                            callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
+
+                                                        //                                                                                        });
+                                                        //                                                                                    }
+                                                        //                                                                                    else
+                                                        //                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                                                                }
+                                                        //                                                                                else
+                                                        //                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                        //                                                                            }, confirmationButtonEvent, cancelButtonEvent);
+                                                        //                                                                        }
+                                                        //                                                                        else
+                                                        //                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                                                    });
+                                                        //                                                                }
+                                                        //                                                                else
+                                                        //                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                                            });
+                                                        //                                                        }
+                                                        //                                                        else
+                                                        //                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                                    });
+                                                        //                                                }
+                                                        //                                                else
+                                                        //                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                            });
+                                                        //                                        }
+                                                        //                                        else
+                                                        //                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                    });
+                                                        //                                }
+                                                        //                                else
+                                                        //                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                            });
+                                                        //                        }
+                                                        //                        else
+                                                        //                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                    });
+                                                        //                }
+                                                        //                else
+                                                        //                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //            }
+                                                        //            else
+                                                        //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //        });
+                                                        //    }
+                                                        //    else
+                                                        //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //}
+                                                        //else
+                                                        //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                        #endregion
+
+                                                    }
+                                                    else
+                                                    {
+                                                        LogSuccess($" __Log_Cat/: Sign Up : {userProfile.GetUserName().GetData()} With Profile ID : {userProfile.GetUniqueIdentifier().GetData()} - Sending Email varification To : {userProfile.GetUserEmail().GetData()}", this);
+                                                    }
+                                                }
+                                                else
+                                                {
+
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var signUpUserProfileAsyncTask = await profileManagerInstance.SignUpAsync(userProfile);
+
+                                                callbackResults.SetResult(signUpUserProfileAsyncTask);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
+
+                                                    callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
+
+                                                    if (callbackResults.UnSuccessful())
+                                                    {
+                                                        surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.EmailVerificationSentPopUp, popUpShownCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(popUpShownCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                            {
+
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                        }, OnUserEmailResendRequestButtonPressedEvent, OnIncorrectUserEmailButtonPressedEvent);
+                                                    }
+
+                                                    if (callbackResults.Success())
+                                                    {
+
+
+                                                        #region Delete This
+
+
+                                                        //screen.HideWidget(AppData.WidgetType.LoadingWidget, widgtHiddenCallbackResults =>
+                                                        //{
+                                                        //    callbackResults.SetResult(widgtHiddenCallbackResults);
+
+                                                        //    if (callbackResults.Success())
+                                                        //    {
+                                                        //        screen.ShowWidget(AppData.WidgetType.ScreenNotificationPopUpWidget, showVarificationEmailSentWidgetCallbackResults =>
+                                                        //        {
+                                                        //            callbackResults.SetResult(showVarificationEmailSentWidgetCallbackResults);
+
+                                                        //            if (callbackResults.Success())
+                                                        //            {
+                                                        //                callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget));
+
+                                                        //                if (callbackResults.Success())
+                                                        //                {
+                                                        //                    callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailVerificationSentMessage));
+
+                                                        //                    if (callbackResults.Success())
+                                                        //                    {
+                                                        //                        var emailVerificationMessageDataObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailVerificationSentMessage).GetData();
+
+                                                        //                        var emailVerificationSentNotificationWidget = screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget).GetData();
+
+                                                        //                        callbackResults.SetResult(emailVerificationMessageDataObject.GetTitle());
+
+                                                        //                        if (callbackResults.Success())
+                                                        //                        {
+                                                        //                            emailVerificationSentNotificationWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, emailVerificationMessageDataObject.GetTitle().GetData(), verificationTitleSetCallbackResults =>
+                                                        //                            {
+                                                        //                                callbackResults.SetResult(verificationTitleSetCallbackResults);
+
+                                                        //                                if (callbackResults.Success())
+                                                        //                                {
+                                                        //                                    callbackResults.SetResult(emailVerificationMessageDataObject.GetMessage());
+
+                                                        //                                    if (callbackResults.Success())
+                                                        //                                    {
+                                                        //                                        string verificationMessage = emailVerificationMessageDataObject.GetMessage($"{userProfile.GetUserEmail().GetData()}").GetData();
+
+                                                        //                                        emailVerificationSentNotificationWidget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, verificationMessage, verificationMessageSetCallbackResults =>
+                                                        //                                        {
+                                                        //                                            callbackResults.SetResult(verificationMessageSetCallbackResults);
+
+                                                        //                                            if (callbackResults.Success())
+                                                        //                                            {
+                                                        //                                                emailVerificationSentNotificationWidget.SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, "Resend Email", resendEmailButtonTitleUpdatedCallbackResults =>
+                                                        //                                                {
+                                                        //                                                    callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
+
+                                                        //                                                    if (callbackResults.Success())
+                                                        //                                                    {
+                                                        //                                                        emailVerificationSentNotificationWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Incorrect Email", resendEmailButtonTitleUpdatedCallbackResults =>
+                                                        //                                                        {
+                                                        //                                                            callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
+
+                                                        //                                                            if (callbackResults.Success())
+                                                        //                                                            {
+                                                        //                                                                confirmationButtonEvent.SetAction(AppData.InputActionButtonType.ConfirmationButton, resendEmailRequestButtonActionCallbackResults =>
+                                                        //                                                                {
+                                                        //                                                                    callbackResults.SetResult(resendEmailRequestButtonActionCallbackResults);
+
+                                                        //                                                                    if (callbackResults.Success())
+                                                        //                                                                    {
+                                                        //                                                                        confirmationButtonEvent.SetMethod(OnUserEmailResendRequestButtonPressedEvent, resendEmailRequestButtonMethodCallbackResults =>
+                                                        //                                                                        {
+                                                        //                                                                            callbackResults.SetResult(resendEmailRequestButtonMethodCallbackResults);
+
+                                                        //                                                                            if (callbackResults.Success())
+                                                        //                                                                            {
+                                                        //                                                                                cancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, incorrectEmailuttonActionCallbackResults =>
+                                                        //                                                                                {
+                                                        //                                                                                    callbackResults.SetResult(incorrectEmailuttonActionCallbackResults);
+
+                                                        //                                                                                    if (callbackResults.Success())
+                                                        //                                                                                    {
+                                                        //                                                                                        cancelButtonEvent.SetMethod(OnIncorrectUserEmailButtonPressedEvent, incorrectEmailButtonMethodCallbackResults =>
+                                                        //                                                                                        {
+                                                        //                                                                                            callbackResults.SetResult(incorrectEmailButtonMethodCallbackResults);
+
+                                                        //                                                                                            if (callbackResults.Success())
+                                                        //                                                                                            {
+                                                        //                                                                                                emailVerificationSentNotificationWidget.RegisterActionButtonListeners(emailVerificationButtonsEventCallbackResults =>
+                                                        //                                                                                                {
+                                                        //                                                                                                    callbackResults.SetResult(emailVerificationButtonsEventCallbackResults);
+
+                                                        //                                                                                                    if (callbackResults.Success())
+                                                        //                                                                                                    {
+                                                        //                                                                                                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name, "App Time Events Manager Instance Is Not Yet Initialized."));
+
+                                                        //                                                                                                        if (callbackResults.Success())
+                                                        //                                                                                                        {
+                                                        //                                                                                                            var timeManager = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, AppEventsManager.Instance.name).GetData();
+
+                                                        //                                                                                                            timeManager.RegisterTimedEvent("On User Email Verification Check Event", OnUserEmailVerificationCheckEvent, 5.0f);
+
+                                                        //                                                                                                            timeManager.InvokeEvent("On User Email Verification Check Event", invokeUserEmailVerificationCheckEventCallbackResults =>
+                                                        //                                                                                                            {
+                                                        //                                                                                                                callbackResults.SetResult(invokeUserEmailVerificationCheckEventCallbackResults);
+
+                                                        //                                                                                                            });
+                                                        //                                                                                                        }
+                                                        //                                                                                                        else
+                                                        //                                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                                                                                    }
+                                                        //                                                                                                    else
+                                                        //                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                        //                                                                                                }, confirmationButtonEvent, cancelButtonEvent);
+                                                        //                                                                                            }
+                                                        //                                                                                            else
+                                                        //                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                                                                        });
+                                                        //                                                                                    }
+                                                        //                                                                                    else
+                                                        //                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                                                                });
+                                                        //                                                                            }
+                                                        //                                                                            else
+                                                        //                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                                                        });
+                                                        //                                                                    }
+                                                        //                                                                    else
+                                                        //                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                                                });
+                                                        //                                                            }
+                                                        //                                                            else
+                                                        //                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                                        });
+                                                        //                                                    }
+                                                        //                                                    else
+                                                        //                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                                });
+                                                        //                                            }
+                                                        //                                            else
+                                                        //                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                        });
+                                                        //                                    }
+                                                        //                                    else
+                                                        //                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                                }
+                                                        //                                else
+                                                        //                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                            });
+                                                        //                        }
+                                                        //                        else
+                                                        //                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                    }
+                                                        //                    else
+                                                        //                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //                }
+                                                        //                else
+                                                        //                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //            }
+                                                        //            else
+                                                        //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //        });
+                                                        //    }
+                                                        //    else
+                                                        //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        //});
+
+                                                        #endregion
+                                                    }
+                                                    else
+                                                    {
+                                                        LogSuccess($" __Log_Cat/: Sign Up : {userProfile.GetUserName().GetData()} With Profile ID : {userProfile.GetUniqueIdentifier().GetData()} - Sending Email varification To : {userProfile.GetUserEmail().GetData()}", this);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    switch (signUpUserProfileAsyncTask.GetData())
+                                                    {
+                                                        case Firebase.Auth.AuthError.AccountExistsWithDifferentCredentials:
+
                                                             break;
 
-                                                        case AppData.CredentialStatusInfo.UserNameError:
+                                                        case Firebase.Auth.AuthError.AdminRestrictedOperation:
 
                                                             break;
 
-                                                        case AppData.CredentialStatusInfo.UserEmailError:
+                                                        case Firebase.Auth.AuthError.EmailAlreadyInUse:
+
+                                                            //callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget));
+
+                                                            //if (callbackResults.Success())
+                                                            //{
+                                                            //    var emailAlreadyInUseWidget = screen.GetWidget(AppData.WidgetType.ScreenNotificationPopUpWidget).GetData();
+
+                                                            //    var emailVerificationCheckCallbackResultsTask = await profileManagerInstance.UserEmailVerified();
+
+                                                            //    callbackResults.SetResult(emailVerificationCheckCallbackResultsTask);
+
+                                                            //    if (callbackResults.Success())
+                                                            //    {
+                                                            //        screen.HideWidget(AppData.WidgetType.LoadingWidget, widgtHiddenCallbackResults =>
+                                                            //        {
+                                                            //            callbackResults.SetResult(widgtHiddenCallbackResults);
+
+                                                            //            if (callbackResults.Success())
+                                                            //            {
+                                                            //                callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailAlreadyInUseVerifiedMessage));
+
+                                                            //                if (callbackResults.Success())
+                                                            //                {
+                                                            //                    var emailAlreadyInUseVerifiedMessageObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailAlreadyInUseVerifiedMessage).GetData();
+
+                                                            //                    callbackResults.SetResult(emailAlreadyInUseVerifiedMessageObject.GetTitle());
+
+                                                            //                    if (callbackResults.Success())
+                                                            //                    {
+                                                            //                        emailAlreadyInUseWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, emailAlreadyInUseVerifiedMessageObject.GetTitle().GetData(), emailAlreadyInUseVerifiedTitleSetCallbackResults =>
+                                                            //                        {
+                                                            //                            callbackResults.SetResult(emailAlreadyInUseVerifiedTitleSetCallbackResults);
+
+                                                            //                            if (callbackResults.Success())
+                                                            //                            {
+                                                            //                                callbackResults.SetResult(emailAlreadyInUseVerifiedMessageObject.GetMessage());
+
+                                                            //                                if (callbackResults.Success())
+                                                            //                                {
+                                                            //                                    string emailAlreadyInUseVerifiedMessage = emailAlreadyInUseVerifiedMessageObject.GetMessage($"{userProfile.GetUserEmail().GetData()}").GetData();
+
+                                                            //                                    emailAlreadyInUseWidget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, emailAlreadyInUseVerifiedMessage, emailAlreadyInUseVerifiedMessageSetCallbackResults =>
+                                                            //                                    {
+                                                            //                                        callbackResults.SetResult(emailAlreadyInUseVerifiedMessageSetCallbackResults);
+
+                                                            //                                        if (callbackResults.Success())
+                                                            //                                        {
+                                                            //                                            emailAlreadyInUseWidget.SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, "Sign In", resendEmailButtonTitleUpdatedCallbackResults =>
+                                                            //                                            {
+                                                            //                                                callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
+
+                                                            //                                                if (callbackResults.Success())
+                                                            //                                                {
+                                                            //                                                    emailAlreadyInUseWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Cancel", async resendEmailButtonTitleUpdatedCallbackResults =>
+                                                            //                                                    {
+                                                            //                                                        callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
+
+                                                            //                                                        if (callbackResults.Success())
+                                                            //                                                        {
+
+
+
+                                                            //                                                        }
+                                                            //                                                        else
+                                                            //                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                                                    });
+                                                            //                                                }
+                                                            //                                                else
+                                                            //                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                                            });
+                                                            //                                        }
+                                                            //                                        else
+                                                            //                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                                    });
+                                                            //                                }
+                                                            //                                else
+                                                            //                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                            }
+                                                            //                            else
+                                                            //                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                        });
+                                                            //                    }
+                                                            //                    else
+                                                            //                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                }
+                                                            //                else
+                                                            //                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //            }
+                                                            //            else
+                                                            //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //        });
+                                                            //    }
+                                                            //    else
+                                                            //    {
+                                                            //        var updateUserEmailCallbackResultsTask = await profileManagerInstance.OnUserAccountReloadAsync(userProfile);
+
+                                                            //        callbackResults.SetResult(updateUserEmailCallbackResultsTask);
+
+                                                            //        if (callbackResults.Success())
+                                                            //        {
+                                                            //            screen.HideWidget(AppData.WidgetType.LoadingWidget, widgtHiddenCallbackResults =>
+                                                            //            {
+                                                            //                callbackResults.SetResult(widgtHiddenCallbackResults);
+
+                                                            //                if (callbackResults.Success())
+                                                            //                {
+                                                            //                    callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailAlreadyInUseUnverifiedMessage));
+
+                                                            //                    if (callbackResults.Success())
+                                                            //                    {
+                                                            //                        var emailAlreadyInUseUnverifiedMessageObject = assetBundlesLibrary.GetLoadedConfigMessageDataPacket(AppData.SurfacingContentType.EmailAlreadyInUseUnverifiedMessage).GetData();
+
+                                                            //                        callbackResults.SetResult(emailAlreadyInUseUnverifiedMessageObject.GetTitle());
+
+                                                            //                        if (callbackResults.Success())
+                                                            //                        {
+                                                            //                            emailAlreadyInUseWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, emailAlreadyInUseUnverifiedMessageObject.GetTitle().GetData(), emailAlreadyInUseUnverifiedTitleSetCallbackResults =>
+                                                            //                            {
+                                                            //                                callbackResults.SetResult(emailAlreadyInUseUnverifiedTitleSetCallbackResults);
+
+                                                            //                                if (callbackResults.Success())
+                                                            //                                {
+                                                            //                                    callbackResults.SetResult(emailAlreadyInUseUnverifiedMessageObject.GetMessage());
+
+                                                            //                                    if (callbackResults.Success())
+                                                            //                                    {
+                                                            //                                        string emailAlreadyInUseUnerifiedMessage = emailAlreadyInUseUnverifiedMessageObject.GetMessage($"{userProfile.GetUserEmail().GetData()}").GetData();
+
+                                                            //                                        emailAlreadyInUseWidget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, emailAlreadyInUseUnerifiedMessage, emailAlreadyInUseUnverifiedMessageSetCallbackResults =>
+                                                            //                                        {
+                                                            //                                            callbackResults.SetResult(emailAlreadyInUseUnverifiedMessageSetCallbackResults);
+
+                                                            //                                            if (callbackResults.Success())
+                                                            //                                            {
+                                                            //                                                emailAlreadyInUseWidget.SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, "Verify Email", resendEmailButtonTitleUpdatedCallbackResults =>
+                                                            //                                                {
+                                                            //                                                    callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
+
+                                                            //                                                    if (callbackResults.Success())
+                                                            //                                                    {
+                                                            //                                                        emailAlreadyInUseWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Incorrect Email", resendEmailButtonTitleUpdatedCallbackResults =>
+                                                            //                                                        {
+                                                            //                                                            callbackResults.SetResult(resendEmailButtonTitleUpdatedCallbackResults);
+
+                                                            //                                                            if (callbackResults.Success())
+                                                            //                                                            {
+                                                            //                                                                confirmationButtonEvent.SetAction(AppData.InputActionButtonType.ConfirmationButton, confirmationButtonActionCallbackResults =>
+                                                            //                                                                {
+                                                            //                                                                    callbackResults.SetResult(confirmationButtonActionCallbackResults);
+
+                                                            //                                                                    if (callbackResults.Success())
+                                                            //                                                                    {
+                                                            //                                                                        confirmationButtonEvent.SetMethod(OnUserEmailResendRequestButtonPressedEvent, confirmationButtonMethodCallbackResults =>
+                                                            //                                                                        {
+                                                            //                                                                            callbackResults.SetResult(confirmationButtonMethodCallbackResults);
+
+                                                            //                                                                            if (callbackResults.Success())
+                                                            //                                                                            {
+                                                            //                                                                                cancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, cancelButtonActionCallbackResults =>
+                                                            //                                                                                {
+                                                            //                                                                                    callbackResults.SetResult(cancelButtonActionCallbackResults);
+
+                                                            //                                                                                    if (callbackResults.Success())
+                                                            //                                                                                    {
+                                                            //                                                                                        cancelButtonEvent.SetMethod(OnIncorrectUserEmailButtonPressedEvent, cancelButtonMethodCallbackResults =>
+                                                            //                                                                                        {
+                                                            //                                                                                            callbackResults.SetResult(cancelButtonMethodCallbackResults);
+
+                                                            //                                                                                            if (callbackResults.Success())
+                                                            //                                                                                            {
+                                                            //                                                                                                emailAlreadyInUseWidget.RegisterActionButtonListeners(buttonEventRegisteredCallbackResults =>
+                                                            //                                                                                                {
+                                                            //                                                                                                    callbackResults.SetResult(buttonEventRegisteredCallbackResults);
+
+                                                            //                                                                                                    if (callbackResults.Success())
+                                                            //                                                                                                    {
+                                                            //                                                                                                        screen.ShowWidget(emailAlreadyInUseWidget, async showConfirmationWidgetCallbackResults =>
+                                                            //                                                                                                        {
+                                                            //                                                                                                            callbackResults.SetResult(showConfirmationWidgetCallbackResults);
+
+                                                            //                                                                                                            if (callbackResults.UnSuccessful())
+                                                            //                                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                                                                                                        });
+                                                            //                                                                                                    }
+                                                            //                                                                                                    else
+                                                            //                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                            //                                                                                                }, confirmationButtonEvent, cancelButtonEvent);
+                                                            //                                                                                            }
+                                                            //                                                                                            else
+                                                            //                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                                                                                        });
+                                                            //                                                                                    }
+                                                            //                                                                                    else
+                                                            //                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                                                                                });
+                                                            //                                                                            }
+                                                            //                                                                            else
+                                                            //                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                                                                        });
+                                                            //                                                                    }
+                                                            //                                                                    else
+                                                            //                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                                                                });
+                                                            //                                                            }
+                                                            //                                                            else
+                                                            //                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                                                        });
+                                                            //                                                    }
+                                                            //                                                    else
+                                                            //                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                                                });
+                                                            //                                            }
+                                                            //                                            else
+                                                            //                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                                        });
+                                                            //                                    }
+                                                            //                                    else
+                                                            //                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                                }
+                                                            //                                else
+                                                            //                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                            });
+                                                            //                        }
+                                                            //                        else
+                                                            //                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                    }
+                                                            //                    else
+                                                            //                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //                }
+                                                            //                else
+                                                            //                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //            });
+                                                            //        }
+                                                            //        else
+                                                            //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            //    }
+                                                            //}
+                                                            //else
+                                                            //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                                             break;
                                                     }
                                                 }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             }
                                         }
                                         else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
+                                        {
+                                            //callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(checkCredentialsCallbackResults.GetData()));
+
+                                            //if (callbackResults.Success())
+                                            //{
+                                            //    switch (checkCredentialsCallbackResults.GetData())
+                                            //    {
+                                            //        case AppData.CredentialStatusInfo.DeviceNetworkError:
+
+                                            //            callbackResults.SetResult(screen.GetWidget(AppData.WidgetType.NetworkNotificationWidget));
+
+                                            //            if (callbackResults.Success())
+                                            //            {
+                                            //                var networkNotificationWidget = screen.GetWidget(AppData.WidgetType.NetworkNotificationWidget).GetData();
+
+                                            //                networkNotificationWidget.SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Cancel", buttonTitleSetCallbackResults =>
+                                            //                {
+                                            //                    callbackResults.SetResult(buttonTitleSetCallbackResults);
+
+                                            //                    if (callbackResults.Success())
+                                            //                    {
+                                            //                        networkNotificationWidget.UnRegisterActionButtonListeners(actionEventsUnregisteredCallbackResults =>
+                                            //                        {
+                                            //                            callbackResults.SetResult(actionEventsUnregisteredCallbackResults);
+
+                                            //                            if (callbackResults.Success())
+                                            //                            {
+                                            //                                onNetworkRetryButtonEvent.SetMethod(OnUserSignUpEvent, retryMethodSetCallbackResults =>
+                                            //                                {
+                                            //                                    callbackResults.SetResult(retryMethodSetCallbackResults);
+
+                                            //                                    if (callbackResults.Success())
+                                            //                                    {
+                                            //                                        onNetworkRetryButtonEvent.SetAction(AppData.InputActionButtonType.RetryButton, retryActionSetCallbackResults =>
+                                            //                                        {
+                                            //                                            callbackResults.SetResult(retryActionSetCallbackResults);
+
+                                            //                                            if (callbackResults.Success())
+                                            //                                            {
+                                            //                                                onNetworkCancelButtonEvent.SetMethod(OnNetworkFailedCancelEvent, cancelMethodSetCallbackResults =>
+                                            //                                                {
+                                            //                                                    callbackResults.SetResult(cancelMethodSetCallbackResults);
+
+                                            //                                                    if (callbackResults.Success())
+                                            //                                                    {
+                                            //                                                        onNetworkCancelButtonEvent.SetAction(AppData.InputActionButtonType.Cancel, cancelActionSetCallbackResults =>
+                                            //                                                        {
+                                            //                                                            callbackResults.SetResult(cancelActionSetCallbackResults);
+
+                                            //                                                            if (callbackResults.Success())
+                                            //                                                            {
+                                            //                                                                networkNotificationWidget.RegisterActionButtonListeners(registerActionEventsCallbackResults =>
+                                            //                                                                {
+                                            //                                                                    callbackResults.SetResult(registerActionEventsCallbackResults);
+
+                                            //                                                                }, onNetworkRetryButtonEvent, onNetworkCancelButtonEvent);
+                                            //                                                            }
+                                            //                                                            else
+                                            //                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //                                                        });
+                                            //                                                    }
+                                            //                                                    else
+                                            //                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //                                                });
+                                            //                                            }
+                                            //                                            else
+                                            //                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //                                        });
+                                            //                                    }
+                                            //                                    else
+                                            //                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //                                });
+                                            //                            }
+                                            //                            else
+                                            //                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //                        });
+                                            //                    }
+                                            //                    else
+                                            //                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            //                });
+                                            //            }
+                                            //            else
+                                            //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                            //            break;
+
+                                            //        case AppData.CredentialStatusInfo.UserNameError:
+
+                                            //            break;
+
+                                            //        case AppData.CredentialStatusInfo.UserEmailError:
+
+                                            //            break;
+                                            //    }
+                                            //}
+                                            //else
+                                            //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -1699,7 +1976,7 @@ namespace Com.RedicalGames.Filar
                                                                 callbackResults.SetResult(deleteAccountCallbackResultsTask);
 
                                                                 if (callbackResults.Success())
-                                                                    OnUserSignUpEvent();
+                                                                    SignUpButtonEvent();
                                                                 else
                                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                             }

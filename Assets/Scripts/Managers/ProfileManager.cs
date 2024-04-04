@@ -58,7 +58,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var networkManagerInstance = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance").GetData();
 
-                    var networkStatusCallbackResultsTask = await networkManagerInstance.CheckConnectionStatus();
+                    var networkStatusCallbackResultsTask = await networkManagerInstance.CheckConnectionStatus(blurScreen: true);
 
                     callbackResults.SetResult(networkStatusCallbackResultsTask);
 

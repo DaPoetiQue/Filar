@@ -48,7 +48,7 @@ namespace Com.RedicalGames.Filar
 
         #region Networking
 
-        public async Task<AppData.Callback> CheckConnectionStatus()
+        public async Task<AppData.Callback> CheckConnectionStatus(bool blurScreen = false)
         {
             AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager", "Check Connection Status Failed - Surfacing Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
@@ -56,60 +56,67 @@ namespace Com.RedicalGames.Filar
             {
                 var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing manager").GetData();
 
-                float timeOut = DefaultTimeOut();
+                var loadingWidgetConfigDataPacket = new AppData.SceneConfigDataPacket();
 
-                status = Application.internetReachability;
+                loadingWidgetConfigDataPacket.SetReferencedScreenType(AppData.ScreenType.LoadingScreen);
+                loadingWidgetConfigDataPacket.SetReferencedWidgetType(AppData.WidgetType.LoadingWidget);
+                loadingWidgetConfigDataPacket.SetReferencedUIScreenPlacementType(AppData.ScreenUIPlacementType.ForeGround);
+                loadingWidgetConfigDataPacket.SetScreenBlurState(blurScreen);
 
-                await Task.Delay(NetworkConnectionDelay());
-
-                while (status == NetworkReachability.NotReachable || timeOut > 0.0f)
-                {
-                    timeOut -= 1 * Time.deltaTime; ;
-
-                    if (status != NetworkReachability.NotReachable && timeOut > 0 || timeOut <= 0)
-                        break;
-                }
-
-                string result = (status != NetworkReachability.NotReachable) ? "Network Connection Available." : "Network Connection Not Available.";
-                callbackResults.SetResults(result, (status != NetworkReachability.NotReachable) ? AppData.LogInfoChannel.Success : AppData.LogInfoChannel.Error);
+                callbackResults.SetResult(surfacingManagerInstance.SurfaceWidget(loadingWidgetConfigDataPacket));
 
                 if (callbackResults.Success())
                 {
-                    AppData.ActionEvents.OnNetworkConnectedEvent();
-                    callbackResults.result = $"Network Successfully Connected For Device : [{AppData.Helpers.GetDeviceInfo().deviceName}] - Model : [{AppData.Helpers.GetDeviceInfo().deviceModel}] - ID : [{AppData.Helpers.GetDeviceInfo().deviceID}]";
+                    float timeOut = DefaultTimeOut();
+
+                    status = Application.internetReachability;
+
+                    await Task.Delay(NetworkConnectionDelay());
+
+                    while (status == NetworkReachability.NotReachable || timeOut > 0.0f)
+                    {
+                        timeOut -= 1 * Time.deltaTime; ;
+
+                        if (status != NetworkReachability.NotReachable && timeOut > 0 || timeOut <= 0)
+                            break;
+                    }
+
+                    string result = (status != NetworkReachability.NotReachable) ? "Network Connection Available." : "Network Connection Not Available.";
+                    callbackResults.SetResults(result, (status != NetworkReachability.NotReachable) ? AppData.LogInfoChannel.Success : AppData.LogInfoChannel.Error);
+
+                    if (callbackResults.Success())
+                    {
+                        AppData.ActionEvents.OnNetworkConnectedEvent();
+                        callbackResults.result = $"Network Successfully Connected For Device : [{AppData.Helpers.GetDeviceInfo().deviceName}] - Model : [{AppData.Helpers.GetDeviceInfo().deviceModel}] - ID : [{AppData.Helpers.GetDeviceInfo().deviceID}]";
+                    }
+                    else
+                    {
+                        surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.NetworkNotificationPopUp, popUpShownCallbackResults =>
+                        {
+                            callbackResults.SetResult(popUpShownCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                AppData.ActionEvents.OnNetworkFailedEvent();
+
+                                callbackResults.result = $"Network Failed With Status : {status}";
+                                callbackResults.resultCode = AppData.Helpers.WarningCode;
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                        }, OnNetworkRetryButtonOverrideEvent);
+                    }
                 }
                 else
-                {
-                    surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.NetworkNotificationPopUp, popUpShownCallbackResults => 
-                    {
-                        callbackResults.SetResult(popUpShownCallbackResults);
-
-                        if (callbackResults.Success())
-                        {
-                            AppData.ActionEvents.OnNetworkFailedEvent();
-
-                            callbackResults.result = $"Network Failed With Status : {status}";
-                            callbackResults.resultCode = AppData.Helpers.WarningCode;
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                    
-                    }, OnNetworkRetryButtonOverrideEvent, OnCancelButtonOverrideEvent);
-                }
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             return callbackResults;
         }
 
-        private void OnNetworkRetryButtonOverrideEvent()
-        {
-            LogInfo("Log_Cat/: On Retry Button Pressed Event.", this);
-        }
-
-        private void OnCancelButtonOverrideEvent()
-        {
-
-        }
+        private async void OnNetworkRetryButtonOverrideEvent()
+                  => await CheckConnectionStatus();
 
 
         public async Task<AppData.Callback> OnCheckConnectionStatus()

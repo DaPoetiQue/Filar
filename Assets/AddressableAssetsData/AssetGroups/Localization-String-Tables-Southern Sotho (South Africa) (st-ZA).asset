@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-String-Tables-Southern Sotho (South Africa) (st-ZA)
+  m_EditorClassIdentifier: 
+  m_GroupName: Localization-String-Tables-Southern Sotho (South Africa) (st-ZA)
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 632dbe02e9361474794b3f0bdd38f3ee
+  m_SerializeEntries:
+  - m_GUID: 1b876e77c66a4154b80e6a02d67ca4c8
+    m_Address: Filar Locales_st-ZA
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-st-ZA
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 09c3fc00f95ca8a49a86bb88139bfdfe, type: 2}
+    - {fileID: 11400000, guid: 0ae88c4535bc12d459874b83ca7363cf, type: 2}

@@ -135,7 +135,7 @@ namespace Com.RedicalGames.Filar
                     var newMessage = string.Empty;
 
                     for (int i = 0; i < messageOverrides.Length; i++)
-                        newMessage = message.Replace($"[{i}]", messageOverrides[i]);
+                        newMessage = string.Format($"{message}", messageOverrides[i]);
 
                     callbackResults.SetResult(AppData.Helpers.GetAppStringValueNotNullOrEmpty(newMessage, "New Message", "Get Message With Overrides Unsuccessful - New Message String Is Null - Invalid Operation."));
 

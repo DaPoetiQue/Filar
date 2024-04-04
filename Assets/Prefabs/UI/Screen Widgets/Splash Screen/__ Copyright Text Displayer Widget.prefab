@@ -256,6 +256,7 @@ MonoBehaviour:
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
   initializeTabs: 0
+  interuptable: 0
   dontShowAgain: 0
   isWidgetVisible: 0
 --- !u!1 &2502762274360271202
@@ -270,6 +271,8 @@ GameObject:
   - component: {fileID: 2502762274360271207}
   - component: {fileID: 2502762274360271200}
   - component: {fileID: 528058120610102392}
+  - component: {fileID: 4968505578376700420}
+  - component: {fileID: 6230814433396331632}
   m_Layer: 5
   m_Name: App Copyright Info Displayer
   m_TagString: Untagged
@@ -1971,7 +1974,7 @@ MonoBehaviour:
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
-    value: {fileID: 2502762274360271200}
+    value: {fileID: 6230814433396331632}
     dataPackets:
       name: 
       externalLinkURL: 
@@ -2299,3 +2302,48 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
   transitionableUIMounts: []
+--- !u!114 &4968505578376700420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2502762274360271202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls: []
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &6230814433396331632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2502762274360271202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3b6b5bd674c44f40bf754765b633795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 

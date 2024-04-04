@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 1d8f7096a103d2c4ab1090119fb26270
   m_CachedHash:
     serializedVersion: 2
-    Hash: 7fa3d0df09133f1a710e6ac17b96cd76
+    Hash: 18a7042a44a864e4096aa1358eb78b86
   m_OptimizeCatalogSize: 1
   m_BuildRemoteCatalog: 0
   m_BundleLocalCatalog: 1
@@ -58,6 +58,21 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fc6f02fc59d26f4438ad1d4facb797ac, type: 2}
   - {fileID: 11400000, guid: 97f9cd425a5edce4697a157188c2a5d4, type: 2}
   - {fileID: 11400000, guid: 079b7e62d35764a4ab62d2dbf9af1e9b, type: 2}
+  - {fileID: 11400000, guid: bd6446853d59fa84c83f1c5d75aee17c, type: 2}
+  - {fileID: 11400000, guid: eed508114368698459bbfed722223bd7, type: 2}
+  - {fileID: 11400000, guid: 17030d02fdf2e2b49aeb4f00de71b34e, type: 2}
+  - {fileID: 11400000, guid: 0247ca89ea52619449c44413d0a64c62, type: 2}
+  - {fileID: 11400000, guid: 02f7d678f4e34d94e817296d34d487ee, type: 2}
+  - {fileID: 11400000, guid: 304ef5e3a1b487046af1bcaeafe48157, type: 2}
+  - {fileID: 11400000, guid: a17c32cf61f03cc448ea2100c298644e, type: 2}
+  - {fileID: 11400000, guid: 127973041ac8e2343bf70bb9c0885e1b, type: 2}
+  - {fileID: 11400000, guid: db1c05a6c58cd8c4da58bed9d9194186, type: 2}
+  - {fileID: 11400000, guid: 793b5f80982b74a4f8e2d8f7a51ed287, type: 2}
+  - {fileID: 11400000, guid: a7cc5f4f934bc4347be2c81d74b7d1c4, type: 2}
+  - {fileID: 11400000, guid: 5c27bf1f1ffa9914abe65dc1ef193ac0, type: 2}
+  - {fileID: 11400000, guid: af0e337d1773fa74c8e9123471ab72c1, type: 2}
+  - {fileID: 11400000, guid: a72074c89f44baa40a49b7246c30f976, type: 2}
+  - {fileID: 11400000, guid: 1ff494f51d600274cb40e3ef93ff516e, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -105,6 +120,21 @@ MonoBehaviour:
     - Selectable
     - Model
     - Config
+    - Locale
+    - Locale-af-ZA
+    - Preload
+    - Locale-zh
+    - Locale-en-ZA
+    - Locale-en
+    - Locale-fr
+    - Locale-nso-ZA
+    - Locale-pt
+    - Locale-st-ZA
+    - Locale-es
+    - Locale-ts-ZA
+    - Locale-tn-ZA
+    - Locale-xh-ZA
+    - Locale-zu-ZA
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 39bb3e37dcb37364cab85ef96fafb4f2, type: 2}

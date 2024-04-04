@@ -217,6 +217,63 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
+        public AppData.CallbackData<AppData.SurfacingResults> SurfaceWidget(AppData.SceneConfigDataPacket configDataPacket)
+        {
+            var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                if (callbackResults.Success())
+                {
+                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                    callbackResults.SetResult(screen.GetWidget(configDataPacket.GetReferencedWidgetType().GetData().GetValue().GetData()));
+
+                    if (callbackResults.Success())
+                    {
+                        HideInteruptableWidgets(interactableWidgetsHiddenCallbackResults => 
+                        {
+                            callbackResults.SetResult(interactableWidgetsHiddenCallbackResults);
+
+                            if(callbackResults.Success())
+                            {
+                                var popUpWidget = screen.GetWidget(configDataPacket.GetReferencedWidgetType().GetData().GetValue().GetData()).GetData();
+
+                                screen.ShowWidget(configDataPacket, widgetShownCallbackResults =>
+                                {
+                                    callbackResults.SetResult(widgetShownCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        AddShownPopUpWidget(popUpWidget, widgetShownSetCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(widgetShownSetCallbackResults);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
         #endregion
 
         #region Pop Up System
@@ -668,7 +725,7 @@ namespace Com.RedicalGames.Filar
 
         #region Surfacing Templates
 
-        public void ShowPopUp(AppData.SurfacingTemplateType templateType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButtonMethodOverride = null, Action secondaryButtonMethodOverride = null)
+        public void ShowPopUp(AppData.SurfacingTemplateType templateType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButtonMethodOverride = null, Action secondaryButtonMethodOverride = null, params string[] messageOverrides)
         {
             var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -746,7 +803,19 @@ namespace Com.RedicalGames.Filar
                                                                         popUpMessage = surfacingTemplateConfigDataObject.GetMessage(surfacingTemplate.GetMessageOverrides().GetData()).GetData();
                                                                 }
                                                                 else
-                                                                    popUpMessage = surfacingTemplateConfigDataObject.GetMessage().GetData();
+                                                                {
+                                                                    callbackResults.SetResult(AppData.Helpers.GetAppStringArrayValid(messageOverrides, "Message Overrides", "There Are No Message Overrides Found."));
+
+                                                                    if(callbackResults.Success())
+                                                                    {
+                                                                        callbackResults.SetResult(surfacingTemplateConfigDataObject.GetMessage(messageOverrides));
+
+                                                                        if (callbackResults.Success())
+                                                                            popUpMessage = surfacingTemplateConfigDataObject.GetMessage(messageOverrides).GetData();
+                                                                    }
+                                                                    else
+                                                                        popUpMessage = surfacingTemplateConfigDataObject.GetMessage().GetData();
+                                                                }
 
                                                                 popUpWidget.SetUITextDisplayerValue(AppData.ScreenTextType.MessageDisplayer, popUpMessage, widgetTitleSetCallbackResults =>
                                                                 {
@@ -1004,9 +1073,16 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        RemoveShownPopUpWidget(widget, shownPopUpWidgetRemovedCallbackResults => 
+                                        RemoveShownPopUpWidget(widget, shownPopUpWidgetRemovedCallbackResults =>
                                         {
                                             callbackResults.SetResult(shownPopUpWidgetRemovedCallbackResults);
+
+                                            if(callbackResults.Success())
+                                            {
+
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         });
                                     }
                                     else
@@ -1077,30 +1153,32 @@ namespace Com.RedicalGames.Filar
 
             if(callbackResults.Success())
             {
-                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+                LogInfo($"Log_cat/::: Surfaced Inturuptables Found : { GetSurfacedInteruptableWidgets().GetData().Count}", this);
 
-                if (callbackResults.Success())
+                int surfaceCount = GetSurfacedInteruptableWidgets().GetData().Count;
+
+                for (int i = 0; i < surfaceCount; i++)
                 {
-                    var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+                    callbackResults.SetResult(GetSurfacedInteruptableWidgets().GetData()[i].GetScreenBlurConfig());
 
-                    for (int i = 0; i < GetSurfacedInteruptableWidgets().GetData().Count; i++)
+                    if (callbackResults.Success())
                     {
-                        screen.HideWidget(GetSurfacedInteruptableWidgets().GetData()[i], widgetHiddenCallbackResults => 
+                        HidePopUp(GetSurfacedInteruptableWidgets().GetData()[i].GetType().GetData(), popUpDiddenCallbackResults =>
                         {
-                            callbackResults.SetResult(widgetHiddenCallbackResults);
-                        });
+                            callbackResults.SetResult(popUpDiddenCallbackResults);
 
-                        if(callbackResults.UnSuccessful())
+                        }, GetSurfacedInteruptableWidgets().GetData()[i].GetScreenBlurConfig().GetData());
+                    }
+                    else
+                    {
+                        HidePopUp(GetSurfacedInteruptableWidgets().GetData()[i].GetType().GetData(), popUpDiddenCallbackResults =>
                         {
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            break;
-                        }
+                            callbackResults.SetResult(popUpDiddenCallbackResults);
+
+                        });
                     }
                 }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
             else
             {
@@ -1129,7 +1207,9 @@ namespace Com.RedicalGames.Filar
 
         public AppData.CallbackDataList<AppData.Widget> GetSurfacedInteruptableWidgets()
         {
-            var callbackResults = new AppData.CallbackDataList<AppData.Widget>(GetSurfacedWidgetList());
+            var callbackResults = new AppData.CallbackDataList<AppData.Widget>();
+
+            callbackResults.SetResult(GetSurfacedWidgetList());
 
             if (callbackResults.Success())
             {

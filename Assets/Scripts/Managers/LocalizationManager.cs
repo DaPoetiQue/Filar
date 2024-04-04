@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using Firebase.Database;
+using UnityEngine.Localization;
 
 namespace Com.RedicalGames.Filar
 {
@@ -11,11 +12,10 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
-
         private AppData.LanguageRestriction  languageRestriction;
         private bool generateLanguageRestriction;
-
-        DatabaseReference databaseReference;
+        private DatabaseReference databaseReference;
+        private AppLocaleConfigDataPacket localeConfigDataPacket;
 
         #endregion
 
@@ -23,17 +23,73 @@ namespace Com.RedicalGames.Filar
 
         protected override async void Init()
         {
-            if (generateLanguageRestriction)
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName(), "App Database Manager Instance Is Not Yet Initialized."));
+
+            if (callbackResults.Success())
             {
-                databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
-             
-                string languageFile = JsonUtility.ToJson(languageRestriction);
+                var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName()).GetData();
 
-                Dictionary<string, object> languageFileObject = new Dictionary<string, object>();
-                languageFileObject.Add("Localization-Filar", languageFile);
+                callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
 
-                await databaseReference.Child("Filar Localization").Child("Language Restrictions").UpdateChildrenAsync(languageFileObject);
+                if(callbackResults.Success())
+                {
+                    var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                    var waitForAddressablesCallbackResults = await assetBundlesLibrary.OnAwaitAssetsInitialization(AppData.AssetBundleResourceLocatorType.Config);
+
+                    callbackResults.SetResult(waitForAddressablesCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(assetBundlesLibrary.GetLoadedConfigData(AppData.ConfigDataType.LocaleConfigData));
+
+                        if (callbackResults.Success())
+                        {
+                            var configDataPackets = assetBundlesLibrary.GetLoadedConfigData(AppData.ConfigDataType.LocaleConfigData).GetData();
+
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(configDataPackets, "Config Data Packets", "Init Failed - There Are No Config Data Packets Found - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                var localeConfigDataPacket = configDataPackets[0] as AppLocaleConfigDataPacket;
+
+                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(localeConfigDataPacket, "Locale Config Data Packet", "Init Failed - Couldn't Find A Local Config Data Packet - Invalid Operation."));
+
+                                if (callbackResults.Success())
+                                {
+                                    callbackResults.result = "Init Success - Local Config Data Packet Found.";
+
+                                    this.localeConfigDataPacket = localeConfigDataPacket;
+
+                                    if (generateLanguageRestriction)
+                                    {
+                                        databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
+
+                                        string languageFile = JsonUtility.ToJson(languageRestriction);
+
+                                        Dictionary<string, object> languageFileObject = new Dictionary<string, object>();
+                                        languageFileObject.Add("Localization-Filar", languageFile);
+
+                                        await databaseReference.Child("Filar Localization").Child("Language Restrictions").UpdateChildrenAsync(languageFileObject);
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         public void SyncLocalizationData(AppData.LanguageRestriction languageRestriction, Action<AppData.Callback> callback = null)
@@ -102,6 +158,42 @@ namespace Com.RedicalGames.Filar
                         }
                     }
                 }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackData<LocalizedString> GetLocaleFromKey(AppData.LocalizationKey localizationKey)
+        {
+            var callbackResults = new AppData.CallbackData<LocalizedString>(AppData.Helpers.GetAppEnumValueValid(localizationKey, "Localization Key", $"Get Locale From Key Failed - Localization Key Parameter Value Is Set To Default : {localizationKey} - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(localeConfigDataPacket, "Locale Config Data Packet", "GetLocaleFromKey Failed - Trying To Access Locale Config Data Packet While It Is Not Yet Loaded From Addressabless - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(localeConfigDataPacket.Initialized());
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.SetResult(localeConfigDataPacket.GetLocalizationValueFromKey(localizationKey));
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.result = $"Get Locale From Key Success - Locale Has Been successfully Found Using Localization Key Parameter Value : {localizationKey}";
+                            callbackResults.data = localeConfigDataPacket.GetLocalizationValueFromKey(localizationKey).GetData();
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

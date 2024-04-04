@@ -88,6 +88,8 @@ GameObject:
   - component: {fileID: 3046965485454435813}
   - component: {fileID: 3046965485454435812}
   - component: {fileID: 2474287121284689378}
+  - component: {fileID: 8013173527449404821}
+  - component: {fileID: 3790972876224431076}
   m_Layer: 5
   m_Name: Message Body Displayer
   m_TagString: Untagged
@@ -1789,7 +1791,7 @@ MonoBehaviour:
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
-    value: {fileID: 3046965485454435812}
+    value: {fileID: 3790972876224431076}
     dataPackets:
       name: 
       externalLinkURL: 
@@ -2117,6 +2119,63 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
   transitionableUIMounts: []
+--- !u!114 &8013173527449404821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3046965485454435814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3046965485454435812}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &3790972876224431076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3046965485454435814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3b6b5bd674c44f40bf754765b633795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
 --- !u!1 &3046965486235780719
 GameObject:
   m_ObjectHideFlags: 0
@@ -2129,6 +2188,8 @@ GameObject:
   - component: {fileID: 3046965486235780714}
   - component: {fileID: 3046965486235780717}
   - component: {fileID: 7338522638899953132}
+  - component: {fileID: 1213926418102173010}
+  - component: {fileID: 3737996837586829515}
   m_Layer: 5
   m_Name: Message Header
   m_TagString: Untagged
@@ -3830,7 +3891,7 @@ MonoBehaviour:
         resultsType: 4
     title: {fileID: 0}
     fieldUIImageList: []
-    value: {fileID: 3046965486235780717}
+    value: {fileID: 3737996837586829515}
     dataPackets:
       name: 
       externalLinkURL: 
@@ -4158,6 +4219,63 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
   transitionableUIMounts: []
+--- !u!114 &1213926418102173010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3046965486235780719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3046965486235780717}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &3737996837586829515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3046965486235780719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3b6b5bd674c44f40bf754765b633795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
 --- !u!1 &3046965486587628298
 GameObject:
   m_ObjectHideFlags: 0
@@ -4417,5 +4535,6 @@ MonoBehaviour:
     hiddenScreenPoint: {fileID: 0}
   dynamicUIHandler: {fileID: 0}
   initializeTabs: 0
+  interuptable: 0
   dontShowAgain: 0
   isWidgetVisible: 0
