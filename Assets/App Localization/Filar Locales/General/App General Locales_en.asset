@@ -27,6 +27,78 @@ MonoBehaviour:
       rights on software are held by the Owner and/or its licensors.  '
     m_Metadata:
       m_Items: []
+  - m_Id: 15830905311232
+    m_Localized: Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16020831784960
+    m_Localized: Sign In
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15976003063808
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15982692978688
+    m_Localized: Retry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21315997978624
+    m_Localized: Sign Up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21439541202944
+    m_Localized: Show
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21546135244800
+    m_Localized: Hide
+    m_Metadata:
+      m_Items: []
+  - m_Id: 261679954579456
+    m_Localized: Forgot Password
+    m_Metadata:
+      m_Items: []
+  - m_Id: 263862020263936
+    m_Localized: Sign in using your email credentials below.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 272470464319488
+    m_Localized: Sign up using one of the options below.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 282021154574336
+    m_Localized: Shopping Cart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 282249857388544
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 282209046810624
+    m_Localized: Profile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 282149353476096
+    m_Localized: Messages
+    m_Metadata:
+      m_Items: []
+  - m_Id: 317791621926912
+    m_Localized: User Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 317932055613440
+    m_Localized: User Email
+    m_Metadata:
+      m_Items: []
+  - m_Id: 317997323177984
+    m_Localized: Password
+    m_Metadata:
+      m_Items: []
+  - m_Id: 318106156978176
+    m_Localized: Repeat password
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

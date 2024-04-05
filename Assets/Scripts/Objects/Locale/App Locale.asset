@@ -69,6 +69,149 @@ MonoBehaviour:
       m_FallbackState: 0
       m_WaitForCompletion: 0
       m_LocalVariables: []
+  - name: Sign In Locale Key
+    key: 6
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 16020831784960
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Sign Up Locale Key
+    key: 5
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 21315997978624
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Sign In Info Toaster Locale Key
+    key: 13
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 263862020263936
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Forgot Passowrd Title Locale Key
+    key: 12
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 261679954579456
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: App Signing Options Info Locale Key
+    key: 14
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 272470464319488
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Profile Title Locale Key
+    key: 15
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 282209046810624
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Inbox Title Locale Key
+    key: 16
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 282149353476096
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Shopping Cart Title Locale Key
+    key: 17
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 282021154574336
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Settings Title Locale Key
+    key: 18
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 282249857388544
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Field Name Locale Key
+    key: 19
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 317791621926912
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Field Email Locale Key
+    key: 20
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 317932055613440
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Field Password Locale Key
+    key: 21
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 317997323177984
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Field Repeat Password Locale Key
+    key: 22
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 318106156978176
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
   references:
     version: 2
     RefIds: []

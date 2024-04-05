@@ -50,6 +50,18 @@ namespace Com.RedicalGames.Filar
                                 });
 
                                 break;
+
+                            case AppData.ScreenType.LandingPageScreen:
+
+                                InitializeLandingPageScreen(initializationCallbackResults =>
+                                {
+                                    callbackResults.SetResult(initializationCallbackResults);
+
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+
+                                break;
                         }
 
                         #endregion
@@ -181,11 +193,48 @@ namespace Com.RedicalGames.Filar
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
         }
 
         private void InitializeLoadingScreen(Action<AppData.Callback> callback = null)
         {
 
+        }
+
+        private void InitializeLandingPageScreen(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance", "App Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance").GetData();
+
+                #region Screen Title Text Displayer Setup
+
+                callbackResults.SetResult(GetWidget(AppData.WidgetType.TitleDisplayerWidget));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(appManagerInstance.GetApplicationName());
+
+                    if (callbackResults.Success())
+                    {
+                        var titleWidget = GetWidget(AppData.WidgetType.TitleDisplayerWidget).GetData();
+                        titleWidget.SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, appManagerInstance.GetApplicationName().GetData());
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                #endregion
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
         }
 
         #endregion

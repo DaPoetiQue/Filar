@@ -208,7 +208,7 @@ GameObject:
   - component: {fileID: 5210182097908641347}
   - component: {fileID: 8750013537632718168}
   m_Layer: 5
-  m_Name: Sign_Up_Sign_In Button Title
+  m_Name: __Sign_Up_Sign_In Button Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -262,7 +262,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Sign In
+  m_text: '[NONE]'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -909,7 +909,7 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     fieldActionInputs: []
-    placeHolderText: 
+    placeHolderTextKey: 0
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
     valueType: 0
@@ -2542,7 +2542,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 2
   type: 31
   widgetLayouts:
@@ -3419,7 +3419,7 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     fieldActionInputs: []
-    placeHolderText: 
+    placeHolderTextKey: 0
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
     valueType: 0
@@ -4941,7 +4941,7 @@ GameObject:
   - component: {fileID: 2442742089128676549}
   - component: {fileID: 6501833623996975148}
   m_Layer: 5
-  m_Name: Cancel Signin Button Title
+  m_Name: __Cancel Signin Button Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4995,7 +4995,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Cancel
+  m_text: '[NONE]'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5078,9 +5078,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_StringReference:
     m_TableReference:
-      m_TableCollectionName: 
+      m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
     m_TableEntryReference:
-      m_KeyId: 0
+      m_KeyId: 15976003063808
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0

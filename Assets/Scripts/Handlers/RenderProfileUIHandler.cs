@@ -22,14 +22,14 @@ namespace Com.RedicalGames.Filar
         {
             this.profileID = profileID;
 
-            if (titleDisplayer != null)
-            {
-                string title = profileID.ToString();
-                title = title.Replace("_", " ");
-                titleDisplayer.text = title;
-            }
-            else
-                Debug.LogWarning("--> RG_Unity - Init Failed : Title Displayer Is Null.");
+            //if (titleDisplayer != null)
+            //{
+            //    string title = profileID.ToString();
+            //    title = title.Replace("_", " ");
+            //    //titleDisplayer.text = title;
+            //}
+            //else
+            //    Debug.LogWarning("--> RG_Unity - Init Failed : Title Displayer Is Null.");
 
             //Init();
         }

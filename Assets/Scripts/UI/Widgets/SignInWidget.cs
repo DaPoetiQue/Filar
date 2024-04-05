@@ -194,16 +194,18 @@ namespace Com.RedicalGames.Filar
 
         private void SwitchPage(AppData.TabViewType viewType = AppData.TabViewType.None)
         {
-            var callbackResults = new AppData.Callback();
+        //    var callbackResults = new AppData.Callback();
 
-            isInitialView = !isInitialView;
+        //    isInitialView = !isInitialView;
 
-            SetActionButtonState(AppData.InputActionButtonType.SignInViewChangeButton, AppData.InputUIState.Disabled);
+        //    SetActionButtonState(AppData.InputActionButtonType.SignInViewChangeButton, AppData.InputUIState.Disabled);
 
-            string buttonTitle = (isInitialView) ? "Sign In" : "Sign Up";
+        //    string buttonTitle = (isInitialView) ? "Signing In" : "Signing Up";
 
-            SetActionButtonTitle(AppData.InputActionButtonType.SignInViewChangeButton, buttonTitle);
-            SetActionButtonState(AppData.InputActionButtonType.SignInViewChangeButton, AppData.InputUIState.Enabled);
+        //    SetActionButtonTitle(AppData.InputActionButtonType.SignInViewChangeButton, buttonTitle);
+        //    SetActionButtonState(AppData.InputActionButtonType.SignInViewChangeButton, AppData.InputUIState.Enabled);
+
+        //    SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Cancel");
         }
 
         public async void SwitchPageAsync(AppData.TabViewType viewType, Action<AppData.Callback> callback = null)

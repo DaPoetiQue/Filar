@@ -487,7 +487,7 @@ namespace Com.RedicalGames.Filar
                         {
                             newProjectStructureData = newProjectCallbackResults.GetData();
          
-                            SetInputFieldPlaceHolder(AppData.InputFieldActionType.AssetNameField, "Project Name");
+                            // SetInputFieldPlaceHolder(AppData.InputFieldActionType.AssetNameField, "Project Name"); // Update To Use Localization Key.
 
                             OnClearInputFieldValue(AppData.InputFieldActionType.AssetNameField);
                             OnClearInputFieldValidation(AppData.InputFieldActionType.AssetNameField);

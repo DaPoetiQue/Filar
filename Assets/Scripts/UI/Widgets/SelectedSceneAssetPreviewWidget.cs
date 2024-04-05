@@ -103,8 +103,8 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Helpers.ShowImage(asset, thumbnailDisplayer);
 
-            if (titleDisplayer != null && !string.IsNullOrEmpty(asset.name))
-                titleDisplayer.text = asset.name;
+            //if (titleDisplayer != null && !string.IsNullOrEmpty(asset.name))
+            //    titleDisplayer.text = asset.name;
 
             if (descriptionDisplayer != null && !string.IsNullOrEmpty(asset.description))
                 descriptionDisplayer.text = asset.description;

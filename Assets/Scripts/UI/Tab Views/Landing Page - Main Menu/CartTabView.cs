@@ -23,6 +23,25 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        protected override void Configure(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(GetScreenTitleLocalizationKey());
+
+            if (callbackResults.Success())
+            {
+                SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, GetScreenTitleLocalizationKey().GetData(), titleSetCallbackResults =>
+                {
+                    callbackResults.SetResult(titleSetCallbackResults);
+
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
 
         #region Tab View Overrides
 

@@ -28,6 +28,78 @@ MonoBehaviour:
       gehou."
     m_Metadata:
       m_Items: []
+  - m_Id: 16020831784960
+    m_Localized: Meld Aan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21315997978624
+    m_Localized: Teken Aan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21439541202944
+    m_Localized: Wys
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21546135244800
+    m_Localized: Verberg
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15830905311232
+    m_Localized: Bevestig
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15976003063808
+    m_Localized: Kanselleer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15982692978688
+    m_Localized: Probeer Weer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 261679954579456
+    m_Localized: Wagwoord Vergeet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 263862020263936
+    m_Localized: Meld aan met jou e-posbewyse hieronder.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 272470464319488
+    m_Localized: Sluit aan deur een van die opsies hieronder te gebruik.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 282021154574336
+    m_Localized: Inkopiemandjie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 282149353476096
+    m_Localized: Boodskappe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 282249857388544
+    m_Localized: Instellings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 282209046810624
+    m_Localized: Profiel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 317791621926912
+    m_Localized: Gebruikersnaam
+    m_Metadata:
+      m_Items: []
+  - m_Id: 317932055613440
+    m_Localized: Gebruikers E-Pos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 317997323177984
+    m_Localized: Wagwoord
+    m_Metadata:
+      m_Items: []
+  - m_Id: 318106156978176
+    m_Localized: Herhaal wagwoord
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

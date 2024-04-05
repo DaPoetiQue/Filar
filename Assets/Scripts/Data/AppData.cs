@@ -1431,13 +1431,24 @@ namespace Com.RedicalGames.Filar
             btn_Cancel,
             btn_Retry,
             btn_Submit,
-            btn_SignUp,
-            btn_SignIn,
+            title_SignUp,
+            title_SignIn,
             btn_VerifyEmail,
             btn_ResendEmail,
             btn_IncorrectEmail,
             info_AppLicense,
-            tag_Copyright
+            tag_Copyright,
+            title_ForgotPassword,
+            info_SignInToaster,
+            info_AppSigningOptions,
+            title_Profile,
+            title_Inbox,
+            title_ShoppingCart,
+            title_Settings,
+            field_Name,
+            field_Email,
+            field_Password,
+            field_RepeatPassword
         }
 
         #endregion
@@ -21542,10 +21553,10 @@ namespace Com.RedicalGames.Filar
             public List<InputActionHandler> fieldActionInputs;
 
             [Space(5)]
-            public string placeHolderText;
+            public LocalizationKey placeHolderTextKey = LocalizationKey.None;
 
             [Space(5)]
-            public TMP_Text placeholderTextDisplayer;
+            public TMPLocalizationHandler placeholderTextDisplayer = null;
 
             [Space(5)]
             public int characterLimit;
@@ -21553,7 +21564,7 @@ namespace Com.RedicalGames.Filar
             [Space(5)]
             public InputFieldValueType valueType;
 
-            private string clearTextPlaceHolder;
+            private LocalizationKey clearTextPlaceHolderKey;
 
             private bool concealField;
 
@@ -22150,7 +22161,7 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public void SetPlaceHolderText(string placeholder, Action<Callback> callback = null)
+            public void SetPlaceHolderText(LocalizationKey placeholderKey, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(GetValue());
 
@@ -22166,13 +22177,13 @@ namespace Com.RedicalGames.Filar
 
                             if(callbackResults.Success())
                             {
-                                SetClearTextPlaceHolder(placeholder, clearTextSetCallbacResults => 
+                                SetClearTextPlaceHolderKey(placeholderKey, clearTextSetCallbacResults => 
                                 {
                                     callbackResults.SetResult(clearTextSetCallbacResults);
 
                                     if (callbackResults.Success())
                                     {
-                                        GetPlaceholderTextDisplayer().GetData().SetValue(placeholder, placeHolderSetCallbackResults => 
+                                        GetPlaceholderTextDisplayer().GetData().SetLocalizedString(placeholderKey, placeHolderSetCallbackResults => 
                                         {
                                             callbackResults.SetResult(placeHolderSetCallbackResults);
                                         });
@@ -22194,14 +22205,14 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void SetClearTextPlaceHolder(string placeholder, Action<Callback> callback = null)
+            public void SetClearTextPlaceHolderKey(LocalizationKey placeholderKey, Action<Callback> callback = null)
             {
-                var callbackResults = new Callback(Helpers.GetAppStringValueNotNullOrEmpty(placeholder, "Place Holder", $"Set Clear Text Place Holder Failed - Place Holder Value Parameter For : {GetName()} Is Null / Empty - Invalid Operation."));
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(placeholderKey, "Place Holder Key", $"Set Clear Text Place Holder Failed - Place Holder Key Parameter Value For : {GetName()} Is Set To Default : {placeHolderTextKey} - Invalid Operation."));
 
-                if(callbackResults.Success())
+                if (callbackResults.Success())
                 {
-                    clearTextPlaceHolder = placeholder;
-                    callbackResults.result = $"Set Clear Text Place Holder Success - Clear Text Place Holder Value For : {GetName()} Is Set To : {placeholder}";
+                    clearTextPlaceHolderKey = placeholderKey;
+                    callbackResults.result = $"Set Clear Text Place Holder Success - Clear Text Place Holder Value For : {GetName()} Is Set To : {placeholderKey}";
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -22209,18 +22220,18 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            private CallbackData<string> GetClearTextPlaceHolder()
+            private CallbackData<LocalizationKey> GetClearTextPlaceHolderKey()
             {
-                var callbackResults = new CallbackData<string>(Initialized());
+                var callbackResults = new CallbackData<LocalizationKey>(Initialized());
 
                 if(callbackResults.Success())
                 {
-                    callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(clearTextPlaceHolder, "Clear Text Place Holder", $"Get Clear Text Place Holder Failed - Clear Text Place Holder Value For : {GetName()} Is Null / Empty - Invalid Operation."));
+                    callbackResults.SetResult(Helpers.GetAppEnumValueValid(clearTextPlaceHolderKey, "Clear Text Place Holder Key", $"Get Clear Text Place Holder Key Failed - Clear Text Place Holder Key Value For : {GetName()} Is Set To Default : {clearTextPlaceHolderKey} - Invalid Operation."));
 
                     if(callbackResults.Success())
                     {
-                        callbackResults.result = $"Get Clear Text Place Holder Success - Clear Text Place Holder Value For : {GetName()} Is Set Tp : {clearTextPlaceHolder}.";
-                        callbackResults.data = clearTextPlaceHolder;
+                        callbackResults.result = $"Get Clear Text Place Holder Key Success - Clear Text Place Holder Key Value For : {GetName()} Is Set To : {clearTextPlaceHolderKey}.";
+                        callbackResults.data = clearTextPlaceHolderKey;
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -22255,9 +22266,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public CallbackData<TMP_Text> GetPlaceholderTextDisplayer()
+            public CallbackData<TMPLocalizationHandler> GetPlaceholderTextDisplayer()
             {
-                var callbackResults = new CallbackData<TMP_Text>();
+                var callbackResults = new CallbackData<TMPLocalizationHandler>();
 
                 callbackResults.SetResult(Helpers.GetAppComponentValid(placeholderTextDisplayer, "Placeholder Text Displayer", $"Get Placeholder Text Displayer Failed - Placeholder Text Displayer Value For : {GetName()} Is Missing - Invalid Operation."));
 
@@ -22282,7 +22293,7 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(GetClearTextPlaceHolder());
+                        callbackResults.SetResult(GetClearTextPlaceHolderKey());
 
                         if (callbackResults.Success())
                         {
@@ -22292,7 +22303,7 @@ namespace Com.RedicalGames.Filar
 
                                 if(callbackResults.Success())
                                 {
-                                    GetPlaceholderTextDisplayer().GetData().SetValue(GetClearTextPlaceHolder().GetData(), placeHolderSetCallbackResults => 
+                                    GetPlaceholderTextDisplayer().GetData().SetLocalizedString(GetClearTextPlaceHolderKey().GetData(), placeHolderSetCallbackResults => 
                                     {
                                         callbackResults.SetResult(placeHolderSetCallbackResults);
 
@@ -22453,18 +22464,18 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            private CallbackData<string> GetPlaceHolderText()
+            private CallbackData<LocalizationKey> GetPlaceHolderText()
             {
-                var callbackResults = new CallbackData<string>(Initialized());
+                var callbackResults = new CallbackData<LocalizationKey>(Initialized());
 
                 if(callbackResults.Success())
                 {
-                    callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(placeHolderText, "Place Holder Text", $"Get Place Holder Text Failed - Place Holder Text Value For : {GetName()} Is Null / Empty - Invalid Operation."));
+                    callbackResults.SetResult(Helpers.GetAppEnumValueValid(placeHolderTextKey, "Place Holder Text Key", $"Get Place Holder Text Failed - Place Holder Text Value For : {GetName()} Is Null / Empty - Invalid Operation."));
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.result = $"Get Place Holder Text Success - Place Holder Text For : {GetName()} Has Been Found And Set To : {placeHolderText}.";
-                        callbackResults.data = placeHolderText;
+                        callbackResults.result = $"Get Place Holder Text Success - Place Holder Text For : {GetName()} Is Set To : {placeHolderTextKey}.";
+                        callbackResults.data = placeHolderTextKey;
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -37862,7 +37873,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(15)]
             [SerializeField]
-            protected TMP_Text titleDisplayer;
+            protected LocalizationKey screenTitleLocalizationKey;
 
             [Space(5)]
             [SerializeField]
@@ -39855,6 +39866,34 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public void SetScreenTitleLocalizationKey(LocalizationKey screenTitleLocalizationKey, Action<Callback> callback = null)
+            {
+                var callbackResults = new CallbackData<LocalizationKey>(Helpers.GetAppEnumValueValid(screenTitleLocalizationKey, "Screen Title Localization Key", $"Set Screen Title Localization Key Failed - Screen Title Localization Key Parameter Value Is Set To Default : {screenTitleLocalizationKey} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Set Screen Title Localization Key Success - Screen Title Localization Key Parameter Value Is Set To : {screenTitleLocalizationKey}";
+                    this.screenTitleLocalizationKey = screenTitleLocalizationKey;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+
+            public CallbackData<LocalizationKey> GetScreenTitleLocalizationKey()
+            {
+                var callbackResults = new CallbackData<LocalizationKey>(Helpers.GetAppEnumValueValid(screenTitleLocalizationKey, "Screen Title Localization Key", $"Get Screen Title Localization Key Failed - Screen Title Localization Key Value Is Set To Default : {screenTitleLocalizationKey} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Screen Title Localization Key Success - Screen Title Localization Key Value Is Set To : {screenTitleLocalizationKey}";
+                    callbackResults.data = screenTitleLocalizationKey;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
             protected CallbackData<TransitionType> GetTransitionType()
             {
                 var callbackResults = new CallbackData<TransitionType>();
@@ -40996,7 +41035,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            protected void SetInputFieldPlaceHolder(InputFieldActionType actionType, string placeHolder, Action<Callback> callback = null)
+            protected void SetInputFieldPlaceHolder(InputFieldActionType actionType, LocalizationKey placeHolderTextKey, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized(InputType.InputField));
 
@@ -41014,12 +41053,12 @@ namespace Com.RedicalGames.Filar
                         {
                             var inputField = inputActionHandler.GetInputFieldComponent().GetData();
 
-                            callbackResults.SetResult(Helpers.GetAppStringValueNotNullOrEmpty(placeHolder, "Input Field Placeholder", "Set Input Field Placeholder Failed - Input Field Placeholder Parameter Is Null - Invalid Operation."));
+                            callbackResults.SetResult(Helpers.GetAppEnumValueValid(placeHolderTextKey, "Place Holder Text Key", $"Set Input Field Placeholder Failed - Input Field Place Holder Key Parameter Is Set To Default : {placeHolderTextKey} - Invalid Operation."));
 
                             if (callbackResults.Success())
                             {
-                                inputField.SetPlaceHolderText(placeHolder);
-                                callbackResults.result = $"Field : {inputField.GetName()}'s Placeholder Is Set To : {placeHolder}.";
+                                inputField.SetPlaceHolderText(placeHolderTextKey);
+                                callbackResults.result = $"Field : {inputField.GetName()}'s Placeholder Is Set To : {placeHolderTextKey}.";
                             }
                             else
                             {
@@ -43162,7 +43201,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void SetActionInputFieldPlaceHolderText(InputFieldActionType actionType, string placeholder, Action<Callback> callback = null)
+            public void SetActionInputFieldPlaceHolderText(InputFieldActionType actionType, LocalizationKey placeholderTextKey, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(Initialized(InputType.InputField));
 
@@ -43180,7 +43219,7 @@ namespace Com.RedicalGames.Filar
                         {
                             var inputField = inputActionHandler.GetInputFieldComponent().GetData();
 
-                            inputField.SetPlaceHolderText(placeholder, inputFieldValueSetcallbackResults =>
+                            inputField.SetPlaceHolderText(placeholderTextKey, inputFieldValueSetcallbackResults =>
                             {
                                 callbackResults.SetResult(inputFieldValueSetcallbackResults);
                             });
@@ -43215,10 +43254,10 @@ namespace Com.RedicalGames.Filar
                         {
                             var inputField = inputActionHandler.GetInputFieldComponent().GetData();
 
-                            inputField.SetPlaceHolderText(placeholder.ToString(), inputFieldValueSetcallbackResults =>
-                            {
-                                callbackResults.SetResult(inputFieldValueSetcallbackResults);
-                            });
+                            //inputField.SetPlaceHolderText(placeholder.ToString(), inputFieldValueSetcallbackResults =>
+                            //{
+                            //    callbackResults.SetResult(inputFieldValueSetcallbackResults);
+                            //}); TO DO // Update To Use Localization
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -47539,7 +47578,7 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                SetTabNavigationButtonTitle(GetTabTitleAtIndex(tabSelectionID).GetData(), titleSetCallbackResults =>
+                                                SetTabNavigationButtonTitle(GetTabViewLocalizedTitleAtIndex(tabSelectionID).GetData(), titleSetCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(titleSetCallbackResults);
 
@@ -47627,6 +47666,65 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
+            public void SetTabNavigationButtonTitle(LocalizationKey key, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTabNavigationButton());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTabNavigationButton().GetData().GetButtonComponent());
+
+                    if (callbackResults.Success())
+                    {
+                        var button = GetTabNavigationButton().GetData().GetButtonComponent().GetData();
+
+                        button.SetTitleLocalized(key, keySetCallbackResults => 
+                        {
+                            callbackResults.SetResult(keySetCallbackResults);
+
+                            if(callbackResults.UnSuccessful())
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this); 
+
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetTabNavigationButtonTitle(LocalizedString titleKey, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetTabNavigationButton());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTabNavigationButton().GetData().GetButtonComponent());
+
+                    if (callbackResults.Success())
+                    {
+                        var button = GetTabNavigationButton().GetData().GetButtonComponent().GetData();
+
+                        button.SetTitleLocalized(titleKey, titleSetCallbackResults => 
+                        {
+                            callbackResults.SetResult(titleSetCallbackResults);
+
+                            if(callbackResults.UnSuccessful())
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
             public void SetActionButtonIcon(InputActionButtonType actionType, Sprite icon, Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(GetTabNavigationButton());
@@ -47696,11 +47794,11 @@ namespace Com.RedicalGames.Filar
 
                             #endregion
 
-                            callbackResults.SetResult(GetTabTitleAtIndex(tabSelectionID));
+                            callbackResults.SetResult(GetTabViewLocalizedTitleAtIndex(tabSelectionID));
 
                             if (callbackResults.Success())
                             {
-                                SetTabNavigationButtonTitle(GetTabTitleAtIndex(tabSelectionID).GetData(), titleSetCallbackResults =>
+                                SetTabNavigationButtonTitle(GetTabViewLocalizedTitleAtIndex(tabSelectionID).GetData(), titleSetCallbackResults =>
                                 {
                                     callbackResults.SetResult(titleSetCallbackResults);
 
@@ -47739,22 +47837,36 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            private CallbackData<string> GetTabTitleAtIndex(int tabID)
+            private CallbackData<LocalizedString> GetTabViewLocalizedTitleAtIndex(int tabID) // GetTabViewTitleLocalizationKey
             {
-                var callbackResults = new CallbackData<string>(GetTabViewList());
+                var callbackResults = new CallbackData<LocalizedString>(GetTabViewList());
 
                 if(callbackResults.Success())
                 {
-                    var titleInfo = GetTabViewList().GetData()[tabID].GetType().GetData().ToString();
+                    callbackResults.SetResult(GetTabViewList().GetData()[tabID].GetTabViewTitleLocalizationKey());
 
-                    callbackResults.SetResult(Helpers.GetFormatedTextString(titleInfo, "View"));
-
-                    if (callbackResults.Success())
+                    if(callbackResults.Success())
                     {
-                        var title = Helpers.GetFormatedTextString(titleInfo, "View").GetData();
+                        var titleLocalizationKey = GetTabViewList().GetData()[tabID].GetTabViewTitleLocalizationKey().GetData();
 
-                        callbackResults.result = $"Tab View Title At Tab ID : {tabID} - Is Set To : {title}";
-                        callbackResults.data = title;
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", $"Get Tab View Localized Title At Index : {tabID} Failed - Localization Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            var localizationManagerInstance = Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
+
+                            callbackResults.SetResult(localizationManagerInstance.GetLocaleFromKey(titleLocalizationKey));
+
+                            if(callbackResults.Success())
+                            {
+                                callbackResults.result = $"Get Tab View Localized Title At Index : {tabID} Success - Localized Tab View Title At Tab ID : {tabID} - Has Been Successfully Found.";
+                                callbackResults.data = localizationManagerInstance.GetLocaleFromKey(titleLocalizationKey).GetData();
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -48434,6 +48546,10 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
+            private LocalizationKey tabViewTitleLocalizationKey = LocalizationKey.None;
+
+            [Space(5)]
+            [SerializeField]
             private ScreenSpaceTargetHandler tabViewMountReference;
 
             [Space(10)]
@@ -48469,7 +48585,20 @@ namespace Com.RedicalGames.Filar
                                 {
                                     callbackResults.SetResult(inputsInitializedCallbackResults);
 
-                                    if(callbackResults.UnSuccessful())
+                                    if(callbackResults.Success())
+                                    {
+                                        Configure(configureWidgetCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(configureWidgetCallbackResults);
+
+                                            if(callbackResults.UnSuccessful())
+                                            {
+                                                callbackResults.result = $"Tab View : {GetName()} Has Been Initialized Without Inputs - Input Initialization Failed - Continuing Execution With Warning.";
+                                                callbackResults.resultCode = Helpers.SuccessCode;
+                                            }
+                                        });
+                                    }
+                                    else
                                     {
                                         callbackResults.result = $"Tab View : {GetName()} Has Been Initialized Without Inputs - Input Initialization Failed - Continuing Execution With Warning.";
                                         callbackResults.resultCode = Helpers.SuccessCode;
@@ -48535,20 +48664,30 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<ScreenType> GetScreenType()
             {
-                var callbackResults = new CallbackData<ScreenType>();
+                var callbackResults = new CallbackData<ScreenType>(Helpers.GetAppEnumValueValid(screenType, "Screen Type", $"Get Screen Type Failed - Screen Type Value Is Set To Default : {screenType} - Invalid Operation."));
 
-                if (screenType != ScreenType.None)
+                if (callbackResults.Success())
                 {
                     callbackResults.result = $"Get Screen Type Success - Screen Type For : {GetName()} Is Set To : {screenType}";
                     callbackResults.data = screenType;
-                    callbackResults.resultCode = Helpers.SuccessCode;
                 }
                 else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<LocalizationKey> GetTabViewTitleLocalizationKey()
+            {
+                var callbackResults = new CallbackData<LocalizationKey>(Helpers.GetAppEnumValueValid(tabViewTitleLocalizationKey, "Tab View Title Localization Key", $"Get Tab View Title Localization Key Failed - Tab View Title Localization Key Value Is Set To Default : {tabViewTitleLocalizationKey} - Invalid Operation."));
+
+                if (callbackResults.Success())
                 {
-                    callbackResults.result = $"Get Screen Type Failed - Screen Type For : {GetName()} Is Set To Default : {screenType}";
-                    callbackResults.data = default;
-                    callbackResults.resultCode = Helpers.WarningCode;
+                    callbackResults.result = $"Get Tab View Title Localization Key Success - Tab View Title Localization Key Set To : {tabViewTitleLocalizationKey}";
+                    callbackResults.data = tabViewTitleLocalizationKey;
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                 return callbackResults;
             }
@@ -48642,6 +48781,8 @@ namespace Com.RedicalGames.Filar
             }
 
             #region Abstract Functions
+
+            protected abstract void Configure(Action<Callback> callback = null);
 
             protected abstract void OnTabViewShown(Action<Callback> callback = null);
 

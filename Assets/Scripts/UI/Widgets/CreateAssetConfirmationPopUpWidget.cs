@@ -157,10 +157,10 @@ namespace Com.RedicalGames.Filar
             {
                 if (!string.IsNullOrEmpty(AppDatabaseManager.Instance.GetCurrentSceneAsset().name))
                 {
-                    if (titleDisplayer)
-                        titleDisplayer.text = AppDatabaseManager.Instance.GetCurrentSceneAsset().name;
-                    else
-                        Debug.LogWarning("--> Pop Up Title Displayer Missing / Not Assigned In The Inspector Panel.");
+                    //if (titleDisplayer)
+                    //    titleDisplayer.text = AppDatabaseManager.Instance.GetCurrentSceneAsset().name;
+                    //else
+                    //    Debug.LogWarning("--> Pop Up Title Displayer Missing / Not Assigned In The Inspector Panel.");
 
                     if (AppDatabaseManager.Instance.GetCurrentSceneAsset().assetMode == AppData.AssetModeType.CreateMode)
                         ClearInputFields();

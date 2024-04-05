@@ -16,6 +16,39 @@ namespace Com.RedicalGames.Filar
 
         #region Localization
 
+        public void SetLocalizedString(AppData.LocalizationKey localizationKey, Action<AppData.Callback> callback)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(localizationKey, "Localization Key", $"The Localization Key Parameter Value Is Set To Default : {localizationKey} - For {GetName()} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "Set Localized String Failed - Localization Manager Instance Is Not Initialized - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    var localizationManagerInstance = AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
+
+                    callbackResults.SetResult(localizationManagerInstance.GetLocaleFromKey(localizationKey));
+
+                    if(callbackResults.Success())
+                    {
+                        SetLocalizedString(localizationManagerInstance.GetLocaleFromKey(localizationKey).GetData(), localizationSetCallbackResults => 
+                        {
+                            callbackResults.SetResult(localizationSetCallbackResults);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
         public void SetLocalizedString(LocalizedString localizedString, Action<AppData.Callback> callback)
         {
             if(stringEvent == null)

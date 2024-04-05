@@ -64,6 +64,11 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        protected override void Configure(Action<AppData.Callback> callback = null)
+        {
+
+        }
+
         #region On Widget Events
 
         private void OnWidgetShown(AppData.Widget widget)
@@ -74,10 +79,44 @@ namespace Com.RedicalGames.Filar
             {
                 if (widget.GetType().GetData() == AppData.WidgetType.SignInWidget)
                 {
-                    HighlightInputField(AppData.InputFieldActionType.UserNameField, callback: fieldHighlightedCallbackResults =>
+                    callbackResults.SetResult(GetScreenTitleLocalizationKey());
+
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(fieldHighlightedCallbackResults);
-                    });
+                        #region Set UI Text
+
+                        SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, GetScreenTitleLocalizationKey().GetData(), titleSetCallbackResults =>
+                        {
+                            callbackResults.SetResult(titleSetCallbackResults);
+                        });
+
+                        SetUITextDisplayerValue(AppData.ScreenTextType.InfoDisplayer, AppData.LocalizationKey.info_AppSigningOptions, signInInfoSetCallbackResults =>
+                        {
+                            callbackResults.SetResult(signInInfoSetCallbackResults);
+                        });
+
+                        #endregion
+
+                        #region Set Button Title Text
+
+                        SetActionButtonTitle(AppData.InputActionButtonType.SignUpButton, AppData.LocalizationKey.title_SignUp, buttonTitleSetCallbackResults =>
+                        {
+                            callbackResults.SetResult(buttonTitleSetCallbackResults);
+                        });
+
+                        #endregion
+
+                        #region Highlight Fields
+
+                        HighlightInputField(AppData.InputFieldActionType.UserNameField, callback: fieldHighlightedCallbackResults =>
+                        {
+                            callbackResults.SetResult(fieldHighlightedCallbackResults);
+                        });
+
+                        #endregion
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
             }
             else

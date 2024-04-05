@@ -73,8 +73,8 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Helpers.ShowImage(asset, thumbnailDisplayer);
 
-            if (titleDisplayer != null && !string.IsNullOrEmpty(asset.name))
-                titleDisplayer.text = asset.name;
+            //if (titleDisplayer != null && !string.IsNullOrEmpty(asset.name))
+            //    titleDisplayer.text = asset.name;
         }
 
         protected override void OnHideScreenWidget(Action<AppData.Callback> callback = null)

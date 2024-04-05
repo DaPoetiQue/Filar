@@ -11557,7 +11557,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  currentLanguage: 8
+  currentLanguage: 2
 --- !u!1 &1204500052
 GameObject:
   m_ObjectHideFlags: 0

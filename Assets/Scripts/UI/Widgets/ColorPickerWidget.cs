@@ -68,8 +68,8 @@ namespace Com.RedicalGames.Filar
 
         void SetWidgetAssetData(AppData.SceneAsset asset)
         {
-            if (titleDisplayer != null && !string.IsNullOrEmpty(asset.name))
-                titleDisplayer.text = asset.name;
+            //if (titleDisplayer != null && !string.IsNullOrEmpty(asset.name))
+            //    titleDisplayer.text = asset.name;
         }
 
         //protected override void OnShowScreenWidget(Action<AppData.Callback> callback = null)
