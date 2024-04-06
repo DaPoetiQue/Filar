@@ -1448,7 +1448,10 @@ namespace Com.RedicalGames.Filar
             field_Name,
             field_Email,
             field_Password,
-            field_RepeatPassword
+            field_RepeatPassword,
+            label_Accept,
+            label_RememberMe,
+            btn_ReadTermsAndConditions
         }
 
         #endregion
@@ -22935,6 +22938,12 @@ namespace Com.RedicalGames.Filar
             public CheckboxInputActionType actionType;
 
             [Space(5)]
+            public LocalizationKey labelTextKey = LocalizationKey.None;
+
+            [Space(5)]
+            public TMPLocalizationHandler labelTextDisplayer = null;
+
+            [Space(5)]
             public bool initialSelectionState;
 
             [Space(5)]
@@ -22961,6 +22970,24 @@ namespace Com.RedicalGames.Filar
                             SetUIInputState(GetSelectionStateInfo().GetData().GetInputUIState().GetData(), showCallbackResults =>
                             {
                                 callbackResults.SetResult(showCallbackResults);
+
+                                if(callbackResults.Success())
+                                {
+                                    callbackResults.SetResult(GetLabelTextKey());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        SetLabelText(GetLabelTextKey().GetData(), placeHolderSetCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(placeHolderSetCallbackResults);
+                                        });
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = $"Input Field : {GetName()} Doesn't Have Place Holder Text - Continuing Execution.";
+                                        callbackResults.resultCode = Helpers.SuccessCode;
+                                    }
+                                }
                             });
                         }
                         else
@@ -23305,6 +23332,84 @@ namespace Com.RedicalGames.Filar
             public override void SetUIColor(Color color, Action<Callback> callback = null)
             {
               
+            }
+
+            public void SetLabelText(LocalizationKey placeholderKey, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetValue());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetLabelextDisplayer());
+
+                    if (callbackResults.Success())
+                    {
+                        GetLabelextDisplayer().GetData().SetLocalizedString(placeholderKey, placeHolderSetCallbackResults =>
+                        {
+                            callbackResults.SetResult(placeHolderSetCallbackResults);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void SetLabelTextKey(LocalizationKey labelTextKey, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(labelTextKey, "Label Text Key", $"Set Label Text Key Failed -Label Text Key Parameter Value For : {GetName()} Is Set To Default : {labelTextKey} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    this.labelTextKey = labelTextKey;
+                    callbackResults.result = $"Set Label Text Key Success - Label Text Key Value For : {GetName()} Is Set To : {labelTextKey}";
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private CallbackData<LocalizationKey> GetLabelTextKey()
+            {
+                var callbackResults = new CallbackData<LocalizationKey>(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppEnumValueValid(labelTextKey, "Label Text Key", $"Get Label Text Key Failed - PLabel Text Key Value For : {GetName()} Is Set to Default : {labelTextKey} - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Label Text Key Success - Label Text Key Value For : {GetName()} Is Set To : {labelTextKey}.";
+                        callbackResults.data = labelTextKey;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<TMPLocalizationHandler> GetLabelextDisplayer()
+            {
+                var callbackResults = new CallbackData<TMPLocalizationHandler>();
+
+                callbackResults.SetResult(Helpers.GetAppComponentValid(labelTextDisplayer, "Label Text Displayer", $"Get Label Text Displayer Failed - Label Text Displayer Value For : {GetName()} Is Missing - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Label Text Displayer Success - Label Text Displayer Value For : {GetName()} Has Been Successfully Found.";
+                    callbackResults.data = labelTextDisplayer;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
             }
 
             #region Selections

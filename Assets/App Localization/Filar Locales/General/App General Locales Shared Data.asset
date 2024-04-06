@@ -95,6 +95,18 @@ MonoBehaviour:
     m_Key: field-Repeat Pasword
     m_Metadata:
       m_Items: []
+  - m_Id: 336990570336256
+    m_Key: label-Accept
+    m_Metadata:
+      m_Items: []
+  - m_Id: 337168845033472
+    m_Key: label-Remember Me
+    m_Metadata:
+      m_Items: []
+  - m_Id: 337745788325888
+    m_Key: btn-Read Terms And Conditions
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

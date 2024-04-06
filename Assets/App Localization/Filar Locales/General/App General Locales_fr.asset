@@ -100,6 +100,18 @@ MonoBehaviour:
     m_Localized: "R\xE9p\xE9ter le mot de passe"
     m_Metadata:
       m_Items: []
+  - m_Id: 336990570336256
+    m_Localized: Accepter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 337168845033472
+    m_Localized: Souviens-toi de moi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 337745788325888
+    m_Localized: Termes et conditions
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

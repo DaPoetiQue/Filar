@@ -100,6 +100,18 @@ MonoBehaviour:
     m_Localized: Pheta Senotlolo
     m_Metadata:
       m_Items: []
+  - m_Id: 336990570336256
+    m_Localized: Amohela
+    m_Metadata:
+      m_Items: []
+  - m_Id: 337168845033472
+    m_Localized: Nkhopole
+    m_Metadata:
+      m_Items: []
+  - m_Id: 337745788325888
+    m_Localized: Lipallo le lipehelo
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

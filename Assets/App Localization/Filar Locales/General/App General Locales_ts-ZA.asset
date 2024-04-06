@@ -100,6 +100,18 @@ MonoBehaviour:
     m_Localized: Phindha phasiwedi
     m_Metadata:
       m_Items: []
+  - m_Id: 336990570336256
+    m_Localized: Amukela
+    m_Metadata:
+      m_Items: []
+  - m_Id: 337168845033472
+    m_Localized: Ndzi Tsundzukeni
+    m_Metadata:
+      m_Items: []
+  - m_Id: 337745788325888
+    m_Localized: Mimpimanyeto Na Swipimelo
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

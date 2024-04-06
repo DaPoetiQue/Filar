@@ -66,7 +66,42 @@ namespace Com.RedicalGames.Filar
 
         protected override void Configure(Action<AppData.Callback> callback = null)
         {
+            var callbackResults = new AppData.Callback(GetScreenTitleLocalizationKey());
 
+            if(callbackResults.Success())
+            {
+                #region Set UI Text
+
+                SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, GetScreenTitleLocalizationKey().GetData(), titleSetCallbackResults =>
+                {
+                    callbackResults.SetResult(titleSetCallbackResults);
+                });
+
+                SetUITextDisplayerValue(AppData.ScreenTextType.InfoDisplayer, AppData.LocalizationKey.info_AppSigningOptions, signInInfoSetCallbackResults =>
+                {
+                    callbackResults.SetResult(signInInfoSetCallbackResults);
+                });
+
+                #endregion
+
+                #region Set Button Title Text
+
+                SetActionButtonTitle(AppData.InputActionButtonType.SignUpButton, AppData.LocalizationKey.title_SignUp, buttonTitleSetCallbackResults =>
+                {
+                    callbackResults.SetResult(buttonTitleSetCallbackResults);
+                });
+
+                SetActionButtonTitle(AppData.InputActionButtonType.ReadButton, AppData.LocalizationKey.btn_ReadTermsAndConditions, buttonTitleSetCallbackResults =>
+                {
+                    callbackResults.SetResult(buttonTitleSetCallbackResults);
+                });
+
+                #endregion
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
         }
 
         #region On Widget Events
@@ -83,29 +118,6 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        #region Set UI Text
-
-                        SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, GetScreenTitleLocalizationKey().GetData(), titleSetCallbackResults =>
-                        {
-                            callbackResults.SetResult(titleSetCallbackResults);
-                        });
-
-                        SetUITextDisplayerValue(AppData.ScreenTextType.InfoDisplayer, AppData.LocalizationKey.info_AppSigningOptions, signInInfoSetCallbackResults =>
-                        {
-                            callbackResults.SetResult(signInInfoSetCallbackResults);
-                        });
-
-                        #endregion
-
-                        #region Set Button Title Text
-
-                        SetActionButtonTitle(AppData.InputActionButtonType.SignUpButton, AppData.LocalizationKey.title_SignUp, buttonTitleSetCallbackResults =>
-                        {
-                            callbackResults.SetResult(buttonTitleSetCallbackResults);
-                        });
-
-                        #endregion
-
                         #region Highlight Fields
 
                         HighlightInputField(AppData.InputFieldActionType.UserNameField, callback: fieldHighlightedCallbackResults =>

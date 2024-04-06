@@ -212,6 +212,39 @@ MonoBehaviour:
       m_FallbackState: 0
       m_WaitForCompletion: 0
       m_LocalVariables: []
+  - name: Read Terms & Conditions Button Locale Key
+    key: 25
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 337745788325888
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Accept Label Locale Key
+    key: 23
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 336990570336256
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Remember Me Label Locale Key
+    key: 24
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 337168845033472
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
   references:
     version: 2
     RefIds: []

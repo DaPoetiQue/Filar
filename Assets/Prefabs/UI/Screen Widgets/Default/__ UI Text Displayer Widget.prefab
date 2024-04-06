@@ -55,7 +55,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 2
   type: 18
   widgetLayouts:
@@ -330,8 +330,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: '[NONE]'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: fc8ec7f6d3d2af245b5d1aa939511a0e, type: 2}
+  m_sharedMaterial: {fileID: -2229040007553072704, guid: fc8ec7f6d3d2af245b5d1aa939511a0e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -794,7 +794,7 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     fieldActionInputs: []
-    placeHolderText: 
+    placeHolderTextKey: 0
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
     valueType: 0
@@ -1367,6 +1367,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     actionType: 0
+    labelTextKey: 0
+    labelTextDisplayer: {fileID: 0}
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:

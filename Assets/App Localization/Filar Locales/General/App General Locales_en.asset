@@ -99,6 +99,18 @@ MonoBehaviour:
     m_Localized: Repeat password
     m_Metadata:
       m_Items: []
+  - m_Id: 336990570336256
+    m_Localized: Accept
+    m_Metadata:
+      m_Items: []
+  - m_Id: 337168845033472
+    m_Localized: Remember Me
+    m_Metadata:
+      m_Items: []
+  - m_Id: 337745788325888
+    m_Localized: Terms And Conditions
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
