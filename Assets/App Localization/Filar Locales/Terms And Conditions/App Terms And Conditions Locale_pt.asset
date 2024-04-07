@@ -68,6 +68,59 @@ MonoBehaviour:
     m_Localized: Loja de Aplicativos
     m_Metadata:
       m_Items: []
+  - m_Id: 63294500818944
+    m_Localized: Afiliada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63661905072128
+    m_Localized: "Afiliada significa uma entidade que controla, \xE9 controlada ou
+      est\xE1 sob controle comum com uma parte, onde \"controle\" significa propriedade
+      de 50% ou mais das a\xE7\xF5es, participa\xE7\xF5es societ\xE1rias ou outros
+      t\xEDtulos com direito a voto para elei\xE7\xE3o de diretores ou outra autoridade
+      administrativa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63872039702528
+    m_Localized: "Pa\xEDs"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63910203674624
+    m_Localized: "Pa\xEDs refere-se a: \xC1frica do Sul"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64172515446784
+    m_Localized: Empresa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64238563151872
+    m_Localized: "Empresa (referida como \"a Empresa\", \"N\xF3s\", \"N\xF3s\" ou
+      \"Nosso\" neste Contrato) refere-se \xE0 Filar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64358486691840
+    m_Localized: Dispositiva
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64397112037376
+    m_Localized: "Dispositivo significa qualquer dispositivo que possa acessar o
+      Servi\xE7o, como um computador, um celular ou um tablet digital."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64548060844032
+    m_Localized: "Servi\xE7o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64580189212672
+    m_Localized: "Servi\xE7o refere-se ao Aplicativo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77746675699712
+    m_Localized: "Termos e Condi\xE7\xF5es (tamb\xE9m chamados de \"Termos\") significam
+      estes Termos e Condi\xE7\xF5es que constituem o acordo integral entre Voc\xEA
+      e a Empresa em rela\xE7\xE3o ao uso do Servi\xE7o. Este acordo de Termos e
+      Condi\xE7\xF5es foi criado com a ajuda do Gerador de Termos e Condi\xE7\xF5es."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

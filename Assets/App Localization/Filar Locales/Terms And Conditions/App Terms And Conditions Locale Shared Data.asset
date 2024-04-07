@@ -28,7 +28,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 28161638977536
-    m_Key: subHeader-Interpretation
+    m_Key: header-Interpretation
     m_Metadata:
       m_Items: []
   - m_Id: 28515575320576
@@ -36,7 +36,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 28728805347328
-    m_Key: subHeader-Definitions
+    m_Key: header-Definitions
     m_Metadata:
       m_Items: []
   - m_Id: 28944136720384
@@ -44,19 +44,243 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 43022611697664
-    m_Key: header-Application Definitions Header
+    m_Key: header-Application Definitions
     m_Metadata:
       m_Items: []
   - m_Id: 43201700089856
-    m_Key: content-Application Defination Content
+    m_Key: content-Application Defination
     m_Metadata:
       m_Items: []
   - m_Id: 43451110182912
-    m_Key: header-Application Store Definitions Header
+    m_Key: header-Application Store Definitions
     m_Metadata:
       m_Items: []
   - m_Id: 43698783834112
-    m_Key: content-Application Store Defination Content
+    m_Key: content-Application Store Defination
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63294500818944
+    m_Key: header-Affiliate Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63661905072128
+    m_Key: content-Affiliate Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63872039702528
+    m_Key: header-Country Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63910203674624
+    m_Key: content-Country Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64172515446784
+    m_Key: 'header-Company Definitions '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64238563151872
+    m_Key: 'content-Company Definitions '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64358486691840
+    m_Key: header-Device Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64397112037376
+    m_Key: content-Device Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64548060844032
+    m_Key: header-Service Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64580189212672
+    m_Key: content-Service Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77746675699712
+    m_Key: content-Terms And Conditions Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82449031548928
+    m_Key: header-Third-party Social Media Service Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82491586957312
+    m_Key: content-Third-party Social Media Service Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82586374033408
+    m_Key: header-You Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82629244014592
+    m_Key: content-You Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82837185024000
+    m_Key: header-Acknowledgment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83335459950592
+    m_Key: content-Acknowledgment Defination Content Paragraph A
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83452556529664
+    m_Key: content-Acknowledgment Defination Content Paragraph B
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83485255323648
+    m_Key: content-Acknowledgment Defination Content Paragraph C
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83503794147328
+    m_Key: content-Acknowledgment Defination Content Paragraph D
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83523813560320
+    m_Key: content-Acknowledgment Defination Content Paragraph E
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83596345659392
+    m_Key: header-Links to Other Websites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83704034414592
+    m_Key: content-Links to Other Websites Defination Paragraph A
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83736829677568
+    m_Key: content-Links to Other Websites Defination Paragraph B
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83755670491136
+    m_Key: content-Links to Other Websites Defination Paragraph C
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83948017078272
+    m_Key: header-Termination
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84006988992512
+    m_Key: content-Termination Defination Paragraph A
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84035392819200
+    m_Key: content-Termination Defination Paragraph B
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84145598156800
+    m_Key: header-Limitation of Liability
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84189248278528
+    m_Key: content-Limitation of Liability Defination Paragraph A
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84218151227392
+    m_Key: content-Limitation of Liability Defination Paragraph B
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84244210438144
+    m_Key: content-Limitation of Liability Defination Paragraph C
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84308689473536
+    m_Key: header-"AS IS" and "AS AVAILABLE" Disclaimer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84381645197312
+    m_Key: content-"AS IS" and "AS AVAILABLE" Disclaimer Defination Paragraph A
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84578211254272
+    m_Key: content-"AS IS" and "AS AVAILABLE" Disclaimer Defination Paragraph B
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84596364201984
+    m_Key: content-"AS IS" and "AS AVAILABLE" Disclaimer Defination Paragraph C
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84687351238656
+    m_Key: header-Governing Law
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84728396697600
+    m_Key: content-Governing Law
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84860143980544
+    m_Key: header-Disputes Resolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84912065269760
+    m_Key: content-Disputes Resolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84973994168320
+    m_Key: header-United States Legal Compliance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85022312550400
+    m_Key: content-United States Legal Compliance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85153434882048
+    m_Key: header-Severability and Waiver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85247118856192
+    m_Key: header-Severability
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85300097110016
+    m_Key: content-Severability
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85441277382656
+    m_Key: header-Waiver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85477595860992
+    m_Key: content-Waiver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85554687168512
+    m_Key: header-Translation Interpretation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85601160056832
+    m_Key: content-Translation Interpretation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85824796151808
+    m_Key: header-Changes to These Terms and Conditions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85891573665792
+    m_Key: content-Changes to These Terms and Conditions Paragraph A
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85924947742720
+    m_Key: content-Changes to These Terms and Conditions Paragraph B
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85983252762624
+    m_Key: 'header-Contact Us '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86020338798592
+    m_Key: 'content-Contact Us '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86119164989440
+    m_Key: 'info-Contact Us - Email '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86213801070592
+    m_Key: 'info-Contact Us - Phone '
     m_Metadata:
       m_Items: []
   m_Metadata:

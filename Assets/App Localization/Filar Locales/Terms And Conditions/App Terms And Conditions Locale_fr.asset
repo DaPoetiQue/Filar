@@ -68,6 +68,61 @@ MonoBehaviour:
     m_Localized: Magasin d'applications
     m_Metadata:
       m_Items: []
+  - m_Id: 63294500818944
+    m_Localized: Affilier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63661905072128
+    m_Localized: "Soci\xE9t\xE9 affili\xE9e d\xE9signe une entit\xE9 qui contr\xF4le,
+      est contr\xF4l\xE9e par ou est sous contr\xF4le commun avec un parti, o\xF9
+      \xAB\_contr\xF4le\_\xBB d\xE9signe la propri\xE9t\xE9 de 50\_% ou plus des
+      actions, participations ou autres titres donnant droit \xE0 voter pour l'\xE9lection
+      d'administrateurs ou d'autres autorit\xE9s de gestion. ."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63872039702528
+    m_Localized: Pays
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63910203674624
+    m_Localized: "Le pays fait r\xE9f\xE9rence \xE0\_: Afrique du Sud"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64172515446784
+    m_Localized: Entreprise
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64238563151872
+    m_Localized: "La Soci\xE9t\xE9 (appel\xE9e \xAB la Soci\xE9t\xE9 \xBB, \xAB Nous
+      \xBB, \xAB Notre \xBB ou \xAB Notre \xBB dans le pr\xE9sent Accord) fait r\xE9f\xE9rence
+      \xE0 Filar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64358486691840
+    m_Localized: Appareil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64397112037376
+    m_Localized: "Appareil d\xE9signe tout appareil pouvant acc\xE9der au Service
+      tel qu'un ordinateur, un t\xE9l\xE9phone portable ou une tablette num\xE9rique."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64548060844032
+    m_Localized: Service
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64580189212672
+    m_Localized: "Service fait r\xE9f\xE9rence \xE0 l\u2019Application."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77746675699712
+    m_Localized: "Les Conditions g\xE9n\xE9rales (\xE9galement appel\xE9es \xAB Conditions
+      \xBB) d\xE9signent les pr\xE9sentes Conditions g\xE9n\xE9rales qui constituent
+      l'int\xE9gralit\xE9 de l'accord entre Vous et la Soci\xE9t\xE9 concernant l'utilisation
+      du Service. Cet accord de conditions g\xE9n\xE9rales a \xE9t\xE9 cr\xE9\xE9
+      \xE0 l'aide du g\xE9n\xE9rateur de conditions g\xE9n\xE9rales."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

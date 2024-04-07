@@ -71,6 +71,61 @@ MonoBehaviour:
       xona.
     m_Metadata:
       m_Items: []
+  - m_Id: 63294500818944
+    m_Localized: Xihlanganisi Xa Vuxaka
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63661905072128
+    m_Localized: Xihlanganisi swi vula bindzu leri lawulaka, leri lawuriwaka hi kumbe
+      leri nga ehansi ka vulawuri lebyi fanaka na vandla, laha "vulawuri" swi vulaka
+      vun'wini bya 50% kumbe ku tlula ya swiave, ntswalo wa xiave kumbe tisekhurithi
+      tin'wana leti nga na mfanelo yo vhotela ku hlawuriwa ka vakongomisi kumbe vulawuri
+      byin'wana.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63872039702528
+    m_Localized: Tiko
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63910203674624
+    m_Localized: 'Tiko ri kombetela eka: Afrika-Dzonga'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64172515446784
+    m_Localized: Khamphani
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64238563151872
+    m_Localized: Khamphani (leyi vuriwaka "Khamphani", "Hina", "Hina" kumbe "Hina"
+      eka Ntwanano lowu) yi kombetela eka Filar.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64358486691840
+    m_Localized: Xitirhisiwa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64397112037376
+    m_Localized: "Xitirhisiwa swi vula xitirhisiwa xin\u2019wana na xin\u2019wana
+      lexi nga nghenaka eka Vukorhokeri ku fana na khompyuta, selfoni kumbe thebulete
+      ya xidijitali."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64548060844032
+    m_Localized: Vukorhokeri
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64580189212672
+    m_Localized: Vukorhokeri byi kombetela eka Xikombelo.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77746675699712
+    m_Localized: Mimpimanyeto na Swipimelo (leswi tlhelaka swi vuriwa "Mimpimanyeto")
+      swi vula Mimpimanyeto na Swipimelo leswi leswi vumbeke ntwanano hinkwawo exikarhi
+      ka Wena na Khamphani mayelana na ku tirhisiwa ka Vukorhokeri. Ntwanano lowu
+      wa Mimpimanyeto na Swipimelo wu tumbuluxiwile hi ku pfuniwa hi Muendli wa Mimpimanyeto
+      na Swipimelo.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

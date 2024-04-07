@@ -68,6 +68,58 @@ MonoBehaviour:
       Play Store) apho isicelo sikhutshelwe khona.
     m_Metadata:
       m_Items: []
+  - m_Id: 63294500818944
+    m_Localized: Affiliate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63661905072128
+    m_Localized: I-Affiliate ithetha iqumrhu elilawulayo, elilawulwa okanye liphantsi
+      kolawulo olufanayo neqela, apho "ulawulo" luthetha ubunini be-50% okanye ngaphezulu
+      kwezabelo, inzala ye-equity okanye ezinye izibambiso ezinelungelo lokuvotela
+      unyulo lwabalawuli okanye elinye igunya elilawulayo.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63872039702528
+    m_Localized: Ilizwe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63910203674624
+    m_Localized: 'Ilizwe libhekisa ku: eMzantsi Afrika'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64172515446784
+    m_Localized: Inkampani
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64238563151872
+    m_Localized: Inkampani (ebizwa ngokuba "yiNkampani", "Thina", "Thina" okanye
+      "Yethu" kwesi siVumelwano) ibhekisa kwiFilar.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64358486691840
+    m_Localized: Isixhobo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64397112037376
+    m_Localized: Isixhobo sithetha nasiphi na isixhobo esinokufikelela kwiNkonzo
+      efana nekhompyutha, iselula okanye ithebhulethi yedijithali.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64548060844032
+    m_Localized: Isevisi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64580189212672
+    m_Localized: Isevisi ibhekisa Application.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77746675699712
+    m_Localized: Imigaqo neMiqathango (ekwabizwa ngokuba "yiMiqathango") ithetha
+      le Miqathango neMiqathango ebumba isivumelwano sonke phakathi kwakho neNkampani
+      malunga nokusetyenziswa kweNkonzo. Esi sivumelwano seMigqaliselo neMiqathango
+      senziwe ngoncedo lweMigaqo neMiqathango yoMvelisi.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -70,6 +70,60 @@ MonoBehaviour:
       (Google Play Store) en el que se ha descargado la Aplicaci\xF3n."
     m_Metadata:
       m_Items: []
+  - m_Id: 63294500818944
+    m_Localized: Afiliada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63661905072128
+    m_Localized: "Afiliada significa una entidad que controla, est\xE1 controlada
+      por o est\xE1 bajo control com\xFAn con una parte, donde \"control\" significa
+      propiedad del 50% o m\xE1s de las acciones, participaci\xF3n accionaria u otros
+      valores con derecho a votar para la elecci\xF3n de directores u otra autoridad
+      administrativa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63872039702528
+    m_Localized: "Pa\xEDs"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63910203674624
+    m_Localized: "Pa\xEDs se refiere a: Sud\xE1frica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64172515446784
+    m_Localized: "Compa\xF1\xEDa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64238563151872
+    m_Localized: "Compa\xF1\xEDa (denominada \"la Compa\xF1\xEDa\", \"Nosotros\",
+      \"Nos\" o \"Nuestro\" en este Acuerdo) se refiere a Filar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64358486691840
+    m_Localized: Dispositivo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64397112037376
+    m_Localized: "Dispositivo significa cualquier dispositivo que pueda acceder al
+      Servicio, como una computadora, un tel\xE9fono celular o una tableta digital."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64548060844032
+    m_Localized: Servicio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64580189212672
+    m_Localized: "Servicio se refiere a la Aplicaci\xF3n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77746675699712
+    m_Localized: "T\xE9rminos y condiciones (tambi\xE9n denominados \"T\xE9rminos\")
+      significan estos T\xE9rminos y condiciones que forman el acuerdo completo entre
+      usted y la Compa\xF1\xEDa con respecto al uso del Servicio. Este acuerdo de
+      T\xE9rminos y condiciones se ha creado con la ayuda del Generador de t\xE9rminos
+      y condiciones."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

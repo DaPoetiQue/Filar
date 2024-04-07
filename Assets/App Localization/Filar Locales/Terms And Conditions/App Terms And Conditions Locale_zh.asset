@@ -66,6 +66,54 @@ MonoBehaviour:
       (Apple App Store) \u6216 Google Inc. (Google Play Store) \u8FD0\u8425\u548C\u5F00\u53D1\u7684\u6570\u5B57\u5206\u53D1\u670D\u52A1\uFF0C\u53EF\u5728\u5176\u4E2D\u4E0B\u8F7D\u5E94\u7528\u7A0B\u5E8F\u3002"
     m_Metadata:
       m_Items: []
+  - m_Id: 63294500818944
+    m_Localized: "\u9644\u5C5E\u673A\u6784"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63661905072128
+    m_Localized: "\u5173\u8054\u516C\u53F8\u662F\u6307\u63A7\u5236\u4E00\u65B9\u3001\u53D7\u4E00\u65B9\u63A7\u5236\u6216\u4E0E\u4E00\u65B9\u5171\u540C\u63A7\u5236\u7684\u5B9E\u4F53\uFF0C\u5176\u4E2D\u201C\u63A7\u5236\u201D\u662F\u6307\u62E5\u6709
+      50% \u6216\u4EE5\u4E0A\u6709\u6743\u6295\u7968\u9009\u4E3E\u8463\u4E8B\u6216\u5176\u4ED6\u7BA1\u7406\u673A\u6784\u7684\u80A1\u4EFD\u3001\u80A1\u6743\u6216\u5176\u4ED6\u8BC1\u5238
+      \u3002"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63872039702528
+    m_Localized: "\u56FD\u5BB6"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63910203674624
+    m_Localized: "\u56FD\u5BB6\u662F\u6307\uFF1A\u5357\u975E"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64172515446784
+    m_Localized: "\u516C\u53F8"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64238563151872
+    m_Localized: "\u516C\u53F8\uFF08\u5728\u672C\u534F\u8BAE\u4E2D\u79F0\u4E3A\u201C\u516C\u53F8\u201D\u3001\u201C\u6211\u4EEC\u201D\u3001\u201C\u6211\u4EEC\u201D\u6216\u201C\u6211\u4EEC\u7684\u201D\uFF09\u662F\u6307
+      Filar\u3002"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64358486691840
+    m_Localized: "\u8BBE\u5907"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64397112037376
+    m_Localized: "\u8BBE\u5907\u662F\u6307\u53EF\u4EE5\u8BBF\u95EE\u670D\u52A1\u7684\u4EFB\u4F55\u8BBE\u5907\uFF0C\u4F8B\u5982\u8BA1\u7B97\u673A\u3001\u624B\u673A\u6216\u6570\u5B57\u5E73\u677F\u7535\u8111\u3002"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64548060844032
+    m_Localized: "\u670D\u52A1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64580189212672
+    m_Localized: "\u670D\u52A1\u6307\u7684\u662F\u5E94\u7528\u7A0B\u5E8F\u3002"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77746675699712
+    m_Localized: "\u6761\u6B3E\u548C\u6761\u4EF6\uFF08\u4E5F\u79F0\u4E3A\u201C\u6761\u6B3E\u201D\uFF09\u662F\u6307\u6784\u6210\u60A8\u4E0E\u516C\u53F8\u4E4B\u95F4\u6709\u5173\u4F7F\u7528\u670D\u52A1\u7684\u5B8C\u6574\u534F\u8BAE\u7684\u8FD9\u4E9B\u6761\u6B3E\u548C\u6761\u4EF6\u3002
+      \u672C\u6761\u6B3E\u548C\u6761\u4EF6\u534F\u8BAE\u662F\u5728\u6761\u6B3E\u548C\u6761\u4EF6\u751F\u6210\u5668\u7684\u5E2E\u52A9\u4E0B\u521B\u5EFA\u7684\u3002"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

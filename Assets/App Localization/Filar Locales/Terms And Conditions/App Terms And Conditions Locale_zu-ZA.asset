@@ -68,6 +68,58 @@ MonoBehaviour:
       Inc. (Google Play Store) lapho Isicelo silandwe khona.
     m_Metadata:
       m_Items: []
+  - m_Id: 63294500818944
+    m_Localized: Affiliate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63661905072128
+    m_Localized: Inxusa lisho ibhizinisi elilawulayo, elilawulwa noma elingaphansi
+      kokulawulwa okufanayo neqembu, lapho "ukulawula" kusho ubunikazi bamasheya
+      angu-50% noma ngaphezulu, inzalo yemalimboleko noma ezinye izibambiso ezinegunya
+      lokuvotela ukhetho lwabaqondisi noma esinye isiphathimandla esiphethe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63872039702528
+    m_Localized: Izwe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63910203674624
+    m_Localized: 'Izwe libhekisa ku: iNingizimu Afrika'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64172515446784
+    m_Localized: Inkampani
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64238563151872
+    m_Localized: Inkampani (ebizwa ngokuthi "Inkampani", "Thina", "Thina" noma "Eyethu"
+      kulesi sivumelwano) ibhekisela ku-Filar.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64358486691840
+    m_Localized: Idivayisi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64397112037376
+    m_Localized: Idivayisi isho noma iyiphi idivayisi engafinyelela Isevisi efana
+      nekhompyutha, umakhalekhukhwini noma ithebhulethi yedijithali.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64548060844032
+    m_Localized: Isevisi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64580189212672
+    m_Localized: Isevisi ibhekisela kuhlelo lokusebenza.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77746675699712
+    m_Localized: Imigomo Nemibandela (ebuye ibizwe ngokuthi "Imigomo") isho le Migomo
+      Nemibandela eyakha sonke isivumelwano phakathi Kwakho Nenkampani mayelana nokusetshenziswa
+      Kwesevisi. Lesi sivumelwano seMigomo Nemibandela sidalwe ngosizo Lomkhiqizi
+      Wemibandela Nemibandela.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

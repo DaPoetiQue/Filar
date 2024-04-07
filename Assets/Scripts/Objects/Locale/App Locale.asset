@@ -366,6 +366,644 @@ MonoBehaviour:
       m_FallbackState: 0
       m_WaitForCompletion: 0
       m_LocalVariables: []
+  - name: Affiliate Definitions Header Locale Key
+    key: 38
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 63294500818944
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Affiliate Definitions Content Locale Key
+    key: 39
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 63661905072128
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Country Definitions Header Locale Key
+    key: 40
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 63872039702528
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Country Definitions Content Locale Key
+    key: 41
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 63910203674624
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Company Definitions  Header Locale Key
+    key: 42
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 64172515446784
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Company Definitions  Content Locale Key
+    key: 43
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 64238563151872
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Device Definitions  Header Locale Key
+    key: 44
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 64358486691840
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Device Definitions  Content Locale Key
+    key: 45
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 64397112037376
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Service Definitions  Header Locale Key
+    key: 46
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 64548060844032
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Service Definitions  Content Locale Key
+    key: 47
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 64580189212672
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Terms and Conditions Definitions  Content Locale Key
+    key: 48
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 77746675699712
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Third-party Social Media Service Definitions Header Locale Key
+    key: 49
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 82449031548928
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Third-party Social Media Service Definitions Content Locale Key
+    key: 50
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 82491586957312
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: You Definitions Header Locale Key
+    key: 51
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 82586374033408
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: You Definitions Content Locale Key
+    key: 52
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 82629244014592
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Acknowledgment Definitions Header Locale Key
+    key: 53
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 82837185024000
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Acknowledgment Definitions Content Paragragh A Locale Key
+    key: 54
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 83335459950592
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Acknowledgment Definitions Content Paragragh B Locale Key
+    key: 55
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 83452556529664
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Acknowledgment Definitions Content Paragragh C Locale Key
+    key: 56
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 83485255323648
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Acknowledgment Definitions Content Paragragh D Locale Key
+    key: 57
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 83503794147328
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Acknowledgment Definitions Content Paragragh E Locale Key
+    key: 58
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 83523813560320
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Links to Other Websites Locale Key
+    key: 59
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 83596345659392
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Links to Other Websites Defination Paragraph A Locale Key
+    key: 60
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 83704034414592
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Links to Other Websites Defination Paragraph B Locale Key
+    key: 61
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 83736829677568
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Links to Other Websites Defination Paragraph C Locale Key
+    key: 62
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 83755670491136
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Termination Header Locale Key
+    key: 63
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 83948017078272
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Termination Defination Paragraph A Locale Key
+    key: 64
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84006988992512
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Termination Defination Paragraph B Locale Key
+    key: 65
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84035392819200
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Limitation of Liability Header Locale Key
+    key: 66
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84145598156800
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Limitation of Liability Defination Paragraph A Locale Key
+    key: 67
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84189248278528
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Limitation of Liability Defination Paragraph B Locale Key
+    key: 68
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84218151227392
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Limitation of Liability Defination Paragraph C Locale Key
+    key: 69
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84244210438144
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: '"AS IS" and "AS AVAILABLE" Disclaimer Header Locale Key'
+    key: 70
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84308689473536
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: '"AS IS" and "AS AVAILABLE" Disclaimer Defination Paragraph A Locale Key'
+    key: 71
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84381645197312
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: '"AS IS" and "AS AVAILABLE" Disclaimer Defination Paragraph B Locale Key'
+    key: 72
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84578211254272
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: '"AS IS" and "AS AVAILABLE" Disclaimer Defination Paragraph C Locale Key'
+    key: 73
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84596364201984
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: '"AS IS" and "AS AVAILABLE" Disclaimer Defination Paragraph C Locale Key'
+    key: 73
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84596364201984
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Governing Law Header Locale Key
+    key: 74
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84687351238656
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Governing Law Content Locale Key
+    key: 75
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84728396697600
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Disputes Resolution Header Locale Key
+    key: 76
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84860143980544
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Disputes Resolution Content Locale Key
+    key: 77
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84912065269760
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: United States Legal Compliance Header Locale Key
+    key: 78
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 84973994168320
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: United States Legal Compliance Content Locale Key
+    key: 79
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 85022312550400
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Severability and Waiver Header Locale Key
+    key: 80
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 85153434882048
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Severability Header Locale Key
+    key: 81
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 85247118856192
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Severability Content Locale Key
+    key: 82
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 85300097110016
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Waiver Header Locale Key
+    key: 83
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 85441277382656
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Waiver Content Locale Key
+    key: 84
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 85477595860992
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Translation Interpretation Header Locale Key
+    key: 85
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 85554687168512
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Translation Interpretation Content Locale Key
+    key: 86
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 85601160056832
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Changes to These Terms and Conditions Header Locale Key
+    key: 87
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 85824796151808
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Changes to These Terms and Conditions Paragraph A Locale Key
+    key: 88
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 85891573665792
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Changes to These Terms and Conditions Paragraph B Locale Key
+    key: 89
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 85924947742720
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Contact Us Header Locale Key
+    key: 90
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 85983252762624
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Contact Us Content Locale Key
+    key: 91
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 86020338798592
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Contact Us Content Locale Key
+    key: 91
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 86020338798592
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Contact Us - Email Info Locale Key
+    key: 92
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 86119164989440
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Contact Us - Phone Info Locale Key
+    key: 93
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:7d6869d444a2fe14d815808046a89f61
+      m_TableEntryReference:
+        m_KeyId: 86213801070592
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
   references:
     version: 2
     RefIds: []

@@ -70,6 +70,59 @@ MonoBehaviour:
       Inc. (Google Play Store) eo Kopo e kopilitsoeng ho eona."
     m_Metadata:
       m_Items: []
+  - m_Id: 63294500818944
+    m_Localized: Affiliate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63661905072128
+    m_Localized: "Affiliate e bolela setheo se laolang, se laoloang ke kapa se tlas'a
+      taolo e t\u0161oanang le mokha, moo \"taolo\" e bolelang ho ba le karolo ea
+      50% kapa ho feta ea likarolo, phaello ea tekano kapa matlotlo a mang a nang
+      le tokelo ea ho vouta bakeng sa likhetho tsa batsamaisi kapa bolaoli bo bong
+      ba tsamaiso."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63872039702528
+    m_Localized: Naha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63910203674624
+    m_Localized: 'Naha e bua ka: Afrika Boroa'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64172515446784
+    m_Localized: Khampani
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64238563151872
+    m_Localized: "Khampani (e bitsoang \"Khampani\", \"Rona\", \"R\u014Dna\" kapa
+      \"R\u014Dna\" Tumellanong ena) e bua ka Filar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64358486691840
+    m_Localized: Sesebelisoa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64397112037376
+    m_Localized: Sesebediswa se bolela sesebediswa sefe kapa sefe se ka fihlellang
+      Tshebeletso jwalo ka komporo, selefounu kapa tablet ya dijithale.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64548060844032
+    m_Localized: Tshebeletso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64580189212672
+    m_Localized: "T\u0161ebeletso e bua ka Kopo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77746675699712
+    m_Localized: "Melao le Maemo (hape a bitsoa \"Melao\") e bolela Melao le Lipehelo
+      tsena tse etsang tumellano eohle pakeng tsa Hao le Khampani mabapi le t\u0161ebeliso
+      ea T\u0161ebeletso. Tumellano ena ea Melao le Maemo e entsoe ka thuso ea Mohlahisi
+      oa Melao le Maemo."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
