@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: App Terms And Conditions Locale_af-ZA
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: af-ZA
+  m_SharedData: {fileID: 11400000, guid: 7d6869d444a2fe14d815808046a89f61, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 51673616384
+    m_Localized: 'Laas opgedateer: 04 Augustus 2023'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25173604225024
+    m_Localized: Lees asseblief hierdie bepalings en voorwaardes noukeurig voordat
+      u ons diens gebruik.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27014354227200
+    m_Localized: Interpretasie en definisies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28161638977536
+    m_Localized: Interpretasie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28515575320576
+    m_Localized: "Die woorde waarvan die beginletter gekapitaliseer word, het betekenisse
+      wat onder die volgende voorwaardes gedefinieer word. Die volgende definisies
+      sal dieselfde betekenis h\xEA, ongeag of hulle in enkelvoud of meervoud voorkom."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28728805347328
+    m_Localized: Definisies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28944136720384
+    m_Localized: 'Vir die doeleindes van hierdie Bepalings en Voorwaardes:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43022611697664
+    m_Localized: Toepassing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43201700089856
+    m_Localized: Toepassing beteken die sagtewareprogram wat deur die Maatskappy
+      verskaf word wat deur U afgelaai word op enige elektroniese toestel, genaamd
+      Filar.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43451110182912
+    m_Localized: Toepassingswinkel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43698783834112
+    m_Localized: Toepassingswinkel beteken die digitale verspreidingsdiens wat bedryf
+      en ontwikkel word deur Apple Inc. (Apple App Store) of Google Inc. (Google
+      Play Winkel) waarin die toepassing afgelaai is.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: App Terms And Conditions Locale_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: 7d6869d444a2fe14d815808046a89f61, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 51673616384
+    m_Localized: "Derni\xE8re mise \xE0 jour : 04 ao\xFBt 2023"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25173604225024
+    m_Localized: Veuillez lire attentivement ces termes et conditions avant d'utiliser
+      notre service.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27014354227200
+    m_Localized: "Interpr\xE9tation et d\xE9finitions"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28161638977536
+    m_Localized: "Interpr\xE9tation"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28515575320576
+    m_Localized: "Les mots dont la lettre initiale est en majuscule ont des significations
+      d\xE9finies dans les conditions suivantes. Les d\xE9finitions suivantes auront
+      la m\xEAme signification qu\u2019elles apparaissent au singulier ou au pluriel."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28728805347328
+    m_Localized: "D\xE9finitions"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28944136720384
+    m_Localized: "Aux fins des pr\xE9sentes Conditions g\xE9n\xE9rales\_:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43022611697664
+    m_Localized: Application
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43201700089856
+    m_Localized: "Application d\xE9signe le logiciel fourni par la Soci\xE9t\xE9
+      t\xE9l\xE9charg\xE9 par Vous sur tout appareil \xE9lectronique, nomm\xE9 Filar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43698783834112
+    m_Localized: "Application Store d\xE9signe le service de distribution num\xE9rique
+      exploit\xE9 et d\xE9velopp\xE9 par Apple Inc. (Apple App Store) ou Google Inc.
+      (Google Play Store) dans lequel l'Application a \xE9t\xE9 t\xE9l\xE9charg\xE9e."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43451110182912
+    m_Localized: Magasin d'applications
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

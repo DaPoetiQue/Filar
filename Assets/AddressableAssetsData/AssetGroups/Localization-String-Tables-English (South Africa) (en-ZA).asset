@@ -38,6 +38,13 @@ MonoBehaviour:
     - Locale-en-ZA
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 36852c7d04065214482bac6e5994240c
+    m_Address: App Terms And Conditions Locale_en-ZA
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en-ZA
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:

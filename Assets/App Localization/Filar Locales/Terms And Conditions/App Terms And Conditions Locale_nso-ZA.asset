@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: App Terms And Conditions Locale_nso-ZA
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: nso-ZA
+  m_SharedData: {fileID: 11400000, guid: 7d6869d444a2fe14d815808046a89f61, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 51673616384
+    m_Localized: 'E qetetse ho ntlafatsoa: la 4 Phato 2023'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25173604225024
+    m_Localized: "Ka kopo bala lipehelo le lipehelo tsena ka hloko pele u sebelisa
+      T\u0161ebeletso ea R\u014Dna."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27014354227200
+    m_Localized: Tlhaloso Le Litlhaloso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28161638977536
+    m_Localized: Tlhaloso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28515575320576
+    m_Localized: "Mantsoe ao tlhaku ea pele e ngotsoeng ka oona a na le meelelo e
+      hlalosoang tlas\u2019a maemo a latelang. Litlhaloso tse latelang li tla ba
+      le moelelo o t\u0161oanang ho sa tsotellehe hore na li hlaha ka bonngoe kapa
+      ka bongata."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28728805347328
+    m_Localized: Litlhaloso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28944136720384
+    m_Localized: 'Bakeng sa Melao le Lipehelo tsena:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43022611697664
+    m_Localized: Application
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43201700089856
+    m_Localized: Application e bolela lenaneo la software le fanoeng ke Khampani
+      e jarollotsoeng ke Uena sesebelisoa sefe kapa sefe sa elektroniki, se bitsoang
+      Filar.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43451110182912
+    m_Localized: Lebenkele la Application
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43698783834112
+    m_Localized: "Lebenkele la Application le bolela t\u0161ebeletso ea kabo ea dijithale
+      e tsamaisoang le ho ntlafatsoa ke Apple Inc. (Apple App Store) kapa Google
+      Inc. (Google Play Store) eo Kopo e kopilitsoeng ho eona."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

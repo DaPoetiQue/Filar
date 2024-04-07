@@ -7,8 +7,7 @@ using UnityEngine.UI;
 
 namespace Com.RedicalGames.Filar
 {
-    [RequireComponent(typeof(GridLayoutGroup))]
-    public class DynamicWidgetsContainer : AppData.DynamicContainer
+    public class DynamicWidgetsContainer: AppData.DynamicContainer
     {
         #region Components
 

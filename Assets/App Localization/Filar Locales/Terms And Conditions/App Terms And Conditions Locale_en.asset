@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: App Terms And Conditions Locale_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 7d6869d444a2fe14d815808046a89f61, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 51673616384
+    m_Localized: 'Last updated: August 04, 2023'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25173604225024
+    m_Localized: Please read these terms and conditions carefully before using Our
+      Service.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27014354227200
+    m_Localized: Interpretation and Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28161638977536
+    m_Localized: Interpretation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28515575320576
+    m_Localized: The words of which the initial letter is capitalized have meanings
+      defined under the following conditions. The following definitions shall have
+      the same meaning regardless of whether they appear in singular or in plural.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28728805347328
+    m_Localized: Definitions
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28944136720384
+    m_Localized: 'For the purposes of these Terms and Conditions:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43022611697664
+    m_Localized: Application
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43201700089856
+    m_Localized: Application means the software program provided by the Company downloaded
+      by You on any electronic device, named Filar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43451110182912
+    m_Localized: 'Application Store '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43698783834112
+    m_Localized: Application Store means the digital distribution service operated
+      and developed by Apple Inc. (Apple App Store) or Google Inc. (Google Play Store)
+      in which the Application has been downloaded.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

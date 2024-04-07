@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: App Terms And Conditions Locale_zh
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: zh
+  m_SharedData: {fileID: 11400000, guid: 7d6869d444a2fe14d815808046a89f61, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 51673616384
+    m_Localized: "\u6700\u540E\u66F4\u65B0\u65F6\u95F4\uFF1A2023 \u5E74 8 \u6708
+      4 \u65E5"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25173604225024
+    m_Localized: "\u5728\u4F7F\u7528\u6211\u4EEC\u7684\u670D\u52A1\u4E4B\u524D\uFF0C\u8BF7\u4ED4\u7EC6\u9605\u8BFB\u8FD9\u4E9B\u6761\u6B3E\u548C\u6761\u4EF6\u3002"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27014354227200
+    m_Localized: "\u89E3\u91CA\u548C\u5B9A\u4E49"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28161638977536
+    m_Localized: "\u89E3\u91CA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28515575320576
+    m_Localized: "\u9996\u5B57\u6BCD\u5927\u5199\u7684\u5355\u8BCD\u5177\u6709\u5728\u4EE5\u4E0B\u6761\u4EF6\u4E0B\u5B9A\u4E49\u7684\u542B\u4E49\u3002
+      \u4E0B\u5217\u5B9A\u4E49\u65E0\u8BBA\u4EE5\u5355\u6570\u8FD8\u662F\u590D\u6570\u5F62\u5F0F\u51FA\u73B0\uFF0C\u5747\u5177\u6709\u76F8\u540C\u7684\u542B\u4E49\u3002"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28728805347328
+    m_Localized: "\u5B9A\u4E49"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28944136720384
+    m_Localized: "\u5C31\u8FD9\u4E9B\u6761\u6B3E\u548C\u6761\u4EF6\u800C\u8A00\uFF1A"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43022611697664
+    m_Localized: "\u5E94\u7528"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43201700089856
+    m_Localized: "\u5E94\u7528\u7A0B\u5E8F\u662F\u6307\u60A8\u5728\u4EFB\u4F55\u7535\u5B50\u8BBE\u5907\u4E0A\u4E0B\u8F7D\u7684\u516C\u53F8\u63D0\u4F9B\u7684\u8F6F\u4EF6\u7A0B\u5E8F\uFF0C\u540D\u4E3A
+      Filar\u3002"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43451110182912
+    m_Localized: "\u5E94\u7528\u5546\u5E97"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43698783834112
+    m_Localized: "\u5E94\u7528\u7A0B\u5E8F\u5546\u5E97\u662F\u6307\u7531 Apple Inc.
+      (Apple App Store) \u6216 Google Inc. (Google Play Store) \u8FD0\u8425\u548C\u5F00\u53D1\u7684\u6570\u5B57\u5206\u53D1\u670D\u52A1\uFF0C\u53EF\u5728\u5176\u4E2D\u4E0B\u8F7D\u5E94\u7528\u7A0B\u5E8F\u3002"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

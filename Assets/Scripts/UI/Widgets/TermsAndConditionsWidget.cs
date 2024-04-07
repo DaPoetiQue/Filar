@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
+    [RequireComponent(typeof(ScrollableContentGeneratorHandler))]
     public class TermsAndConditionsWidget : AppData.Widget
     {
         #region Components
@@ -11,6 +12,8 @@ namespace Com.RedicalGames.Filar
 
         private AppData.ActionButtonListener confirmationButtonEvent = new AppData.ActionButtonListener();
         private AppData.ActionButtonListener cancelationButtonEvent = new AppData.ActionButtonListener();
+
+        private ScrollableContentGeneratorHandler scrollableContentGeneratorHandler;
 
         #endregion
 
@@ -34,27 +37,93 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, GetScreenTitleLocalizationKey().GetData(), titleSetCallbackResults =>
-                {
-                    callbackResults.SetResult(titleSetCallbackResults);
+                callbackResults.SetResult(GetScrollableContentGeneratorHandler());
 
-                    if (callbackResults.UnSuccessful())
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "On Tab View Shown Event Failed - App Database Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+                    if(callbackResults.Success())
+                    {
+                        var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                        callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                        if (callbackResults.Success())
+                        {
+                            var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                            callbackResults.SetResult(assetBundlesLibrary.GetDynamicUITextContentConfigDataPacket());
+
+                            if (callbackResults.Success())
+                            {
+                                GetScrollableContentGeneratorHandler().GetData().Init(this, assetBundlesLibrary.GetDynamicUITextContentConfigDataPacket().GetData(), initializedScrollableContentCallbackResults =>
+                                {
+                                    callbackResults.SetResult(initializedScrollableContentCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        #region Set Title Text
+
+                                        SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, GetScreenTitleLocalizationKey().GetData(), titleSetCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(titleSetCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+
+                                        #endregion
+
+                                        #region Set Button Title Text
+
+                                        SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.LocalizationKey.label_Accept, buttonTitleSetCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(buttonTitleSetCallbackResults);
+                                        });
+
+                                        #endregion
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                });
-
-                #region Set Button Title Text
-
-                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.LocalizationKey.label_Accept, buttonTitleSetCallbackResults =>
-                {
-                    callbackResults.SetResult(buttonTitleSetCallbackResults);
-                });
-
-                #endregion
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             callback?.Invoke(callbackResults);
+        }
+
+        private AppData.CallbackData<ScrollableContentGeneratorHandler> GetScrollableContentGeneratorHandler()
+        {
+            var callbackResults = new AppData.CallbackData<ScrollableContentGeneratorHandler>();
+
+            if (scrollableContentGeneratorHandler == null)
+                scrollableContentGeneratorHandler = GetComponent<ScrollableContentGeneratorHandler>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(scrollableContentGeneratorHandler, "Scrollable Content Generator Handler", "Get Scrollable Content Generator Handler Failed - Scrollable Content Generator Handler Value Is Not Found - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = "Get Scrollable Content Generator Handler Success - Scrollable Content Generator Handler Value Has Been Successfully Found.";
+                callbackResults.data = scrollableContentGeneratorHandler;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType, AppData.TabViewType, AppData.Widget>> OnGetState()

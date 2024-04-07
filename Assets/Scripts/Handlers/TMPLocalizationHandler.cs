@@ -87,6 +87,43 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
+        public void SetUITextComponentConfig(AppData.UITextComponentConfig uiTextComponentConfig, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(uiTextComponentConfig, "UI Text Component Config", $"Set UI Text Component Config Failed - UI Text Component Config Parameter Value For : {GetName()} Is Null - Invalid Operation"));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(uiTextComponentConfig.Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTextComponent());
+
+                    if(callbackResults.Success())
+                    {
+                        GetTextComponent().GetData().font = uiTextComponentConfig.GetFont().GetData();
+                        GetTextComponent().GetData().fontWeight = uiTextComponentConfig.GetFontWeight().GetData();
+                        GetTextComponent().GetData().fontStyle = uiTextComponentConfig.GetFontStyles().GetData();
+                        GetTextComponent().GetData().alignment = uiTextComponentConfig.GetTextAlignmentOptions().GetData();
+                        GetTextComponent().GetData().fontSizeMin = uiTextComponentConfig.GetFontSize().GetData().fontMinSize;
+                        GetTextComponent().GetData().fontSizeMax = uiTextComponentConfig.GetFontSize().GetData().fontMaxSize;
+                        GetTextComponent().GetData().lineSpacing = uiTextComponentConfig.GetTextLineInfo().GetData().lineSpacing;
+                        GetTextComponent().GetData().lineSpacingAdjustment = uiTextComponentConfig.GetTextLineInfo().GetData().lineSpacingAdjustment;
+                        GetTextComponent().GetData().maxVisibleLines = uiTextComponentConfig.GetTextLineInfo().GetData().maxVisibleLines;
+                        GetTextComponent().GetData().color = uiTextComponentConfig.GetTextColor().GetData();
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
         #endregion
 
         #region Unlocalized

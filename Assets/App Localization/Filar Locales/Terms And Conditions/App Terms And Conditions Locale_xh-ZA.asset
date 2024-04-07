@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: App Terms And Conditions Locale_xh-ZA
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: xh-ZA
+  m_SharedData: {fileID: 11400000, guid: 7d6869d444a2fe14d815808046a89f61, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 51673616384
+    m_Localized: 'Igqityelwe ukuhlaziya: Agasti 04, 2023'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25173604225024
+    m_Localized: Nceda ufunde le migaqo kunye neemeko ngononophelo ngaphambi kokusebenzisa
+      iNkonzo yethu.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27014354227200
+    m_Localized: Ukutolika Kunye neeNkcazo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28161638977536
+    m_Localized: Ukutolikwa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28515575320576
+    m_Localized: Amagama apho unobumba wokuqala abhalwe ngoonobumba abakhulu aneentsingiselo
+      ezichazwe phantsi kwezi meko zilandelayo. Ezi nkcazelo zilandelayo ziya kuba
+      nentsingiselo efanayo nokuba zivela kwisinye okanye kwisininzi.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28728805347328
+    m_Localized: Iingcaciso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28944136720384
+    m_Localized: 'Ngeenjongo zale Migaqo neMiqathango:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43022611697664
+    m_Localized: I-Application
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43201700089856
+    m_Localized: i-Application sithetha inkqubo yesoftware enikezelwe yiNkampani
+      ekhutshelwe nguwe kuso nasiphi na isixhobo sombane esibizwa ngokuba yiFilar.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43451110182912
+    m_Localized: Ivenkile yosetyenziso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43698783834112
+    m_Localized: UGcino lweSicelo luthetha inkonzo yokuhanjiswa kwedijithali eqhutywa
+      yaze yaphuhliswa yi-Apple Inc. (iApple App Store) okanye iGoogle Inc. (Google
+      Play Store) apho isicelo sikhutshelwe khona.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []
