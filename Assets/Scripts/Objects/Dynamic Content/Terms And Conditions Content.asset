@@ -497,3 +497,948 @@ MonoBehaviour:
       lineSpacingAdjustment: 1
       maxVisibleLines: 10
       textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Third-party Social Media Service Definitions  Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 49
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.44313726, g: 0.44313726, b: 0.44313726, a: 1}
+  - name: Third-party Social Media Service Definitions  Content
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 50
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: You Definitions  Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 51
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.44313726, g: 0.44313726, b: 0.44313726, a: 1}
+  - name: You Definitions  Content
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 52
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Acknowledgment  Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 53
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: Acknowledgment Defination Content Paragraph A
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 54
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Acknowledgment Defination Content Paragraph B
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 55
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Acknowledgment Defination Content Paragraph C
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 56
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Acknowledgment Defination Content Paragraph D
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 57
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Acknowledgment Defination Content Paragraph E
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 58
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Links to Other Websites Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 59
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: Links to Other Websites Defination Paragraph A
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 60
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Links to Other Websites Defination Paragraph B
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 61
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Links to Other Websites Defination Paragraph C
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 62
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Termination Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 63
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: Termination Defination Content Paragraph A
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 64
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Termination Defination Content Paragraph B
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 65
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Limitation of Liability Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 66
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: Limitation of Liability Defination Paragraph A
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 67
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Limitation of Liability Defination Paragraph B
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 68
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Limitation of Liability Defination Paragraph C
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 69
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: '"AS IS" and "AS AVAILABLE" Disclaimer Header'
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 70
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: '"AS IS" and "AS AVAILABLE" Disclaimer Defination Paragraph A'
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 71
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: '"AS IS" and "AS AVAILABLE" Disclaimer Defination Paragraph B'
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 72
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: '"AS IS" and "AS AVAILABLE" Disclaimer Defination Paragraph C'
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 73
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Governing Law Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 74
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: Governing Law Content
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 75
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Disputes Resolution Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 76
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: Disputes Resolution Header Content
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 77
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: United States Legal Compliance Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 78
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: United States Legal Compliance Content
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 79
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Severability and Waiver Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 80
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: Severability Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 81
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: Severability Content
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 82
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Waiver Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 83
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: Waiver Content
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 84
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Translation Interpretation Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 85
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: Translation Interpretation Content
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 86
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Changes to These Terms and Conditions Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 87
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: Changes to These Terms and Conditions Paragraph A
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 88
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Changes to These Terms and Conditions Paragraph B
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 89
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Contact Us Header
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 90
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.007843138, g: 0.43137255, b: 0.7176471, a: 1}
+  - name: Contact Us Content
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 91
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 600
+      fontStyles: 0
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+  - name: Contact Us - Email Info
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 92
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.8666667, g: 0.6392157, b: 0.050980393, a: 1}
+  - name: Contact Us - Phone Info
+    screenTextDisplayerType: 8
+    contentLocalizationKey: 93
+    referencedWidgetDependencyAsset:
+      name: UI Text Displayer
+      referenceType: 42
+      uIPlacementType: 0
+      containerType: 20
+      initialVisibilityState: 1
+      constriants: []
+    textComponent:
+      font: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+      fontWeight: 700
+      fontStyles: 1
+      fontMinSize: 10
+      fontMaxSize: 50
+      textAlignment: 514
+      lineSpacing: 1.15
+      lineSpacingAdjustment: 1
+      maxVisibleLines: 10
+      textColor: {r: 0.8666667, g: 0.6392157, b: 0.050980393, a: 1}

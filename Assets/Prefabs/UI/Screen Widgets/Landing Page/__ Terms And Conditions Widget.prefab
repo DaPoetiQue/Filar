@@ -3811,7 +3811,7 @@ GameObject:
   - component: {fileID: 1801848047327639648}
   - component: {fileID: 1801848047327639651}
   m_Layer: 5
-  m_Name: '"AS IS" and "AS AVAILABLE" Disclaimer Defination Content Paragraph A'
+  m_Name: '"AS IS" and "AS AVAILABLE" Disclaimer Defination Paragraph A'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4737,7 +4737,7 @@ GameObject:
   - component: {fileID: 1801848047514238057}
   - component: {fileID: 1801848047514238056}
   m_Layer: 5
-  m_Name: Limitation of Liability Defination Content Paragraph A
+  m_Name: Limitation of Liability Defination Paragraph A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4876,7 +4876,7 @@ GameObject:
   - component: {fileID: 1801848047523147875}
   - component: {fileID: 1801848047523147874}
   m_Layer: 5
-  m_Name: Changes to These Terms and Conditions Content Paragraph A
+  m_Name: Changes to These Terms and Conditions Paragraph A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18725,7 +18725,7 @@ GameObject:
   - component: {fileID: 1801848048812234372}
   - component: {fileID: 1801848048812234375}
   m_Layer: 5
-  m_Name: Links to Other Websites Defination ContentParagraph A
+  m_Name: Links to Other Websites Defination Paragraph A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
