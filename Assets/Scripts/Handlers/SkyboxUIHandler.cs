@@ -38,6 +38,13 @@ namespace Com.RedicalGames.Filar
             });
         }
 
+        protected override void Configure(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callback?.Invoke(callbackResults);
+        }
+
         public void SetDataOnInitialization(AppData.SkyboxSettings skyboxData)
         {
             this.skyboxData = skyboxData;

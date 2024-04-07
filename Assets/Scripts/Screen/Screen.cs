@@ -94,6 +94,13 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        protected override void Configure(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callback?.Invoke(callbackResults);
+        }
+
         #region Screens Initialization
 
         private void InitializeSplashScreen(Action<AppData.Callback> callback = null)

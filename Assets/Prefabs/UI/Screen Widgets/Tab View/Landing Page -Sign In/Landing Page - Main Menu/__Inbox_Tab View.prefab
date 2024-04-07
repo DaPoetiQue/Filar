@@ -1032,8 +1032,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     fieldActionInputs: []
-    placeHolderText: info@filar.io
-    placeholderTextDisplayer: {fileID: 8920805573863993771}
+    placeHolderTextKey: 0
+    placeholderTextDisplayer: {fileID: 0}
     characterLimit: 30
     valueType: 0
   inputSliderComponentConfig:
@@ -1605,6 +1605,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     actionType: 0
+    labelTextKey: 0
+    labelTextDisplayer: {fileID: 0}
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
@@ -3269,6 +3271,18 @@ PrefabInstance:
       propertyPath: m_text
       value: '[NONE]'
       objectReference: {fileID: 0}
+    - target: {fileID: 271385047960304153, guid: b435781244640404080816e5082b2ad4, type: 3}
+      propertyPath: m_fontSize
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 271385047960304153, guid: b435781244640404080816e5082b2ad4, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 56807dc564134494b9fc44a86e4cfd3f, type: 2}
+    - target: {fileID: 271385047960304153, guid: b435781244640404080816e5082b2ad4, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -2370664526074735393, guid: 56807dc564134494b9fc44a86e4cfd3f, type: 2}
     - target: {fileID: 6250178828843088701, guid: b435781244640404080816e5082b2ad4, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3369,6 +3383,23 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6255988844187023824, guid: b435781244640404080816e5082b2ad4, type: 3}
   m_PrefabInstance: {fileID: 6974742621659501179}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2934094688126109355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3898709630281870251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3b6b5bd674c44f40bf754765b633795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
 --- !u!114 &6421536260215820179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3409,23 +3440,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
---- !u!114 &2934094688126109355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3898709630281870251}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3b6b5bd674c44f40bf754765b633795, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  logAttributes:
-    enabledInfoLogs: 0
-    enabledExceptionLogs: 0
-    logCatInfo:
-      debugClassLogCat: 
 --- !u!114 &7970876784348069421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3823,7 +3837,7 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     fieldActionInputs: []
-    placeHolderText: 
+    placeHolderTextKey: 0
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
     valueType: 0
@@ -4396,6 +4410,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     actionType: 0
+    labelTextKey: 0
+    labelTextDisplayer: {fileID: 0}
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:

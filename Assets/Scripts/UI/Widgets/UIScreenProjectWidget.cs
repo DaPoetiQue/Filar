@@ -24,6 +24,13 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        protected override void Configure(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callback?.Invoke(callbackResults);
+        }
+
         protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType, AppData.WidgetType, AppData.Widget>> OnGetState()
         {
             return null;

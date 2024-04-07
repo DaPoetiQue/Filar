@@ -212,7 +212,7 @@ MonoBehaviour:
       m_FallbackState: 0
       m_WaitForCompletion: 0
       m_LocalVariables: []
-  - name: Read Terms & Conditions Button Locale Key
+  - name: Terms & Conditions Button Locale Key
     key: 25
     value:
       m_TableReference:

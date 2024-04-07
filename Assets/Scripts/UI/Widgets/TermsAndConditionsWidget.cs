@@ -28,6 +28,35 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        protected override void Configure(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(GetScreenTitleLocalizationKey());
+
+            if (callbackResults.Success())
+            {
+                SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, GetScreenTitleLocalizationKey().GetData(), titleSetCallbackResults =>
+                {
+                    callbackResults.SetResult(titleSetCallbackResults);
+
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+
+                #region Set Button Title Text
+
+                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.LocalizationKey.label_Accept, buttonTitleSetCallbackResults =>
+                {
+                    callbackResults.SetResult(buttonTitleSetCallbackResults);
+                });
+
+                #endregion
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
         protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType, AppData.TabViewType, AppData.Widget>> OnGetState()
         {
             var callbackResults = new AppData.CallbackData<AppData.WidgetStatePacket<AppData.WidgetType, AppData.TabViewType, AppData.Widget>>(AppData.Helpers.GetAppComponentValid(GetStatePacket(), $"{GetName()} - State Object", "Widget State Object Is Null / Not Yet Initialized In The Base Class."));
@@ -106,7 +135,7 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Decline Terms", buttonTitleSetCallbackResults =>
+                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.LocalizationKey.label_Decline, buttonTitleSetCallbackResults =>
                                 {
                                     callbackResults.SetResult(buttonTitleSetCallbackResults);
 
@@ -129,7 +158,7 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Accept Terms", buttonTitleSetCallbackResults =>
+                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.LocalizationKey.label_Accept, buttonTitleSetCallbackResults =>
                                 {
                                     callbackResults.SetResult(buttonTitleSetCallbackResults);
 
@@ -167,7 +196,7 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Decline Terms", buttonTitleSetCallbackResults =>
+                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.LocalizationKey.label_Decline, buttonTitleSetCallbackResults =>
                                 {
                                     callbackResults.SetResult(buttonTitleSetCallbackResults);
 
@@ -189,7 +218,7 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Accept Terms", buttonTitleSetCallbackResults =>
+                                SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.LocalizationKey.label_Accept, buttonTitleSetCallbackResults =>
                                 {
                                     callbackResults.SetResult(buttonTitleSetCallbackResults);
 
@@ -252,7 +281,7 @@ namespace Com.RedicalGames.Filar
 
                                 if(callbackResults.Success())
                                 {
-                                    SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Decline Terms", buttonTitleSetCallbackResults => 
+                                    SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.LocalizationKey.label_Decline, buttonTitleSetCallbackResults => 
                                     {
                                         callbackResults.SetResult(buttonTitleSetCallbackResults);
 
@@ -275,7 +304,7 @@ namespace Com.RedicalGames.Filar
                                 }
                                 else
                                 {
-                                    SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, "Accept Terms", buttonTitleSetCallbackResults => 
+                                    SetActionButtonTitle(AppData.InputActionButtonType.AcceptTermsAndConditionsButton, AppData.LocalizationKey.label_Accept, buttonTitleSetCallbackResults => 
                                     {
                                         callbackResults.SetResult(buttonTitleSetCallbackResults);
 
@@ -418,10 +447,6 @@ namespace Com.RedicalGames.Filar
                                 break;
 
                             case AppData.InputActionButtonType.CloseButton:
-
-
-
-
 
                                 callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName(), "App Database Manager Instance Is Not Yet Initialized."));
 

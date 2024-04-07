@@ -9,18 +9,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Unity Callbacks
-
-        void Start() => Initialization();
-
-        #endregion
-
         #region Main
-
-        void Initialization()
-        {
-          
-        }
 
         protected override void OnInitilize(Action<AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType, AppData.WidgetType, AppData.Widget>>> callback)
         {
@@ -35,6 +24,12 @@ namespace Com.RedicalGames.Filar
             callback.Invoke(callbackResults);
         }
 
+        protected override void Configure(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callback?.Invoke(callbackResults);
+        }
 
         protected override AppData.CallbackData<AppData.WidgetStatePacket<AppData.SelectableWidgetType, AppData.WidgetType, AppData.Widget>> OnGetState()
         {

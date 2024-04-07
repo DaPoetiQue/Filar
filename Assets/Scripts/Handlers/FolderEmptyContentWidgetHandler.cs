@@ -11,6 +11,13 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
+        protected override void Configure(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callback?.Invoke(callbackResults);
+        }
+
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)
         {
             throw new System.NotImplementedException();

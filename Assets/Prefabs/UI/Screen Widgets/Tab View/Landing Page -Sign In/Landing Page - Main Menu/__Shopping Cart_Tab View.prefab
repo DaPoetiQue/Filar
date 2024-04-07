@@ -446,8 +446,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 271385047960304153, guid: b435781244640404080816e5082b2ad4, type: 3}
       propertyPath: m_fontSize
-      value: 17.9
+      value: 15
       objectReference: {fileID: 0}
+    - target: {fileID: 271385047960304153, guid: b435781244640404080816e5082b2ad4, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 56807dc564134494b9fc44a86e4cfd3f, type: 2}
+    - target: {fileID: 271385047960304153, guid: b435781244640404080816e5082b2ad4, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -2370664526074735393, guid: 56807dc564134494b9fc44a86e4cfd3f, type: 2}
     - target: {fileID: 6250178828843088701, guid: b435781244640404080816e5082b2ad4, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -945,7 +953,7 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     fieldActionInputs: []
-    placeHolderText: 
+    placeHolderTextKey: 0
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
     valueType: 0
@@ -1518,6 +1526,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     actionType: 0
+    labelTextKey: 0
+    labelTextDisplayer: {fileID: 0}
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:

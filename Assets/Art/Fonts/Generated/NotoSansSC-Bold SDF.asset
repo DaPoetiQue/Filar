@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansSC-Bold SDF
   m_EditorClassIdentifier: 
-  hashCode: 0
+  hashCode: -1715382628
   material: {fileID: 8647444548989666112}
-  materialHashCode: 0
+  materialHashCode: -1751593028
   m_Version: 1.1.0
   m_SourceFontFileGUID: 7f49af7b1588b19419e83aa590465338
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 7f49af7b1588b19419e83aa590465338, type: 3}
@@ -2614,7 +2614,8 @@ MonoBehaviour:
   m_FontFeatureTable:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
-  m_FallbackFontAssetTable: []
+  m_FallbackFontAssetTable:
+  - {fileID: 11400000, guid: fc8ec7f6d3d2af245b5d1aa939511a0e, type: 2}
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: 7f49af7b1588b19419e83aa590465338

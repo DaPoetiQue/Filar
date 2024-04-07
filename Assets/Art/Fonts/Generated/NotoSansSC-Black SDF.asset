@@ -73,9 +73,9 @@ Material:
     - _OutlineWidth: 0
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
-    - _ScaleRatioA: 1
-    - _ScaleRatioB: 1
-    - _ScaleRatioC: 1
+    - _ScaleRatioA: 0.8333333
+    - _ScaleRatioB: 0.6770833
+    - _ScaleRatioC: 0.6770833
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -167,9 +167,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansSC-Black SDF
   m_EditorClassIdentifier: 
-  hashCode: 0
+  hashCode: -276792482
   material: {fileID: -8563216705735591525}
-  materialHashCode: 0
+  materialHashCode: -660462914
   m_Version: 1.1.0
   m_SourceFontFileGUID: cb82a732b0a6b2343ba5e8a04fad8d2c
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: cb82a732b0a6b2343ba5e8a04fad8d2c, type: 3}
@@ -2765,7 +2765,8 @@ MonoBehaviour:
   m_FontFeatureTable:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
-  m_FallbackFontAssetTable: []
+  m_FallbackFontAssetTable:
+  - {fileID: 11400000, guid: fc8ec7f6d3d2af245b5d1aa939511a0e, type: 2}
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: cb82a732b0a6b2343ba5e8a04fad8d2c

@@ -91,7 +91,7 @@ namespace Com.RedicalGames.Filar
                     callbackResults.SetResult(buttonTitleSetCallbackResults);
                 });
 
-                SetActionButtonTitle(AppData.InputActionButtonType.ReadButton, AppData.LocalizationKey.btn_ReadTermsAndConditions, buttonTitleSetCallbackResults =>
+                SetActionButtonTitle(AppData.InputActionButtonType.ReadButton, AppData.LocalizationKey.title_TermsAndConditions, buttonTitleSetCallbackResults =>
                 {
                     callbackResults.SetResult(buttonTitleSetCallbackResults);
                 });

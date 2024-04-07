@@ -1451,7 +1451,8 @@ namespace Com.RedicalGames.Filar
             field_RepeatPassword,
             label_Accept,
             label_RememberMe,
-            btn_ReadTermsAndConditions
+            title_TermsAndConditions,
+            label_Decline
         }
 
         #endregion
@@ -40082,6 +40083,8 @@ namespace Com.RedicalGames.Filar
 
             protected abstract void OnInitilize(Action<CallbackData<WidgetStatePacket<T, U, V>>> callback);
 
+            protected abstract void Configure(Action<Callback> callback = null);
+
             protected abstract void OnScreenWidgetShownEvent();
             protected abstract void OnScreenWidgetHiddenEvent();
             protected abstract void OnScreenWidgetTransitionInProgressEvent();
@@ -44265,12 +44268,19 @@ namespace Com.RedicalGames.Filar
                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult);
 
                                                     #endregion
+
+                                                    Configure();
                                                 }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             });
                                         }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     });
                                 }
-
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             });
                         }
                         else
@@ -48886,8 +48896,6 @@ namespace Com.RedicalGames.Filar
             }
 
             #region Abstract Functions
-
-            protected abstract void Configure(Action<Callback> callback = null);
 
             protected abstract void OnTabViewShown(Action<Callback> callback = null);
 

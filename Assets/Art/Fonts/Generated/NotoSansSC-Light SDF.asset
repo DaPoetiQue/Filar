@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: NotoSansSC-Light SDF
   m_EditorClassIdentifier: 
-  hashCode: 0
+  hashCode: 1791768967
   material: {fileID: 3551457219313734851}
-  materialHashCode: 0
+  materialHashCode: 1574871495
   m_Version: 1.1.0
   m_SourceFontFileGUID: 365cfb37c798d0a479d8297b8ff02ea2
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 365cfb37c798d0a479d8297b8ff02ea2, type: 3}
@@ -2638,7 +2638,8 @@ MonoBehaviour:
   m_FontFeatureTable:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
-  m_FallbackFontAssetTable: []
+  m_FallbackFontAssetTable:
+  - {fileID: 11400000, guid: fc8ec7f6d3d2af245b5d1aa939511a0e, type: 2}
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: 365cfb37c798d0a479d8297b8ff02ea2
