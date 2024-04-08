@@ -120,6 +120,287 @@ MonoBehaviour:
       Wemibandela Nemibandela.
     m_Metadata:
       m_Items: []
+  - m_Id: 82449031548928
+    m_Localized: Isevisi yezokuxhumana yomphakathi evela eceleni
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82491586957312
+    m_Localized: Isevisi yezokuxhumana yomphakathi yenkampani yangaphandle isho noma
+      yiziphi izinsiza noma okuqukethwe (okuhlanganisa idatha, ulwazi, imikhiqizo
+      noma amasevisi) okunikezwa umuntu wesithathu okungase kuboniswe, kufakwe noma
+      kwenziwe kutholakale Isevisi.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82586374033408
+    m_Localized: Wena
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82629244014592
+    m_Localized: Usho umuntu ofinyelela noma osebenzisa Isevisi, noma inkampani,
+      noma enye inhlangano esemthethweni lapho lowo muntu efinyelela noma esebenzisa
+      Isevisi, njengoba kufanele.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82837185024000
+    m_Localized: Ukuvuma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83335459950592
+    m_Localized: Lena Imigomo Nemibandela elawula ukusetshenziswa kwale Nsizakalo
+      kanye nesivumelwano esisebenza phakathi Kwakho Nenkampani. Le Migomo Nemibandela
+      ibeka amalungelo nezibopho zabo bonke abasebenzisi mayelana nokusetshenziswa
+      Kwesevisi.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83452556529664
+    m_Localized: Ukufinyelela kwakho nokusebenzisa Isevisi kuncike ekwamukeleni Kwakho
+      kanye nokuthobela Le Migomo Nemibandela. Le Migomo Nemibandela isebenza kuzo
+      zonke izivakashi, abasebenzisi nabanye abafinyelela noma abasebenzisa Isevisi.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83485255323648
+    m_Localized: Ngokufinyelela noma ukusebenzisa Isevisi Uyavuma ukuboshwa yile
+      Migomo Nemibandela. Uma ungavumelani nanoma iyiphi ingxenye yale Migomo Nemibandela
+      ungase ungakwazi ukufinyelela Isevisi.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83503794147328
+    m_Localized: Umele ukuthi uneminyaka engaphezu kuka-18. Inkampani ayibavumeli
+      abangaphansi kweminyaka engu-18 ukuthi basebenzise Isevisi.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83523813560320
+    m_Localized: Ukufinyelela kwakho nokusebenzisa Isevisi nakho kuncike ekwamukeleni
+      Kwakho kanye nokuhambisana Nenqubomgomo Yobumfihlo Yenkampani. Inqubomgomo
+      Yethu Yobumfihlo ichaza Izinqubomgomo Nezinqubo Zethu ekuqoqweni, ukusetshenziswa
+      nokudalulwa kolwazi Lwakho lomuntu siqu lapho Usebenzisa Isicelo noma Iwebhusayithi
+      futhi ikutshela ngamalungelo Akho obumfihlo nokuthi umthetho ukuvikela kanjani.
+      Sicela ufunde Inqubomgomo Yethu Yobumfihlo ngokucophelela ngaphambi kokusebenzisa
+      Isevisi Yethu.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83596345659392
+    m_Localized: Izixhumanisi Eziya Kwamanye Amawebhusayithi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83704034414592
+    m_Localized: Isevisi yethu ingase iqukathe izixhumanisi zamawebhusayithi ezinkampani
+      zangaphandle noma amasevisi okungewona abanikazi noma alawulwa yiNkampani.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83736829677568
+    m_Localized: Inkampani ayinakho ukulawula, futhi ayizibophezeli, ngokuqukethwe,
+      izinqubomgomo zobumfihlo, noma izinqubo zanoma yiziphi izingosi zewebhu zezinkampani
+      zangaphandle noma amasevisi. Uyavuma futhi futhi uyavuma ukuthi iNkampani ngeke
+      ibe nesibopho noma icala, ngokuqondile noma ngokungaqondile, ngomonakalo noma
+      ukulahlekelwa okudalwe noma okusolwa ukuthi kubangelwe noma mayelana nokusetshenziswa
+      noma ukuthembela kunoma yikuphi okuqukethwe, izimpahla noma amasevisi atholakalayo.
+      noma nganoma yimaphi amawebhusayithi anjalo noma amasevisi.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83755670491136
+    m_Localized: Sikweluleka ngokuqinile ukuthi ufunde imigomo nemibandela kanye
+      nezinqubomgomo zobumfihlo zanoma yimaphi amawebhusayithi ezinkampani zangaphandle
+      noma amasevisi owavakashelayo.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83948017078272
+    m_Localized: Ukunqanyulwa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84006988992512
+    m_Localized: Singase sikunqamule noma sikumise ukufinyelela Kwakho ngokushesha,
+      ngaphandle kwesaziso sangaphambili noma icala, nganoma yisiphi isizathu, kuhlanganise
+      ngaphandle komkhawulo uma Wephula le Migomo Nemibandela.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84035392819200
+    m_Localized: Ngemva kokunqanyulwa, ilungelo lakho lokusebenzisa Isevisi lizophela
+      ngokushesha.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84145598156800
+    m_Localized: Umkhawulo Wesibopho
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84189248278528
+    m_Localized: Ngaphandle kokumelana nanoma yimuphi umonakalo Ongase uwenze, sonke
+      isikweletu seNkampani kanye nanoma ibaphi abahlinzeki bayo ngaphansi kwanoma
+      yikuphi ukunikezwa kwale Migomo kanye nekhambi Lakho elikhethekile lakho konke
+      lokhu osekushiwo ngaphambili lizokhawulelwa enanini eliyikhokhelwe Nguwe ngempela
+      Ngesevisi noma 100. I-USD uma ungathenganga lutho ngesevisi.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84218151227392
+    m_Localized: Ngokwezinga eliphezulu elivunyelwe umthetho osebenzayo, iNkampani
+      noma abahlinzeki bayo ngeke babe nesibopho sanoma imuphi umonakalo okhethekile,
+      oyiphutha, ongaqondile, noma umphumela wanoma iluphi uhlobo (okuhlanganisa,
+      kodwa kungagcini nje, umonakalo wokulahlekelwa inzuzo, ukulahleka kwedatha
+      noma olunye ulwazi, lokuphazamiseka kwebhizinisi, ngokulimala komuntu siqu,
+      ukulahlekelwa ubumfihlo obuvela noma nganoma iyiphi indlela ehlobene nokusetshenziswa
+      noma ukungakwazi ukusebenzisa Isevisi, isofthiwe yenkampani yangaphandle kanye/noma
+      izingxenyekazi zekhompyutha zenkampani yangaphandle ezisetshenziswa Nesevisi,
+      noma ngaphandle kwalokho maqondana nanoma yikuphi ukunikezwa kwale Migomo),
+      ngisho noma iNkampani noma yimuphi umphakeli eye waziswa mayelana nokuba khona
+      kwalowo monakalo futhi ngisho noma ikhambi lihluleka inhloso yalo ebalulekile.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84244210438144
+    m_Localized: Ezinye izifundazwe azikuvumeli ukukhishwa kweziqinisekiso ezishiwo
+      noma umkhawulo wesibopho sezomthetho ngomonakalo wengozi noma wemiphumela,
+      okusho ukuthi eminye yemikhawulo engenhla ingase ingasebenzi. Kulezi zifundazwe,
+      isikweletu seqembu ngalinye sizokhawulelwa ngezinga elikhulu elivunyelwe umthetho.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84308689473536
+    m_Localized: '"NJENGOBA LINGAKHO" kanye "NJENGOBA UTHOLAKALA" Umshwana wokuzihlangula'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84381645197312
+    m_Localized: Isevisi inikezwa Wena "NJENGOBA IKHONA" kanye "NJENGOBA IYATHOLAKALA"
+      futhi nawo wonke amaphutha nokukhubazeka ngaphandle kwewaranti yanoma yiluphi
+      uhlobo. Ngokwezinga eliphezulu elivunyelwe ngaphansi komthetho osebenzayo,
+      iNkampani, egameni layo futhi egameni leNhlangano yayo kanye nabanikezeli bamalayisensi
+      abafanele nabahlinzeki besevisi, ngokusobala ichitha zonke iziqinisekiso, kungakhathaliseki
+      ukuthi zicacile, zishiwo, zingokomthetho noma ngenye indlela, maqondana Isevisi,
+      ehlanganisa zonke iziqinisekiso ezishiwo zokuthengiselana, ukufaneleka kwenjongo
+      ethile, isihloko nokungaphuli, kanye neziqinisekiso ezingase zivele ngokuhamba
+      kwesikhathi, inkambo yokusebenza, ukusetshenziswa noma umkhuba wokuhweba. Ngaphandle
+      komkhawulo kulokhu osekushiwo ngenhla, iNkampani ayihlinzeki ngewaranti noma
+      umsebenzi, futhi ayenzi ukumelwa kwanoma yiluphi uhlobo ukuthi Isevisi izohlangabezana
+      nezidingo Zakho, izuze noma yimiphi imiphumela ehlosiwe, ihambisane noma isebenze
+      nanoma iyiphi enye isofthiwe, izinhlelo zokusebenza, amasistimu noma izinsizakalo,
+      zisebenze. ngaphandle kokuphazamiseka, ukuhlangabezana nanoma yimaphi amazinga
+      okusebenza noma ukwethembeka noma ungabi namaphutha noma ukuthi noma yimaphi
+      amaphutha noma ukukhubazeka kungalungiswa noma kuzolungiswa.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84578211254272
+    m_Localized: 'Ngaphandle kokunciphisa lokhu osekushiwo ngaphambili, iNkampani
+      nanoma yimuphi umhlinzeki wenkampani akekho owenza noma yisiphi isethulo noma
+      iwaranti yanoma yiluphi uhlobo, ecacile noma eshiwoyo: (i) mayelana nokusebenza
+      noma ukutholakala Kwesevisi, noma ulwazi, okuqukethwe, kanye nezinto noma imikhiqizo.
+      kufakwe kuyo; (ii) ukuthi Isevisi ngeke iphazamiseke noma ingabi namaphutha;
+      (iii) ngokunemba, ukwethembeka, noma uhlobo lwemali lwanoma yiluphi ulwazi
+      noma okuqukethwe okuhlinzekwe Ngesevisi; noma (iv) ukuthi Isevisi, iziphakeli
+      zayo, okuqukethwe, noma ama-imeyili athunyelwe evela noma egameni leNkampani
+      awanawo amagciwane, imibhalo, amahhashi, izikelemu, uhlelo olungayilungele
+      ikhompuyutha, amabhomu esikhathi noma ezinye izingxenye eziyingozi.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84596364201984
+    m_Localized: Ezinye izindawo azikuvumeli ukukhishwa kwezinhlobo ezithile zeziqinisekiso
+      noma imikhawulo kumalungelo omthetho asebenzayo omthengi, ngakho okunye noma
+      konke ukukhishwa okungenhla kanye nemikhawulo ingase ingasebenzi Kuwe. Kodwa
+      esimweni esinjalo ukukhishwa kanye nemikhawulo eshiwo kulesi sigaba kuzosetshenziswa
+      ngezinga elikhulu kakhulu eliphoqelelayo ngaphansi komthetho osebenzayo.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84687351238656
+    m_Localized: Umthetho Obusayo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84728396697600
+    m_Localized: Imithetho Yezwe, ngaphandle kokungqubuzana kwemithetho yayo, izobusa
+      le Migomo kanye nokusebenzisa Kwakho Isevisi. Ukusebenzisa kwakho Uhlelo Lokusebenza
+      kungase futhi kube ngaphansi kweminye imithetho yendawo, yesifunda, kazwelonke,
+      noma yamazwe ngamazwe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84860143980544
+    m_Localized: Ukuxazululwa Kwezingxabano
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84912065269760
+    m_Localized: Uma unokuthile okukukhathazayo noma ingxabano mayelana Nesevisi,
+      Uyavuma ukuthi uqale uzame ukuxazulula ingxabano ngokusemthethweni ngokuthintana
+      neNkampani.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84973994168320
+    m_Localized: Ukuthobelana Kwezomthetho Kwase-United States
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85022312550400
+    m_Localized: Uyamela futhi uyaqinisekisa ukuthi (i) Awutholakali ezweni elingaphansi
+      kwesivumelwano sikahulumeni wase-United States, noma eliqokwe uhulumeni wase-United
+      States njengezwe "elisekela amaphekula", futhi (ii) Awukho. ezisohlwini lwanoma
+      yiluphi uhlu lukahulumeni wase-United States lwamaqembu anqatshelwe noma akhawulelwe.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85153434882048
+    m_Localized: I-Severability kanye ne-Waiver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85247118856192
+    m_Localized: Ukuhlukaniswa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85300097110016
+    m_Localized: Uma noma yikuphi ukunikezwa kwale Migomo kubhekwa njengokungaphoqeleleki
+      noma okungavumelekile, lokho kunikezwa kuzoshintshwa futhi kuhunyushwe ukuze
+      kufezwe izinjongo zalelo lungiselelo ngezinga elikhulu kakhulu elingenzeka
+      ngaphansi komthetho osebenzayo futhi izinhlinzeko ezisele zizoqhubeka nokusebenza
+      ngokugcwele.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85441277382656
+    m_Localized: Ukuyekelela
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85477595860992
+    m_Localized: Ngaphandle njengoba kuhlinzekwe lapha, ukwehluleka ukusebenzisa
+      ilungelo noma ukudinga ukusebenza kwesibopho ngaphansi kwale Migomo ngeke kusebenze
+      ikhono leqembu lokusebenzisa lelo lungelo noma kudinge lokho kusebenza nganoma
+      isiphi isikhathi ngemva kwalokho futhi ukuhoxiswa kokwephulwa ngeke kuhlanganise
+      ukuhoxiswa noma yikuphi ukwephulwa okulandelayo.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85554687168512
+    m_Localized: Ukuhumusha Ukuhumusha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85601160056832
+    m_Localized: Le Migomo Nemibandela kungenzeka ihunyushiwe uma Siyenze yatholakala
+      Kuwe Ensizakalweni yethu. Uyavuma ukuthi umbhalo wokuqala wesiNgisi yiwona
+      ozosebenza esimweni sengxabano.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85824796151808
+    m_Localized: Izinguquko Zale Migomo Nemibandela
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85891573665792
+    m_Localized: Sigodla ilungelo, ngokubona Kwethu kuphela, ukushintsha noma ukufaka
+      esikhundleni sale Migomo nganoma yisiphi isikhathi. Uma isibuyekezo sibalulekile
+      Sizokwenza imizamo ephusile yokuhlinzeka okungenani ngesaziso sezinsuku ezingama-30
+      ngaphambi kokuba noma yimiphi imigomo emisha iqale ukusebenza. Okuhlanganisa
+      ushintsho olubonakalayo kuzonqunywa ngokubona Kwethu kuphela.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85924947742720
+    m_Localized: Ngokuqhubeka nokufinyelela noma ukusebenzisa Isevisi Yethu ngemva
+      kokuba lezo zibuyekezo zisebenze, uyavuma ukuboshelwa imigomo ebuyekeziwe.
+      Uma ungavumelani nemigomo emisha, yonke noma ingxenye, sicela uyeke ukusebenzisa
+      iwebhusayithi kanye nesevisi.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85983252762624
+    m_Localized: Xhumana nathi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86020338798592
+    m_Localized: 'Uma unemibuzo mayelana nale Migomo Nemibandela, Ungaxhumana nathi:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86119164989440
+    m_Localized: 'Nge-imeyili: afreemedian@gmail.com'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86213801070592
+    m_Localized: 'Ngenombolo yocingo: (+27) 79-723-5948'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

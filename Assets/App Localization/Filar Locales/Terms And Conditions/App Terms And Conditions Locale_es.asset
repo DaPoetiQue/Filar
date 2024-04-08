@@ -124,6 +124,294 @@ MonoBehaviour:
       y condiciones."
     m_Metadata:
       m_Items: []
+  - m_Id: 82449031548928
+    m_Localized: Servicio de redes sociales de terceros
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82491586957312
+    m_Localized: "Servicio de redes sociales de terceros significa cualquier servicio
+      o contenido (incluidos datos, informaci\xF3n, productos o servicios) proporcionado
+      por un tercero que puede mostrarse, incluirse o ponerse a disposici\xF3n mediante
+      el Servicio."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82586374033408
+    m_Localized: "T\xFA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82629244014592
+    m_Localized: "Usted se refiere a la persona que accede o utiliza el Servicio,
+      o la empresa u otra entidad legal en nombre de la cual dicha persona accede
+      o utiliza el Servicio, seg\xFAn corresponda."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82837185024000
+    m_Localized: Reconocimiento
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83335459950592
+    m_Localized: "Estos son los T\xE9rminos y condiciones que rigen el uso de este
+      Servicio y el acuerdo que opera entre Usted y la Compa\xF1\xEDa. Estos T\xE9rminos
+      y condiciones establecen los derechos y obligaciones de todos los usuarios
+      con respecto al uso del Servicio."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83452556529664
+    m_Localized: "Su acceso y uso del Servicio est\xE1 condicionado a su aceptaci\xF3n
+      y cumplimiento de estos T\xE9rminos y condiciones. Estos T\xE9rminos y condiciones
+      se aplican a todos los visitantes, usuarios y otras personas que acceden o
+      utilizan el Servicio."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83485255323648
+    m_Localized: "Al acceder o utilizar el Servicio, usted acepta estar sujeto a
+      estos T\xE9rminos y condiciones. Si no est\xE1 de acuerdo con alguna parte
+      de estos T\xE9rminos y condiciones, no podr\xE1 acceder al Servicio."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83503794147328
+    m_Localized: "Usted declara que es mayor de 18 a\xF1os. La Compa\xF1\xEDa no
+      permite que menores de 18 a\xF1os utilicen el Servicio."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83523813560320
+    m_Localized: "Su acceso y uso del Servicio tambi\xE9n est\xE1 condicionado a
+      su aceptaci\xF3n y cumplimiento de la Pol\xEDtica de Privacidad de la Compa\xF1\xEDa.
+      Nuestra Pol\xEDtica de privacidad describe Nuestras pol\xEDticas y procedimientos
+      sobre la recopilaci\xF3n, el uso y la divulgaci\xF3n de Su informaci\xF3n personal
+      cuando utiliza la Aplicaci\xF3n o el Sitio web y le informa sobre Sus derechos
+      de privacidad y c\xF3mo la ley lo protege. Lea atentamente nuestra Pol\xEDtica
+      de privacidad antes de utilizar nuestro servicio."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83596345659392
+    m_Localized: Enlaces a otros sitios web
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83704034414592
+    m_Localized: "Nuestro Servicio puede contener enlaces a sitios web o servicios
+      de terceros que no son propiedad de la Compa\xF1\xEDa ni est\xE1n controlados
+      por ella."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83736829677568
+    m_Localized: "La Compa\xF1\xEDa no tiene control ni asume ninguna responsabilidad
+      por el contenido, las pol\xEDticas de privacidad o las pr\xE1cticas de los
+      sitios web o servicios de terceros. Adem\xE1s, reconoce y acepta que la Compa\xF1\xEDa
+      no ser\xE1 responsable, directa o indirectamente, de ning\xFAn da\xF1o o p\xE9rdida
+      causada o presuntamente causada por o en conexi\xF3n con el uso o la confianza
+      en dicho contenido, bienes o servicios disponibles en o a trav\xE9s de dichos
+      sitios web o servicios."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83755670491136
+    m_Localized: "Le recomendamos encarecidamente que lea los t\xE9rminos y condiciones
+      y las pol\xEDticas de privacidad de los sitios web o servicios de terceros
+      que visite."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83948017078272
+    m_Localized: "Terminaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84006988992512
+    m_Localized: "Podemos cancelar o suspender Su acceso inmediatamente, sin previo
+      aviso ni responsabilidad, por cualquier motivo, incluido, entre otros, si incumple
+      estos T\xE9rminos y condiciones."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84035392819200
+    m_Localized: "Tras la rescisi\xF3n, su derecho a utilizar el Servicio cesar\xE1
+      inmediatamente."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84145598156800
+    m_Localized: "Limitaci\xF3n de responsabilidad"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84189248278528
+    m_Localized: "Sin perjuicio de los da\xF1os en los que pueda incurrir, la responsabilidad
+      total de la Compa\xF1\xEDa y cualquiera de sus proveedores seg\xFAn cualquier
+      disposici\xF3n de estos T\xE9rminos y su recurso exclusivo por todo lo anterior
+      se limitar\xE1 al monto realmente pagado por usted a trav\xE9s del Servicio
+      o 100 USD si no has comprado nada a trav\xE9s del Servicio."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84218151227392
+    m_Localized: "En la m\xE1xima medida permitida por la ley aplicable, en ning\xFAn
+      caso la Compa\xF1\xEDa o sus proveedores ser\xE1n responsables de ning\xFAn
+      da\xF1o especial, incidental, indirecto o consecuente de ning\xFAn tipo (incluidos,
+      entre otros, da\xF1os por p\xE9rdida de ganancias, p\xE9rdida de datos o otra
+      informaci\xF3n, por interrupci\xF3n del negocio, por lesiones personales, p\xE9rdida
+      de privacidad que surja de o est\xE9 relacionada de alguna manera con el uso
+      o la imposibilidad de usar el Servicio, el software de terceros y/o el hardware
+      de terceros utilizado con el Servicio, o de otro modo en relaci\xF3n con cualquier
+      disposici\xF3n de estos T\xE9rminos), incluso si la Compa\xF1\xEDa o cualquier
+      proveedor han sido advertidos de la posibilidad de tales da\xF1os e incluso
+      si el remedio no cumple con su prop\xF3sito esencial."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84244210438144
+    m_Localized: "Algunos estados no permiten la exclusi\xF3n de garant\xEDas impl\xEDcitas
+      o la limitaci\xF3n de responsabilidad por da\xF1os incidentales o consecuentes,
+      lo que significa que algunas de las limitaciones anteriores pueden no aplicarse.
+      En estos estados, la responsabilidad de cada parte se limitar\xE1 en la mayor
+      medida permitida por la ley."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84308689473536
+    m_Localized: "Descargo de responsabilidad \"TAL CUAL\" y \"SEG\xDAN DISPONIBILIDAD\""
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84381645197312
+    m_Localized: "El Servicio se le proporciona \"TAL CUAL\" y \"SEG\xDAN DISPONIBILIDAD\"
+      y con todas las fallas y defectos sin garant\xEDa de ning\xFAn tipo. En la
+      medida m\xE1xima permitida por la ley aplicable, la Compa\xF1\xEDa, en su propio
+      nombre y en nombre de sus Afiliados y sus respectivos licenciantes y proveedores
+      de servicios, renuncia expresamente a todas las garant\xEDas, ya sean expresas,
+      impl\xEDcitas, legales o de otro tipo, con respecto a la Servicio, incluidas
+      todas las garant\xEDas impl\xEDcitas de comerciabilidad, idoneidad para un
+      prop\xF3sito particular, t\xEDtulo y no infracci\xF3n, y garant\xEDas que puedan
+      surgir del curso del trato, curso del desempe\xF1o, uso o pr\xE1ctica comercial.
+      Sin limitaci\xF3n a lo anterior, la Compa\xF1\xEDa no ofrece garant\xEDa ni
+      compromiso, y no hace ninguna declaraci\xF3n de ning\xFAn tipo de que el Servicio
+      cumplir\xE1 con Sus requisitos, lograr\xE1 los resultados previstos, ser\xE1
+      compatible o funcionar\xE1 con cualquier otro software, aplicaci\xF3n, sistema
+      o servicio, operar\xE1 sin interrupci\xF3n, cumplir con cualquier est\xE1ndar
+      de rendimiento o confiabilidad o estar libre de errores o que cualquier error
+      o defecto pueda o ser\xE1 corregido."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84578211254272
+    m_Localized: "Sin limitar lo anterior, ni la Compa\xF1\xEDa ni ninguno de los
+      proveedores de la compa\xF1\xEDa hacen ninguna representaci\xF3n o garant\xEDa
+      de ning\xFAn tipo, expresa o impl\xEDcita: (i) en cuanto al funcionamiento
+      o disponibilidad del Servicio, o la informaci\xF3n, el contenido y los materiales
+      o productos. incluido en el mismo; (ii) que el Servicio ser\xE1 ininterrumpido
+      o estar\xE1 libre de errores; (iii) en cuanto a la exactitud, confiabilidad
+      o actualidad de cualquier informaci\xF3n o contenido proporcionado a trav\xE9s
+      del Servicio; o (iv) que el Servicio, sus servidores, el contenido o los correos
+      electr\xF3nicos enviados desde o en nombre de la Compa\xF1\xEDa est\xE1n libres
+      de virus, scripts, troyanos, gusanos, malware, bombas de tiempo u otros componentes
+      da\xF1inos."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84596364201984
+    m_Localized: "Algunas jurisdicciones no permiten la exclusi\xF3n de ciertos tipos
+      de garant\xEDas o limitaciones de los derechos legales aplicables de un consumidor,
+      por lo que es posible que algunas o todas las exclusiones y limitaciones anteriores
+      no se apliquen a usted. Pero en tal caso, las exclusiones y limitaciones establecidas
+      en esta secci\xF3n se aplicar\xE1n en la mayor medida exigible seg\xFAn la
+      ley aplicable."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84687351238656
+    m_Localized: Ley que rige
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84728396697600
+    m_Localized: "Las leyes del Pa\xEDs, excluyendo sus conflictos de normas legales,
+      regir\xE1n estos T\xE9rminos y Su uso del Servicio. Su uso de la Aplicaci\xF3n
+      tambi\xE9n puede estar sujeto a otras leyes locales, estatales, nacionales
+      o internacionales."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84860143980544
+    m_Localized: "Resoluci\xF3n de disputas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84912065269760
+    m_Localized: "Si tiene alguna inquietud o disputa sobre el Servicio, acepta intentar
+      primero resolver la disputa de manera informal comunic\xE1ndose con la Compa\xF1\xEDa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84973994168320
+    m_Localized: Cumplimiento legal de Estados Unidos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85022312550400
+    m_Localized: "Usted declara y garantiza que (i) no se encuentra en un pa\xEDs
+      que est\xE9 sujeto al embargo del gobierno de los Estados Unidos, o que haya
+      sido designado por el gobierno de los Estados Unidos como un pa\xEDs que \"apoya
+      al terrorismo\", y (ii) no est\xE1 incluido en cualquier lista del gobierno
+      de los Estados Unidos de partes prohibidas o restringidas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85153434882048
+    m_Localized: Divisibilidad y renuncia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85247118856192
+    m_Localized: Divisibilidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85300097110016
+    m_Localized: "Si alguna disposici\xF3n de estos T\xE9rminos se considera inaplicable
+      o inv\xE1lida, dicha disposici\xF3n se modificar\xE1 e interpretar\xE1 para
+      lograr los objetivos de dicha disposici\xF3n en la mayor medida posible seg\xFAn
+      la ley aplicable y las disposiciones restantes continuar\xE1n en pleno vigor
+      y efecto."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85441277382656
+    m_Localized: "Exenci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85477595860992
+    m_Localized: "Salvo lo dispuesto en el presente documento, la falta de ejercicio
+      de un derecho o de exigir el cumplimiento de una obligaci\xF3n en virtud de
+      estos T\xE9rminos no afectar\xE1 la capacidad de una parte para ejercer dicho
+      derecho o exigir dicho cumplimiento en cualquier momento posterior ni la renuncia
+      a un incumplimiento constituir\xE1 una renuncia a cualquier incumplimiento
+      posterior."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85554687168512
+    m_Localized: "Traducci\xF3n Interpretaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85601160056832
+    m_Localized: "Es posible que estos T\xE9rminos y condiciones se hayan traducido
+      si los hemos puesto a su disposici\xF3n en nuestro Servicio. Usted acepta que
+      el texto original en ingl\xE9s prevalecer\xE1 en caso de disputa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85824796151808
+    m_Localized: "Cambios a estos t\xE9rminos y condiciones"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85891573665792
+    m_Localized: "Nos reservamos el derecho, a nuestra entera discreci\xF3n, de modificar
+      o reemplazar estos T\xE9rminos en cualquier momento. Si una revisi\xF3n es
+      importante, haremos esfuerzos razonables para avisar con al menos 30 d\xEDas
+      de antelaci\xF3n antes de que los nuevos t\xE9rminos entren en vigor. Lo que
+      constituye un cambio material se determinar\xE1 a Nuestro exclusivo criterio."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85924947742720
+    m_Localized: "Al continuar accediendo o utilizando Nuestro Servicio despu\xE9s
+      de que esas revisiones entren en vigencia, usted acepta estar sujeto a los
+      t\xE9rminos revisados. Si no acepta los nuevos t\xE9rminos, total o parcialmente,
+      deje de utilizar el sitio web y el Servicio."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85983252762624
+    m_Localized: Contacta con nosotras
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86020338798592
+    m_Localized: "Si tiene alguna pregunta sobre estos T\xE9rminos y condiciones,
+      puede contactarnos:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86119164989440
+    m_Localized: "Por correo electr\xF3nico: afreemedian@gmail.com"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86213801070592
+    m_Localized: "Por n\xFAmero de tel\xE9fono: (+27) 79-723-5948"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

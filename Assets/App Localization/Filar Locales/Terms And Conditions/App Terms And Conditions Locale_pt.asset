@@ -121,6 +121,294 @@ MonoBehaviour:
       Condi\xE7\xF5es foi criado com a ajuda do Gerador de Termos e Condi\xE7\xF5es."
     m_Metadata:
       m_Items: []
+  - m_Id: 82449031548928
+    m_Localized: "Servi\xE7o de m\xEDdia social de terceiros"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82491586957312
+    m_Localized: "Servi\xE7o de M\xEDdia Social de Terceiros significa quaisquer
+      servi\xE7os ou conte\xFAdos (incluindo dados, informa\xE7\xF5es, produtos ou
+      servi\xE7os) fornecidos por terceiros que possam ser exibidos, inclu\xEDdos
+      ou disponibilizados pelo Servi\xE7o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82586374033408
+    m_Localized: "Voc\xEA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82629244014592
+    m_Localized: "Voc\xEA significa o indiv\xEDduo que acessa ou usa o Servi\xE7o,
+      ou a empresa ou outra entidade legal em nome da qual tal indiv\xEDduo est\xE1
+      acessando ou usando o Servi\xE7o, conforme aplic\xE1vel."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82837185024000
+    m_Localized: Reconhecimento
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83335459950592
+    m_Localized: "Estes s\xE3o os Termos e Condi\xE7\xF5es que regem o uso deste
+      Servi\xE7o e o acordo que funciona entre Voc\xEA e a Empresa. Estes Termos
+      e Condi\xE7\xF5es estabelecem os direitos e obriga\xE7\xF5es de todos os utilizadores
+      relativamente \xE0 utiliza\xE7\xE3o do Servi\xE7o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83452556529664
+    m_Localized: "Seu acesso e uso do Servi\xE7o est\xE3o condicionados \xE0 sua
+      aceita\xE7\xE3o e cumprimento destes Termos e Condi\xE7\xF5es. Estes Termos
+      e Condi\xE7\xF5es aplicam-se a todos os visitantes, usu\xE1rios e outras pessoas
+      que acessam ou utilizam o Servi\xE7o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83485255323648
+    m_Localized: "Ao acessar ou usar o Servi\xE7o, voc\xEA concorda em ficar vinculado
+      a estes Termos e Condi\xE7\xF5es. Se voc\xEA discordar de qualquer parte destes
+      Termos e Condi\xE7\xF5es, voc\xEA n\xE3o poder\xE1 acessar o Servi\xE7o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83503794147328
+    m_Localized: "Voc\xEA declara ter mais de 18 anos. A Empresa n\xE3o permite que
+      menores de 18 anos usem o Servi\xE7o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83523813560320
+    m_Localized: "Seu acesso e uso do Servi\xE7o tamb\xE9m est\xE3o condicionados
+      \xE0 sua aceita\xE7\xE3o e conformidade com a Pol\xEDtica de Privacidade da
+      Empresa. Nossa Pol\xEDtica de Privacidade descreve Nossas pol\xEDticas e procedimentos
+      sobre a coleta, uso e divulga\xE7\xE3o de Suas informa\xE7\xF5es pessoais quando
+      Voc\xEA usa o Aplicativo ou o Site e informa sobre Seus direitos de privacidade
+      e como a lei protege Voc\xEA. Por favor, leia nossa Pol\xEDtica de Privacidade
+      com aten\xE7\xE3o antes de usar nosso servi\xE7o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83596345659392
+    m_Localized: Links para outros sites
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83704034414592
+    m_Localized: "Nosso Servi\xE7o pode conter links para sites ou servi\xE7os de
+      terceiros que n\xE3o pertencem ou s\xE3o controlados pela Empresa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83736829677568
+    m_Localized: "A Empresa n\xE3o tem controle e n\xE3o assume nenhuma responsabilidade
+      pelo conte\xFAdo, pol\xEDticas de privacidade ou pr\xE1ticas de quaisquer sites
+      ou servi\xE7os de terceiros. Voc\xEA tamb\xE9m reconhece e concorda que a Empresa
+      n\xE3o ser\xE1 respons\xE1vel, direta ou indiretamente, por qualquer dano ou
+      perda causada ou supostamente causada por ou em conex\xE3o com o uso ou confian\xE7a
+      em qualquer conte\xFAdo, bens ou servi\xE7os dispon\xEDveis em ou atrav\xE9s
+      de quaisquer desses sites ou servi\xE7os."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83755670491136
+    m_Localized: "Recomendamos fortemente que voc\xEA leia os termos e condi\xE7\xF5es
+      e as pol\xEDticas de privacidade de quaisquer sites ou servi\xE7os de terceiros
+      que voc\xEA visitar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83948017078272
+    m_Localized: "Termina\xE7\xE3o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84006988992512
+    m_Localized: "Poderemos rescindir ou suspender Seu acesso imediatamente, sem
+      aviso pr\xE9vio ou responsabilidade, por qualquer motivo, incluindo, sem limita\xE7\xE3o,
+      se Voc\xEA violar estes Termos e Condi\xE7\xF5es."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84035392819200
+    m_Localized: "Ap\xF3s a rescis\xE3o, o seu direito de usar o Servi\xE7o cessar\xE1
+      imediatamente."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84145598156800
+    m_Localized: "Limita\xE7\xE3o de responsabilidade"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84189248278528
+    m_Localized: "N\xE3o obstante quaisquer danos que Voc\xEA possa incorrer, toda
+      a responsabilidade da Empresa e de qualquer um de seus fornecedores sob qualquer
+      disposi\xE7\xE3o destes Termos e Seu recurso exclusivo para todos os itens
+      acima ser\xE1 limitada ao valor efetivamente pago por Voc\xEA atrav\xE9s do
+      Servi\xE7o ou 100 USD se voc\xEA n\xE3o tiver comprado nada por meio do Servi\xE7o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84218151227392
+    m_Localized: "Na extens\xE3o m\xE1xima permitida pela lei aplic\xE1vel, em nenhum
+      caso a Empresa ou seus fornecedores ser\xE3o respons\xE1veis por quaisquer
+      danos especiais, incidentais, indiretos ou consequenciais de qualquer natureza
+      (incluindo, mas n\xE3o limitado a, danos por lucros cessantes, perda de dados
+      ou outras informa\xE7\xF5es, por interrup\xE7\xE3o de neg\xF3cios, por danos
+      pessoais, perda de privacidade decorrente ou de alguma forma relacionada ao
+      uso ou incapacidade de usar o Servi\xE7o, software de terceiros e/ou hardware
+      de terceiros usado com o Servi\xE7o, ou caso contr\xE1rio, em conex\xE3o com
+      qualquer disposi\xE7\xE3o destes Termos), mesmo que a Empresa ou qualquer fornecedor
+      tenha sido avisado da possibilidade de tais danos e mesmo que a solu\xE7\xE3o
+      falhe em seu prop\xF3sito essencial."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84244210438144
+    m_Localized: "Alguns estados n\xE3o permitem a exclus\xE3o de garantias impl\xEDcitas
+      ou limita\xE7\xE3o de responsabilidade por danos incidentais ou consequenciais,
+      o que significa que algumas das limita\xE7\xF5es acima podem n\xE3o se aplicar.
+      Nestes estados, a responsabilidade de cada parte ser\xE1 limitada ao m\xE1ximo
+      permitido por lei."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84308689473536
+    m_Localized: "Isen\xE7\xE3o de responsabilidade \"COMO EST\xC1\" e \"CONFORME
+      DISPON\xCDVEL\""
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84381645197312
+    m_Localized: "O Servi\xE7o \xE9 fornecido a Voc\xEA \"COMO EST\xC1\" e \"CONFORME
+      DISPON\xCDVEL\" e com todas as falhas e defeitos, sem garantia de qualquer
+      tipo. Na extens\xE3o m\xE1xima permitida pela lei aplic\xE1vel, a Empresa,
+      em seu pr\xF3prio nome e em nome de suas Afiliadas e seus respectivos licenciantes
+      e prestadores de servi\xE7os, isenta-se expressamente de todas as garantias,
+      sejam expressas, impl\xEDcitas, estatut\xE1rias ou de outra forma, com rela\xE7\xE3o
+      ao Servi\xE7o, incluindo todas as garantias impl\xEDcitas de comercializa\xE7\xE3o,
+      adequa\xE7\xE3o a uma finalidade espec\xEDfica, t\xEDtulo e n\xE3o viola\xE7\xE3o,
+      e garantias que possam surgir do curso de negocia\xE7\xE3o, curso de desempenho,
+      uso ou pr\xE1tica comercial. Sem limita\xE7\xE3o ao acima exposto, a Empresa
+      n\xE3o oferece nenhuma garantia ou compromisso, e n\xE3o faz nenhuma representa\xE7\xE3o
+      de qualquer tipo de que o Servi\xE7o atender\xE1 \xE0s Suas necessidades, alcan\xE7ar\xE1
+      quaisquer resultados pretendidos, ser\xE1 compat\xEDvel ou funcionar\xE1 com
+      qualquer outro software, aplicativos, sistemas ou servi\xE7os, operar\xE1 sem
+      interrup\xE7\xE3o, atender a quaisquer padr\xF5es de desempenho ou confiabilidade
+      ou estar livre de erros ou que quaisquer erros ou defeitos podem ou ser\xE3o
+      corrigidos."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84578211254272
+    m_Localized: "Sem limitar o acima exposto, nem a Empresa nem qualquer fornecedor
+      da empresa fazem qualquer representa\xE7\xE3o ou garantia de qualquer tipo,
+      expressa ou impl\xEDcita: (i) quanto \xE0 opera\xE7\xE3o ou disponibilidade
+      do Servi\xE7o, ou \xE0s informa\xE7\xF5es, conte\xFAdo e materiais ou produtos
+      inclu\xEDdo nele; (ii) que o Servi\xE7o ser\xE1 ininterrupto ou livre de erros;
+      (iii) quanto \xE0 precis\xE3o, confiabilidade ou atualidade de qualquer informa\xE7\xE3o
+      ou conte\xFAdo fornecido atrav\xE9s do Servi\xE7o; ou (iv) que o Servi\xE7o,
+      seus servidores, o conte\xFAdo ou e-mails enviados de ou em nome da Empresa
+      est\xE3o livres de v\xEDrus, scripts, cavalos de troia, worms, malware, bombas-rel\xF3gio
+      ou outros componentes prejudiciais."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84596364201984
+    m_Localized: "Algumas jurisdi\xE7\xF5es n\xE3o permitem a exclus\xE3o de certos
+      tipos de garantias ou limita\xE7\xF5es aos direitos legais aplic\xE1veis de
+      um consumidor, portanto, algumas ou todas as exclus\xF5es e limita\xE7\xF5es
+      acima podem n\xE3o se aplicar a Voc\xEA. Mas, nesse caso, as exclus\xF5es e
+      limita\xE7\xF5es estabelecidas nesta se\xE7\xE3o ser\xE3o aplicadas na maior
+      extens\xE3o poss\xEDvel sob a lei aplic\xE1vel."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84687351238656
+    m_Localized: "Lei Aplic\xE1vel"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84728396697600
+    m_Localized: "As leis do Pa\xEDs, excluindo suas regras de conflitos de leis,
+      reger\xE3o estes Termos e Seu uso do Servi\xE7o. O uso do Aplicativo tamb\xE9m
+      pode estar sujeito a outras leis locais, estaduais, nacionais ou internacionais."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84860143980544
+    m_Localized: "Resolu\xE7\xE3o de disputas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84912065269760
+    m_Localized: "Se voc\xEA tiver alguma preocupa\xE7\xE3o ou disputa sobre o Servi\xE7o,
+      concorda em primeiro tentar resolver a disputa informalmente entrando em contato
+      com a Empresa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84973994168320
+    m_Localized: Conformidade Legal dos Estados Unidos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85022312550400
+    m_Localized: "Voc\xEA declara e garante que (i) n\xE3o est\xE1 localizado em
+      um pa\xEDs sujeito ao embargo do governo dos Estados Unidos ou que tenha sido
+      designado pelo governo dos Estados Unidos como um pa\xEDs de \"apoio ao terrorismo\"
+      e (ii) voc\xEA n\xE3o est\xE1 listado em qualquer lista do governo dos Estados
+      Unidos de partes proibidas ou restritas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85153434882048
+    m_Localized: "Divisibilidade e Ren\xFAncia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85247118856192
+    m_Localized: Divisibilidade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85300097110016
+    m_Localized: "Se qualquer disposi\xE7\xE3o destes Termos for considerada inexequ\xEDvel
+      ou inv\xE1lida, tal disposi\xE7\xE3o ser\xE1 alterada e interpretada para cumprir
+      os objetivos de tal disposi\xE7\xE3o na maior medida poss\xEDvel sob a lei
+      aplic\xE1vel e as disposi\xE7\xF5es restantes continuar\xE3o em pleno vigor
+      e efeito."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85441277382656
+    m_Localized: "Ren\xFAncia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85477595860992
+    m_Localized: "Exceto conforme disposto neste documento, a falha em exercer um
+      direito ou em exigir o cumprimento de uma obriga\xE7\xE3o sob estes Termos
+      n\xE3o afetar\xE1 a capacidade de uma parte exercer tal direito ou exigir tal
+      desempenho em qualquer momento posterior, nem a ren\xFAncia a uma viola\xE7\xE3o
+      constituir\xE1 uma ren\xFAncia de qualquer viola\xE7\xE3o subsequente."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85554687168512
+    m_Localized: "Interpreta\xE7\xE3o de Tradu\xE7\xE3o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85601160056832
+    m_Localized: "Estes Termos e Condi\xE7\xF5es podem ter sido traduzidos se os
+      tivermos disponibilizado a Voc\xEA em nosso Servi\xE7o. Voc\xEA concorda que
+      o texto original em ingl\xEAs prevalecer\xE1 em caso de disputa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85824796151808
+    m_Localized: "Altera\xE7\xF5es a estes Termos e Condi\xE7\xF5es"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85891573665792
+    m_Localized: "Reservamo-nos o direito, a nosso exclusivo crit\xE9rio, de modificar
+      ou substituir estes Termos a qualquer momento. Se uma revis\xE3o for material,
+      faremos esfor\xE7os razo\xE1veis para fornecer um aviso com pelo menos 30 dias
+      de anteced\xEAncia antes da entrada em vigor de quaisquer novos termos. O que
+      constitui uma altera\xE7\xE3o material ser\xE1 determinado a Nosso exclusivo
+      crit\xE9rio."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85924947742720
+    m_Localized: "Ao continuar a acessar ou usar Nosso Servi\xE7o ap\xF3s essas revis\xF5es
+      entrarem em vigor, Voc\xEA concorda em ficar vinculado aos termos revisados.
+      Se Voc\xEA n\xE3o concordar com os novos termos, no todo ou em parte, pare
+      de usar o site e o Servi\xE7o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85983252762624
+    m_Localized: Contate-nos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86020338798592
+    m_Localized: "Se voc\xEA tiver alguma d\xFAvida sobre estes Termos e Condi\xE7\xF5es,
+      voc\xEA pode entrar em contato conosco:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86119164989440
+    m_Localized: 'Por e-mail: afreemedian@gmail.com'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86213801070592
+    m_Localized: 'Pelo telefone: (+27) 79-723-5948'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

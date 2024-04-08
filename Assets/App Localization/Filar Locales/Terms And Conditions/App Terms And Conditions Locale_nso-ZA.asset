@@ -123,6 +123,295 @@ MonoBehaviour:
       oa Melao le Maemo."
     m_Metadata:
       m_Items: []
+  - m_Id: 82449031548928
+    m_Localized: "T\u0161ebeletso ea Mekhatlo ea Boraro ea Mecha ea Sechaba"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82491586957312
+    m_Localized: "T\u0161ebeletso ea Mekhatlo ea Boraro ea Mecha ea Sechaba e bolela
+      lit\u0161ebeletso leha e le life kapa litaba (ho kenyeletsoa data, tlhahisoleseding,
+      lihlahisoa kapa lit\u0161ebeletso) tse fanoang ke motho oa boraro tse ka hlahisoang,
+      tsa kenyelletsoa kapa tsa fumaneha ke Ts'ebeletso."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82586374033408
+    m_Localized: Wena
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82629244014592
+    m_Localized: U bolela motho ea kenang kapa ea sebelisang Ts'ebeletso, kapa k'hamphani,
+      kapa mokhatlo o mong oa molao oo motho ea joalo a kenang kapa a sebelisang
+      Ts'ebeletso, joalo ka ha ho sebetsa.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82837185024000
+    m_Localized: Kananelo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83335459950592
+    m_Localized: Ena ke Melao le Maemo a laolang ts'ebeliso ea Ts'ebeletso ena le
+      tumellano e sebetsang lipakeng tsa Hao le Khampani. Melao le Lipehelo tsena
+      li hlalosa litokelo le boitlamo ba basebelisi bohle mabapi le ts'ebeliso ea
+      Ts'ebeletso.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83452556529664
+    m_Localized: "Phihlello ea hau ea ts'ebeletso le ts'ebeliso ea Ts'ebeletso e
+      ipapisitse le ho amohela le ho latela Melao le Maemo ana. Melao le Lipehelo
+      tsena li sebetsa ho baeti bohle, basebelisi le ba bang ba kenang kapa ba sebelisang
+      T\u0161ebeletso."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83485255323648
+    m_Localized: Ka ho kena kapa ho sebedisa Tshebeletso O dumela ho tlangwa ke Melao
+      le Maemo ana. Haeba u sa lumellane le karolo efe kapa efe ea Melao le Lipehelo
+      tsena, u kanna oa se khone ho fihlella Ts'ebeletso.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83503794147328
+    m_Localized: U emela hore u kaholimo ho lilemo tse 18. Khampani ha e lumelle
+      ba ka tlase ho lilemo tse 18 ho sebelisa Ts'ebeletso.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83523813560320
+    m_Localized: Phihlello ea hau ea ts'ebeletso le ts'ebeliso ea Ts'ebeletso e boetse
+      e ipapisitse le ho amohela le ho latela Leano la Lekunutu la Khampani. Leano
+      la rona la Lekunutu le hlalosa maano le mekhoa ea rona mabapi le ho bokella,
+      ho sebelisa le ho senola tlhahisoleseling ea hau ha U sebelisa Kopo kapa Webosaete
+      mme e U bolella ka litokelo tsa hau tsa lekunutu le hore na molao o u sireletsa
+      joang. Ka kopo bala Leano la rona la Lekunutu ka hloko pele o sebelisa Ts'ebeletso
+      ea Rona.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83596345659392
+    m_Localized: Lihokelo ho Liwebosaete tse ling
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83704034414592
+    m_Localized: Ts'ebeletso ea rona e kanna ea ba le likhokahano tsa liwebsaete
+      tsa batho ba bang kapa lits'ebeletso tseo e seng tsa rona kapa tse sa laoloeng
+      ke Khampani.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83755670491136
+    m_Localized: "Re u eletsa ka matla hore u bale lipehelo le lipehelo le maano
+      a lekunutu a liwebsaete tsa batho ba bang kapa lit\u0161ebeletso tseo u li
+      etelang."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83736829677568
+    m_Localized: "Khampani ha e na taolo holim'a, 'me ha e nke boikarabello bakeng
+      sa, litaba, maano a lekunutu, kapa mekhoa ea liwebsaete tsa batho ba bang kapa
+      lit\u0161ebeletso. U tsoela pele ho lumela le ho lumela hore Khampani e ke
+      ke ea jara boikarabelo kapa molato, ka ho toba kapa ka mokhoa o sa tobang,
+      bakeng sa t\u0161enyo leha e le efe kapa tahlehelo e bakiloeng kapa e boleloang
+      e bakiloe ke kapa mabapi le t\u0161ebeliso ea kapa ho it\u0161etleha ka litaba
+      leha e le life tse joalo, thepa kapa lit\u0161ebeletso tse teng ho. kapa ka
+      liwebsaete kapa lit\u0161ebeletso life kapa life tse joalo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83948017078272
+    m_Localized: Phediso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84006988992512
+    m_Localized: Re ka emisa kapa ra emisa phihlello ea Hao hang-hang, ntle le tsebiso
+      esale pele kapa boikarabello, ka lebaka lefe kapa lefe, ho kenyeletsoa ntle
+      le meeli haeba U tlola Melao le Lipehelo tsena.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84035392819200
+    m_Localized: "Ha o felisitsoe, tokelo ea hau ea ho sebelisa T\u0161ebeletso e
+      tla fela hang-hang."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84145598156800
+    m_Localized: Moeli oa Boikarabelo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84189248278528
+    m_Localized: "Ho sa tsotellehe lit\u0161enyehelo leha e le life tseo u ka li
+      etsang, molato oohle oa Khampani le bafani ba eona ba tlas'a tokisetso leha
+      e le efe ea Melaoana ena le pheko ea hau e khethehileng bakeng sa tsohle tse
+      boletsoeng ka holimo e tla lekanyetsoa ho chelete e hlileng e lefiloeng ke
+      Uena ka Ts'ebeletso kapa 100. USD haeba U sa reka letho ka T\u0161ebeletso."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84218151227392
+    m_Localized: "Ho isa tekanyong e lumelletsoeng ke molao o sebetsang, ha ho ketsahalo
+      e tla tlameha Khampani kapa bafani ba eona ba tla ikarabella bakeng sa t\u0161enyo
+      efe kapa efe e khethehileng, e sa lebelloang, e sa tobang, kapa ea litlamorao
+      efe kapa efe (ho kenyeletsoa, \u200B\u200Bempa e sa felle feela, lit\u0161enyehelo
+      tsa tahlehelo ea phaello, tahlehelo ea data kapa boitsebiso bo bong, bakeng
+      sa t\u0161itiso ea khoebo, bakeng sa kotsi ea botho, tahlehelo ea boinot\u0161ing
+      e hlahang kapa ka tsela leha e le efe e amanang le t\u0161ebeliso kapa ho se
+      khone ho sebelisa T\u0161ebeletso, software ea motho oa boraro le / kapa lisebelisoa
+      tsa motho oa boraro tse sebelisoang le T\u0161ebeletso, kapa ho seng joalo
+      mabapi le tokisetso efe kapa efe ea Melao ena), le haeba Khampani kapa mofani
+      ofe kapa ofe a elelitsoe ka monyetla oa ts'enyehelo e joalo le haeba pheko
+      e hloleha ho phethahatsa morero oa eona oa bohlokoa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84244210438144
+    m_Localized: "Linaha tse ling ha li lumelle ho qheleloa ka thoko ha litiisetso
+      tse boletsoeng kapa moedi oa boikarabello bakeng sa ts'enyehelo ea t\u0161ohanyetso
+      kapa ea litlamorao, ho bolelang hore mefokolo e meng e kaholimo e kanna ea
+      se sebetse. Linaheng tsena, boikarabello ba mokha o mong le o mong bo tla lekanyetsoa
+      ho isa tekanyong e kholo e lumelletsoeng ke molao."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84308689473536
+    m_Localized: '"JOALOKAHA HO LE" le "JAAKA E FUMANA" Boithorollo'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84381645197312
+    m_Localized: "Tshebeletso eo o e fuwe \"JAKA E LE\" le \"JOKA E FUMANA\" 'me
+      e na le liphoso le mefokolo ntle le tiisetso ea mofuta ofe kapa ofe. Ho isa
+      tekanyong e lumelletsoeng tlas'a molao o sebetsang, Khampani, molemong oa eona
+      le molemong oa balekane ba eona le bafani ba bona ba laesense le bafani ba
+      lits'ebeletso, ka ho hlaka e hana litiisetso tsohle, ebang ke tse boletsoeng,
+      tse boletsoeng, tse molaong kapa tse ling, mabapi le Ts'ebeletso, ho kenyeletsoa
+      litiisetso tsohle tse boletsoeng tsa thekiso, ho itekanela molemong o itseng,
+      sehlooho le ho se tlole molao, le litiisetso tse ka hlahang ka lebaka la t\u0161ebetso,
+      t\u0161ebetso, ts'ebeliso kapa mokhoa oa khoebo. Ntle le moeli ho se boletsoeng
+      ka holimo, Khampani ha e fane ka tiisetso kapa boitlamo, 'me ha e etse tlhahiso
+      ea mofuta ofe kapa ofe oa hore T\u0161ebeletso e tla finyella litlhoko tsa
+      hau, e fihlelle liphetho leha e le life tse reriloeng, e lumellane kapa e sebetse
+      le software efe kapa efe, lits'ebetso, litsamaiso kapa lits'ebeletso, ho sebetsa.
+      ntle le t\u0161itiso, ho fihlela maemo leha e le afe a tshebetso kapa ho t\u0161epahala
+      kapa ho se be le liphoso kapa hore liphoso leha e le life kapa mefokolo e ka
+      lokisoa kapa e tla lokisoa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84578211254272
+    m_Localized: "Ntle le ho fokotsa se boletsoeng ka holimo, Khampani kapa mofani
+      ofe kapa ofe oa k'hamphani ha a etse tlhahiso kapa tiisetso ea mofuta ofe kapa
+      ofe, ho hlalosa kapa ho fana ka maikutlo: (i) mabapi le ts'ebetso kapa boteng
+      ba Ts'ebeletso, kapa tlhahisoleseding, dikahare, le thepa kapa lihlahisoa.
+      e kenyelelitsoe ho eona; (ii) hore T\u0161ebeletso e ke ke ea sitisoa kapa
+      ha e na liphoso; (iii) mabapi le ho nepahala, ho ts'epahala, kapa chelete ea
+      tlhahisoleseling efe kapa efe kapa litaba tse fanoeng ka Ts'ebeletso; kapa
+      (iv) hore T\u0161ebeletso, li-server tsa eona, litaba, kapa li-imeile tse rometsoeng
+      ho tsoa kapa molemong oa Khampani ha li na livaerase, mangolo, lipere tsa trojan,
+      liboko, malware, libomo tsa nako kapa likarolo tse ling tse kotsi."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84596364201984
+    m_Localized: Maemo a mang ha a lumelle ho qheleloa ka thoko ha mefuta e itseng
+      ea litiisetso kapa lithibelo litokelong tse sebetsang tsa molao tsa moreki,
+      kahoo tse ling kapa tse ling kapa tsohle tse ka holimo le mefokolo e kanna
+      ea se sebetse ho Uena. Empa maemong a joalo mekhaollo le meeli e boletsoeng
+      karolong ena e tla sebelisoa ka tekanyo e kholo ka ho fetisisa e ka qobelloang
+      ho latela molao o sebetsang.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84687351238656
+    m_Localized: Molao o Laolang
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84728396697600
+    m_Localized: "Melao ea Naha, ho sa kenyeletsoe likhohlano tsa melao ea eona,
+      e tla laola Melaoana ena le t\u0161ebeliso ea Hao ea Ts'ebeletso. T\u0161ebeliso
+      ea hau ea Kopo e kanna ea ipapisa le melao e meng ea lehae, ea naha, ea naha
+      kapa ea machabeng."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84860143980544
+    m_Localized: Tharollo ea Likhohlano
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84912065269760
+    m_Localized: Haeba o na le ngongoreho kapa phehisano efe kapa efe mabapi le Ts'ebeletso,
+      O lumela ho leka ho rarolla tseko eo ka mokhoa o sa reroang ka ho ikopanya
+      le Khampani.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84973994168320
+    m_Localized: Tumellano ea Molao ea United States
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85022312550400
+    m_Localized: "U emela le ho fana ka tumello ea hore (i) Ha u naheng e tlas'a
+      thibelo ea 'muso oa United States, kapa e khethiloeng ke' muso oa United States
+      e le \"naha e t\u0161ehetsang likhukhuni\", le (ii) ha u eo. e thathamisitsoeng
+      lethathamong lefe kapa lefe la mmuso la United States la mekha e thibetsoeng
+      kapa e thibetsoeng."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85153434882048
+    m_Localized: Severability le Waiver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85247118856192
+    m_Localized: Severability
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85300097110016
+    m_Localized: Haeba tokisetso leha e le efe ea Melaoana ena e nkoa e sa sebetse
+      kapa e sa sebetse, tokisetso e joalo e tla fetoloa le ho hlalosoa ho finyella
+      lipakane tsa tokisetso e joalo ka hohle kamoo ho ka khonehang tlas'a molao
+      o sebetsang 'me litokisetso tse setseng li tla tsoela pele ka matla le ho sebetsa
+      ka botlalo.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85441277382656
+    m_Localized: Tlokotsi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85477595860992
+    m_Localized: "Ntle le ha ho fanoe ka mona, ho hloleha ho sebelisa tokelo kapa
+      ho hloka ts'ebetso ea boitlamo tlas'a Melaoana ena ho ke ke ha etsa hore mokha
+      a khone ho sebelisa tokelo e joalo kapa a hloke ts'ebetso e joalo ka nako leha
+      e le efe ka mor'a moo kapa ho tlosoa ha tl\u014Dlo ea molao ho tla etsa tlolo
+      efe kapa efe e latelang."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85554687168512
+    m_Localized: Tlhaloso ea Phetolelo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85601160056832
+    m_Localized: Melao le Lipehelo tsena li kanna tsa fetoleloa haeba re entse hore
+      li fumanehe ho uena Ts'ebeletsong ea rona. Ua lumela hore mongolo oa Senyesemane
+      oa mantlha o tla ba teng ha ho e-na le khang.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85824796151808
+    m_Localized: Liphetoho ho Melao le Maemo ana
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85891573665792
+    m_Localized: Re na le tokelo, ka boikhethelo ba Rona, ho fetola kapa ho khutlisa
+      Melaoana ena ka nako efe kapa efe. Haeba tokiso e le ea bohlokoa Re tla etsa
+      boiteko bo matla ba ho fana ka tsebiso bonyane matsatsi a 30 pele mantsoe afe
+      kapa afe a macha a qala ho sebetsa. Phetoho ea lintho tse bonahalang e tla
+      khethoa ho ea ka boikhethelo ba Rona.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85924947742720
+    m_Localized: Ka ho tsoela pele ho fumana kapa ho sebelisa Ts'ebeletso ea Rona
+      ka mor'a hore litokiso tseo li sebetse, U lumela ho tlamahanoa ke lipehelo
+      tse ntlafalitsoeng. Haeba u sa lumellane le lipehelo tse ncha, ka kakaretso
+      kapa karolo e itseng, ka kopo emisa ho sebelisa sebaka sa marang-rang le Ts'ebeletso.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85983252762624
+    m_Localized: Iteanye le rona
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86020338798592
+    m_Localized: 'Haeba u na le lipotso mabapi le Melao le Maemo ana, u ka ikopanya
+      le rona:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86119164989440
+    m_Localized: 'Ka lengolo-tsoibila: afreemedian@gmail.com'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86213801070592
+    m_Localized: 'Ka nomoro ea mohala: (+27) 79-723-5948'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
