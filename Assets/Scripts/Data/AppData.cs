@@ -59363,6 +59363,28 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public static CallbackData<(T valueA, T ValueB)> GetAppEnumValuesEqual<T>(T valueA, T valueB, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : Enum
+            {
+                var callbackResults = new CallbackData<(T valueA, T ValueB)>();
+
+                if (valueA.ToString() != "None" && valueA.ToString() == valueB.ToString())
+                {
+                    callbackResults.result = $"Enum Values Equal Check Success - Value A : {valueA.ToString()} Is Equal To Value B : {valueB.ToString()} .";
+                    callbackResults.data = (valueA, valueB);
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Enum Values Equal Check Failed - Value A : {valueA.ToString()} Is Not Equal To Value B : {valueB.ToString()}.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = WarningCode;
+                }
+
+                return callbackResults;
+            }
+
             public static CallbackData<Enum> GetAppEnumValueValid(Enum type, string name = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
             {
                 var callbackResults = new CallbackData<Enum>();

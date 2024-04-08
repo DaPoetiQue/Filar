@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using XNode;
 
 namespace Com.RedicalGames.Filar
@@ -12,6 +10,8 @@ namespace Com.RedicalGames.Filar
 		[SerializeField]
 		private AppData.ScreenType screen = AppData.ScreenType.None;
 
+		[Input]
+		public int input;
 
 		[Output]
 		public int output;

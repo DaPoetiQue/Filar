@@ -42,6 +42,17 @@ namespace Com.RedicalGames.Filar
 			return callbackResults;
 		}
 
+		public override AppData.CallbackData<AppData.GraphNodeType> GetNodeType()
+		{
+			var callbackResults = new AppData.CallbackData<AppData.GraphNodeType>();
+
+			callbackResults.result = "This Is A Show Popup Node.";
+			callbackResults.data = AppData.GraphNodeType.ShowPopupNode;
+			callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+			return callbackResults;
+		}
+
 		// Return the correct value of an output port when requested
 		public override object GetValue(NodePort port)
 		{

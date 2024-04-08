@@ -107,9 +107,9 @@ namespace Com.RedicalGames.Filar
                         GetTextComponent().GetData().alignment = uiTextComponentConfig.GetTextAlignmentOptions().GetData();
                         GetTextComponent().GetData().fontSizeMin = uiTextComponentConfig.GetFontSize().GetData().fontMinSize;
                         GetTextComponent().GetData().fontSizeMax = uiTextComponentConfig.GetFontSize().GetData().fontMaxSize;
-                        GetTextComponent().GetData().lineSpacing = uiTextComponentConfig.GetTextLineInfo().GetData().lineSpacing;
-                        GetTextComponent().GetData().lineSpacingAdjustment = uiTextComponentConfig.GetTextLineInfo().GetData().lineSpacingAdjustment;
-                        GetTextComponent().GetData().maxVisibleLines = uiTextComponentConfig.GetTextLineInfo().GetData().maxVisibleLines;
+                        //GetTextComponent().GetData().lineSpacing = uiTextComponentConfig.GetTextLineInfo().GetData().lineSpacing;
+                        //GetTextComponent().GetData().lineSpacingAdjustment = uiTextComponentConfig.GetTextLineInfo().GetData().lineSpacingAdjustment;
+                        //GetTextComponent().GetData().maxVisibleLines = uiTextComponentConfig.GetTextLineInfo().GetData().maxVisibleLines;
                         GetTextComponent().GetData().color = uiTextComponentConfig.GetTextColor().GetData();
                     }
                     else

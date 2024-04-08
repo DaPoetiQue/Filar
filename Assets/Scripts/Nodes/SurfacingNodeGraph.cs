@@ -14,6 +14,7 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         private BaseNode currentNode = null;
 
+        private BaseNode entryNode = null;
         private AppData.GraphEntryEventType entryEvent = AppData.GraphEntryEventType.None;
         private List<SurfacingNodeGraph> prerequisiteGraphs = new List<SurfacingNodeGraph>();
 
@@ -22,6 +23,37 @@ namespace Com.RedicalGames.Filar
         #endregion
 
         #region Main
+
+        public void Config(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentsValid(nodes, "Node", $"Config Failed - There Are No Nodes Found For Graph : {name}"));
+
+            if(callbackResults.Success())
+            {
+                foreach (BaseNode node in nodes)
+                {
+                    callbackResults.SetResult(node.GetNodeType());
+
+                    if (callbackResults.Success())
+                    {
+                        if (node.GetNodeType().GetData() == AppData.GraphNodeType.EntryNode)
+                        {
+                            callbackResults.SetResult(SetCurrentNode(node));
+
+                            if (callbackResults.Success())
+                                break;
+                        }
+                        else
+                        {
+                            callbackResults.result = $"Not An Entry Node - {node.GetNodeType().GetResult}";
+                            callbackResults.resultCode = AppData.Helpers.WarningCode;
+                        }
+                    }
+                }
+            }
+
+            callback?.Invoke(callbackResults);
+        }
 
         public void SetCurrentNode(BaseNode currentNode, Action<AppData.Callback> callback = null)
         {
@@ -198,15 +230,60 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        public void Reset(Action<AppData.Callback> callback = null)
+        public AppData.Callback CompleteGraph()
         {
-            var callbackResults = new AppData.Callback(Completed());
+            var callbackResults = new AppData.Callback(GetPrerequisiteGraphs());
 
             if (callbackResults.Success())
             {
-                completed = false;
-                callbackResults.result = $"Graph : {name} Has Been Successfully Reset.";
+                completed = true;
+                callbackResults.result = $"Graph : {name} Has Been Successfully Completed.";
             }
+
+            return callbackResults;
+        }
+
+        public AppData.Callback InProgress()
+        {
+            var callbackResults = new AppData.Callback(GetCurrentNode());
+
+            if (callbackResults.Success())
+            {
+                if(GetCurrentNode().GetData().GetNodeType().GetData() != AppData.GraphNodeType.EntryNode)
+                    callbackResults.result = $"Graph : {name} Is In Progress.";
+                else
+                {
+
+                    callbackResults.result = $"Graph : {name} Is Not In Progress.";
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+                }
+            }
+
+            return callbackResults;
+        }
+
+        public void Reset(bool resetComplition = false, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            Config(configCallbackResults => 
+            {
+                callbackResults.SetResult(configCallbackResults);
+
+                if(callbackResults.Success())
+                {
+                    if(resetComplition)
+                    {
+                        callbackResults.SetResult(Completed());
+
+                        if (callbackResults.Success())
+                        {
+                            completed = false;
+                            callbackResults.result = $"Graph : {name} Has Been Successfully Reset.";
+                        }
+                    }
+                }
+            });
 
             callback?.Invoke(callbackResults);
         }

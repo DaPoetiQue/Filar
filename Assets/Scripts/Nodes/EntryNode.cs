@@ -16,10 +16,6 @@ namespace Com.RedicalGames.Filar
 		[SerializeField]
 		private List<SurfacingNodeGraph> prerequisiteGraphs = new List<SurfacingNodeGraph>();
 
-
-		[Input]
-		public int input;
-
 		[Output]
 		public int output;
 
