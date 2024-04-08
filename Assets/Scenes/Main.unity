@@ -1180,7 +1180,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -1527,7 +1527,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts: []
@@ -1663,7 +1663,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -2423,7 +2423,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -2671,7 +2671,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -3002,7 +3002,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -4377,7 +4377,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -7790,7 +7790,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -8038,7 +8038,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -9030,7 +9030,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -9875,7 +9875,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -10259,7 +10259,7 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     fieldActionInputs: []
-    placeHolderText: 
+    placeHolderTextKey: 0
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
     valueType: 0
@@ -10499,7 +10499,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -11049,7 +11049,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -11642,7 +11642,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -11890,7 +11890,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -12276,7 +12276,7 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     fieldActionInputs: []
-    placeHolderText: 
+    placeHolderTextKey: 0
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
     valueType: 0
@@ -12467,7 +12467,7 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     fieldActionInputs: []
-    placeHolderText: 
+    placeHolderTextKey: 0
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
     valueType: 0
@@ -12658,7 +12658,7 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     fieldActionInputs: []
-    placeHolderText: 
+    placeHolderTextKey: 0
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
     valueType: 0
@@ -12909,7 +12909,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -13997,7 +13997,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -14511,7 +14511,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -14909,7 +14909,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts: []
@@ -15194,7 +15194,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -15881,7 +15881,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -16221,7 +16221,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -16472,7 +16472,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -17003,7 +17003,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -17251,7 +17251,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -17460,6 +17460,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1942207137}
   - component: {fileID: 1942207138}
+  - component: {fileID: 1942207139}
   m_Layer: 0
   m_Name: __Surfacing Manager
   m_TagString: Untagged
@@ -17595,6 +17596,25 @@ MonoBehaviour:
       messageOverrides: []
       active: 1
   surfacedWidgetList: []
+--- !u!114 &1942207139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942207136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3b0ae4e1e134cb48bb926ca0be8a078, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
+  graphs:
+  - {fileID: 11400000, guid: d3af76ac3522f0146a4f4efa469a0f94, type: 2}
 --- !u!1 &1950216718
 GameObject:
   m_ObjectHideFlags: 0
@@ -17644,7 +17664,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -17894,7 +17914,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -18415,7 +18435,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:
@@ -20261,7 +20281,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 0
   type: 0
   widgetLayouts:

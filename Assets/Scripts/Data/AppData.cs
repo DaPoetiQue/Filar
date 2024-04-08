@@ -43,6 +43,28 @@ namespace Com.RedicalGames.Filar
 
         #region Data Types
 
+        public enum GraphNodeType
+        {
+            None,
+            EntryNode,
+            ExitNode,
+            CurrentScreenNode,
+            ShowPopupNode,
+            ShowTooltipNode,
+            WaitForEventNode,
+            WaitForButtonEventNode,
+            WaitForSecondsNode
+        }
+
+        public enum GraphEntryEventType
+        {
+            None,
+            OnScreenEnter,
+            OnScreenExit,
+            OnScreenFocused,
+            OnScreenBlured
+        }
+
         public enum AssetFieldType
         {
             None,
