@@ -50,10 +50,13 @@ namespace Com.RedicalGames.Filar
             ExitNode,
             CurrentScreenNode,
             ShowPopupNode,
+            HidePopupNode,
             ShowTooltipNode,
+            HideTooltipNode,
             WaitForEventNode,
             WaitForButtonEventNode,
-            WaitForSecondsNode
+            WaitForSecondsNode,
+            TriggerEventNode
         }
 
         public enum GraphEntryEventType
@@ -63,6 +66,12 @@ namespace Com.RedicalGames.Filar
             OnScreenExit,
             OnScreenFocused,
             OnScreenBlured
+        }
+
+        public enum GraphMode
+        {
+            Once,
+            Repeat,
         }
 
         public enum AssetFieldType
@@ -1424,7 +1433,7 @@ namespace Com.RedicalGames.Filar
             ParameterEventActions
         }
 
-        public enum SurfacingTemplateType
+        public enum PopupTemplateType
         {
             None,
             NetworkNotificationPopUp,
@@ -1432,6 +1441,13 @@ namespace Com.RedicalGames.Filar
             EmailVerificationSentPopUp,
             VerifiedEmailAlreadyInUsePopUp,
             UnverifiedEmailAlreadyInUsePopUp
+        }
+
+        public enum TooltipTemplateType
+        {
+            None,
+            Default,
+            Custom
         }
 
         public enum LocaleType : int
@@ -1786,7 +1802,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            private SurfacingTemplateType templateType;
+            private PopupTemplateType templateType;
 
             [Space(5)]
             [SerializeField]
@@ -1844,7 +1860,7 @@ namespace Com.RedicalGames.Filar
 
             }
 
-            public SurfacingTemplate(SurfacingTemplateType templateType, WidgetType templateWidgetType, SurfacingContentType templateContentType, bool active, ButtonOverrideConfigDataPacket primaryButtonTitle = null, ButtonOverrideConfigDataPacket secondaryButtonTitle = null, ImageComponent icon = null, ImageComponent backgroundImage = null, params string[] messageOverrides)
+            public SurfacingTemplate(PopupTemplateType templateType, WidgetType templateWidgetType, SurfacingContentType templateContentType, bool active, ButtonOverrideConfigDataPacket primaryButtonTitle = null, ButtonOverrideConfigDataPacket secondaryButtonTitle = null, ImageComponent icon = null, ImageComponent backgroundImage = null, params string[] messageOverrides)
             {
                 this.templateType = templateType;
                 this.templateWidgetType = templateWidgetType;
@@ -1883,9 +1899,9 @@ namespace Com.RedicalGames.Filar
 
             #region Data Getters
 
-            public CallbackData<SurfacingTemplateType> GetTemplateType()
+            public CallbackData<PopupTemplateType> GetTemplateType()
             {
-                var callbackResults = new CallbackData<SurfacingTemplateType>(Helpers.GetAppEnumValueValid(templateType, "Template Type", $"Get Template Type Failed - Template Type Is Set To Default : {templateType} - Invalid Operation."));
+                var callbackResults = new CallbackData<PopupTemplateType>(Helpers.GetAppEnumValueValid(templateType, "Template Type", $"Get Template Type Failed - Template Type Is Set To Default : {templateType} - Invalid Operation."));
 
                 if(callbackResults.Success())
                 {
@@ -2079,7 +2095,7 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<SurfacingTemplate> GetSurfacingTemplate(SurfacingTemplateType templateType)
+            public CallbackData<SurfacingTemplate> GetSurfacingTemplate(PopupTemplateType templateType)
             {
                 var callbackResults = new CallbackData<SurfacingTemplate>(GetSurfacingTemplates());
 
@@ -60894,7 +60910,9 @@ namespace Com.RedicalGames.Filar
             OnShowTabViewEvent,
             OnShowTabViewAsyncEvent,
             OnTabViewShownEvent,
-            OnTabViewHiddenEvent
+            OnTabViewHiddenEvent,
+            OnDownloadStartedEvent,
+            OnDownloadCompletedEvent
         }
 
         public enum TransitionableEventType
@@ -62076,6 +62094,9 @@ namespace Com.RedicalGames.Filar
             public static event Void _OnInitializationStartedEvent;
             public static event Void _OnInitializationCompletedEvent;
 
+            public static event Void _OnDownloadStartedEvent;
+            public static event Void _OnDownloadCompletedEvent;
+
 
             public static event Void _OnNetworkConnectedEvent;
             public static event Void _OnNetworkFailedEvent;
@@ -62165,6 +62186,8 @@ namespace Com.RedicalGames.Filar
             public static void OnInitializationStartedEvent() => _OnInitializationStartedEvent?.Invoke();
             public static void OnInitializationCompletedEvent() => _OnInitializationCompletedEvent?.Invoke();
 
+            public static void OnDownloadStartedEvent() => _OnDownloadStartedEvent?.Invoke();
+            public static void OnDownloadCompletedEvent() => _OnDownloadCompletedEvent?.Invoke();
 
             public static void OnNetworkConnectedEvent() => _OnNetworkConnectedEvent?.Invoke();
             public static void OnNetworkFailedEvent() => _OnNetworkFailedEvent?.Invoke();
@@ -62265,6 +62288,24 @@ namespace Com.RedicalGames.Filar
                                     _OnInitializationCompletedEvent += eventAction.TriggeredEventMethod;
                                 else
                                     _OnInitializationCompletedEvent -= eventAction.TriggeredEventMethod;
+
+                                break;
+
+                            case EventType.OnDownloadStartedEvent:
+
+                                if (subscribe)
+                                    _OnDownloadStartedEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    _OnDownloadStartedEvent -= eventAction.TriggeredEventMethod;
+
+                                break;
+
+                            case EventType.OnDownloadCompletedEvent:
+
+                                if (subscribe)
+                                    _OnDownloadCompletedEvent += eventAction.TriggeredEventMethod;
+                                else
+                                    _OnDownloadCompletedEvent -= eventAction.TriggeredEventMethod;
 
                                 break;
 

@@ -22,7 +22,7 @@ namespace Com.RedicalGames.Filar
 
 		#region Main
 
-		public AppData.CallbackData<AppData.InputActionButtonType> GetButtonEventType()
+		public AppData.CallbackData<AppData.InputActionButtonType> GetEventType()
 		{
 			var callbackResults = new AppData.CallbackData<AppData.InputActionButtonType>(AppData.Helpers.GetAppEnumValueValid(eventType, "Button Event Type", $"Get Button Event Type Failed - Button Event Type Is Set To Default : {eventType} - Invalid Operation."));
 

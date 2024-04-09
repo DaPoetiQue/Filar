@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using XNode;
 
 namespace Com.RedicalGames.Filar
 {
-	public class ShowPopupNode : BaseNode
+	public class HidePopupNode : BaseNode
 	{
 		#region Components
 
@@ -31,11 +29,11 @@ namespace Com.RedicalGames.Filar
 
 		public AppData.CallbackData<AppData.PopupTemplateType> GetPopupTemplateType()
 		{
-			var callbackResults = new AppData.CallbackData<AppData.PopupTemplateType>(AppData.Helpers.GetAppEnumValueValid(popupTemplate, "Surfacing Template Type", $"Get Surfacing Template Type Failed - Surfacing Template Type Is Set To Default : {popupTemplate} - Invalid Operation."));
+			var callbackResults = new AppData.CallbackData<AppData.PopupTemplateType>(AppData.Helpers.GetAppEnumValueValid(popupTemplate, "Popup Template Type", $"Get Popup Template Type Failed - Popup Template Type Is Set To Default : {popupTemplate} - Invalid Operation."));
 
 			if (callbackResults.Success())
 			{
-				callbackResults.result = $"Get Surfacing Templatet Type Success - Surfacing Template Type Is Set To : {popupTemplate}.";
+				callbackResults.result = $"Get Popup Templatet Type Success - Popup Template Type Is Set To : {popupTemplate}.";
 				callbackResults.data = popupTemplate;
 			}
 
@@ -46,8 +44,8 @@ namespace Com.RedicalGames.Filar
 		{
 			var callbackResults = new AppData.CallbackData<AppData.GraphNodeType>();
 
-			callbackResults.result = "This Is A Show Popup Node.";
-			callbackResults.data = AppData.GraphNodeType.ShowPopupNode;
+			callbackResults.result = "This Is A Hide Popup Node.";
+			callbackResults.data = AppData.GraphNodeType.HidePopupNode;
 			callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
 			return callbackResults;

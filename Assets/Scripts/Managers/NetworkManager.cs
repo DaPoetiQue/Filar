@@ -91,7 +91,7 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.NetworkNotificationPopUp, popUpShownCallbackResults =>
+                        surfacingManagerInstance.ShowPopUp(AppData.PopupTemplateType.NetworkNotificationPopUp, popUpShownCallbackResults =>
                         {
                             callbackResults.SetResult(popUpShownCallbackResults);
 

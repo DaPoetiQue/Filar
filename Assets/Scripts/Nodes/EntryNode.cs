@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -15,6 +14,10 @@ namespace Com.RedicalGames.Filar
 		[Space(5)]
 		[SerializeField]
 		private List<SurfacingNodeGraph> prerequisiteGraphs = new List<SurfacingNodeGraph>();
+
+		[Space(5)]
+		[SerializeField]
+		private AppData.GraphMode graphMode = AppData.GraphMode.Once;
 
 		[Output]
 		public int output;
@@ -64,6 +67,19 @@ namespace Com.RedicalGames.Filar
 			{
 				callbackResults.result = $"Get Prerequisite Graphs Success - There Are : {prerequisiteGraphs.Count} Prerequisite Graphs Assigned.";
 				callbackResults.data = prerequisiteGraphs;
+			}
+
+			return callbackResults;
+		}
+
+		public AppData.CallbackData<AppData.GraphMode> GetGraphMode()
+        {
+			var callbackResults = new AppData.CallbackData<AppData.GraphMode>(AppData.Helpers.GetAppEnumValueValid(graphMode, "Graph Mode", $"Get Graph Mode Failed - Graph Mode Is Set To Default : {graphMode} - Invalid Operation."));
+
+			if (callbackResults.Success())
+			{
+				callbackResults.result = $"Get Graph Mode Success - Get Graph Mode Is Set To : {graphMode}.";
+				callbackResults.data = graphMode;
 			}
 
 			return callbackResults;

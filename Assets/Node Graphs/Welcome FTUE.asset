@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8310515461330957478
+--- !u!114 &-2518089816452071464
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,76 +9,42 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d6e54811f8426d40a12e9805b17d3e9, type: 3}
-  m_Name: Wait For Event
+  m_Script: {fileID: 11500000, guid: 7dff03090e566be47a8488a324685064, type: 3}
+  m_Name: Wait For Seconds
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 72, y: -88}
+  position: {x: 136, y: -72}
   ports:
     keys:
     - input
     - output
     values:
     - _fieldName: input
-      _node: {fileID: -8310515461330957478}
+      _node: {fileID: -2518089816452071464}
       _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
       connections:
       - fieldName: output
-        node: {fileID: 4481618442133750714}
+        node: {fileID: 596725462240741576}
         reroutePoints: []
       _direction: 0
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: output
-      _node: {fileID: -8310515461330957478}
+      _node: {fileID: -2518089816452071464}
       _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
       connections:
       - fieldName: input
-        node: {fileID: 5641588044605813725}
+        node: {fileID: 4920256634921641176}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
-  eventType: 2
+  seconds: 5
   input: 0
-  output: 0
---- !u!114 &-1238588050531087505
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d28a642a9135c2459f11d6e0c208edf, type: 3}
-  m_Name: Entry
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -424, y: -120}
-  ports:
-    keys:
-    - output
-    values:
-    - _fieldName: output
-      _node: {fileID: -1238588050531087505}
-      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
-        PublicKeyToken=b77a5c561934e089
-      connections:
-      - fieldName: input
-        node: {fileID: 4481618442133750714}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-  entryEvent: 1
-  prerequisiteGraphs: []
-  graphMode: 0
   output: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -90,48 +56,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0084793fdf668584aa605967a4049cf6, type: 3}
-  m_Name: Prerequisite Test
+  m_Name: Welcome FTUE
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: -1238588050531087505}
-  - {fileID: 3792458044074890365}
-  - {fileID: 4481618442133750714}
-  - {fileID: -8310515461330957478}
-  - {fileID: 5641588044605813725}
-  currentNode: {fileID: -1238588050531087505}
-  completed: 1
---- !u!114 &3792458044074890365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fefa38c6a569bdf418e9bab8695aee57, type: 3}
-  m_Name: Exit
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 520, y: 56}
-  ports:
-    keys:
-    - input
-    values:
-    - _fieldName: input
-      _node: {fileID: 3792458044074890365}
-      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
-        PublicKeyToken=b77a5c561934e089
-      connections:
-      - fieldName: output
-        node: {fileID: 5641588044605813725}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-  input: 0
---- !u!114 &4481618442133750714
+  - {fileID: 2509255513794919271}
+  - {fileID: 596725462240741576}
+  - {fileID: -2518089816452071464}
+  - {fileID: 4920256634921641176}
+  - {fileID: 7944874689770880370}
+  currentNode: {fileID: 0}
+  completed: 0
+--- !u!114 &596725462240741576
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -144,40 +79,40 @@ MonoBehaviour:
   m_Name: Current Screen
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -168, y: -88}
+  position: {x: -88, y: -72}
   ports:
     keys:
     - input
     - output
     values:
     - _fieldName: input
-      _node: {fileID: 4481618442133750714}
+      _node: {fileID: 596725462240741576}
       _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
       connections:
       - fieldName: output
-        node: {fileID: -1238588050531087505}
+        node: {fileID: 2509255513794919271}
         reroutePoints: []
       _direction: 0
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: output
-      _node: {fileID: 4481618442133750714}
+      _node: {fileID: 596725462240741576}
       _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
       connections:
       - fieldName: input
-        node: {fileID: -8310515461330957478}
+        node: {fileID: -2518089816452071464}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
-  screen: 8
+  screen: 7
   input: 0
   output: 0
---- !u!114 &5641588044605813725
+--- !u!114 &2509255513794919271
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -186,35 +121,69 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb115ffd6f8378d45b9a5cb263ace16b, type: 3}
-  m_Name: Hide Popup
+  m_Script: {fileID: 11500000, guid: 8d28a642a9135c2459f11d6e0c208edf, type: 3}
+  m_Name: Entry
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 296, y: -72}
+  position: {x: -312, y: -120}
+  ports:
+    keys:
+    - output
+    values:
+    - _fieldName: output
+      _node: {fileID: 2509255513794919271}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: input
+        node: {fileID: 596725462240741576}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  entryEvent: 1
+  prerequisiteGraphs: []
+  graphMode: 0
+  output: 0
+--- !u!114 &4920256634921641176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2b1bf565b28f44284cd9acedd6b3a7, type: 3}
+  m_Name: Show Popup
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 360, y: -104}
   ports:
     keys:
     - input
     - output
     values:
     - _fieldName: input
-      _node: {fileID: 5641588044605813725}
+      _node: {fileID: 4920256634921641176}
       _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
       connections:
       - fieldName: output
-        node: {fileID: -8310515461330957478}
+        node: {fileID: -2518089816452071464}
         reroutePoints: []
       _direction: 0
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: output
-      _node: {fileID: 5641588044605813725}
+      _node: {fileID: 4920256634921641176}
       _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
       connections:
       - fieldName: input
-        node: {fileID: 3792458044074890365}
+        node: {fileID: 7944874689770880370}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
@@ -223,3 +192,34 @@ MonoBehaviour:
   popupTemplate: 1
   input: 0
   output: 0
+--- !u!114 &7944874689770880370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fefa38c6a569bdf418e9bab8695aee57, type: 3}
+  m_Name: Exit
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 408.4646, y: 83.47386}
+  ports:
+    keys:
+    - input
+    values:
+    - _fieldName: input
+      _node: {fileID: 7944874689770880370}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: output
+        node: {fileID: 4920256634921641176}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  input: 0

@@ -85,6 +85,42 @@ namespace Com.RedicalGames.Filar
                                 AppData.ActionEvents._OnFixedUpdate -= eventMethod.Invoke;
 
                             break;
+
+                        case AppData.EventType.OnInitializationStartedEvent:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnInitializationStartedEvent += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnInitializationStartedEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnInitializationCompletedEvent:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnInitializationCompletedEvent += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnInitializationCompletedEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnDownloadStartedEvent:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnDownloadStartedEvent += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnDownloadStartedEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnDownloadCompletedEvent:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnDownloadCompletedEvent += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnDownloadCompletedEvent -= eventMethod.Invoke;
+
+                            break;
                     }
                 }
                 else
@@ -537,6 +573,32 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.result = $"Event Named  : {eventName} Not Found In Registered Timed Events. Make Sure This Event Is Registered Before Invoking.";
                     callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                }
+            }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void InvokeEvent(AppData.EventType eventType, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(eventType, "Event type", $"Invoke Event Failed - Event Type Parameter Value Is set To Default : {eventType} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                switch(eventType)
+                {
+                    case AppData.EventType.OnInitializationStartedEvent:
+
+                        AppData.ActionEvents.OnInitializationStartedEvent();
+
+                        break;
+
+                    case AppData.EventType.OnInitializationCompletedEvent:
+
+                        AppData.ActionEvents.OnInitializationCompletedEvent();
+
+                        break;
+                       
                 }
             }
 

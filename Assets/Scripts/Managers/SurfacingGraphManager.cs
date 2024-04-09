@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,10 +16,9 @@ namespace Com.RedicalGames.Filar
         private List<SurfacingNodeGraph> graphs = new List<SurfacingNodeGraph>();
 
         private List<SurfacingNodeGraph> selectedGraphs = new List<SurfacingNodeGraph>();
-        private Coroutine _process;
 
-        private Action waitForEventAction, 
-                       waitForButtonEventAction;
+        private TaskCompletionSource<AppData.EventType> awaitEventTriggerTaskSource = null;
+        private TaskCompletionSource<AppData.InputActionButtonType> awaitButtonEventTriggerTaskSource = null;
 
         #endregion
 
@@ -43,6 +41,9 @@ namespace Com.RedicalGames.Filar
                 appEventsManagerInstance.OnEventSubscription<AppData.TabView<AppData.WidgetType>>(OnScreenBluredEvent, AppData.EventType.OnTabViewShownEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
                 appEventsManagerInstance.OnEventSubscription<AppData.TabView<AppData.WidgetType>>(OnScreenFocusedEvent, AppData.EventType.OnTabViewHiddenEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
 
+                appEventsManagerInstance.OnEventSubscription(TestEventRemoveAfter, AppData.EventType.OnDownloadStartedEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults);  }); // Test - Delete After.
+                appEventsManagerInstance.OnEventSubscription(TestEventRemoveAfter2, AppData.EventType.OnInitializationCompletedEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); }); // Test - Delete After.
+
                 if (callbackResults.Success())
                 {
                     OnConfig(graphsConfiguredCallbackResults =>
@@ -61,6 +62,16 @@ namespace Com.RedicalGames.Filar
         }
 
         #region Entry Event Callbacks
+
+        private void TestEventRemoveAfter()
+        {
+            awaitEventTriggerTaskSource?.TrySetResult(AppData.EventType.OnDownloadStartedEvent); // Test - Delete After.
+        }
+
+        private void TestEventRemoveAfter2()
+        {
+            awaitEventTriggerTaskSource?.TrySetResult(AppData.EventType.OnInitializationCompletedEvent); // Test - Delete After.
+        }
 
         private void OnScreenEnterEvent(Screen screen)
         {
@@ -359,7 +370,9 @@ namespace Com.RedicalGames.Filar
 
         public AppData.CallbackDataList<SurfacingNodeGraph> GetGraphs()
         {
-            var callbackResults = new AppData.CallbackDataList<SurfacingNodeGraph>(AppData.Helpers.GetAppComponentsValid(graphs, "Graphs", "Get Graphs Failed - There Are No Graphs Found - Invalid Operation."));
+            var callbackResults = new AppData.CallbackDataList<SurfacingNodeGraph>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(graphs, "Graphs", "Get Graphs Failed - There Are No Graphs Found - Invalid Operation."));
 
             if (callbackResults.Success())
             {
@@ -478,17 +491,7 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     callbackResults.SetResult(graphResetedCallbackResults);
 
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        StopProcessing(proccessingStoppedCallbackResults =>
-                                                        {
-                                                            callbackResults.SetResult(proccessingStoppedCallbackResults);
-
-                                                            if (callbackResults.UnSuccessful())
-                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                        });
-                                                    }
-                                                    else
+                                                    if(callbackResults.UnSuccessful())
                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                 });
                                             }
@@ -513,13 +516,135 @@ namespace Com.RedicalGames.Filar
                                     var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
                                     var showPopupNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as ShowPopupNode;
 
-                                    callbackResults.SetResult(showPopupNode.GetSurfacingTemplateType());
+                                    callbackResults.SetResult(showPopupNode.GetPopupTemplateType());
 
                                     if(callbackResults.Success())
                                     {
-                                        surfacingManagerInstance.ShowPopUp(showPopupNode.GetSurfacingTemplateType().GetData(), popUpSurfacedCallbackResults => 
+                                        surfacingManagerInstance.ShowPopUp(showPopupNode.GetPopupTemplateType().GetData(), popUpSurfacedCallbackResults => 
                                         {
                                             callbackResults.SetResult(popUpSurfacedCallbackResults);
+
+                                            if(callbackResults.Success())
+                                            {
+                                                ProccessNextNode(GetSelectedGraphs().GetData()[i], proccessNextNodeCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                                    if (callbackResults.UnSuccessful())
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                            else
+                                            {
+                                                GetSelectedGraphs().GetData()[i].Reset(callback: graphResetedCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(graphResetedCallbackResults);
+
+                                                    if (callbackResults.UnSuccessful())
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                        });
+                                    }
+                                    else
+                                    {
+                                        GetSelectedGraphs().GetData()[i].Reset(callback: graphResetedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(graphResetedCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case AppData.GraphNodeType.HidePopupNode:
+
+                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance", "Execute Graph Failed -Surfacing Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                                if (callbackResults.Success())
+                                {
+                                    var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
+                                    var hidePopupNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as HidePopupNode;
+
+                                    callbackResults.SetResult(hidePopupNode.GetPopupTemplateType());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        surfacingManagerInstance.HidePopUp(hidePopupNode.GetPopupTemplateType().GetData(), popUpSurfacedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(popUpSurfacedCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                ProccessNextNode(GetSelectedGraphs().GetData()[i], proccessNextNodeCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                                    if (callbackResults.UnSuccessful())
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                            else
+                                            {
+                                                GetSelectedGraphs().GetData()[i].Reset(callback: graphResetedCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(graphResetedCallbackResults);
+
+                                                    if (callbackResults.UnSuccessful())
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                        });
+                                    }
+                                    else
+                                    {
+                                        GetSelectedGraphs().GetData()[i].Reset(callback: graphResetedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(graphResetedCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+
+                            case AppData.GraphNodeType.ShowTooltipNode:
+
+                                var showTooltipNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as ShowTooltipNode;
+
+                                break;
+
+                            case AppData.GraphNodeType.HideTooltipNode:
+
+                                var hideTooltipNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as HideTooltipNode;
+
+                                break;
+
+                            case AppData.GraphNodeType.TriggerEventNode:
+
+                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "Execute Graph Failed -App Events Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                                if(callbackResults.Success())
+                                {
+                                    var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+                                    var triggerEventNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as TriggerEventNode;
+
+                                    callbackResults.SetResult(triggerEventNode.GetEventType());
+
+                                    if(callbackResults.Success())
+                                    {
+                                        appEventsManagerInstance.InvokeEvent(triggerEventNode.GetEventType().GetData(), eventInvokedCallbackResults => 
+                                        {
+                                            callbackResults.SetResult(eventInvokedCallbackResults);
 
                                             if(callbackResults.Success())
                                             {
@@ -538,56 +663,14 @@ namespace Com.RedicalGames.Filar
                                                 });
                                             }
                                             else
-                                            {
-                                                StopProcessing(proccessingStoppedCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(proccessingStoppedCallbackResults);
-
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        GetSelectedGraphs().GetData()[i].Reset(callback: graphResetedCallbackResults =>
-                                                        {
-                                                            callbackResults.SetResult(graphResetedCallbackResults);
-
-                                                            if (callbackResults.UnSuccessful())
-                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                        });
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                        });
-                                    }
-                                    else
-                                    {
-                                        StopProcessing(proccessingStoppedCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(proccessingStoppedCallbackResults);
-
-                                            if (callbackResults.Success())
-                                            {
-                                                GetSelectedGraphs().GetData()[i].Reset(callback: graphResetedCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(graphResetedCallbackResults);
-
-                                                    if (callbackResults.UnSuccessful())
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                            else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         });
                                     }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                break;
-
-                            case AppData.GraphNodeType.ShowTooltipNode:
-
-                                var showTooltipNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as ShowTooltipNode;
 
                                 break;
 
@@ -595,7 +678,31 @@ namespace Com.RedicalGames.Filar
 
                                 var waitForEventNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as WaitForEventNode;
 
-                                
+                                callbackResults.SetResult(waitForEventNode.GetEventType());
+
+                                if (callbackResults.Success())
+                                {
+                                    awaitEventTriggerTaskSource = new TaskCompletionSource<AppData.EventType>();
+
+                                    var results = await awaitEventTriggerTaskSource.Task;
+
+                                    callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(waitForEventNode.GetEventType().GetData(), results));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        ProccessNextNode(GetSelectedGraphs().GetData()[i], proccessNextNodeCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                 break;
 
@@ -603,7 +710,31 @@ namespace Com.RedicalGames.Filar
 
                                 var waitForButtonEventNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as WaitForButtonEventNode;
 
+                                callbackResults.SetResult(waitForButtonEventNode.GetEventType());
 
+                                if (callbackResults.Success())
+                                {
+                                    awaitButtonEventTriggerTaskSource = new TaskCompletionSource<AppData.InputActionButtonType>();
+
+                                    var results = await awaitButtonEventTriggerTaskSource.Task;
+
+                                    callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(waitForButtonEventNode.GetEventType().GetData(), results));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        ProccessNextNode(GetSelectedGraphs().GetData()[i], proccessNextNodeCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                 break;
 
@@ -621,17 +752,10 @@ namespace Com.RedicalGames.Filar
                                     {
                                         callbackResults.SetResult(proccessNextNodeCallbackResults);
 
-                                        if (callbackResults.Success())
-                                        {
-                                            LogInfo($"Logging_Cats:// Finished Executing Node : {GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData().name} - " +
-                                                    $"Of Type : {GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData().GetNodeType().GetData()} - " +
-                                                    $"In Graph {GetSelectedGraphs().GetData()[i].name} With Entry Event : {GetSelectedGraphs().GetData()[i].GetEntryEventType().GetData()}", this);
-                                        }
-                                        else
+                                        if (callbackResults.UnSuccessful())
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
 
-                                    LogInfo($"Logging_Cats:// Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}", this);
+                                    });
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -642,20 +766,7 @@ namespace Com.RedicalGames.Filar
 
                                 callbackResults.SetResult(GetSelectedGraphs().GetData()[i].CompleteGraph());
 
-                                if (callbackResults.Success())
-                                {
-                                    callbackResults.SetResult(StopProcessing());
-
-                                    if (callbackResults.Success())
-                                    {
-                                        LogInfo($"Logging_Cats:// Finished Executing Node : {GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData().name} - " +
-                                                $"Of Type : {GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData().GetNodeType().GetData()} - " +
-                                                $"In Graph {GetSelectedGraphs().GetData()[i].name} With Entry Event : {GetSelectedGraphs().GetData()[i].GetEntryEventType().GetData()}", this);
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                }
-                                else
+                                if (callbackResults.UnSuccessful())
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                 break;
@@ -673,7 +784,7 @@ namespace Com.RedicalGames.Filar
 
         private void ProccessNextNode(SurfacingNodeGraph graph, Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback(StopProcessing());
+            var callbackResults = new AppData.Callback(graph.GetCurrentNode());
 
             if (callbackResults.Success())
             {
@@ -702,52 +813,6 @@ namespace Com.RedicalGames.Filar
 
             callback?.Invoke(callbackResults);
         }
-
-        private void StopProcessing(Action<AppData.Callback> callback = null)
-        {
-            var callbackResults = new AppData.Callback();
-
-            StopCoroutine(_process);
-            _process = null;
-
-            if (_process == null)
-            {
-                callbackResults.result = "Stop Processing Success -  All Running Proccesses Have Been Successfully Stopped.";
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-            }
-            else
-            {
-                callbackResults.result = "Stop Processing Failed - There Is No Running Proccess To Stop - Invalid Operation.";
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-            }
-
-            callback?.Invoke(callbackResults);
-        }
-
-        private AppData.Callback StopProcessing()
-        {
-            var callbackResults = new AppData.Callback();
-
-            if (_process != null)
-            {
-                StopCoroutine(_process);
-                _process = null;
-            }
-
-            if(_process == null)
-            {
-                callbackResults.result = "Stop Processing Success -  All Running Proccesses Have Been Successfully Stopped.";
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-            }
-            else
-            {
-                callbackResults.result = "Stop Processing Failed - Process Couldn't Be Stopped - Please Check Here - Invalid Operation.";
-                callbackResults.resultCode = AppData.Helpers.WarningCode;
-            }
-
-            return callbackResults;
-        }
-
 
         #endregion
     }

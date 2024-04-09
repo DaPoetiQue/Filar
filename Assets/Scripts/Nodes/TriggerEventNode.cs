@@ -3,12 +3,12 @@ using XNode;
 
 namespace Com.RedicalGames.Filar
 {
-	public class ShowTooltipNode : BaseNode
+	public class TriggerEventNode : BaseNode
 	{
 		#region Components
 
 		[SerializeField]
-		private AppData.TooltipTemplateType tooltipTemplate = AppData.TooltipTemplateType.None;
+		private AppData.EventType eventType = AppData.EventType.None;
 
 		[Input]
 		public int input;
@@ -27,14 +27,14 @@ namespace Com.RedicalGames.Filar
 
 		}
 
-		public AppData.CallbackData<AppData.TooltipTemplateType> GetTooltipTemplateType()
+		public AppData.CallbackData<AppData.EventType> GetEventType()
 		{
-			var callbackResults = new AppData.CallbackData<AppData.TooltipTemplateType>(AppData.Helpers.GetAppEnumValueValid(tooltipTemplate, "Tooltip Template Type", $"Get Tooltip Template Type Failed - Tooltip Template Type Is Set To Default : {tooltipTemplate} - Invalid Operation."));
+			var callbackResults = new AppData.CallbackData<AppData.EventType>(AppData.Helpers.GetAppEnumValueValid(eventType, "Event Type", $"Get Event Type Failed - Event Type Is Set To Default : {eventType} - Invalid Operation."));
 
 			if (callbackResults.Success())
 			{
-				callbackResults.result = $"Get Tooltip Templatet Type Success - Tooltip Template Type Is Set To : {tooltipTemplate}.";
-				callbackResults.data = tooltipTemplate;
+				callbackResults.result = $"Get Event Type Success - Event Type Is Set To : {eventType}.";
+				callbackResults.data = eventType;
 			}
 
 			return callbackResults;
@@ -44,8 +44,8 @@ namespace Com.RedicalGames.Filar
 		{
 			var callbackResults = new AppData.CallbackData<AppData.GraphNodeType>();
 
-			callbackResults.result = "This Is A Show Tooltip Node.";
-			callbackResults.data = AppData.GraphNodeType.ShowTooltipNode;
+			callbackResults.result = "This Is A Trigger Event Node.";
+			callbackResults.data = AppData.GraphNodeType.TriggerEventNode;
 			callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
 			return callbackResults;

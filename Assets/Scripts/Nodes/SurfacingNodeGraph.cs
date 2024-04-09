@@ -16,8 +16,10 @@ namespace Com.RedicalGames.Filar
 
         private BaseNode entryNode = null;
         private AppData.GraphEntryEventType entryEvent = AppData.GraphEntryEventType.None;
+        private AppData.GraphMode graphMode = AppData.GraphMode.Once;
         private List<SurfacingNodeGraph> prerequisiteGraphs = new List<SurfacingNodeGraph>();
 
+        [SerializeField]
         private bool completed;
 
         #endregion
@@ -41,7 +43,10 @@ namespace Com.RedicalGames.Filar
                             callbackResults.SetResult(SetCurrentNode(node));
 
                             if (callbackResults.Success())
+                            {
+                                completed = false;
                                 break;
+                            }    
                         }
                         else
                         {
@@ -74,6 +79,7 @@ namespace Com.RedicalGames.Filar
                         if(callbackResults.Success())
                         {
                             entryEvent = node.GetEntryEventType().GetData();
+                            graphMode = node.GetGraphMode().GetData();
 
                             callbackResults.SetResult(node.GetPrerequisiteGraphs());
 
@@ -114,6 +120,7 @@ namespace Com.RedicalGames.Filar
                         if (callbackResults.Success())
                         {
                             entryEvent = node.GetEntryEventType().GetData();
+                            graphMode = node.GetGraphMode().GetData();
 
                             callbackResults.SetResult(node.GetPrerequisiteGraphs());
 
@@ -232,13 +239,27 @@ namespace Com.RedicalGames.Filar
 
         public AppData.Callback CompleteGraph()
         {
-            var callbackResults = new AppData.Callback(GetPrerequisiteGraphs());
+            var callbackResults = new AppData.Callback(Completed());
 
-            if (callbackResults.Success())
+            if (callbackResults.UnSuccessful())
             {
                 completed = true;
-                callbackResults.result = $"Graph : {name} Has Been Successfully Completed.";
+
+                if (GetGraphMode().GetData() == AppData.GraphMode.Repeat)
+                {
+                    Reset(true, resetedCallbackResults => 
+                    {
+                        callbackResults.SetResult(resetedCallbackResults);
+
+                        if(callbackResults.Success())
+                            callbackResults.result = $"Graph : {name} Has Been Successfully Restarted.";
+                    });
+                }
+                else
+                    callbackResults.result = $"Graph : {name} Has Been Successfully Completed.";
             }
+            else
+                callbackResults.result = $"Graph : {name} Has Been Successfully Completed.";
 
             return callbackResults;
         }
@@ -286,6 +307,19 @@ namespace Com.RedicalGames.Filar
             });
 
             callback?.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackData<AppData.GraphMode> GetGraphMode()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.GraphMode>(AppData.Helpers.GetAppEnumValueValid(graphMode, "Graph Mode", $"Get Graph Mode Failed - Graph Mode Is Set To Default : {graphMode} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"Get Graph Mode Success - Get Graph Mode Is Set To : {graphMode}.";
+                callbackResults.data = graphMode;
+            }
+
+            return callbackResults;
         }
 
         #endregion

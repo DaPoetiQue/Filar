@@ -726,7 +726,7 @@ namespace Com.RedicalGames.Filar
 
         #region Surfacing Templates
 
-        public void ShowPopUp(AppData.SurfacingTemplateType templateType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButtonMethodOverride = null, Action secondaryButtonMethodOverride = null, params string[] messageOverrides)
+        public void ShowPopUp(AppData.PopupTemplateType templateType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, Action primaryButtonMethodOverride = null, Action secondaryButtonMethodOverride = null, params string[] messageOverrides)
         {
             var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -1107,7 +1107,49 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
-        
+        public void HidePopUp(AppData.PopupTemplateType templateType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, AppData.ScreenBlurConfig blurConfig = null)
+        {
+            var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppEnumValueValid(templateType, "Tempalte Type", $"Hide Pop Up Failed - Template Type Parameter Value Is Set To Default : {templateType} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(GetSurfacingTemplateLibrary());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetSurfacingTemplateLibrary().GetData().GetSurfacingTemplate(templateType));
+
+                    if (callbackResults.Success())
+                    {
+                        var surfacingTemplate = GetSurfacingTemplateLibrary().GetData().GetSurfacingTemplate(templateType).GetData();
+
+                        callbackResults.SetResult(surfacingTemplate.GetTemplateWidgetType());
+
+                        if(callbackResults.Success())
+                        {
+                            HidePopUp(surfacingTemplate.GetTemplateWidgetType().GetData(), popUpHiddenCallbackResults => 
+                            {
+                                callbackResults.SetResult(popUpHiddenCallbackResults);
+
+                                if(callbackResults.UnSuccessful())
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
         public AppData.Callback HideInteruptableWidgets()
         {
             var callbackResults = new AppData.Callback(GetSurfacedInteruptableWidgets());
@@ -1189,7 +1231,6 @@ namespace Com.RedicalGames.Filar
 
             callback?.Invoke(callbackResults);
         }
-
 
         public AppData.CallbackDataList<AppData.Widget> GetSurfacedWidgetList()
         {

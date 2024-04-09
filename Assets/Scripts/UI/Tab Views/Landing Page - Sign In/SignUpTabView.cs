@@ -638,7 +638,7 @@ namespace Com.RedicalGames.Filar
 
                                                     if (callbackResults.UnSuccessful())
                                                     {
-                                                        surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.EmailVerificationSentPopUp, popUpShownCallbackResults =>
+                                                        surfacingManagerInstance.ShowPopUp(AppData.PopupTemplateType.EmailVerificationSentPopUp, popUpShownCallbackResults =>
                                                         {
                                                             callbackResults.SetResult(popUpShownCallbackResults);
 
@@ -680,7 +680,7 @@ namespace Com.RedicalGames.Filar
 
                                                             if (callbackResults.Success())
                                                             {
-                                                                surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.VerifiedEmailAlreadyInUsePopUp, popUpShownCallbackResults =>
+                                                                surfacingManagerInstance.ShowPopUp(AppData.PopupTemplateType.VerifiedEmailAlreadyInUsePopUp, popUpShownCallbackResults =>
                                                                 {
                                                                     callbackResults.SetResult(popUpShownCallbackResults);
 
@@ -701,7 +701,7 @@ namespace Com.RedicalGames.Filar
                                                             }
                                                             else
                                                             {
-                                                                surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.UnverifiedEmailAlreadyInUsePopUp, popUpShownCallbackResults =>
+                                                                surfacingManagerInstance.ShowPopUp(AppData.PopupTemplateType.UnverifiedEmailAlreadyInUsePopUp, popUpShownCallbackResults =>
                                                                 {
                                                                     callbackResults.SetResult(popUpShownCallbackResults);
 
@@ -739,7 +739,7 @@ namespace Com.RedicalGames.Filar
 
                                                     if (callbackResults.UnSuccessful())
                                                     {
-                                                        surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.EmailVerificationSentPopUp, popUpShownCallbackResults =>
+                                                        surfacingManagerInstance.ShowPopUp(AppData.PopupTemplateType.EmailVerificationSentPopUp, popUpShownCallbackResults =>
                                                         {
                                                             callbackResults.SetResult(popUpShownCallbackResults);
 
@@ -773,7 +773,7 @@ namespace Com.RedicalGames.Filar
 
                                                         case Firebase.Auth.AuthError.EmailAlreadyInUse:
 
-                                                            surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.UnverifiedEmailAlreadyInUsePopUp, popUpShownCallbackResults =>
+                                                            surfacingManagerInstance.ShowPopUp(AppData.PopupTemplateType.UnverifiedEmailAlreadyInUsePopUp, popUpShownCallbackResults =>
                                                             {
                                                                 callbackResults.SetResult(popUpShownCallbackResults);
 
@@ -887,7 +887,7 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         #region Surface Popup
 
-                                                        surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.EmailVerificationSentPopUp, popUpShownCallbackResults =>
+                                                        surfacingManagerInstance.ShowPopUp(AppData.PopupTemplateType.EmailVerificationSentPopUp, popUpShownCallbackResults =>
                                                         {
                                                             callbackResults.SetResult(popUpShownCallbackResults);
 
@@ -1080,7 +1080,7 @@ namespace Com.RedicalGames.Filar
 
                                                     if (callbackResults.UnSuccessful())
                                                     {
-                                                        surfacingManagerInstance.ShowPopUp(AppData.SurfacingTemplateType.EmailVerificationSentPopUp, popUpShownCallbackResults =>
+                                                        surfacingManagerInstance.ShowPopUp(AppData.PopupTemplateType.EmailVerificationSentPopUp, popUpShownCallbackResults =>
                                                         {
                                                             callbackResults.SetResult(popUpShownCallbackResults);
 

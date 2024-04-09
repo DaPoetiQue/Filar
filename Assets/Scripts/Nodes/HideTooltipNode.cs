@@ -3,8 +3,9 @@ using XNode;
 
 namespace Com.RedicalGames.Filar
 {
-	public class ShowTooltipNode : BaseNode
+	public class HideTooltipNode : BaseNode
 	{
+
 		#region Components
 
 		[SerializeField]
@@ -44,8 +45,8 @@ namespace Com.RedicalGames.Filar
 		{
 			var callbackResults = new AppData.CallbackData<AppData.GraphNodeType>();
 
-			callbackResults.result = "This Is A Show Tooltip Node.";
-			callbackResults.data = AppData.GraphNodeType.ShowTooltipNode;
+			callbackResults.result = "This Is A Hide Tooltip Node.";
+			callbackResults.data = AppData.GraphNodeType.HideTooltipNode;
 			callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
 			return callbackResults;

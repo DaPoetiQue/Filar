@@ -4488,6 +4488,8 @@ namespace Com.RedicalGames.Filar
             {
                 var postManagerInstance = AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance").GetData();
 
+                AppData.ActionEvents.OnDownloadStartedEvent();
+
                 while (!postManagerInstance.HasPost)
                     await Task.Yield();
 
@@ -4617,6 +4619,9 @@ namespace Com.RedicalGames.Filar
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            if(callbackResults.Success())
+                AppData.ActionEvents.OnDownloadCompletedEvent();
 
             return callbackResults;
         }
