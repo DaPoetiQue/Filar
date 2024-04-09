@@ -303,7 +303,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        private void OnGraphEntry(AppData.GraphEntryEventType entry, Action<AppData.Callback> callback = null)
+        private async void OnGraphEntry(AppData.GraphEntryEventType entry, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(entry, "Entry", $"On Graph Entry Failed - Entry Parameter Value Is Set To Default : {entry} - Invalid Operation."));
 
@@ -321,17 +321,12 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        SetSelectedGraphs(entryGraphs, entryGraphsAssignedCallbackResults =>
-                        {
-                            callbackResults.SetResult(entryGraphsAssignedCallbackResults);
+                        var graphExecutionTasks = new List<Task>();
 
-                            if (callbackResults.Success())
-                            {
-                                ExecuteGraph(onProcessGraphsCallbackResults => { callbackResults.SetResult(onProcessGraphsCallbackResults); });
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
+                        for (int i = 0; i < entryGraphs.Count; i++)
+                            graphExecutionTasks.Add(ExecuteGraph(entryGraphs[i]));
+
+                        await Task.WhenAll(graphExecutionTasks);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -385,404 +380,344 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        private void SetSelectedGraphs(List<SurfacingNodeGraph> selectedGraphs, Action<AppData.Callback> callback = null)
+        private async Task ExecuteGraph(SurfacingNodeGraph graph)
         {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentsValid(selectedGraphs, "Selected Graphs", "Set Selected Graphs Failed - Selected Graphs Parameter Value Is Null - Invalid Operation."));
+            var callbackResults = new AppData.CallbackData<Task>(graph.Completed());
 
-            if(callbackResults.Success())
+            if (callbackResults.UnSuccessful())
             {
-                this.selectedGraphs = selectedGraphs;
-                callbackResults.result = $"Set Selected Graphs Success - There Are : {selectedGraphs.Count} - Selected Graphs Assigned.";
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-            callback?.Invoke(callbackResults);
-        }
-
-        private AppData.CallbackDataList<SurfacingNodeGraph> GetSelectedGraphs()
-        {
-            var callbackResults = new AppData.CallbackDataList<SurfacingNodeGraph>();
-
-            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(selectedGraphs, "Selected Graphs", "Get Selected Graphs Failed - There Are No Selected Graphs Found - Invalid Operation."));
-
-            if (callbackResults.Success())
-            {
-                callbackResults.result = $"Get Selected Graphs Success - There Are : {selectedGraphs.Count} Selected Graphs Found.";
-                callbackResults.data = selectedGraphs;
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-            return callbackResults;
-        }
-
-        private async void ExecuteGraph(Action<AppData.Callback> callback = null)
-        {
-            var callbackResults = new AppData.Callback(GetSelectedGraphs());
-
-            if(callbackResults.Success())
-            {
-                for (int i = 0; i < GetSelectedGraphs().GetData().Count; i++)
+                switch (graph.GetCurrentNode().GetData().GetNodeType().GetData())
                 {
-                    callbackResults.SetResult(GetSelectedGraphs().GetData()[i].Completed());
+                    case AppData.GraphNodeType.EntryNode:
 
-                    if (callbackResults.UnSuccessful())
-                    {
-                        switch (GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData().GetNodeType().GetData())
+                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
                         {
-                            case AppData.GraphNodeType.EntryNode:
+                            callbackResults.SetResult(proccessNextNodeCallbackResults);
 
-                                ProccessNextNode(GetSelectedGraphs().GetData()[i], proccessNextNodeCallbackResults =>
+                            if (callbackResults.UnSuccessful())
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+
+                        break;
+
+                    case AppData.GraphNodeType.CurrentScreenNode:
+
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Execute Graph Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                            callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreenType());
+
+                            if (callbackResults.Success())
+                            {
+                                var currentScreenNode = graph.GetCurrentNode().GetData() as CurrentScreenNode;
+
+                                callbackResults.SetResult(currentScreenNode.GetCurrentScreenType());
+
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
+                                    callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(currentScreenNode.GetCurrentScreenType().GetData(), screenUIManagerInstance.GetCurrentScreenType().GetData()));
 
                                     if (callbackResults.Success())
                                     {
-                                        LogInfo($"Logging_Cats:// Finished Executing Node : {GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData().name} - " +
-                                                $"Of Type : {GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData().GetNodeType().GetData()} - " +
-                                                $"In Graph {GetSelectedGraphs().GetData()[i].name} With Entry Event : {GetSelectedGraphs().GetData()[i].GetEntryEventType().GetData()}", this);
+                                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                    {
+                                        graph.Reset(callback: graphResetedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(graphResetedCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                        break;
+
+                    case AppData.GraphNodeType.ShowPopupNode:
+
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance", "Execute Graph Failed -Surfacing Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
+                            var showPopupNode = graph.GetCurrentNode().GetData() as ShowPopupNode;
+
+                            callbackResults.SetResult(showPopupNode.GetPopupTemplateType());
+
+                            if (callbackResults.Success())
+                            {
+                                surfacingManagerInstance.ShowPopUp(showPopupNode.GetPopupTemplateType().GetData(), popUpSurfacedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(popUpSurfacedCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                    {
+                                        graph.Reset(callback: graphResetedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(graphResetedCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                graph.Reset(callback: graphResetedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(graphResetedCallbackResults);
+
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                        break;
+
+                    case AppData.GraphNodeType.HidePopupNode:
+
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance", "Execute Graph Failed -Surfacing Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
+                            var hidePopupNode = graph.GetCurrentNode().GetData() as HidePopupNode;
+
+                            callbackResults.SetResult(hidePopupNode.GetPopupTemplateType());
+
+                            if (callbackResults.Success())
+                            {
+                                surfacingManagerInstance.HidePopUp(hidePopupNode.GetPopupTemplateType().GetData(), popUpSurfacedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(popUpSurfacedCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                    {
+                                        graph.Reset(callback: graphResetedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(graphResetedCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                graph.Reset(callback: graphResetedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(graphResetedCallbackResults);
+
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                        break;
+
+                    case AppData.GraphNodeType.ShowTooltipNode:
+
+                        var showTooltipNode = graph.GetCurrentNode().GetData() as ShowTooltipNode;
+
+                        break;
+
+                    case AppData.GraphNodeType.HideTooltipNode:
+
+                        var hideTooltipNode = graph.GetCurrentNode().GetData() as HideTooltipNode;
+
+                        break;
+
+                    case AppData.GraphNodeType.TriggerEventNode:
+
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "Execute Graph Failed -App Events Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+                            var triggerEventNode = graph.GetCurrentNode().GetData() as TriggerEventNode;
+
+                            callbackResults.SetResult(triggerEventNode.GetEventType());
+
+                            if (callbackResults.Success())
+                            {
+                                appEventsManagerInstance.InvokeEvent(triggerEventNode.GetEventType().GetData(), eventInvokedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(eventInvokedCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
                                     }
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                break;
+                        break;
 
-                            case AppData.GraphNodeType.CurrentScreenNode:
+                    case AppData.GraphNodeType.WaitForEventNode:
 
-                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Execute Graph Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
+                        var waitForEventNode = graph.GetCurrentNode().GetData() as WaitForEventNode;
 
-                                if(callbackResults.Success())
+                        callbackResults.SetResult(waitForEventNode.GetEventType());
+
+                        if (callbackResults.Success())
+                        {
+                            awaitEventTriggerTaskSource = new TaskCompletionSource<AppData.EventType>();
+
+                            var results = await awaitEventTriggerTaskSource.Task;
+
+                            callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(waitForEventNode.GetEventType().GetData(), results));
+
+                            if (callbackResults.Success())
+                            {
+                                ProccessNextNode(graph, proccessNextNodeCallbackResults =>
                                 {
-                                    var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
 
-                                    callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreenType());
-
-                                    if(callbackResults.Success())
-                                    {
-                                        var currentScreenNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as CurrentScreenNode;
-
-                                        callbackResults.SetResult(currentScreenNode.GetCurrentScreenType());
-
-                                        if(callbackResults.Success())
-                                        {
-                                            callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(currentScreenNode.GetCurrentScreenType().GetData(), screenUIManagerInstance.GetCurrentScreenType().GetData()));
-
-                                            if (callbackResults.Success())
-                                            {
-                                                ProccessNextNode(GetSelectedGraphs().GetData()[i], proccessNextNodeCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
-
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        LogInfo($"Logging_Cats:// Finished Executing Node : {GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData().name} - " +
-                                                                $"Of Type : {GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData().GetNodeType().GetData()} - " +
-                                                                $"In Graph {GetSelectedGraphs().GetData()[i].name} With Entry Event : {GetSelectedGraphs().GetData()[i].GetEntryEventType().GetData()}", this);
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                            else
-                                            {
-                                                GetSelectedGraphs().GetData()[i].Reset(callback: graphResetedCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(graphResetedCallbackResults);
-
-                                                    if(callbackResults.UnSuccessful())
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    }
-                                    else
+                                    if (callbackResults.UnSuccessful())
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                break;
+                        break;
 
-                            case AppData.GraphNodeType.ShowPopupNode:
+                    case AppData.GraphNodeType.WaitForButtonEventNode:
 
-                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance", "Execute Graph Failed -Surfacing Manager Instance Is Not Initialized Yet - Invalid Operation."));
+                        var waitForButtonEventNode = graph.GetCurrentNode().GetData() as WaitForButtonEventNode;
 
-                                if(callbackResults.Success())
+                        callbackResults.SetResult(waitForButtonEventNode.GetEventType());
+
+                        if (callbackResults.Success())
+                        {
+                            awaitButtonEventTriggerTaskSource = new TaskCompletionSource<AppData.InputActionButtonType>();
+
+                            var results = await awaitButtonEventTriggerTaskSource.Task;
+
+                            callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(waitForButtonEventNode.GetEventType().GetData(), results));
+
+                            if (callbackResults.Success())
+                            {
+                                ProccessNextNode(graph, proccessNextNodeCallbackResults =>
                                 {
-                                    var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
-                                    var showPopupNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as ShowPopupNode;
+                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
 
-                                    callbackResults.SetResult(showPopupNode.GetPopupTemplateType());
-
-                                    if(callbackResults.Success())
-                                    {
-                                        surfacingManagerInstance.ShowPopUp(showPopupNode.GetPopupTemplateType().GetData(), popUpSurfacedCallbackResults => 
-                                        {
-                                            callbackResults.SetResult(popUpSurfacedCallbackResults);
-
-                                            if(callbackResults.Success())
-                                            {
-                                                ProccessNextNode(GetSelectedGraphs().GetData()[i], proccessNextNodeCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
-
-                                                    if (callbackResults.UnSuccessful())
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                            else
-                                            {
-                                                GetSelectedGraphs().GetData()[i].Reset(callback: graphResetedCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(graphResetedCallbackResults);
-
-                                                    if (callbackResults.UnSuccessful())
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                        });
-                                    }
-                                    else
-                                    {
-                                        GetSelectedGraphs().GetData()[i].Reset(callback: graphResetedCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(graphResetedCallbackResults);
-
-                                            if (callbackResults.UnSuccessful())
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                break;
-
-                            case AppData.GraphNodeType.HidePopupNode:
-
-                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance", "Execute Graph Failed -Surfacing Manager Instance Is Not Initialized Yet - Invalid Operation."));
-
-                                if (callbackResults.Success())
-                                {
-                                    var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
-                                    var hidePopupNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as HidePopupNode;
-
-                                    callbackResults.SetResult(hidePopupNode.GetPopupTemplateType());
-
-                                    if (callbackResults.Success())
-                                    {
-                                        surfacingManagerInstance.HidePopUp(hidePopupNode.GetPopupTemplateType().GetData(), popUpSurfacedCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(popUpSurfacedCallbackResults);
-
-                                            if (callbackResults.Success())
-                                            {
-                                                ProccessNextNode(GetSelectedGraphs().GetData()[i], proccessNextNodeCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
-
-                                                    if (callbackResults.UnSuccessful())
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                            else
-                                            {
-                                                GetSelectedGraphs().GetData()[i].Reset(callback: graphResetedCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(graphResetedCallbackResults);
-
-                                                    if (callbackResults.UnSuccessful())
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                        });
-                                    }
-                                    else
-                                    {
-                                        GetSelectedGraphs().GetData()[i].Reset(callback: graphResetedCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(graphResetedCallbackResults);
-
-                                            if (callbackResults.UnSuccessful())
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                break;
-
-                            case AppData.GraphNodeType.ShowTooltipNode:
-
-                                var showTooltipNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as ShowTooltipNode;
-
-                                break;
-
-                            case AppData.GraphNodeType.HideTooltipNode:
-
-                                var hideTooltipNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as HideTooltipNode;
-
-                                break;
-
-                            case AppData.GraphNodeType.TriggerEventNode:
-
-                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "Execute Graph Failed -App Events Manager Instance Is Not Initialized Yet - Invalid Operation."));
-
-                                if(callbackResults.Success())
-                                {
-                                    var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
-                                    var triggerEventNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as TriggerEventNode;
-
-                                    callbackResults.SetResult(triggerEventNode.GetEventType());
-
-                                    if(callbackResults.Success())
-                                    {
-                                        appEventsManagerInstance.InvokeEvent(triggerEventNode.GetEventType().GetData(), eventInvokedCallbackResults => 
-                                        {
-                                            callbackResults.SetResult(eventInvokedCallbackResults);
-
-                                            if(callbackResults.Success())
-                                            {
-                                                ProccessNextNode(GetSelectedGraphs().GetData()[i], proccessNextNodeCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
-
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        LogInfo($"Logging_Cats:// Finished Executing Node : {GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData().name} - " +
-                                                                $"Of Type : {GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData().GetNodeType().GetData()} - " +
-                                                                $"In Graph {GetSelectedGraphs().GetData()[i].name} With Entry Event : {GetSelectedGraphs().GetData()[i].GetEntryEventType().GetData()}", this);
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
-                                    else
+                                    if (callbackResults.UnSuccessful())
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                break;
+                        break;
 
-                            case AppData.GraphNodeType.WaitForEventNode:
+                    case AppData.GraphNodeType.WaitForSecondsNode:
 
-                                var waitForEventNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as WaitForEventNode;
+                        var waitForSecondsNode = graph.GetCurrentNode().GetData() as WaitForSecondsNode;
 
-                                callbackResults.SetResult(waitForEventNode.GetEventType());
+                        callbackResults.SetResult(waitForSecondsNode.GetWaitTime());
 
-                                if (callbackResults.Success())
-                                {
-                                    awaitEventTriggerTaskSource = new TaskCompletionSource<AppData.EventType>();
+                        if (callbackResults.Success())
+                        {
+                            await Task.Delay(AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(waitForSecondsNode.GetWaitTime().GetData()));
 
-                                    var results = await awaitEventTriggerTaskSource.Task;
-
-                                    callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(waitForEventNode.GetEventType().GetData(), results));
-
-                                    if (callbackResults.Success())
-                                    {
-                                        ProccessNextNode(GetSelectedGraphs().GetData()[i], proccessNextNodeCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
-
-                                            if (callbackResults.UnSuccessful())
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                break;
-
-                            case AppData.GraphNodeType.WaitForButtonEventNode:
-
-                                var waitForButtonEventNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as WaitForButtonEventNode;
-
-                                callbackResults.SetResult(waitForButtonEventNode.GetEventType());
-
-                                if (callbackResults.Success())
-                                {
-                                    awaitButtonEventTriggerTaskSource = new TaskCompletionSource<AppData.InputActionButtonType>();
-
-                                    var results = await awaitButtonEventTriggerTaskSource.Task;
-
-                                    callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(waitForButtonEventNode.GetEventType().GetData(), results));
-
-                                    if (callbackResults.Success())
-                                    {
-                                        ProccessNextNode(GetSelectedGraphs().GetData()[i], proccessNextNodeCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
-
-                                            if (callbackResults.UnSuccessful())
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                break;
-
-                            case AppData.GraphNodeType.WaitForSecondsNode:
-
-                                var waitForSecondsNode = GetSelectedGraphs().GetData()[i].GetCurrentNode().GetData() as WaitForSecondsNode;
-
-                                callbackResults.SetResult(waitForSecondsNode.GetWaitTime());
-
-                                if (callbackResults.Success())
-                                {
-                                    await Task.Delay(AppData.Helpers.ConvertSecondsFromFloatToMillisecondsInt(waitForSecondsNode.GetWaitTime().GetData()));
-
-                                    ProccessNextNode(GetSelectedGraphs().GetData()[i], proccessNextNodeCallbackResults =>
-                                    {
-                                        callbackResults.SetResult(proccessNextNodeCallbackResults);
-
-                                        if (callbackResults.UnSuccessful())
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                    });
-                                }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                break;
-
-                            case AppData.GraphNodeType.ExitNode:
-
-                                callbackResults.SetResult(GetSelectedGraphs().GetData()[i].CompleteGraph());
+                            ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                            {
+                                callbackResults.SetResult(proccessNextNodeCallbackResults);
 
                                 if (callbackResults.UnSuccessful())
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                break;
+                            });
                         }
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                        break;
+
+                    case AppData.GraphNodeType.ExitNode:
+
+                        callbackResults.SetResult(graph.CompleteGraph());
+
+                        if (callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                        break;
                 }
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-            callback?.Invoke(callbackResults);
+            await Task.Yield();
         }
 
-        private void ProccessNextNode(SurfacingNodeGraph graph, Action<AppData.Callback> callback = null)
+        private async void ProccessNextNode(SurfacingNodeGraph graph, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(graph.GetCurrentNode());
 
@@ -795,17 +730,13 @@ namespace Com.RedicalGames.Filar
                         callbackResults.SetResult(graph.SetCurrentNode(port.Connection.node as BaseNode));
 
                         if (callbackResults.Success())
-                        {
-                            ExecuteGraph(onProcessGraphsCallbackResults => { callbackResults.SetResult(onProcessGraphsCallbackResults); });
-
                             break;
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         continue;
                 }
+
+                await ExecuteGraph(graph);
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
