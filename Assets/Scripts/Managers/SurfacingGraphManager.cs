@@ -15,11 +15,6 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         private List<SurfacingNodeGraph> graphs = new List<SurfacingNodeGraph>();
 
-        private List<SurfacingNodeGraph> selectedGraphs = new List<SurfacingNodeGraph>();
-
-        private TaskCompletionSource<AppData.EventType> awaitEventTriggerTaskSource = null;
-        private TaskCompletionSource<AppData.InputActionButtonType> awaitButtonEventTriggerTaskSource = null;
-
         #endregion
 
         #region Main
@@ -41,9 +36,6 @@ namespace Com.RedicalGames.Filar
                 appEventsManagerInstance.OnEventSubscription<AppData.TabView<AppData.WidgetType>>(OnScreenBluredEvent, AppData.EventType.OnTabViewShownEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
                 appEventsManagerInstance.OnEventSubscription<AppData.TabView<AppData.WidgetType>>(OnScreenFocusedEvent, AppData.EventType.OnTabViewHiddenEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
 
-                appEventsManagerInstance.OnEventSubscription(TestEventRemoveAfter, AppData.EventType.OnDownloadStartedEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults);  }); // Test - Delete After.
-                appEventsManagerInstance.OnEventSubscription(TestEventRemoveAfter2, AppData.EventType.OnInitializationCompletedEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); }); // Test - Delete After.
-
                 if (callbackResults.Success())
                 {
                     OnConfig(graphsConfiguredCallbackResults =>
@@ -62,16 +54,6 @@ namespace Com.RedicalGames.Filar
         }
 
         #region Entry Event Callbacks
-
-        private void TestEventRemoveAfter()
-        {
-            awaitEventTriggerTaskSource?.TrySetResult(AppData.EventType.OnDownloadStartedEvent); // Test - Delete After.
-        }
-
-        private void TestEventRemoveAfter2()
-        {
-            awaitEventTriggerTaskSource?.TrySetResult(AppData.EventType.OnInitializationCompletedEvent); // Test - Delete After.
-        }
 
         private void OnScreenEnterEvent(Screen screen)
         {
@@ -615,20 +597,21 @@ namespace Com.RedicalGames.Filar
 
                     case AppData.GraphNodeType.WaitForEventNode:
 
-                        var waitForEventNode = graph.GetCurrentNode().GetData() as WaitForEventNode;
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "Execute Graph Failed - App Events Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
-                        callbackResults.SetResult(waitForEventNode.GetEventType());
-
-                        if (callbackResults.Success())
+                        if(callbackResults.Success())
                         {
-                            awaitEventTriggerTaskSource = new TaskCompletionSource<AppData.EventType>();
+                            var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
 
-                            var results = await awaitEventTriggerTaskSource.Task;
+                            var waitForEventNode = graph.GetCurrentNode().GetData() as WaitForEventNode;
 
-                            callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(waitForEventNode.GetEventType().GetData(), results));
+                            callbackResults.SetResult(waitForEventNode.GetEventType());
 
                             if (callbackResults.Success())
                             {
+                                while (appEventsManagerInstance.GetCurrentEvent().GetData() != waitForEventNode.GetEventType().GetData())
+                                    await Task.Yield();
+
                                 ProccessNextNode(graph, proccessNextNodeCallbackResults =>
                                 {
                                     callbackResults.SetResult(proccessNextNodeCallbackResults);
@@ -653,24 +636,7 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            awaitButtonEventTriggerTaskSource = new TaskCompletionSource<AppData.InputActionButtonType>();
 
-                            var results = await awaitButtonEventTriggerTaskSource.Task;
-
-                            callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(waitForButtonEventNode.GetEventType().GetData(), results));
-
-                            if (callbackResults.Success())
-                            {
-                                ProccessNextNode(graph, proccessNextNodeCallbackResults =>
-                                {
-                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
-
-                                    if (callbackResults.UnSuccessful())
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                });
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

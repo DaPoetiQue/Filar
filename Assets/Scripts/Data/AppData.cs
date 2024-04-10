@@ -60886,8 +60886,8 @@ namespace Com.RedicalGames.Filar
             None,
             OnInitializationStartedEvent,
             OnInitializationCompletedEvent,
-            OnAppAwake,
-            OnAppStart,
+            OnAwake,
+            OnStart,
             OnUpdate,
             OnLateUpdate,
             OnFixedUpdate,
@@ -60912,7 +60912,10 @@ namespace Com.RedicalGames.Filar
             OnTabViewShownEvent,
             OnTabViewHiddenEvent,
             OnDownloadStartedEvent,
-            OnDownloadCompletedEvent
+            OnDownloadCompletedEvent,
+            OnScreenChangedEvent,
+            OnScreenRefreshed,
+            OnActionButtonClicked
         }
 
         public enum TransitionableEventType

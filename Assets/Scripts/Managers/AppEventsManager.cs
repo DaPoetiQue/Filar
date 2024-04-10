@@ -1,11 +1,17 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Com.RedicalGames.Filar
 {
     public class AppEventsManager : AppData.SingletonBaseComponent<AppEventsManager>
     {
         #region Components
+
+        [Tooltip("Alert! - Do No Assign This Value, This Is Assigned In Runtime - Note : Any Settings Applied Will Be Overriden In Runtime.")]
+        [Space(5)]
+        [SerializeField]
+        private AppData.EventType currentEvent = AppData.EventType.None;
 
         Dictionary<string, AppData.TimedEventComponent> timedEventComponents = new Dictionary<string, AppData.TimedEventComponent>();
 
@@ -25,7 +31,67 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override void Init() => AppData.ActionEvents.Start();
+        #region Initializations
+
+        protected override void Init()
+        {
+            var callbackResults = new AppData.Callback();
+
+            OnEventSubscription(OnGlobalEventSubscriptions, true, subscribedToEventCallbackResults => 
+            {
+                callbackResults.SetResult(subscribedToEventCallbackResults); 
+
+                if(callbackResults.Success())
+                    AppData.ActionEvents.Start();
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            });
+        }
+
+        private void OnGlobalEventSubscriptions(AppData.EventType currentEvent)
+        {
+            var callbackResults = new AppData.Callback();
+
+            SetCurrentEventType(currentEvent, globalEventSubscriptionsCallbackResults => 
+            {
+                callbackResults.SetResult(globalEventSubscriptionsCallbackResults);
+
+                if (callbackResults.UnSuccessful())
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            });
+        }
+
+        private void SetCurrentEventType(AppData.EventType currentEvent, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(currentEvent, "Current Event", $"Set Current Event Failed - Current Event Parameter Value Is Set To Default : {currentEvent} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                this.currentEvent = currentEvent;
+                callbackResults.result = $"Set Current Event Success - Current Event Parameter Value Is Set To : {currentEvent}.";
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackData<AppData.EventType> GetCurrentEvent()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.EventType>(AppData.Helpers.GetAppEnumValueValid(currentEvent, "Current Event", $"Get Current Event Failed - Current Event Value Is Set To Default : {currentEvent} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"Get Current Event Success - Current Event Value Is Set To : {currentEvent}.";
+                callbackResults.data = currentEvent;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        #endregion
 
         #region Subscriptions
 
@@ -41,7 +107,7 @@ namespace Com.RedicalGames.Filar
                 {
                     switch (eventType)
                     {
-                        case AppData.EventType.OnAppAwake:
+                        case AppData.EventType.OnAwake:
 
                             if (subscribe)
                                 AppData.ActionEvents._OnAwake += eventMethod.Invoke;
@@ -50,7 +116,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnAppStart:
+                        case AppData.EventType.OnStart:
 
                             if (subscribe)
                                 AppData.ActionEvents._OnStart += eventMethod.Invoke;
@@ -125,6 +191,45 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void OnEventSubscription(Action<AppData.EventType> eventMethod, bool subscribe = true, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", "On Event Subscription Failed - Event Menthod Parameter Value Is Not Assigned."));
+
+            if (callbackResults.Success())
+            {
+                if (subscribe)
+                {
+                    AppData.ActionEvents._OnStart += () => eventMethod?.Invoke(AppData.EventType.OnStart);
+                    AppData.ActionEvents._OnInitializationStartedEvent += () => eventMethod?.Invoke(AppData.EventType.OnInitializationStartedEvent);
+                    AppData.ActionEvents._OnInitializationCompletedEvent += () => eventMethod?.Invoke(AppData.EventType.OnInitializationCompletedEvent);
+                    AppData.ActionEvents._OnDownloadStartedEvent += () => eventMethod?.Invoke(AppData.EventType.OnDownloadStartedEvent);
+                    AppData.ActionEvents._OnDownloadCompletedEvent += () => eventMethod?.Invoke(AppData.EventType.OnDownloadCompletedEvent);
+                    AppData.ActionEvents._OnScreenChangedEvent += (value) => eventMethod?.Invoke(AppData.EventType.OnScreenChangedEvent);
+                    AppData.ActionEvents._OnScreenRefreshed += (value) => eventMethod?.Invoke(AppData.EventType.OnScreenRefreshed);
+                    AppData.ActionEvents._OnActionButtonClickedEvent += (value) => eventMethod?.Invoke(AppData.EventType.OnActionButtonClicked);
+                    AppData.ActionEvents._OnNetworkConnectedEvent += () => eventMethod?.Invoke(AppData.EventType.OnNetworkConnectedEvent);
+                    AppData.ActionEvents._OnNetworkFailedEvent += () => eventMethod?.Invoke(AppData.EventType.OnNetworkFailedEvent);
+                }
+                else
+                {
+                    AppData.ActionEvents._OnStart -= () => eventMethod?.Invoke(AppData.EventType.OnStart);
+                    AppData.ActionEvents._OnInitializationStartedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnInitializationStartedEvent);
+                    AppData.ActionEvents._OnInitializationCompletedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnInitializationCompletedEvent);
+                    AppData.ActionEvents._OnDownloadStartedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnDownloadStartedEvent);
+                    AppData.ActionEvents._OnDownloadCompletedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnDownloadCompletedEvent);
+                    AppData.ActionEvents._OnScreenChangedEvent -= (value) => eventMethod?.Invoke(AppData.EventType.OnScreenChangedEvent);
+                    AppData.ActionEvents._OnScreenRefreshed -= (value) => eventMethod?.Invoke(AppData.EventType.OnScreenRefreshed);
+                    AppData.ActionEvents._OnActionButtonClickedEvent -= (value) => eventMethod?.Invoke(AppData.EventType.OnActionButtonClicked);
+                    AppData.ActionEvents._OnNetworkConnectedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnNetworkConnectedEvent);
+                    AppData.ActionEvents._OnNetworkFailedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnNetworkFailedEvent);
+                }
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
