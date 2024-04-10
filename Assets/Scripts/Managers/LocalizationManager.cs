@@ -61,33 +61,31 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    ChangeLanguage(GetCurrentLanguage().GetData(), languageChangedCallbackResults => 
+                                    ChangeLanguage(GetCurrentLanguage().GetData(), async languageChangedCallbackResults =>
                                     {
                                         callbackResults.SetResult(languageChangedCallbackResults);
 
-                                        if(callbackResults.Success())
+                                        if (callbackResults.Success())
                                         {
+                                            this.localeConfigDataPacket = localeConfigDataPacket;
 
+                                            if (generateLanguageRestriction)
+                                            {
+                                                databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
+
+                                                string languageFile = JsonUtility.ToJson(languageRestriction);
+
+                                                Dictionary<string, object> languageFileObject = new Dictionary<string, object>();
+                                                languageFileObject.Add("Localization-Filar", languageFile);
+
+                                                await databaseReference.Child("Filar Localization").Child("Language Restrictions").UpdateChildrenAsync(languageFileObject);
+                                            }
+
+                                            LocalizationSettings.SelectedLocaleChanged += OnAppLanguageChangedEvent;
                                         }
                                         else
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     });
-
-                                    callbackResults.result = "Init Success - Local Config Data Packet Found.";
-
-                                    this.localeConfigDataPacket = localeConfigDataPacket;
-
-                                    if (generateLanguageRestriction)
-                                    {
-                                        databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
-
-                                        string languageFile = JsonUtility.ToJson(languageRestriction);
-
-                                        Dictionary<string, object> languageFileObject = new Dictionary<string, object>();
-                                        languageFileObject.Add("Localization-Filar", languageFile);
-
-                                        await databaseReference.Child("Filar Localization").Child("Language Restrictions").UpdateChildrenAsync(languageFileObject);
-                                    }
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -103,6 +101,26 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        private void OnAppLanguageChangedEvent(Locale obj)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "On App Language Changed Event Failed - App Events Manager Instance Is Not Initialized Yet."));
+
+            if(callbackResults.Success())
+            {
+                var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+
+                appEventsManagerInstance.InvokeEvent(AppData.EventType.OnAppLanguageChanged, appLanguageChangedEventCallbackResults => 
+                {
+                    callbackResults.SetResult(appLanguageChangedEventCallbackResults);
+
+                    if(callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -223,16 +241,17 @@ namespace Com.RedicalGames.Filar
 
             await LocalizationSettings.InitializationOperation.Task;
 
-            if(LocalizationSettings.InitializationOperation.Task.IsCompleted && LocalizationSettings.InitializationOperation.Task.Exception == null)
+            if (LocalizationSettings.InitializationOperation.Task.IsCompletedSuccessfully && LocalizationSettings.InitializationOperation.Task.Exception == null)
             {
                 LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[(int)LocaleType];
 
-                // Save Language To Data
+                callbackResults.result = $"Change Language Success - App Languge Has Been Successfully Changed To : {LocaleType}";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
             else
             {
-                callbackResults.result = $"Change Language Failed With Exception : {LocalizationSettings.InitializationOperation.Task.Exception.Message}";
-                callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                callbackResults.result = $"Change Language Failed - App Languge Couldn'nt Changed To : {LocaleType} - Error Message : {LocalizationSettings.InitializationOperation.Task.Exception.Message} - Invalid Operation.";
+                callbackResults.resultCode = AppData.Helpers.WarningCode;
             }
 
             callback?.Invoke(callbackResults);
@@ -247,6 +266,8 @@ namespace Com.RedicalGames.Filar
 
             return callbackResults;
         }
+
+        
 
         #endregion
     }

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-Assets-Tsonga (South Africa) (ts-ZA)
+  m_EditorClassIdentifier: 
+  m_GroupName: Localization-Assets-Tsonga (South Africa) (ts-ZA)
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 335e94bffa3f90342ba826f09b5ac497
+  m_SerializeEntries:
+  - m_GUID: 50b34ccaa6b240c479f25274edf93b5f
+    m_Address: Tsonga
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ts-ZA
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 776bab8cfea74a747a9cb149b1fbe523, type: 2}
+    - {fileID: 11400000, guid: cca7facbe93e7c34986fa9755c33cbb3, type: 2}

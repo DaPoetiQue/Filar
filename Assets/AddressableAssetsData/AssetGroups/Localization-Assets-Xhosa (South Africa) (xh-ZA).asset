@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-Assets-Xhosa (South Africa) (xh-ZA)
+  m_EditorClassIdentifier: 
+  m_GroupName: Localization-Assets-Xhosa (South Africa) (xh-ZA)
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 82dd73ccaf69f414d947eaf878298056
+  m_SerializeEntries:
+  - m_GUID: 3c5f5b94e2506f2429ddfa030c5b7332
+    m_Address: Xhosa
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-xh-ZA
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 9056d49abb24a7f4aaf9775d032d19f6, type: 2}
+    - {fileID: 11400000, guid: 48b3b6e5a94a7c4428d9bedf95425b2d, type: 2}

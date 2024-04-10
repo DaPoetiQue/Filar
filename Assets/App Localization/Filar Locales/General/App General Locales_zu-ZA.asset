@@ -112,6 +112,10 @@ MonoBehaviour:
     m_Localized: Imibandela
     m_Metadata:
       m_Items: []
+  - m_Id: 862452530860032
+    m_Localized: Khetha Ulimi
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

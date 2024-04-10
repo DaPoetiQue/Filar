@@ -1004,6 +1004,17 @@ MonoBehaviour:
       m_FallbackState: 0
       m_WaitForCompletion: 0
       m_LocalVariables: []
+  - name: Select App Language Title Locale Key
+    key: 94
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:12346a79f2c58094abaa18d9e87c4289
+      m_TableEntryReference:
+        m_KeyId: 862452530860032
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
   references:
     version: 2
     RefIds: []

@@ -105,7 +105,7 @@ namespace Com.RedicalGames.Filar
 
                     callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
 
-                    if(callbackResults.Success())
+                    if (callbackResults.Success())
                     {
                         callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen().GetData().GetScreenBlur());
 
@@ -113,7 +113,7 @@ namespace Com.RedicalGames.Filar
                         {
                             callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen().GetData().GetScreenBlur().GetData().IsScreenBlured());
 
-                            if(callbackResults.Success())
+                            if (callbackResults.Success())
                             {
                                 OnGraphEntry(AppData.GraphEntryEventType.OnScreenBlured, screenFocusedEventCallbackResults =>
                                 {
@@ -434,44 +434,88 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.GraphNodeType.ShowPopupNode:
+                    case AppData.GraphNodeType.ScreenWidgetStateNode:
 
                         callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance", "Execute Graph Failed -Surfacing Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
                         if (callbackResults.Success())
                         {
                             var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
-                            var showPopupNode = graph.GetCurrentNode().GetData() as ShowPopupNode;
+                            var screenWidgetStateNode = graph.GetCurrentNode().GetData() as ScreenWidgetStateNode;
 
-                            callbackResults.SetResult(showPopupNode.GetPopupTemplateType());
+                            callbackResults.SetResult(screenWidgetStateNode.GetWidgetType());
 
                             if (callbackResults.Success())
                             {
-                                surfacingManagerInstance.ShowPopUp(showPopupNode.GetPopupTemplateType().GetData(), popUpSurfacedCallbackResults =>
+                                callbackResults.SetResult(screenWidgetStateNode.GetState());
+
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(popUpSurfacedCallbackResults);
-
-                                    if (callbackResults.Success())
+                                    switch (screenWidgetStateNode.GetState().GetData())
                                     {
-                                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
+                                        case AppData.UIVisibilityStateEvent.Show:
 
-                                            if (callbackResults.UnSuccessful())
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
-                                    else
-                                    {
-                                        graph.Reset(callback: graphResetedCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(graphResetedCallbackResults);
+                                            surfacingManagerInstance.SurfaceWidget(screenWidgetStateNode.GetWidgetType().GetData(), popUpSurfacedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(popUpSurfacedCallbackResults);
 
-                                            if (callbackResults.UnSuccessful())
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
+                                                if (callbackResults.Success())
+                                                {
+                                                    ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                                        if (callbackResults.UnSuccessful())
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                {
+                                                    graph.Reset(callback: graphResetedCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(graphResetedCallbackResults);
+
+                                                        if (callbackResults.UnSuccessful())
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                            });
+
+                                            break;
+
+                                        case AppData.UIVisibilityStateEvent.Hide:
+
+                                            surfacingManagerInstance.HidePopUp(screenWidgetStateNode.GetWidgetType().GetData(), popUpSurfacedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(popUpSurfacedCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                                        if (callbackResults.UnSuccessful())
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                {
+                                                    graph.Reset(callback: graphResetedCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(graphResetedCallbackResults);
+
+                                                        if (callbackResults.UnSuccessful())
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                            });
+
+                                            break;
                                     }
-                                });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
                             else
                             {
@@ -489,44 +533,88 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.GraphNodeType.HidePopupNode:
+                    case AppData.GraphNodeType.ScreenPopupStateNode:
 
                         callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance", "Execute Graph Failed -Surfacing Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
                         if (callbackResults.Success())
                         {
                             var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
-                            var hidePopupNode = graph.GetCurrentNode().GetData() as HidePopupNode;
+                            var screenPopUpStateNode = graph.GetCurrentNode().GetData() as ScreenPopupStateNode;
 
-                            callbackResults.SetResult(hidePopupNode.GetPopupTemplateType());
+                            callbackResults.SetResult(screenPopUpStateNode.GetPopupTemplateType());
 
                             if (callbackResults.Success())
                             {
-                                surfacingManagerInstance.HidePopUp(hidePopupNode.GetPopupTemplateType().GetData(), popUpSurfacedCallbackResults =>
+                                callbackResults.SetResult(screenPopUpStateNode.GetState());
+
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(popUpSurfacedCallbackResults);
-
-                                    if (callbackResults.Success())
+                                    switch(screenPopUpStateNode.GetState().GetData())
                                     {
-                                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
+                                        case AppData.UIVisibilityStateEvent.Show:
 
-                                            if (callbackResults.UnSuccessful())
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
-                                    else
-                                    {
-                                        graph.Reset(callback: graphResetedCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(graphResetedCallbackResults);
+                                            surfacingManagerInstance.ShowPopUp(screenPopUpStateNode.GetPopupTemplateType().GetData(), popUpSurfacedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(popUpSurfacedCallbackResults);
 
-                                            if (callbackResults.UnSuccessful())
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
+                                                if (callbackResults.Success())
+                                                {
+                                                    ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                                        if (callbackResults.UnSuccessful())
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                {
+                                                    graph.Reset(callback: graphResetedCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(graphResetedCallbackResults);
+
+                                                        if (callbackResults.UnSuccessful())
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                            });
+
+                                            break;
+
+                                        case AppData.UIVisibilityStateEvent.Hide:
+
+                                            surfacingManagerInstance.HidePopUp(screenPopUpStateNode.GetPopupTemplateType().GetData(), popUpSurfacedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(popUpSurfacedCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                                        if (callbackResults.UnSuccessful())
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                {
+                                                    graph.Reset(callback: graphResetedCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(graphResetedCallbackResults);
+
+                                                        if (callbackResults.UnSuccessful())
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                            });
+
+                                            break;
                                     }
-                                });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
                             else
                             {
@@ -628,11 +716,9 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.GraphNodeType.WaitForButtonEventNode:
+                    case AppData.GraphNodeType.DisableScreenInputsNode:
 
-                        var waitForButtonEventNode = graph.GetCurrentNode().GetData() as WaitForButtonEventNode;
-
-                        callbackResults.SetResult(waitForButtonEventNode.GetEventType());
+                        var waitForButtonEventNode = graph.GetCurrentNode().GetData() as DisableScreenInputsNode;
 
                         if (callbackResults.Success())
                         {

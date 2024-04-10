@@ -43,20 +43,30 @@ namespace Com.RedicalGames.Filar
 
         #region Data Types
 
+        public enum AppExecutionalConditionType
+        {
+            None,
+            InitialLoad,
+            UserSignedIn,
+            UserSignedOut
+        }
+
         public enum GraphNodeType
         {
             None,
             EntryNode,
             ExitNode,
             CurrentScreenNode,
-            ShowPopupNode,
-            HidePopupNode,
+            ScreenWidgetStateNode,
+            ScreenPopupStateNode,
             ShowTooltipNode,
             HideTooltipNode,
             WaitForEventNode,
-            WaitForButtonEventNode,
+            DisableScreenInputsNode,
             WaitForSecondsNode,
-            TriggerEventNode
+            TriggerEventNode,
+            HighlightScreenInputNode,
+            ConditionalNode
         }
 
         public enum GraphEntryEventType
@@ -258,7 +268,8 @@ namespace Com.RedicalGames.Filar
             ProjectCreationWidget,
             ScreenNotificationPopUpWidget,
             SuccessNotificationPopUpWidget,
-            DynamicUITextDisplayerWidget
+            DynamicUITextDisplayerWidget,
+            AppLanguageSelectionWidget
         }
 
         public enum UIComponentType
@@ -500,8 +511,17 @@ namespace Com.RedicalGames.Filar
             Default
         }
 
+        // Note To Self : Remove If Outdated - Use Enum Below-V.
         public enum NavigationWidgetVisibilityState
         {
+            Hide,
+            Show
+        }
+
+        // Note To Self : Replace Above With This Enum.
+        public enum UIVisibilityStateEvent
+        {
+            None,
             Hide,
             Show
         }
@@ -1560,7 +1580,8 @@ namespace Com.RedicalGames.Filar
             header_ContactUs,
             content_ContactUs,
             info_ContactUsEmail,
-            info_ContactUsPhone
+            info_ContactUsPhone,
+            title_SelectAppLanguage
         }
 
         #endregion
@@ -20602,6 +20623,9 @@ namespace Com.RedicalGames.Filar
         {
             #region Components
 
+            [Space(5)]
+            public LocalizationKey buttonTitletKey = LocalizationKey.None;
+
             #endregion
 
             #region Main
@@ -20626,8 +20650,23 @@ namespace Com.RedicalGames.Filar
 
                                 if(callbackResults.Success())
                                 {
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    //callbackResults.SetResult(GetButtonTitleKey());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        //SetButtonTitle(GetButtonTitleKey().GetData(), buttonTitleSetCallbackResults =>
+                                        //{
+                                        //    callbackResults.SetResult(buttonTitleSetCallbackResults);
+
+                                        //    if (callbackResults.UnSuccessful())
+                                        //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        //});
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             });
                         }
                         else
@@ -20729,6 +20768,63 @@ namespace Com.RedicalGames.Filar
                     Debug.LogWarning(InputValueAssigned().results);
                     return false;
                 }
+            }
+
+            public void SetButtonTitleKey(LocalizationKey buttonTitletKey, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppEnumValueValid(buttonTitletKey, "Button Title Key", $"Set Button Title Key Failed - Button Title Key Parameter Value For : {GetName()} Is Set To Default : {buttonTitletKey} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    this.buttonTitletKey = buttonTitletKey;
+                    callbackResults.result = $"Set Button Title Key Success - Button Title Key Value For : {GetName()} Is Set To : {buttonTitletKey}";
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public CallbackData<LocalizationKey> GetButtonTitleKey()
+            {
+                var callbackResults = new CallbackData<LocalizationKey>(Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppEnumValueValid(buttonTitletKey, "Button Title Key", $"Get Button Title Key Failed - Button Title Key Value For : {GetName()} Is Set to Default : {buttonTitletKey} - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Button Title Key Success - Button Title  Key Value For : {GetName()} Is Set To : {buttonTitletKey}.";
+                        callbackResults.data = buttonTitletKey;
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public void SetButtonTitle(LocalizationKey buttonTitletKey, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetValue());
+
+                if (callbackResults.Success())
+                {
+                    SetTitleLocalized(buttonTitletKey, buttonTitletKeySetCallbackResults =>
+                    {
+                        callbackResults.SetResult(buttonTitletKeySetCallbackResults);
+
+                        if (callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public override void SetInteractableState(bool interactable, Action<Callback> callback = null)
@@ -60884,8 +60980,8 @@ namespace Com.RedicalGames.Filar
         public enum EventType
         {
             None,
-            OnInitializationStartedEvent,
-            OnInitializationCompletedEvent,
+            OnInitializationStarted,
+            OnInitializationCompleted,
             OnAwake,
             OnStart,
             OnUpdate,
@@ -60911,11 +61007,12 @@ namespace Com.RedicalGames.Filar
             OnShowTabViewAsyncEvent,
             OnTabViewShownEvent,
             OnTabViewHiddenEvent,
-            OnDownloadStartedEvent,
-            OnDownloadCompletedEvent,
+            OnDownloadStarted,
+            OnDownloadCompleted,
             OnScreenChangedEvent,
             OnScreenRefreshed,
-            OnActionButtonClicked
+            OnActionButtonClicked,
+            OnAppLanguageChanged
         }
 
         public enum TransitionableEventType
@@ -62111,6 +62208,8 @@ namespace Com.RedicalGames.Filar
             public static event Void _OnScreenLoadStartedEvent;
             public static event Void _OnScreenLoadEndedEvent;
 
+            public static event Void _OnAppLanguageChanged;
+
             #region Unity Events
 
             public static event Void _Enabled;
@@ -62202,6 +62301,8 @@ namespace Com.RedicalGames.Filar
             public static void OnScreenLoadStartedEvent() => _OnScreenLoadStartedEvent?.Invoke();
             public static void OnScreenLoadEndedEvent() => _OnScreenLoadEndedEvent?.Invoke();
 
+            public static void OnAppLanguageChangedEvent() => _OnAppLanguageChanged?.Invoke();
+
             #region Unity Event Callbacks
 
             public static void Enabled() => _Enabled?.Invoke();
@@ -62276,7 +62377,7 @@ namespace Com.RedicalGames.Filar
                     {
                         switch (eventAction.GetEventType().GetData())
                         {
-                            case EventType.OnInitializationStartedEvent:
+                            case EventType.OnInitializationStarted:
 
                                 if (subscribe)
                                     _OnInitializationStartedEvent += eventAction.TriggeredEventMethod;
@@ -62285,7 +62386,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case EventType.OnInitializationCompletedEvent:
+                            case EventType.OnInitializationCompleted:
 
                                 if (subscribe)
                                     _OnInitializationCompletedEvent += eventAction.TriggeredEventMethod;
@@ -62294,7 +62395,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case EventType.OnDownloadStartedEvent:
+                            case EventType.OnDownloadStarted:
 
                                 if (subscribe)
                                     _OnDownloadStartedEvent += eventAction.TriggeredEventMethod;
@@ -62303,7 +62404,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case EventType.OnDownloadCompletedEvent:
+                            case EventType.OnDownloadCompleted:
 
                                 if (subscribe)
                                     _OnDownloadCompletedEvent += eventAction.TriggeredEventMethod;
@@ -62363,6 +62464,15 @@ namespace Com.RedicalGames.Filar
                                     _OnPostsInitializationCompletedEvent += eventAction.TriggeredEventMethod;
                                 else
                                     _OnPostsInitializationCompletedEvent -= eventAction.TriggeredEventMethod;
+
+                                break;
+
+                            case EventType.OnAppLanguageChanged:
+
+                                if (subscribe)
+                                    _OnAppLanguageChanged += eventAction.TriggeredEventMethod;
+                                else
+                                    _OnAppLanguageChanged -= eventAction.TriggeredEventMethod;
 
                                 break;
                         }

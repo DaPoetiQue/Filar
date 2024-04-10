@@ -112,6 +112,10 @@ MonoBehaviour:
     m_Localized: "Termos e Condi\xE7\xF5es"
     m_Metadata:
       m_Items: []
+  - m_Id: 862452530860032
+    m_Localized: Selecione O Idioma
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

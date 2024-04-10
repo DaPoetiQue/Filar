@@ -112,6 +112,10 @@ MonoBehaviour:
     m_Localized: Lipallo le lipehelo
     m_Metadata:
       m_Items: []
+  - m_Id: 862452530860032
+    m_Localized: Kgetha Puo
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

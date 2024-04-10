@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Locale Flags Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Locale Flags
+  m_TableCollectionNameGuidString: ad5d34bef63a7f743b93feb70dde7498
+  m_Entries:
+  - m_Id: 1350741839872
+    m_Key: flags-Locale Flags
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items:
+    - rid: 8074354018567061593
+  m_KeyGenerator:
+    rid: 8074354018567061592
+  references:
+    version: 2
+    RefIds:
+    - rid: 8074354018567061592
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1712757306097
+    - rid: 8074354018567061593
+      type: {class: AssetTypeMetadata, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries:
+        - m_KeyId: 1350741839872
+          m_TableCodes:
+          - af-ZA
+          - zh
+          - en-ZA
+          - en
+          - fr
+          - nso-ZA
+          - pt
+          - es
+          - ts-ZA
+          - xh-ZA
+          - zu-ZA
+        m_TypeString: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null

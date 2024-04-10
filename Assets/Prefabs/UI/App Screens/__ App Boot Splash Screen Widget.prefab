@@ -270,7 +270,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 1
   type: 9
   widgetLayouts: []
@@ -303,6 +303,12 @@ MonoBehaviour:
     initialVisibilityState: 1
     constriants:
     - {fileID: 11400000, guid: 3cf48579d23ecc84cbd2b14661a1a0a3, type: 2}
+  - name: App Language Selection Widget
+    referenceType: 43
+    uIPlacementType: 2
+    containerType: 14
+    initialVisibilityState: 2
+    constriants: []
   dynamicContainerList:
   - {fileID: 1207815466596216749}
   - {fileID: 4343902750515389455}

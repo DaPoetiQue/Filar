@@ -152,7 +152,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnInitializationStartedEvent:
+                        case AppData.EventType.OnInitializationStarted:
 
                             if (subscribe)
                                 AppData.ActionEvents._OnInitializationStartedEvent += eventMethod.Invoke;
@@ -161,7 +161,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnInitializationCompletedEvent:
+                        case AppData.EventType.OnInitializationCompleted:
 
                             if (subscribe)
                                 AppData.ActionEvents._OnInitializationCompletedEvent += eventMethod.Invoke;
@@ -170,7 +170,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnDownloadStartedEvent:
+                        case AppData.EventType.OnDownloadStarted:
 
                             if (subscribe)
                                 AppData.ActionEvents._OnDownloadStartedEvent += eventMethod.Invoke;
@@ -179,12 +179,21 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnDownloadCompletedEvent:
+                        case AppData.EventType.OnDownloadCompleted:
 
                             if (subscribe)
                                 AppData.ActionEvents._OnDownloadCompletedEvent += eventMethod.Invoke;
                             else
                                 AppData.ActionEvents._OnDownloadCompletedEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnAppLanguageChanged:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnAppLanguageChanged += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnAppLanguageChanged -= eventMethod.Invoke;
 
                             break;
                     }
@@ -207,28 +216,30 @@ namespace Com.RedicalGames.Filar
                 if (subscribe)
                 {
                     AppData.ActionEvents._OnStart += () => eventMethod?.Invoke(AppData.EventType.OnStart);
-                    AppData.ActionEvents._OnInitializationStartedEvent += () => eventMethod?.Invoke(AppData.EventType.OnInitializationStartedEvent);
-                    AppData.ActionEvents._OnInitializationCompletedEvent += () => eventMethod?.Invoke(AppData.EventType.OnInitializationCompletedEvent);
-                    AppData.ActionEvents._OnDownloadStartedEvent += () => eventMethod?.Invoke(AppData.EventType.OnDownloadStartedEvent);
-                    AppData.ActionEvents._OnDownloadCompletedEvent += () => eventMethod?.Invoke(AppData.EventType.OnDownloadCompletedEvent);
+                    AppData.ActionEvents._OnInitializationStartedEvent += () => eventMethod?.Invoke(AppData.EventType.OnInitializationStarted);
+                    AppData.ActionEvents._OnInitializationCompletedEvent += () => eventMethod?.Invoke(AppData.EventType.OnInitializationCompleted);
+                    AppData.ActionEvents._OnDownloadStartedEvent += () => eventMethod?.Invoke(AppData.EventType.OnDownloadStarted);
+                    AppData.ActionEvents._OnDownloadCompletedEvent += () => eventMethod?.Invoke(AppData.EventType.OnDownloadCompleted);
                     AppData.ActionEvents._OnScreenChangedEvent += (value) => eventMethod?.Invoke(AppData.EventType.OnScreenChangedEvent);
                     AppData.ActionEvents._OnScreenRefreshed += (value) => eventMethod?.Invoke(AppData.EventType.OnScreenRefreshed);
                     AppData.ActionEvents._OnActionButtonClickedEvent += (value) => eventMethod?.Invoke(AppData.EventType.OnActionButtonClicked);
                     AppData.ActionEvents._OnNetworkConnectedEvent += () => eventMethod?.Invoke(AppData.EventType.OnNetworkConnectedEvent);
                     AppData.ActionEvents._OnNetworkFailedEvent += () => eventMethod?.Invoke(AppData.EventType.OnNetworkFailedEvent);
+                    AppData.ActionEvents._OnAppLanguageChanged += () => eventMethod?.Invoke(AppData.EventType.OnAppLanguageChanged);
                 }
                 else
                 {
                     AppData.ActionEvents._OnStart -= () => eventMethod?.Invoke(AppData.EventType.OnStart);
-                    AppData.ActionEvents._OnInitializationStartedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnInitializationStartedEvent);
-                    AppData.ActionEvents._OnInitializationCompletedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnInitializationCompletedEvent);
-                    AppData.ActionEvents._OnDownloadStartedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnDownloadStartedEvent);
-                    AppData.ActionEvents._OnDownloadCompletedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnDownloadCompletedEvent);
+                    AppData.ActionEvents._OnInitializationStartedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnInitializationStarted);
+                    AppData.ActionEvents._OnInitializationCompletedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnInitializationCompleted);
+                    AppData.ActionEvents._OnDownloadStartedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnDownloadStarted);
+                    AppData.ActionEvents._OnDownloadCompletedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnDownloadCompleted);
                     AppData.ActionEvents._OnScreenChangedEvent -= (value) => eventMethod?.Invoke(AppData.EventType.OnScreenChangedEvent);
                     AppData.ActionEvents._OnScreenRefreshed -= (value) => eventMethod?.Invoke(AppData.EventType.OnScreenRefreshed);
                     AppData.ActionEvents._OnActionButtonClickedEvent -= (value) => eventMethod?.Invoke(AppData.EventType.OnActionButtonClicked);
                     AppData.ActionEvents._OnNetworkConnectedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnNetworkConnectedEvent);
                     AppData.ActionEvents._OnNetworkFailedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnNetworkFailedEvent);
+                    AppData.ActionEvents._OnAppLanguageChanged -= () => eventMethod?.Invoke(AppData.EventType.OnAppLanguageChanged);
                 }
             }
             else
@@ -692,18 +703,35 @@ namespace Com.RedicalGames.Filar
             {
                 switch(eventType)
                 {
-                    case AppData.EventType.OnInitializationStartedEvent:
+                    case AppData.EventType.OnInitializationStarted:
 
                         AppData.ActionEvents.OnInitializationStartedEvent();
 
                         break;
 
-                    case AppData.EventType.OnInitializationCompletedEvent:
+                    case AppData.EventType.OnInitializationCompleted:
 
                         AppData.ActionEvents.OnInitializationCompletedEvent();
 
                         break;
-                       
+
+                    case AppData.EventType.OnDownloadStarted:
+
+                        AppData.ActionEvents.OnDownloadStartedEvent();
+
+                        break;
+
+                    case AppData.EventType.OnDownloadCompleted:
+
+                        AppData.ActionEvents.OnDownloadCompletedEvent();
+
+                        break;
+
+                    case AppData.EventType.OnAppLanguageChanged:
+
+                        AppData.ActionEvents.OnAppLanguageChangedEvent();
+
+                        break;
                 }
             }
 

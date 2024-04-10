@@ -121,6 +121,10 @@ MonoBehaviour:
     m_Localized: Imimmiselo nemiqathango
     m_Metadata:
       m_Items: []
+  - m_Id: 862452530860032
+    m_Localized: Khetha Ulwimi
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
