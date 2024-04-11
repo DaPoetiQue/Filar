@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: App Boot State Graph
   m_EditorClassIdentifier: 
   nodes: []
+  type: 1
   currentNode: {fileID: 0}
   completed: 0

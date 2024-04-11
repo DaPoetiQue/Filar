@@ -41,9 +41,7 @@ namespace Com.RedicalGames.Filar
             {
                 callbackResults.SetResult(subscribedToEventCallbackResults); 
 
-                if(callbackResults.Success())
-                    AppData.ActionEvents.Start();
-                else
+                if(callbackResults.UnSuccessful())
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             });
         }
@@ -703,6 +701,12 @@ namespace Com.RedicalGames.Filar
             {
                 switch(eventType)
                 {
+                    case AppData.EventType.OnStart:
+
+                        AppData.ActionEvents.Start();
+
+                        break;
+
                     case AppData.EventType.OnInitializationStarted:
 
                         AppData.ActionEvents.OnInitializationStartedEvent();

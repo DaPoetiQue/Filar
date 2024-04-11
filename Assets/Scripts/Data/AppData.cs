@@ -761,8 +761,13 @@ namespace Com.RedicalGames.Filar
             SceneConfigData,
             ScreenConfigData,
             LocaleConfigData,
-            DynamicUITextContentConfigData,
-            SurfacingGraph
+            DynamicUITextContentConfigData
+        }
+
+        public enum GraphType
+        {
+            None,
+            Surfacing
         }
 
         public enum SceneModelType
@@ -3854,7 +3859,7 @@ namespace Com.RedicalGames.Filar
             [Tooltip("Do Not Initialize - Surfacing Graphs Are Loaded Dynamically")]
             [Space(10)]
             [SerializeField]
-            private LoadedAssetCache<ConfigDataType, SurfacingNodeGraph> loadedGraphs = new LoadedAssetCache<ConfigDataType, SurfacingNodeGraph>();
+            private LoadedAssetCache<GraphType, SurfacingNodeGraph> loadedGraphs = new LoadedAssetCache<GraphType, SurfacingNodeGraph>();
 
             #region Dynamic Container
 
@@ -4883,6 +4888,29 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region Graphs
+
+            public CallbackDataList<SurfacingNodeGraph> GetLoadedGraphs(GraphType graphType)
+            {
+                var callbackResults = new CallbackDataList<SurfacingNodeGraph>(loadedGraphs.Initialized());
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(loadedGraphs.GetCachedAssets(graphType));
+
+                    if (callbackResults.Success())
+                        callbackResults.data = loadedGraphs.GetCachedAssets(graphType).GetData();
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+
             #region Dynamic UI Text Content config
 
             public CallbackData<DynamicUITextContentConfigDataPacket> GetDynamicUITextContentConfigDataPacket()
@@ -5224,9 +5252,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            private void AddLoadedGraphToCache(AssetBundleResourceLocatorType locatorType, Action<CallbackData<ConfigDataType>> callback = null, params SurfacingNodeGraph[] loadedGraphArray)
+            private void AddLoadedGraphToCache(AssetBundleResourceLocatorType locatorType, Action<CallbackData<GraphType>> callback = null, params SurfacingNodeGraph[] loadedGraphArray)
             {
-                var callbackResults = new CallbackData<ConfigDataType>(Helpers.GetAppComponentsValid(loadedGraphArray, "Loaded Assets",
+                var callbackResults = new CallbackData<GraphType>(Helpers.GetAppComponentsValid(loadedGraphArray, "Loaded Assets",
                   "Add Loaded Graph To Cache Failed - There Are No Loaded Assets To Cache."));
 
                 if (callbackResults.Success())
@@ -5235,38 +5263,29 @@ namespace Com.RedicalGames.Filar
                     {
                         for (int i = 0; i < loadedGraphArray.Length; i++)
                         {
-                            var loadedGraph = loadedGraphArray[i] as SurfacingNodeGraph;
-
-                            callbackResults.SetResult(Helpers.GetAppComponentValid(loadedGraph, "Loaded Config Data", "Loaded Config Data Casting From Scriptable Object Failed."));
-
-                            if (callbackResults.Success())
+                            loadedGraphs.CacheLoadedAssets(loadedGraphArray[i].GetType().GetData(), loadedGraphArray[i], graphCachedCallbackResults =>
                             {
-                                this.loadedGraphs.CacheLoadedAssets(loadedGraph.GetType().GetData(), loadedGraph, graphCachedCallbackResults =>
-                                {
-                                    callbackResults.SetResult(graphCachedCallbackResults);
+                                callbackResults.SetResult(graphCachedCallbackResults);
 
-                                    if (callbackResults.Success())
+                                if (callbackResults.Success())
+                                {
+                                    if (graphCachedCallbackResults.GetData() == loadedGraphArray[i].GetType().GetData())
                                     {
-                                        if (graphCachedCallbackResults.GetData() == loadedGraph.GetType().GetData())
-                                        {
-                                            callbackResults.result = $"Added Loaded Graph Of Type : {graphCachedCallbackResults.GetData()}.";
-                                            callbackResults.data = graphCachedCallbackResults.GetData();
-                                        }
-                                        else
-                                        {
-                                            callbackResults.result = $"Failed To Add Loaded Graph Of Type : {ScreenType.Default} - Invalid Operation - Please Check Here.";
-                                            callbackResults.resultCode = Helpers.ErrorCode;
-                                        }
+                                        callbackResults.result = $"Added Loaded Graph Of Type : {graphCachedCallbackResults.GetData()}.";
+                                        callbackResults.data = graphCachedCallbackResults.GetData();
                                     }
                                     else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    {
+                                        callbackResults.result = $"Failed To Add Loaded Graph Of Type : {loadedGraphArray[i].GetType().GetData()} - Invalid Operation - Please Check Here.";
+                                        callbackResults.resultCode = Helpers.ErrorCode;
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                });
+                            });
 
-                                if (callbackResults.UnSuccessful())
-                                    break;
-                            }
-                            else
+                            if (callbackResults.UnSuccessful())
                                 break;
                         }
                     }
@@ -59644,6 +59663,44 @@ namespace Com.RedicalGames.Filar
                 else
                 {
                     string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Type : {name ?? "Name Unsassigned"}'s Value Is Set To Default : {type.ToString()}.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = WarningCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static CallbackDataList<T> GetAppEnumValuesValid<T>(List<T> types, string name, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : Enum
+            {
+                var callbackResults = new CallbackDataList<T>();
+
+                if (types != null && types.Count > 0)
+                {
+                    for (int i = 0; i < types.Count; i++)
+                    {
+                        if(types[i].ToString() != "None")
+                            callbackResults.resultCode = SuccessCode;
+                        else
+                        {
+                            callbackResults.result = $"Type Group : {name}'s Value At Index : {i} Is Set To Default : {types[i].ToString()}";
+                            callbackResults.data = default;
+                            callbackResults.resultCode = WarningCode;
+
+                            break;
+                        }
+                    }
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.result = $"All : {types.Count} Types Are Valid.";
+                        callbackResults.data = types;
+                    }
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Type : {name ?? "Name Unsassigned"}'s Values Are Set To Default : {types.ToString()}.";
 
                     callbackResults.result = results;
                     callbackResults.data = default;

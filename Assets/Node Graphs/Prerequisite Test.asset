@@ -37,7 +37,7 @@ MonoBehaviour:
         PublicKeyToken=b77a5c561934e089
       connections:
       - fieldName: input
-        node: {fileID: 5641588044605813725}
+        node: {fileID: 0}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
@@ -97,9 +97,9 @@ MonoBehaviour:
   - {fileID: 3792458044074890365}
   - {fileID: 4481618442133750714}
   - {fileID: -8310515461330957478}
-  - {fileID: 5641588044605813725}
-  currentNode: {fileID: -1238588050531087505}
-  completed: 1
+  type: 1
+  currentNode: {fileID: 0}
+  completed: 0
 --- !u!114 &3792458044074890365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,7 +124,7 @@ MonoBehaviour:
         PublicKeyToken=b77a5c561934e089
       connections:
       - fieldName: output
-        node: {fileID: 5641588044605813725}
+        node: {fileID: 0}
         reroutePoints: []
       _direction: 0
       _connectionType: 0

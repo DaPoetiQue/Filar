@@ -11,15 +11,22 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
+        [Header("Active Graphs")]
+
         [Space(5)]
         [SerializeField]
-        private List<SurfacingNodeGraph> graphs = new List<SurfacingNodeGraph>();
+        private List<AppData.GraphType> activeGraphKeys = new List<AppData.GraphType>();
+
+        [Tooltip("Do Not Initialize - Graphs Are Loaded Dynamically : Warning - Data Overrides At Runtime.")]
+        [Space(5)]
+        [SerializeField]
+        private List<SurfacingNodeGraph> loadedGraphs = new List<SurfacingNodeGraph>();
 
         #endregion
 
         #region Main
 
-        protected override void Init()
+        protected override async void Init()
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "App Events Manager Instance Is Not Yet Initialized."));
 
@@ -38,19 +45,111 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    OnConfig(graphsConfiguredCallbackResults =>
-                    {
-                        callbackResults.SetResult(graphsConfiguredCallbackResults);
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "Surfacing Manager Init Failed - App Database Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
-                        if (callbackResults.UnSuccessful())
+                    if(callbackResults.Success())
+                    {
+                        var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                        callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                        if(callbackResults.Success())
+                        {
+                            var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                            var awaitLoadedGraphsTaskCallbackResults = await assetBundlesLibrary.OnAwaitAssetsInitialization( AppData.AssetBundleResourceLocatorType.Graph);
+
+                            callbackResults.SetResult(awaitLoadedGraphsTaskCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(GetActiveGraphKeys());
+
+                                if(callbackResults.Success())
+                                {
+                                    for (int i = 0; i < GetActiveGraphKeys().GetData().Count; i++)
+                                    {
+                                        callbackResults.SetResult(assetBundlesLibrary.GetLoadedGraphs(GetActiveGraphKeys().GetData()[i]));
+
+                                        if(callbackResults.Success())
+                                        {
+                                            var graphs = assetBundlesLibrary.GetLoadedGraphs(GetActiveGraphKeys().GetData()[i]).GetData();
+
+                                            AddGraphs(graphs, graphsAddedCallbackResults => 
+                                            {
+                                                callbackResults.SetResult(graphsAddedCallbackResults);
+
+                                                if(callbackResults.UnSuccessful())
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+
+                                        if (callbackResults.UnSuccessful())
+                                        {
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            break;
+                                        }
+                                    }
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(GetGraphs());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            appEventsManagerInstance.InvokeEvent(AppData.EventType.OnStart, onStartEventTriggeredCallbackResults => 
+                                            {
+                                                callbackResults.SetResult(onStartEventTriggeredCallbackResults);
+
+                                                if(callbackResults.Success())
+                                                {
+                                                    OnConfig(graphsConfiguredCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(graphsConfiguredCallbackResults);
+
+                                                        if (callbackResults.UnSuccessful())
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                    });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        private void AddGraphs(List<SurfacingNodeGraph> graphs, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentsValid(graphs, "Graphs", "Add graphs Failed - Graphs Parameter value Is Null - Invalid Operations."));
+
+            if(callbackResults.Success())
+                loadedGraphs.AddRange(graphs);
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
         }
 
         #region Entry Event Callbacks
@@ -349,12 +448,12 @@ namespace Com.RedicalGames.Filar
         {
             var callbackResults = new AppData.CallbackDataList<SurfacingNodeGraph>();
 
-            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(graphs, "Graphs", "Get Graphs Failed - There Are No Graphs Found - Invalid Operation."));
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(loadedGraphs, "Graphs", "Get Graphs Failed - There Are No Graphs Found - Invalid Operation."));
 
             if (callbackResults.Success())
             {
-                callbackResults.result = $"Get Graphs Success - There Are : {graphs.Count} Graphs Found.";
-                callbackResults.data = graphs;
+                callbackResults.result = $"Get Graphs Success - There Are : {loadedGraphs.Count} Graphs Found.";
+                callbackResults.data = loadedGraphs;
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -848,6 +947,21 @@ namespace Com.RedicalGames.Filar
 
 
             callback?.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackDataList<AppData.GraphType> GetActiveGraphKeys()
+        {
+            var callbackResults = new AppData.CallbackDataList<AppData.GraphType>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesValid(activeGraphKeys, "Active Graph Keys", $"Get Active Graph Keys Failed - There Are No Active Graph Keys Initialized - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"Get Active Graph Keys Success - There's : {activeGraphKeys.Count} Active Graph Key(s) Found.";
+                callbackResults.data = activeGraphKeys;
+            }
+
+            return callbackResults;
         }
 
         #endregion
