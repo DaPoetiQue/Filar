@@ -761,7 +761,8 @@ namespace Com.RedicalGames.Filar
             SceneConfigData,
             ScreenConfigData,
             LocaleConfigData,
-            DynamicUITextContentConfigData
+            DynamicUITextContentConfigData,
+            SurfacingGraph
         }
 
         public enum SceneModelType
@@ -3853,7 +3854,7 @@ namespace Com.RedicalGames.Filar
             [Tooltip("Do Not Initialize - Surfacing Graphs Are Loaded Dynamically")]
             [Space(10)]
             [SerializeField]
-            private LoadedAssetCache<ScreenType, SurfacingNodeGraph> loadedGraphs = new LoadedAssetCache<ScreenType, SurfacingNodeGraph>();
+            private LoadedAssetCache<ConfigDataType, SurfacingNodeGraph> loadedGraphs = new LoadedAssetCache<ConfigDataType, SurfacingNodeGraph>();
 
             #region Dynamic Container
 
@@ -5223,9 +5224,9 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            private void AddLoadedGraphToCache(AssetBundleResourceLocatorType locatorType, Action<CallbackData<ScreenType>> callback = null, params SurfacingNodeGraph[] loadedGraphArray)
+            private void AddLoadedGraphToCache(AssetBundleResourceLocatorType locatorType, Action<CallbackData<ConfigDataType>> callback = null, params SurfacingNodeGraph[] loadedGraphArray)
             {
-                var callbackResults = new CallbackData<ScreenType>(Helpers.GetAppComponentsValid(loadedGraphArray, "Loaded Assets",
+                var callbackResults = new CallbackData<ConfigDataType>(Helpers.GetAppComponentsValid(loadedGraphArray, "Loaded Assets",
                   "Add Loaded Graph To Cache Failed - There Are No Loaded Assets To Cache."));
 
                 if (callbackResults.Success())
@@ -5234,17 +5235,19 @@ namespace Com.RedicalGames.Filar
                     {
                         for (int i = 0; i < loadedGraphArray.Length; i++)
                         {
-                            callbackResults.SetResult(Helpers.GetAppComponentValid(loadedGraphs, "Loaded Graphs", "Loaded Config Data Casting From Scriptable Object Failed."));
+                            var loadedGraph = loadedGraphArray[i] as SurfacingNodeGraph;
+
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(loadedGraph, "Loaded Config Data", "Loaded Config Data Casting From Scriptable Object Failed."));
 
                             if (callbackResults.Success())
                             {
-                                this.loadedGraphs.CacheLoadedAssets(ScreenType.Default, loadedGraphArray[i], graphCachedCallbackResults =>
+                                this.loadedGraphs.CacheLoadedAssets(loadedGraph.GetType().GetData(), loadedGraph, graphCachedCallbackResults =>
                                 {
                                     callbackResults.SetResult(graphCachedCallbackResults);
 
                                     if (callbackResults.Success())
                                     {
-                                        if (graphCachedCallbackResults.GetData() == ScreenType.Default)
+                                        if (graphCachedCallbackResults.GetData() == loadedGraph.GetType().GetData())
                                         {
                                             callbackResults.result = $"Added Loaded Graph Of Type : {graphCachedCallbackResults.GetData()}.";
                                             callbackResults.data = graphCachedCallbackResults.GetData();

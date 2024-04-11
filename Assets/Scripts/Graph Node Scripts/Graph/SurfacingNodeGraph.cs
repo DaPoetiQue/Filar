@@ -10,7 +10,10 @@ namespace Com.RedicalGames.Filar
     {
         #region Components
 
+        [SerializeField]
+        private AppData.ConfigDataType configType = AppData.ConfigDataType.SurfacingGraph;
 
+        [Space(5)]
         [SerializeField]
         private BaseNode currentNode = null;
 
@@ -317,6 +320,19 @@ namespace Com.RedicalGames.Filar
             {
                 callbackResults.result = $"Get Graph Mode Success - Get Graph Mode Is Set To : {graphMode}.";
                 callbackResults.data = graphMode;
+            }
+
+            return callbackResults;
+        }
+
+        public new AppData.CallbackData<AppData.ConfigDataType> GetType()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.ConfigDataType>(AppData.Helpers.GetAppEnumValueValid(configType, "Type", $"Get Type Failed - Type Is Set To Default : {configType} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"Get Type Success - Type Is Set To : {configType}.";
+                callbackResults.data = configType;
             }
 
             return callbackResults;
