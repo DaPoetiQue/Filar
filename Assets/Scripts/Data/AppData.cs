@@ -57,6 +57,7 @@ namespace Com.RedicalGames.Filar
             EntryNode,
             ExitNode,
             CurrentScreenNode,
+            ScreenStateNode,
             ScreenWidgetStateNode,
             ScreenPopupStateNode,
             ShowTooltipNode,
@@ -72,6 +73,7 @@ namespace Com.RedicalGames.Filar
         public enum GraphEntryEventType
         {
             None,
+            OnStart,
             OnScreenEnter,
             OnScreenExit,
             OnScreenFocused,
@@ -1433,7 +1435,8 @@ namespace Com.RedicalGames.Filar
             Selectable,
             Model,
             Config,
-            Tab
+            Tab,
+            Graph
         }
 
         public enum OrderInLayerType
@@ -3289,7 +3292,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class LoadedAssetsCacheObject<T, U> : DataDebugger where T : Enum where U : AppMonoBaseClass
+        public class LoadedAssetsCacheObject<T, U> : DataDebugger where T : Enum where U : class
         {
             #region Components
 
@@ -3440,7 +3443,7 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
-        public class LoadedAssetCache<T, U> : DataDebugger where T : Enum where U : AppMonoBaseClass
+        public class LoadedAssetCache<T, U> : DataDebugger where T : Enum where U : class
         {
             #region Components
 
@@ -3844,6 +3847,14 @@ namespace Com.RedicalGames.Filar
             [SerializeField]
             private ScriptableLoadedAssetCache<ConfigDataType, ScriptableConfigDataPacket<ConfigDataType>> loadedConfigData = new ScriptableLoadedAssetCache<ConfigDataType, ScriptableConfigDataPacket<ConfigDataType>>();
 
+            [Space(5)]
+            [Header("Surfacing Graphs")]
+
+            [Tooltip("Do Not Initialize - Surfacing Graphs Are Loaded Dynamically")]
+            [Space(10)]
+            [SerializeField]
+            private LoadedAssetCache<ScreenType, SurfacingNodeGraph> loadedGraphs = new LoadedAssetCache<ScreenType, SurfacingNodeGraph>();
+
             #region Dynamic Container
 
             [Space(10)]
@@ -3993,7 +4004,29 @@ namespace Com.RedicalGames.Filar
                             }
                         };
 
-                        InitializeConfigDataEvent();
+                        #region Config Data
+
+                        InitializeConfigDataEvent(initializeConfigDataEventCallbackResults => 
+                        {
+                            callbackResults.SetResult(initializeConfigDataEventCallbackResults);
+
+                            if (callbackResults.UnSuccessful())
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+
+                        #endregion
+
+                        #region Graphs
+
+                        InitializeGraphEvent(initializeConfigDataEventCallbackResults =>
+                        {
+                            callbackResults.SetResult(initializeConfigDataEventCallbackResults);
+
+                            if (callbackResults.UnSuccessful())
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+
+                        #endregion
                     }
                     else
                         Log(GetAssetBundleKeyStrings().GetResultCode, GetAssetBundleKeyStrings().GetResult, this);
@@ -4002,7 +4035,7 @@ namespace Com.RedicalGames.Filar
                     throw new Exception($"Failed To Initialize Addressables - Invalid Operation - Please See Here - Addressables Status : {evt.Status}");
             }
 
-            private void InitializeConfigDataEvent()
+            private void InitializeConfigDataEvent(Action<Callback> callback = null)
             {
                 var callbackResults = new Callback(GetInitializedAssetBundleResourceLocators());
 
@@ -4042,6 +4075,52 @@ namespace Com.RedicalGames.Filar
                 }
                 else
                     Log(GetAssetBundleKeyStrings().GetResultCode, GetAssetBundleKeyStrings().GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private void InitializeGraphEvent(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetInitializedAssetBundleResourceLocators());
+
+                if (callbackResults.Success())
+                {
+                    var initializedAssetBundleResourceLocators = GetInitializedAssetBundleResourceLocators().GetData();
+
+                    #region Surfacing Graphs
+
+                    for (int i = 0; i < initializedAssetBundleResourceLocators.Count; i++)
+                    {
+                        if (initializedAssetBundleResourceLocators[i].GetKey().GetData() == AssetBundleResourceLocatorType.Graph)
+                        {
+                            Addressables.LoadAssetsAsync<SurfacingNodeGraph>(new List<string>() { initializedAssetBundleResourceLocators[i].GetKey().GetData().ToString() }, null, Addressables.MergeMode.None).Completed += (loadedAssetsCallbackResults) =>
+                            {
+                                if (loadedAssetsCallbackResults.Status == AsyncOperationStatus.Succeeded)
+                                {
+                                    OnProccessLoadedGraphs(initializedAssetBundleResourceLocators[i].GetKey().GetData(), loadedAssetsCallbackResults.Result.ToList(), assetsProccessedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(assetsProccessedCallbackResults);
+                                    });
+                                }
+                                else
+                                {
+                                    callbackResults.result = "Failed To Load Graphs From Addressables. Please Check Here.";
+                                    callbackResults.resultCode = Helpers.ErrorCode;
+                                }
+                            };
+
+                            break;
+                        }
+                        else
+                            continue;
+                    }
+
+                    #endregion
+                }
+                else
+                    Log(GetAssetBundleKeyStrings().GetResultCode, GetAssetBundleKeyStrings().GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             private void OnProccessLoadedAssetBundles(AssetBundleResourceLocatorType locatorType, List<GameObject> loadedAssetBundles, Action<Callback> callback = null)
@@ -4242,6 +4321,45 @@ namespace Com.RedicalGames.Filar
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                         }, loadedConfigDataBundles.ToArray());
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                {
+                    callbackResults.result = $"Warning! - Asset Bundle Resource Locator Of Type : {locatorType} Can Not Be Proccessed As Config - Continue Execution.";
+                    callbackResults.resultCode = Helpers.SuccessCode;
+                }
+
+                callback?.Invoke(callbackResults);
+
+            }
+
+            private void OnProccessLoadedGraphs(AssetBundleResourceLocatorType locatorType, List<SurfacingNodeGraph> loadedGraphBundles, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Helpers.GetAppComponentsValid(loadedGraphBundles, "Loaded Graph Bundles", "There Are No Loaded Graph Bundles Found."));
+
+                if (locatorType == AssetBundleResourceLocatorType.Graph)
+                {
+                    if (callbackResults.Success())
+                    {
+                        AddLoadedGraphToCache(locatorType, loadedAssetsCallbackResults =>
+                        {
+                            callbackResults.SetResult(loadedAssetsCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(loadedGraphs.GetCachedAssets(loadedAssetsCallbackResults.GetData()));
+
+                                if (callbackResults.Success())
+                                    GetInitializedAssetBundleResourceLocators().GetData().Find(locator => locator.GetKey().GetData() == locatorType).SetLoadedState(callbackResults.Success());
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                        }, loadedGraphBundles.ToArray());
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -5095,6 +5213,63 @@ namespace Com.RedicalGames.Filar
                     else
                     {
                         callbackResults.result = "Couldn't Add Loaded Config Data To Cache - Asset Bundle Resource Locator Type Is Not Set To Config.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.WarningCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            private void AddLoadedGraphToCache(AssetBundleResourceLocatorType locatorType, Action<CallbackData<ScreenType>> callback = null, params SurfacingNodeGraph[] loadedGraphArray)
+            {
+                var callbackResults = new CallbackData<ScreenType>(Helpers.GetAppComponentsValid(loadedGraphArray, "Loaded Assets",
+                  "Add Loaded Graph To Cache Failed - There Are No Loaded Assets To Cache."));
+
+                if (callbackResults.Success())
+                {
+                    if (locatorType == AssetBundleResourceLocatorType.Graph)
+                    {
+                        for (int i = 0; i < loadedGraphArray.Length; i++)
+                        {
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(loadedGraphs, "Loaded Graphs", "Loaded Config Data Casting From Scriptable Object Failed."));
+
+                            if (callbackResults.Success())
+                            {
+                                this.loadedGraphs.CacheLoadedAssets(ScreenType.Default, loadedGraphArray[i], graphCachedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(graphCachedCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        if (graphCachedCallbackResults.GetData() == ScreenType.Default)
+                                        {
+                                            callbackResults.result = $"Added Loaded Graph Of Type : {graphCachedCallbackResults.GetData()}.";
+                                            callbackResults.data = graphCachedCallbackResults.GetData();
+                                        }
+                                        else
+                                        {
+                                            callbackResults.result = $"Failed To Add Loaded Graph Of Type : {ScreenType.Default} - Invalid Operation - Please Check Here.";
+                                            callbackResults.resultCode = Helpers.ErrorCode;
+                                        }
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                });
+
+                                if (callbackResults.UnSuccessful())
+                                    break;
+                            }
+                            else
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        callbackResults.result = "Couldn't Add Loaded Graph To Cache - Asset Bundle Resource Locator Type Is Not Set To Graph.";
                         callbackResults.data = default;
                         callbackResults.resultCode = Helpers.WarningCode;
                     }

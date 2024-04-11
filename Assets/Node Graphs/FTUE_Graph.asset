@@ -100,7 +100,7 @@ MonoBehaviour:
   m_Name: Screen Widget State
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 136, y: -168}
+  position: {x: 24, y: -120}
   ports:
     keys:
     - input
