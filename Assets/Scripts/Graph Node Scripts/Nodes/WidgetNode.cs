@@ -3,12 +3,12 @@ using XNode;
 
 namespace Com.RedicalGames.Filar
 {
-	public class ScreenStateNode : BaseNode
+	public class WidgetNode : BaseNode
 	{
 		#region Components
 
 		[SerializeField]
-		private AppData.ScreenType screen = AppData.ScreenType.None;
+		private AppData.WidgetType widget = AppData.WidgetType.None;
 
 		[Space(5)]
 		[SerializeField]
@@ -31,14 +31,14 @@ namespace Com.RedicalGames.Filar
 
 		}
 
-		public AppData.CallbackData<AppData.ScreenType> GetScreenType()
+		public AppData.CallbackData<AppData.WidgetType> GetWidgetType()
 		{
-			var callbackResults = new AppData.CallbackData<AppData.ScreenType>(AppData.Helpers.GetAppEnumValueValid(screen, "Screen Type", $"Get Screen Type Failed - Screen Type Is Set To Default : {screen} - Invalid Operation."));
+			var callbackResults = new AppData.CallbackData<AppData.WidgetType>(AppData.Helpers.GetAppEnumValueValid(widget, "Widget Type", $"Get Widget Type Failed - Widget Type Is Set To Default : {widget} - Invalid Operation."));
 
 			if (callbackResults.Success())
 			{
-				callbackResults.result = $"Get Screen Type Success - Screen Type Is Set To : {screen}.";
-				callbackResults.data = screen;
+				callbackResults.result = $"Get Widget Type Success - Widget Type Is Set To : {widget}.";
+				callbackResults.data = widget;
 			}
 
 			return callbackResults;
@@ -61,8 +61,8 @@ namespace Com.RedicalGames.Filar
 		{
 			var callbackResults = new AppData.CallbackData<AppData.GraphNodeType>();
 
-			callbackResults.result = "This Is A Screen State Node.";
-			callbackResults.data = AppData.GraphNodeType.ScreenStateNode;
+			callbackResults.result = "This Is A Widget Node.";
+			callbackResults.data = AppData.GraphNodeType.WidgetNode;
 			callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
 			return callbackResults;

@@ -533,8 +533,7 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.GraphNodeType.ScreenStateNode:
-
+                    case AppData.GraphNodeType.ScreenNode:
 
                         callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Execute Graph Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -542,38 +541,38 @@ namespace Com.RedicalGames.Filar
                         {
                             var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                            callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreenType());
-
                             if (callbackResults.Success())
                             {
-                                var screenStateNode = graph.GetCurrentNode().GetData() as ScreenStateNode;
+                                var screenNode = graph.GetCurrentNode().GetData() as ScreenNode;
 
-                                callbackResults.SetResult(screenStateNode.GetScreenType());
+                                callbackResults.SetResult(screenNode.GetScreenType());
 
                                 if (callbackResults.Success())
                                 {
-                                    //callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(screenStateNode.GetCurrentScreenType().GetData(), screenUIManagerInstance.GetCurrentScreenType().GetData()));
+                                    var screenShowAsyncCallbackResultsTask = await screenUIManagerInstance.ShowScreenAsync(screenNode.GetScreenType().GetData());
 
-                                    //if (callbackResults.Success())
-                                    //{
-                                    //    ProccessNextNode(graph, proccessNextNodeCallbackResults =>
-                                    //    {
-                                    //        callbackResults.SetResult(proccessNextNodeCallbackResults);
+                                    callbackResults.SetResult(screenShowAsyncCallbackResultsTask);
 
-                                    //        if (callbackResults.UnSuccessful())
-                                    //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    //    });
-                                    //}
-                                    //else
-                                    //{
-                                    //    graph.Reset(callback: graphResetedCallbackResults =>
-                                    //    {
-                                    //        callbackResults.SetResult(graphResetedCallbackResults);
+                                    if(callbackResults.Success())
+                                    {
+                                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
 
-                                    //        if (callbackResults.UnSuccessful())
-                                    //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    //    });
-                                    //}
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                    {
+                                        graph.Reset(callback: graphResetedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(graphResetedCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -586,14 +585,14 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.GraphNodeType.ScreenWidgetStateNode:
+                    case AppData.GraphNodeType.WidgetNode:
 
                         callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance", "Execute Graph Failed -Surfacing Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
                         if (callbackResults.Success())
                         {
                             var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
-                            var screenWidgetStateNode = graph.GetCurrentNode().GetData() as ScreenWidgetStateNode;
+                            var screenWidgetStateNode = graph.GetCurrentNode().GetData() as WidgetNode;
 
                             callbackResults.SetResult(screenWidgetStateNode.GetWidgetType());
 
@@ -685,14 +684,14 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
-                    case AppData.GraphNodeType.ScreenPopupStateNode:
+                    case AppData.GraphNodeType.PopupNode:
 
                         callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance", "Execute Graph Failed -Surfacing Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
                         if (callbackResults.Success())
                         {
                             var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
-                            var screenPopUpStateNode = graph.GetCurrentNode().GetData() as ScreenPopupStateNode;
+                            var screenPopUpStateNode = graph.GetCurrentNode().GetData() as PopupNode;
 
                             callbackResults.SetResult(screenPopUpStateNode.GetPopupTemplateType());
 

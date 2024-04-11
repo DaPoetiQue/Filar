@@ -3,12 +3,12 @@ using XNode;
 
 namespace Com.RedicalGames.Filar
 {
-	public class ScreenPopupStateNode : BaseNode
+	public class ScreenNode : BaseNode
 	{
 		#region Components
 
 		[SerializeField]
-		private AppData.PopupTemplateType popupTemplate = AppData.PopupTemplateType.None;
+		private AppData.ScreenType screen = AppData.ScreenType.None;
 
 		[Space(5)]
 		[SerializeField]
@@ -31,21 +31,21 @@ namespace Com.RedicalGames.Filar
 
 		}
 
-		public AppData.CallbackData<AppData.PopupTemplateType> GetPopupTemplateType()
+		public AppData.CallbackData<AppData.ScreenType> GetScreenType()
 		{
-			var callbackResults = new AppData.CallbackData<AppData.PopupTemplateType>(AppData.Helpers.GetAppEnumValueValid(popupTemplate, "Surfacing Template Type", $"Get Surfacing Template Type Failed - Surfacing Template Type Is Set To Default : {popupTemplate} - Invalid Operation."));
+			var callbackResults = new AppData.CallbackData<AppData.ScreenType>(AppData.Helpers.GetAppEnumValueValid(screen, "Screen Type", $"Get Screen Type Failed - Screen Type Is Set To Default : {screen} - Invalid Operation."));
 
 			if (callbackResults.Success())
 			{
-				callbackResults.result = $"Get Surfacing Templatet Type Success - Surfacing Template Type Is Set To : {popupTemplate}.";
-				callbackResults.data = popupTemplate;
+				callbackResults.result = $"Get Screen Type Success - Screen Type Is Set To : {screen}.";
+				callbackResults.data = screen;
 			}
 
 			return callbackResults;
 		}
 
 		public AppData.CallbackData<AppData.UIVisibilityStateEvent> GetState()
-        {
+		{
 			var callbackResults = new AppData.CallbackData<AppData.UIVisibilityStateEvent>(AppData.Helpers.GetAppEnumValueValid(state, "State", $"Get State Failed - State Is Set To Default : {state} - Invalid Operation."));
 
 			if (callbackResults.Success())
@@ -61,8 +61,8 @@ namespace Com.RedicalGames.Filar
 		{
 			var callbackResults = new AppData.CallbackData<AppData.GraphNodeType>();
 
-			callbackResults.result = "This Is A Screen Popup State Node.";
-			callbackResults.data = AppData.GraphNodeType.ScreenPopupStateNode;
+			callbackResults.result = "This Is A Screen Node.";
+			callbackResults.data = AppData.GraphNodeType.ScreenNode;
 			callbackResults.resultCode = AppData.Helpers.SuccessCode;
 
 			return callbackResults;

@@ -30,6 +30,10 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         List<AppData.PermissionInfo> permissionInfos = new List<AppData.PermissionInfo>();
 
+        [Space(5)]
+        [SerializeField]
+        bool startBootSequence = false;
+
         #region Loading Data
 
         #endregion
@@ -39,6 +43,12 @@ namespace Com.RedicalGames.Filar
         #region Main
 
         protected override void Init()
+        {
+            if(startBootSequence)
+                BootSequence();
+        }
+
+        private void BootSequence(Action<AppData.Callback> callback = null)
         {
             AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "App Database Manager Instance Is Not Yet Initialized."));
 
@@ -184,6 +194,8 @@ namespace Com.RedicalGames.Filar
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
         }
 
         void OnProjectSupport(Action<AppData.CallbackData<AppData.ProjectRestriction>> callback)

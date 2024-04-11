@@ -15121,6 +15121,7 @@ MonoBehaviour:
     message: Filar requires access to device Storage to read and write data.
     type: 2
     granted: 0
+  startBootSequence: 1
 --- !u!1 &1478371150
 GameObject:
   m_ObjectHideFlags: 0
