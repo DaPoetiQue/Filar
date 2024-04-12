@@ -566,6 +566,7 @@ namespace Com.RedicalGames.Filar
             RotationalDirection,
             ProjectType,
             ProjectTamplate,
+            LanguageSelection,
             None
         }
 
@@ -1483,17 +1484,17 @@ namespace Com.RedicalGames.Filar
 
         public enum LocaleType : int
         {
-            Afrikaans_AF_ZA = 0,
-            Chinesse_simplified = 1,
-            English_en = 2,
-            English_za = 3,
-            French_fr=4,
-            Sesotho_nso_za = 5,
-            Portuguese_pt = 6,
-            Spanish_es = 7,
-            Tsonga_ts_za = 8,
-            Xhosa_xh_za = 9,
-            Zulu_zn_za = 10
+            Afrikaans = 0,
+            Chinesse = 1,       
+            English_SouthAfrica = 2,
+            English = 3,
+            French = 4,
+            Sesotho = 5,
+            Portuguese = 6,
+            Spanish = 7,
+            Tsonga = 8,
+            Xhosa = 9,
+            Zulu = 10
         }
 
         public enum LocalizationKey
@@ -21750,6 +21751,21 @@ namespace Com.RedicalGames.Filar
             bool IsInitialized()
             {
                 return value;
+            }
+
+            public void Reset(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(GetValue());
+
+                if (callbackResults.Success())
+                {
+                    GetValue().GetData().ClearOptions();
+                    GetValue().GetData().onValueChanged.RemoveAllListeners();
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
             }
 
             public void SetContent(List<string> contentList)
@@ -44358,8 +44374,65 @@ namespace Com.RedicalGames.Filar
                 //}
             }
 
-            public void SetActionDropdownContent(params UIScreenGroupContent[] groupContentParams)
+            public void SetActionDropdownContent(int defaultSelection = 0, Action<Callback> callback = null, params UIScreenGroupContent[] groupContentParams)
             {
+                var callbackResults = new Callback(Initialized(InputType.DropDown));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppComponentsValid(groupContentParams, "Group Content Params", "Set Action Dropdown Content Failed - Group Content Params Value Is Null - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        for (int i = 0; i < groupContentParams.Length; i++)
+                        {
+                            var inputActionHandler = Initialized(InputType.DropDown).GetData().Find(input => input.GetDropdownComponent().GetData().GetDataPackets().GetData().GetAction().GetData() == groupContentParams[i].dropDownActionType);
+
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(inputActionHandler, "Input Action Handler", $"Input Action Handler Of Type : {groupContentParams[i].dropDownActionType} Not Found In Action Groups. Invalid operation - Please Varify If Text Type Is Assigned Properly."));
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(inputActionHandler.GetDropdownComponent());
+
+                                if (callbackResults.Success())
+                                {
+                                    var dropdown = inputActionHandler.GetDropdownComponent().GetData();
+                                    dropdown.SetUIInputState(groupContentParams[i].state);
+
+                                    dropdown.Reset(dropdownRestCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(dropdownRestCallbackResults);
+
+                                        if(callbackResults.Success())
+                                        {
+                                            var dropdownOption = new List<TMP_Dropdown.OptionData>();
+
+                                            foreach (var content in groupContentParams[i].contents)
+                                                dropdownOption.Add(new TMP_Dropdown.OptionData() { text = content });
+
+                                            dropdown.GetValue().GetData().AddOptions(dropdownOption);
+                                            dropdown.GetValue().GetData().value = defaultSelection;
+                                            dropdown.GetValue().GetData().onValueChanged.AddListener((value) => OnActionDropdownValueChanged(value, dropdown.dataPackets));
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+
                 //if (groupContentParams != null && groupContentParams.Length > 0)
                 //{
                 //    foreach (var groupContent in groupContentParams)

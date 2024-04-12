@@ -526,7 +526,10 @@ namespace Com.RedicalGames.Filar
                                     break;
                             }
 
-                            SetActionDropdownContent(projectTypeContentParam, projectTemplateContentParam);
+                            SetActionDropdownContent(0, dropDownContentSetCallbackResults =>
+                            {
+                            
+                            }, projectTypeContentParam, projectTemplateContentParam);
 
                             var projectType = (int)newProjectStructureData.GetProjectInfo().GetCategoryType() - 1;
 

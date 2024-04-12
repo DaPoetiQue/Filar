@@ -14,7 +14,7 @@ namespace Com.RedicalGames.Filar
         #region Components
 
         [SerializeField]
-        private AppData.LocaleType currentLanguage = AppData.LocaleType.English_en;
+        private AppData.LocaleType currentLanguage = AppData.LocaleType.English;
 
         private AppData.LanguageRestriction  languageRestriction;
         private bool generateLanguageRestriction;

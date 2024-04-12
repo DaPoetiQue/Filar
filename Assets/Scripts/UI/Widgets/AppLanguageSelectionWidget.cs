@@ -22,7 +22,63 @@ namespace Com.RedicalGames.Filar
 
         protected override void Configure(Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback();
+            var callbackResults = new AppData.Callback(GetScreenTitleLocalizationKey());
+
+            if (callbackResults.Success())
+            {
+                SetUITextDisplayerValue(AppData.ScreenTextType.TitleDisplayer, GetScreenTitleLocalizationKey().GetData(), titleSetCallbackResults =>
+                {
+                    callbackResults.SetResult(titleSetCallbackResults);
+
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+
+                SetActionButtonTitle(AppData.InputActionButtonType.ConfirmationButton, AppData.LocalizationKey.btn_Confirm, buttonTitleSetCallbackResults => 
+                {
+                    callbackResults.SetResult(buttonTitleSetCallbackResults);
+
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "App Language Selection Widget Configure Failed - App Database Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                    var languages = appDatabaseManagerInstance.GetDropdownContent<AppData.LocaleType>().data;
+                    var appLanguages = appDatabaseManagerInstance.GetUIScreenGroupContentTemplate("Languages", AppData.InputType.DropDown, placeHolder: "English", contents: languages, dropdownActionType: AppData.InputDropDownActionType.LanguageSelection);
+
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "App Language Selection Widget Configure Failed - Localization Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                    if(callbackResults.Success())
+                    {
+                        var localizationManagerInstance = AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
+
+                        callbackResults.SetResult(localizationManagerInstance.GetCurrentLanguage());
+
+                        if (callbackResults.Success())
+                        {
+                            SetActionDropdownContent((int)localizationManagerInstance.GetCurrentLanguage().GetData(), languagesSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(languagesSetCallbackResults);
+
+                                if (callbackResults.UnSuccessful())
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            }, appLanguages);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             callback?.Invoke(callbackResults);
         }
@@ -100,7 +156,24 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)
         {
-            throw new System.NotImplementedException();
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "On Action Dropdown Value Changed Failed - Localization Manager Instance Is No Initialized Yet - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var localizationManagerInstance = AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
+
+                var selectedLanguage = (AppData.LocaleType)value;
+
+                localizationManagerInstance.ChangeLanguage(selectedLanguage, languageChangesCallbackResults => 
+                {
+                    callbackResults.SetResult(languageChangesCallbackResults);
+
+                    if(callbackResults.Success())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         protected override void ScrollerPosition(Vector2 position)

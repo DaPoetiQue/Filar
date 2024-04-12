@@ -14539,7 +14539,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  scriptExecutionMode: 0
+  scriptExecutionMode: 1
   activeGraphKeys: 01000000
   loadedGraphs:
   - {fileID: 11400000, guid: e164d8093b10f9a428e674f2bf8d58cf, type: 2}
