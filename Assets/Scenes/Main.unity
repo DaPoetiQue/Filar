@@ -172,6 +172,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   captureFileExtension: 2
   cropImage: 0
   captureResolution:
@@ -347,6 +348,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   assetInfoDisplayer:
     infoWidgetFieldList: []
     widgetsContainer: {fileID: 0}
@@ -1428,6 +1430,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   sceneTrackingData:
     session: {fileID: 633275383}
     rayCastManager: {fileID: 795621439}
@@ -2008,6 +2011,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   loadingSequence:
     name: Loading Sequences
     sequenceDataList:
@@ -3299,7 +3303,8 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  currentEvent: 4
+  scriptExecutionMode: 2
+  currentEvent: 0
 --- !u!1 &450849730
 GameObject:
   m_ObjectHideFlags: 0
@@ -3722,6 +3727,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   sceneEventCameras:
   - name: Landing Page Camera
     eventCamera: {fileID: 555689117}
@@ -3857,6 +3863,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   tutorialInfoViews:
   - name: Selection Options Tutorial View
     tutorialInfoList: []
@@ -4297,6 +4304,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   <AppinfoSynced>k__BackingField: 0
 --- !u!1 &625718228
 GameObject:
@@ -7429,6 +7437,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   selectableAssetsLayerName: Selectable
   pressHoldSelectionDuration: 0.5
   widgetsTransitionDelayDuration: 0.35
@@ -8792,6 +8801,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   sceneRenderCamera: {fileID: 555689117}
   renderingSettings:
     lightingSettings:
@@ -8982,6 +8992,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   profileURL: User Profile
   profileStorageData:
     name: Profile
@@ -9291,6 +9302,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   folderNavigationDataPackets:
     name: 
     externalLinkURL: 
@@ -10789,6 +10801,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   notificationWidgetsList: []
   notificationWidgetContainersList:
   - name: Assets Screen Notifications Container
@@ -11518,6 +11531,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   postURL: User Post Runtime Content
   postContentsURL: User Post Data
 --- !u!1 &1168116820
@@ -11569,6 +11583,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   currentLanguage: 2
 --- !u!1 &1204500052
 GameObject:
@@ -13902,6 +13917,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   messageGroups:
   - name: Filar General Loading Messages
     messages:
@@ -14523,8 +14539,10 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 0
   activeGraphKeys: 01000000
-  loadedGraphs: []
+  loadedGraphs:
+  - {fileID: 11400000, guid: e164d8093b10f9a428e674f2bf8d58cf, type: 2}
 --- !u!1 &1433837151
 GameObject:
   m_ObjectHideFlags: 0
@@ -15105,6 +15123,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   appInfo:
     appRestrictions: []
   testProjectSupport: 2
@@ -15121,7 +15140,7 @@ MonoBehaviour:
     message: Filar requires access to device Storage to read and write data.
     type: 2
     granted: 0
-  startBootSequence: 1
+  startBootSequence: 0
 --- !u!1 &1478371150
 GameObject:
   m_ObjectHideFlags: 0
@@ -15206,6 +15225,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 0
   screens: []
   currentScreen: {fileID: 0}
   screenWidgetsContainer: {fileID: 511625444}
@@ -17017,6 +17037,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   postWidgets: []
 --- !u!1 &1892024579
 GameObject:
@@ -17563,6 +17584,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   surfacingTemplateLibrary:
     surfacingTemplates:
     - name: Network Warning Popup Template
@@ -18303,6 +18325,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   status: 0
 --- !u!1 &1975152758
 GameObject:
@@ -18761,6 +18784,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   defaultAppDirectoryFolderName: App/Storage
   defaultAssetName: New Scene Asset
   defaultFallbackSceneAssetIcon: {fileID: 21300000, guid: 4e05bdcf884c1d2429d4a01972c6da53, type: 3}
@@ -20580,6 +20604,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
+  scriptExecutionMode: 2
   environmentLibrary:
     name: 
     sceneEnvironments:

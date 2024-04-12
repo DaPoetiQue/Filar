@@ -475,7 +475,79 @@ namespace Com.RedicalGames.Filar
             }
 
             return callbackResults;
+        }
 
+        #region Nodes
+
+        public async void ShowScreenNode(AppData.ScreenType screenType, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(screenType, "Screen Type", $"Show Screen Node Failed - Screen Type Parameter Value Is set To Default : {screenType} - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.SetResult(GetCurrentScreenType());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(GetCurrentScreenType().GetData(), screenType));
+
+                    if(callbackResults.UnSuccessful())
+                    {
+                        var showScreenAsyncCallbackResultsTask = await ShowScreenAsync(screenType);
+
+                        callbackResults.SetResult(showScreenAsyncCallbackResultsTask);
+
+                        if (callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                }
+                else
+                {
+                    var showScreenAsyncCallbackResultsTask = await ShowScreenAsync(screenType);
+
+                    callbackResults.SetResult(showScreenAsyncCallbackResultsTask);
+
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public async void HideScreenNode(AppData.ScreenType screenType, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(screenType, "Screen Type", $"Show Screen Node Failed - Screen Type Parameter Value Is set To Default : {screenType} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(GetCurrentScreenType());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(AppData.Helpers.GetAppEnumValuesEqual(GetCurrentScreenType().GetData(), screenType));
+
+                    if(callbackResults.Success())
+                    {
+                        var hideScreenAsyncCallbackResultsTask = await HideScreenAsync(screenType);
+
+                        callbackResults.SetResult(hideScreenAsyncCallbackResultsTask);
+
+                        if (callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                 else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
         }
 
         public async Task<AppData.CallbackData<Screen>> ShowScreenAsync(AppData.ScreenType screenType)
@@ -484,19 +556,21 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                GetScreen(screenType, screenFoundCallback =>
+                GetScreen(screenType, screenFoundCallbackResults =>
                 {
-                    callbackResults.SetResult(screenFoundCallback);
+                    callbackResults.SetResult(screenFoundCallbackResults);
 
                     if (callbackResults.Success())
                     {
+                        var screen = screenFoundCallbackResults.GetData();
+
                         callbackResults.SetResult(GetCurrentScreenType());
 
                         if(callbackResults.Success())
                         {
                             AppData.ActionEvents.OnScreenExitEvent(GetCurrentScreenType().GetData());
 
-                            SetCurrentScreen(callbackResults.GetData(), currentScreenSetCallbackResults => 
+                            SetCurrentScreen(screen, currentScreenSetCallbackResults => 
                             {
                                 callbackResults.SetResult(currentScreenSetCallbackResults);
 
@@ -518,7 +592,28 @@ namespace Com.RedicalGames.Filar
                             });
                         }
                         else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        {
+                            SetCurrentScreen(screen, currentScreenSetCallbackResults =>
+                            {
+                                callbackResults.SetResult(currentScreenSetCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    OnCheckIfScreenLoadedAsync(screenType, screenLoadedCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(screenLoadedCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            callbackResults.result = $"Screen : {screenType} Has Been Loaded Successfully.";
+                                            callbackResults.data = screenLoadedCallbackResults.data;
+                                        }
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
                     }
                 });
 
@@ -543,16 +638,37 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #endregion
+
         #region On Hide Screen Async
 
-        public async Task<AppData.CallbackData<Screen>> HideScreenAsync(AppData.ScreenConfigDataPacket dataPacket) { return await OnTriggerHideScreenAsync(dataPacket); }
-
-        async Task<AppData.CallbackData<Screen>> OnTriggerHideScreenAsync(AppData.ScreenConfigDataPacket dataPacket)
+        public async Task<AppData.CallbackData<Screen>> HideScreenAsync(AppData.ScreenType screenType)
         {
-            return await OnHideScreenAsync(dataPacket);
+            AppData.CallbackData<Screen> callbackResults = new AppData.CallbackData<Screen>(AppData.Helpers.GetAppEnumValueValid(screenType, "screen Type", $"Hide Screen Async Failed - Screen Type Parameter Value Is Set To Default : {screenType} - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.SetResult(GetCurrentScreen());
+
+                if(callbackResults.Success())
+                {
+                    var OnHideSelectedScreenViewAsyncCallbackResultsTask = await OnHideSelectedScreenViewAsync(GetCurrentScreen().GetData());
+
+                    callbackResults.SetResult(OnHideSelectedScreenViewAsyncCallbackResultsTask);
+
+                    if(callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
-        async Task<AppData.CallbackData<Screen>> OnHideScreenAsync(AppData.ScreenConfigDataPacket dataPacket)
+        public async Task<AppData.CallbackData<Screen>> HideScreenAsync(AppData.ScreenConfigDataPacket dataPacket)
         {
             AppData.CallbackData<Screen> callbackResults = new AppData.CallbackData<Screen>();
 
@@ -561,14 +677,33 @@ namespace Com.RedicalGames.Filar
                 callbackResults = screenFoundCallback;
             });
 
-            await OnHideSelectedScreenViewAsync(callbackResults.data);
+            if(callbackResults.Success())
+            {
+
+            }
+
+            await OnHideSelectedScreenViewAsync(callbackResults.GetData());
 
             return callbackResults;
         }
 
         public async Task<AppData.CallbackData<Screen>> OnHideSelectedScreenViewAsync(Screen screen)
         {
-            return await screen.HideViewSync();
+            var callbackResults = new AppData.CallbackData<Screen>(AppData.Helpers.GetAppComponentValid(screen, "Screen", "On Hide Selected Screen View Async Failed - Screen Parameter Value Is Null - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                var hideScreenAsyncCallbackResultsTask = await screen.HideViewSync();
+
+                callbackResults.SetResult(hideScreenAsyncCallbackResultsTask);
+
+                if (callbackResults.UnSuccessful())
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         #endregion

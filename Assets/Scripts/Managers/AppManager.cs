@@ -44,8 +44,100 @@ namespace Com.RedicalGames.Filar
 
         protected override void Init()
         {
-            if(startBootSequence)
-                BootSequence();
+            var callbackResults = new AppData.Callback();
+
+            if (startBootSequence)
+            {
+                BootSequence(bootSequenceCallbackResults => 
+                {
+                    callbackResults.SetResult(bootSequenceCallbackResults);
+
+                    if(callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
+            else
+            {
+                BuildAppUI(buildAppUICallbackResults => 
+                {
+                    callbackResults.SetResult(buildAppUICallbackResults);
+
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
+        }
+
+        private void BuildAppUI(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Build App UI Failed - App Database Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).GetData();
+
+                databaseManager.InitializeLocalCacheStorage(cacheStorageInitializedCallbackResults =>
+                {
+                    callbackResults.SetResult(cacheStorageInitializedCallbackResults);
+
+                    if (callbackResults.Success())
+                    {
+                        AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, async screenUIManagerInstanceCallbackResults =>
+                        {
+                            callbackResults.SetResults(screenUIManagerInstanceCallbackResults);
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResults(databaseManager.GetAssetBundlesLibrary());
+
+                                if (callbackResults.Success())
+                                {
+                                    databaseManager.LoadSplashImagesDataOnInitialization();
+                                    databaseManager.GetAssetBundlesLibrary().GetData().Initialize();
+
+                                    var screenUIManager = screenUIManagerInstanceCallbackResults.GetData();
+                                    var onScreenInitializationTaskResultsCallback = await screenUIManager.OnScreenInitAsync();
+
+                                    callbackResults.SetResult(onScreenInitializationTaskResultsCallback);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SurfacingGraphManager.Instance, "Surfacing Graph Manager Instance", "Build App UI Failed - Surfacing Graph Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+                                        if(callbackResults.Success())
+                                        {
+                                            var surfacingGraphManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingGraphManager.Instance, "Surfacing Graph Manager Instance").GetData();
+
+                                            surfacingGraphManagerInstance.BuildGraphs(buildGraphsCallbackResults => 
+                                            {
+                                                callbackResults.SetResult(buildGraphsCallbackResults);
+
+                                                if(callbackResults.UnSuccessful())
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                        }, "Screen UI Manager Instance Is Not Yet Initialized");
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
         }
 
         private void BootSequence(Action<AppData.Callback> callback = null)
@@ -198,9 +290,27 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
+        public AppData.Callback BootSequenceEnabled()
+        {
+            AppData.Callback callbackResults = new AppData.Callback();
+
+            if(startBootSequence)
+            {
+                callbackResults.result = "Start Boot Sequence Is Enabled.";
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+            else
+            {
+                callbackResults.result = "Start Boot Sequence Is Disabled.";
+                callbackResults.resultCode = AppData.Helpers.WarningCode;
+            }
+
+            return callbackResults;
+        }
+
         void OnProjectSupport(Action<AppData.CallbackData<AppData.ProjectRestriction>> callback)
         {
-            AppData.CallbackData<AppData.ProjectRestriction> callbackResults = new AppData.CallbackData<AppData.ProjectRestriction>();
+            var callbackResults = new AppData.CallbackData<AppData.ProjectRestriction>();
 
             var supportRestriction = new AppData.ProjectRestriction();
 

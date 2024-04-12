@@ -128,14 +128,14 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                             {
-                                float xRot = Input.GetAxis("Mouse X") * SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Editor, AppData.RuntimeExecution.InspectorModePanSpeed).value;
-                                float yRot = Input.GetAxis("Mouse Y") * SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Editor, AppData.RuntimeExecution.InspectorModePanSpeed).value;
+                                float xRot = Input.GetAxis("Mouse X") * SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Debug, AppData.RuntimeExecution.InspectorModePanSpeed).value;
+                                float yRot = Input.GetAxis("Mouse Y") * SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Debug, AppData.RuntimeExecution.InspectorModePanSpeed).value;
 
                                 Vector3 rightVect = Vector3.Cross(eventCamera.transform.up, containerTargetPoseReference.position - eventCamera.transform.position);
                                 Vector3 upVect = Vector3.Cross(containerTargetPoseReference.position - eventCamera.transform.position, rightVect);
 
-                                contentContainer.rotation = Quaternion.Slerp(contentContainer.rotation, Quaternion.AngleAxis(-xRot, upVect) * contentContainer.rotation, SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Editor, AppData.RuntimeExecution.InspectorModePanSpeed).value * Time.smoothDeltaTime);
-                                contentContainer.rotation = Quaternion.Slerp(contentContainer.rotation, Quaternion.AngleAxis(yRot, rightVect) * contentContainer.rotation, SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Editor, AppData.RuntimeExecution.InspectorModePanSpeed).value * Time.smoothDeltaTime);
+                                contentContainer.rotation = Quaternion.Slerp(contentContainer.rotation, Quaternion.AngleAxis(-xRot, upVect) * contentContainer.rotation, SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Debug, AppData.RuntimeExecution.InspectorModePanSpeed).value * Time.smoothDeltaTime);
+                                contentContainer.rotation = Quaternion.Slerp(contentContainer.rotation, Quaternion.AngleAxis(yRot, rightVect) * contentContainer.rotation, SelectableManager.Instance.GetAssetPanDragSpeedRuntimeValue(AppData.BuildType.Debug, AppData.RuntimeExecution.InspectorModePanSpeed).value * Time.smoothDeltaTime);
 
                                 previousPosition = eventCamera.ScreenToViewportPoint(Input.mousePosition);
 

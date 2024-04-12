@@ -97,8 +97,8 @@ MonoBehaviour:
   - {fileID: 3792458044074890365}
   - {fileID: 4481618442133750714}
   - {fileID: -8310515461330957478}
-  type: 1
-  currentNode: {fileID: 0}
+  type: 0
+  currentNode: {fileID: -1238588050531087505}
   completed: 0
 --- !u!114 &3792458044074890365
 MonoBehaviour:

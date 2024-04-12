@@ -942,7 +942,9 @@ namespace Com.RedicalGames.Filar
         public enum BuildType
         {
             Runtime,
-            Editor
+            Debug,
+            Default,
+            None
         }
 
         public enum RuntimeExecution
@@ -35543,8 +35545,6 @@ namespace Com.RedicalGames.Filar
                 {
                     bool validScreenViewState = (onShowScreen) ? GetView().GetData().GetInActive() : GetView().GetData().GetActive();
 
-                    LogInfo($" _____________________++++++++++++++++++++===== Screen View : {GetName()} Has Valid Screen State : {validScreenViewState} - Show Screen : {onShowScreen} - Screen Active : {GetView().GetData().GetActive()} - Screen In-Active : {GetView().GetData().GetInActive()}", this);
-
                     if (validScreenViewState)
                     {
                         callbackResults.result = $"Screen View : {name} - Has Been Initialized Successfully";
@@ -35599,7 +35599,11 @@ namespace Com.RedicalGames.Filar
                                 {
                                     OnScreenViewVisibility(true);
 
-                                   return await faderComponent.FadeOut();
+                                   var screenFadeCallbackResultsTask = await faderComponent.FadeOut();
+                                    callbackResults.SetResult(screenFadeCallbackResultsTask);
+
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
                                 {
@@ -61181,6 +61185,15 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
+            #region Components
+
+            [Header("Runtime Execution")]
+
+            [Space(5)]
+            [SerializeField]
+            private BuildType scriptExecutionMode = BuildType.Default;
+
+            #endregion
 
             #region Unity Callbacks
 
@@ -61204,6 +61217,21 @@ namespace Com.RedicalGames.Filar
             }
 
             protected abstract void Init();
+
+            protected AppData.CallbackData<AppData.BuildType> GetScriptExecutionMode()
+            {
+                var callbackResults = new AppData.CallbackData<AppData.BuildType>(Helpers.GetAppEnumValueValid(scriptExecutionMode, "Script Execution Mode", $"Get Script Execution Mod Failed - Script Execution Mod Value Is Set To Default : {scriptExecutionMode} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Script Execution Mod Success - Script Execution Mod Value Is Set To : {scriptExecutionMode}.";
+                    callbackResults.data = scriptExecutionMode;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
 
             #endregion
         }

@@ -17,12 +17,6 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 0a49b241355ec974286b6da48c51a010
   m_SerializeEntries:
-  - m_GUID: 4809a066dc5deb54f92141c1e3f11eae
-    m_Address: App Boot State Graph
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Graph
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d3af76ac3522f0146a4f4efa469a0f94
     m_Address: FTUE_Graph
     m_ReadOnly: 0
@@ -37,6 +31,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4bd67b5485d83c54b9727801564601a1
     m_Address: Welcome FTUE
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Graph
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e164d8093b10f9a428e674f2bf8d58cf
+    m_Address: App Boot State Graph
     m_ReadOnly: 0
     m_SerializedLabels:
     - Graph

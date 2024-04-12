@@ -147,7 +147,9 @@ namespace Com.RedicalGames.Filar
 
         public AppData.CallbackData<BaseNode> GetCurrentNode()
         {
-            var callbackResults = new AppData.CallbackData<BaseNode>(AppData.Helpers.GetAppComponentValid(currentNode, "Current Node", "Get Current Node Failed - Current Node Value Is Not Assigned - Invalid Operation."));
+            var callbackResults = new AppData.CallbackData<BaseNode>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(currentNode, "Current Node", "Get Current Node Failed - Current Node Value Is Not Assigned - Invalid Operation."));
 
             if(callbackResults.Success())
             {

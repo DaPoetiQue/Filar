@@ -26,7 +26,34 @@ namespace Com.RedicalGames.Filar
 
         #region Main
 
-        protected override async void Init()
+        protected override void Init()
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance", "Surfacing Data Init Failed - App Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance").GetData();
+
+                callbackResults.SetResult(appManagerInstance.BootSequenceEnabled());
+
+                if(callbackResults.Success())
+                {
+                    BuildGraphs(buildGraphsCallbackResults => 
+                    {
+                        callbackResults.SetResult(buildGraphsCallbackResults);
+
+                        if(callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        public async void BuildGraphs(Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "App Events Manager Instance Is Not Yet Initialized."));
 
@@ -43,77 +70,124 @@ namespace Com.RedicalGames.Filar
                 appEventsManagerInstance.OnEventSubscription<AppData.TabView<AppData.WidgetType>>(OnScreenBluredEvent, AppData.EventType.OnTabViewShownEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
                 appEventsManagerInstance.OnEventSubscription<AppData.TabView<AppData.WidgetType>>(OnScreenFocusedEvent, AppData.EventType.OnTabViewHiddenEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
 
+                appEventsManagerInstance.OnEventSubscription(OnAppEvents, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
+
                 if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "Surfacing Manager Init Failed - App Database Manager Instance Is Not Yet Initialized - Invalid Operation."));
+                    callbackResults.SetResult(GetScriptExecutionMode());
 
-                    if(callbackResults.Success())
+                    if (callbackResults.Success())
                     {
-                        var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
-
-                        callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
-
-                        if(callbackResults.Success())
+                        if (GetScriptExecutionMode().GetData() == AppData.BuildType.Debug)
                         {
-                            var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+                            #region Debug Execution
 
-                            var awaitLoadedGraphsTaskCallbackResults = await assetBundlesLibrary.OnAwaitAssetsInitialization( AppData.AssetBundleResourceLocatorType.Graph);
-
-                            callbackResults.SetResult(awaitLoadedGraphsTaskCallbackResults);
+                            callbackResults.SetResult(GetGraphs());
 
                             if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(GetActiveGraphKeys());
-
-                                if(callbackResults.Success())
+                                appEventsManagerInstance.InvokeEvent(AppData.EventType.OnStart, onStartEventTriggeredCallbackResults =>
                                 {
-                                    for (int i = 0; i < GetActiveGraphKeys().GetData().Count; i++)
-                                    {
-                                        callbackResults.SetResult(assetBundlesLibrary.GetLoadedGraphs(GetActiveGraphKeys().GetData()[i]));
-
-                                        if(callbackResults.Success())
-                                        {
-                                            var graphs = assetBundlesLibrary.GetLoadedGraphs(GetActiveGraphKeys().GetData()[i]).GetData();
-
-                                            AddGraphs(graphs, graphsAddedCallbackResults => 
-                                            {
-                                                callbackResults.SetResult(graphsAddedCallbackResults);
-
-                                                if(callbackResults.UnSuccessful())
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            });
-                                        }
-
-                                        if (callbackResults.UnSuccessful())
-                                        {
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            break;
-                                        }
-                                    }
+                                    callbackResults.SetResult(onStartEventTriggeredCallbackResults);
 
                                     if (callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(GetGraphs());
+                                        OnConfig(graphsConfiguredCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(graphsConfiguredCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            #endregion
+                        }
+                        else
+                        {
+                            #region Build Execution
+
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "Surfacing Manager Init Failed - App Database Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                                callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
+
+                                if (callbackResults.Success())
+                                {
+                                    var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
+
+                                    var awaitLoadedGraphsTaskCallbackResults = await assetBundlesLibrary.OnAwaitAssetsInitialization(AppData.AssetBundleResourceLocatorType.Graph);
+
+                                    callbackResults.SetResult(awaitLoadedGraphsTaskCallbackResults);
+
+                                    if (callbackResults.Success())
+                                    {
+                                        callbackResults.SetResult(GetActiveGraphKeys());
 
                                         if (callbackResults.Success())
                                         {
-                                            appEventsManagerInstance.InvokeEvent(AppData.EventType.OnStart, onStartEventTriggeredCallbackResults => 
+                                            for (int i = 0; i < GetActiveGraphKeys().GetData().Count; i++)
                                             {
-                                                callbackResults.SetResult(onStartEventTriggeredCallbackResults);
+                                                callbackResults.SetResult(assetBundlesLibrary.GetLoadedGraphs(GetActiveGraphKeys().GetData()[i]));
 
-                                                if(callbackResults.Success())
+                                                if (callbackResults.Success())
                                                 {
-                                                    OnConfig(graphsConfiguredCallbackResults =>
+                                                    var graphs = assetBundlesLibrary.GetLoadedGraphs(GetActiveGraphKeys().GetData()[i]).GetData();
+
+                                                    AddGraphs(graphs, graphsAddedCallbackResults =>
                                                     {
-                                                        callbackResults.SetResult(graphsConfiguredCallbackResults);
+                                                        callbackResults.SetResult(graphsAddedCallbackResults);
 
                                                         if (callbackResults.UnSuccessful())
                                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     });
                                                 }
+
+                                                if (callbackResults.UnSuccessful())
+                                                {
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    break;
+                                                }
+                                            }
+
+                                            if (callbackResults.Success())
+                                            {
+                                                callbackResults.SetResult(GetGraphs());
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    appEventsManagerInstance.InvokeEvent(AppData.EventType.OnStart, onStartEventTriggeredCallbackResults =>
+                                                    {
+                                                        callbackResults.SetResult(onStartEventTriggeredCallbackResults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            OnConfig(graphsConfiguredCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(graphsConfiguredCallbackResults);
+
+                                                                if (callbackResults.UnSuccessful())
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
                                                 else
                                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                            });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         }
                                         else
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -126,9 +200,9 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            #endregion
                         }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -138,6 +212,8 @@ namespace Com.RedicalGames.Filar
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
         }
 
         private void AddGraphs(List<SurfacingNodeGraph> graphs, Action<AppData.Callback> callback = null)
@@ -153,6 +229,27 @@ namespace Com.RedicalGames.Filar
         }
 
         #region Entry Event Callbacks
+
+        private void OnAppEvents(AppData.EventType eventType)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(eventType, "Event Type", $"On App Events Failed - Event Type Parameter Value Is Set To Default : {eventType} - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                if(eventType == AppData.EventType.OnStart)
+                {
+                    OnGraphEntry(AppData.GraphEntryEventType.OnStart, screenEnterEventCallbackResults =>
+                    {
+                        callbackResults.SetResult(screenEnterEventCallbackResults);
+
+                        if (callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
 
         private void OnScreenEnterEvent(Screen screen)
         {
@@ -240,50 +337,50 @@ namespace Com.RedicalGames.Filar
 
         private void OnScreenFocusedEvent(AppData.Widget widget)
         {
-            var callbackResults = new AppData.Callback(widget.GetType());
+            //var callbackResults = new AppData.Callback(widget.GetType());
 
-            if (callbackResults.Success())
-            {
-                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "On Screen Blured Event Failed - Screen UI Manager Instance Is Not Yet Initialized."));
+            //if (callbackResults.Success())
+            //{
+            //    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "On Screen Blured Event Failed - Screen UI Manager Instance Is Not Yet Initialized."));
 
-                if (callbackResults.Success())
-                {
-                    var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+            //    if (callbackResults.Success())
+            //    {
+            //        var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
 
-                    callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+            //        callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
 
-                    if (callbackResults.Success())
-                    {
-                        callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen().GetData().GetScreenBlur());
+            //        if (callbackResults.Success())
+            //        {
+            //            callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen().GetData().GetScreenBlur());
 
-                        if (callbackResults.Success())
-                        {
-                            callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen().GetData().GetScreenBlur().GetData().IsScreenBlured());
+            //            if (callbackResults.Success())
+            //            {
+            //                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen().GetData().GetScreenBlur().GetData().IsScreenBlured());
 
-                            if (callbackResults.UnSuccessful())
-                            {
-                                OnGraphEntry(AppData.GraphEntryEventType.OnScreenFocused, screenFocusedEventCallbackResults =>
-                                {
-                                    callbackResults.SetResult(screenFocusedEventCallbackResults);
+            //                if (callbackResults.UnSuccessful())
+            //                {
+            //                    OnGraphEntry(AppData.GraphEntryEventType.OnScreenFocused, screenFocusedEventCallbackResults =>
+            //                    {
+            //                        callbackResults.SetResult(screenFocusedEventCallbackResults);
 
-                                    if (callbackResults.UnSuccessful())
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                });
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        }
-                        else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                    }
-                    else
-                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                }
-                else
-                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-            }
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //                        if (callbackResults.UnSuccessful())
+            //                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //                    });
+            //                }
+            //                else
+            //                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //            }
+            //            else
+            //                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //        }
+            //        else
+            //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //    }
+            //    else
+            //        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            //}
+            //else
+            //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         private void OnScreenBluredEvent(AppData.TabView<AppData.WidgetType> tabView)
@@ -549,30 +646,80 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    var screenShowAsyncCallbackResultsTask = await screenUIManagerInstance.ShowScreenAsync(screenNode.GetScreenType().GetData());
+                                    callbackResults.SetResult(screenNode.GetState());
 
-                                    callbackResults.SetResult(screenShowAsyncCallbackResultsTask);
-
-                                    if(callbackResults.Success())
+                                    if (callbackResults.Success())
                                     {
-                                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                        switch(screenNode.GetState().GetData())
                                         {
-                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
+                                            case AppData.UIVisibilityStateEvent.Show:
 
-                                            if (callbackResults.UnSuccessful())
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
+                                                screenUIManagerInstance.ShowScreenNode(screenNode.GetScreenType().GetData(), showScreenCallbackResults => 
+                                                {
+                                                    callbackResults.SetResult(showScreenCallbackResults);
+
+                                                    if(callbackResults.Success())
+                                                    {
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                                                if (callbackResults.UnSuccessful())
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            });
+                                                        }
+                                                        else
+                                                        {
+                                                            graph.Reset(callback: graphResetedCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(graphResetedCallbackResults);
+
+                                                                if (callbackResults.UnSuccessful())
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            });
+                                                        }
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+
+                                                break;
+
+                                            case AppData.UIVisibilityStateEvent.Hide:
+
+                                                screenUIManagerInstance.HideScreenNode(screenNode.GetScreenType().GetData(), hideScreenCallbackResults => 
+                                                {
+                                                    callbackResults.SetResult(hideScreenCallbackResults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                                            if (callbackResults.UnSuccessful())
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                    {
+                                                        graph.Reset(callback: graphResetedCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(graphResetedCallbackResults);
+
+                                                            if (callbackResults.UnSuccessful())
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                });
+
+                                                break;
+                                        }
                                     }
                                     else
-                                    {
-                                        graph.Reset(callback: graphResetedCallbackResults =>
-                                        {
-                                            callbackResults.SetResult(graphResetedCallbackResults);
-
-                                            if (callbackResults.UnSuccessful())
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
-                                    }
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
