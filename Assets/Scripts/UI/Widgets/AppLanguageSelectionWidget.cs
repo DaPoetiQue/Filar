@@ -151,7 +151,32 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnActionButtonEvent(AppData.WidgetType popUpType, AppData.InputActionButtonType actionType, AppData.SceneConfigDataPacket dataPackets)
         {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(actionType, "Action Type", $"On Action Button Event Failed - Action Type Parameter Value Is set To Default : {actionType} - Invalid Operation."));
 
+            if(callbackResults.Success())
+            {
+                if(actionType == AppData.InputActionButtonType.ConfirmationButton)
+                {
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance", "On Action Button Event Failed - App Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                    if(callbackResults.Success())
+                    {
+                        var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance").GetData();
+
+                        appManagerInstance.SetAppLanguageInfo(appLanguageInfoSetCallbackResults => 
+                        {
+                            callbackResults.SetResult(appLanguageInfoSetCallbackResults);
+                        
+                            if(callbackResults.UnSuccessful())
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         protected override void OnActionDropdownValueChanged(int value, AppData.DropdownConfigDataPacket dataPackets)

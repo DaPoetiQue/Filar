@@ -194,6 +194,15 @@ namespace Com.RedicalGames.Filar
                                 AppData.ActionEvents._OnAppLanguageChanged -= eventMethod.Invoke;
 
                             break;
+
+                        case AppData.EventType.OnActionButtonPress:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnActionButtonPressEvent += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnActionButtonPressEvent -= eventMethod.Invoke;
+
+                            break;
                     }
                 }
                 else
@@ -224,6 +233,7 @@ namespace Com.RedicalGames.Filar
                     AppData.ActionEvents._OnNetworkConnectedEvent += () => eventMethod?.Invoke(AppData.EventType.OnNetworkConnectedEvent);
                     AppData.ActionEvents._OnNetworkFailedEvent += () => eventMethod?.Invoke(AppData.EventType.OnNetworkFailedEvent);
                     AppData.ActionEvents._OnAppLanguageChanged += () => eventMethod?.Invoke(AppData.EventType.OnAppLanguageChanged);
+                    AppData.ActionEvents._OnActionButtonPressEvent += () => eventMethod?.Invoke(AppData.EventType.OnActionButtonPress);
                 }
                 else
                 {
@@ -238,6 +248,7 @@ namespace Com.RedicalGames.Filar
                     AppData.ActionEvents._OnNetworkConnectedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnNetworkConnectedEvent);
                     AppData.ActionEvents._OnNetworkFailedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnNetworkFailedEvent);
                     AppData.ActionEvents._OnAppLanguageChanged -= () => eventMethod?.Invoke(AppData.EventType.OnAppLanguageChanged);
+                    AppData.ActionEvents._OnActionButtonPressEvent -= () => eventMethod?.Invoke(AppData.EventType.OnActionButtonPress);
                 }
             }
             else
@@ -736,12 +747,17 @@ namespace Com.RedicalGames.Filar
                         AppData.ActionEvents.OnAppLanguageChangedEvent();
 
                         break;
+
+                    case AppData.EventType.OnActionButtonPress:
+
+                        AppData.ActionEvents.OnActionButtonPressEvent();
+
+                        break;
                 }
             }
 
             callback?.Invoke(callbackResults);
         }
-
 
         public void InvokeEvents(Action<AppData.Callback> callback = null)
         {

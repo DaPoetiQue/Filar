@@ -663,6 +663,19 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region App Language
+
+        public void SetAppLanguageInfo(Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback();
+
+            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+            callback?.Invoke(callbackResults);
+        }
+
+        #endregion
+
         public void SetAppMode(AppData.AppMode appMode) => this.appMode = appMode;
 
         public AppData.AppMode GetAppMode()

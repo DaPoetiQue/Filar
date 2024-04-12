@@ -22322,8 +22322,6 @@ namespace Com.RedicalGames.Filar
                                                                                 {
                                                                                     callbackResults.SetResult(callbackResults);
                                                                                 });
-
-                                                                                ActionEvents.OnActionButtonPressedEvent(input.dataPackets);
                                                                             });
                                                                         }
                                                                         else
@@ -41136,7 +41134,7 @@ namespace Com.RedicalGames.Filar
                                                                                                         {
                                                                                                             OnActionButtonInputs(actionButton);
                                                                                                             OnActionButtonEvent(GetType().GetData(), actionButton.dataPackets.GetAction().GetData(), actionButton.dataPackets);
-                                                                                                            ActionEvents.OnActionButtonPressedEvent(actionButton.dataPackets);
+                                                                                                            ActionEvents.OnActionButtonPressEvent();
                                                                                                         });
                                                                                                     }
                                                                                                     else
@@ -41170,7 +41168,7 @@ namespace Com.RedicalGames.Filar
                                                                                         {
                                                                                             OnActionButtonInputs(actionButton);
                                                                                             OnActionButtonEvent(GetType().GetData(), actionButton.dataPackets.GetAction().GetData(), actionButton.dataPackets);
-                                                                                            ActionEvents.OnActionButtonPressedEvent(actionButton.dataPackets);
+                                                                                            ActionEvents.OnActionButtonPressEvent();
                                                                                         });
                                                                                     }
                                                                                     else
@@ -48948,8 +48946,6 @@ namespace Com.RedicalGames.Filar
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 });
-
-                                ActionEvents.OnActionButtonPressedEvent(actionButton);
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -61336,7 +61332,7 @@ namespace Com.RedicalGames.Filar
             OnSelectableWidgetShownEvent,
             OnSelectableWidgetHiddenEvent,
             OnSelectableWidgetTransitionInProgressEvent,
-            OnActionButtonPressedEvent,
+            OnActionButtonPress,
             OnPostSelectedEvent,
             OnNetworkConnectedEvent,
             OnShowTabViewEvent,
@@ -62544,6 +62540,8 @@ namespace Com.RedicalGames.Filar
             public static event Void _OnScreenLoadStartedEvent;
             public static event Void _OnScreenLoadEndedEvent;
 
+            public static event Void _OnActionButtonPressEvent;
+
             public static event Void _OnAppLanguageChanged;
 
             #region Unity Events
@@ -62592,7 +62590,6 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<TabViewType> _OnShowTabViewEvent;
             public static event ParamVoid<TabViewType, Action<Callback>> _OnShowTabViewAsyncEvent;
 
-            public static event ParamVoid<ButtonConfigDataPacket> _OnActionButtonPressedEvent;
             public static event ParamVoid<string, InputFieldConfigDataPacket> _OnInputFieldValueChanged;          
             public static event ParamVoid<bool, CheckboxConfigDataPacket> _OnCheckboxValueChanged;
 
@@ -62636,6 +62633,8 @@ namespace Com.RedicalGames.Filar
 
             public static void OnScreenLoadStartedEvent() => _OnScreenLoadStartedEvent?.Invoke();
             public static void OnScreenLoadEndedEvent() => _OnScreenLoadEndedEvent?.Invoke();
+
+            public static void OnActionButtonPressEvent() => _OnActionButtonPressEvent?.Invoke();
 
             public static void OnAppLanguageChangedEvent() => _OnAppLanguageChanged?.Invoke();
 
@@ -62686,7 +62685,6 @@ namespace Com.RedicalGames.Filar
             public static void OnShowTabViewEvent(TabViewType viewType) => _OnShowTabViewEvent?.Invoke(viewType);
             public static void OnShowTabViewAsyncEvent(TabViewType viewType, Action<Callback> callback = null) => _OnShowTabViewAsyncEvent?.Invoke(viewType, callback);
 
-            public static void OnActionButtonPressedEvent(ButtonConfigDataPacket buttonConfig) => _OnActionButtonPressedEvent?.Invoke(buttonConfig);
             public static void OnInputFieldValueChanged(string value, InputFieldConfigDataPacket inputFieldConfig) => _OnInputFieldValueChanged?.Invoke(value, inputFieldConfig);
             public static void OnCheckboxValueChanged(bool value, CheckboxConfigDataPacket checkboxConfig) => _OnCheckboxValueChanged?.Invoke(value, checkboxConfig);
 
@@ -62836,7 +62834,7 @@ namespace Com.RedicalGames.Filar
                         switch (eventAction.GetEventType().GetData())
                         {
                          
-                            case EventType.OnActionButtonPressedEvent:
+                            case EventType.OnActionButtonPress:
 
                                 //if (subscribe)
                                 //    _OnActionButtonPressedEvent += eventAction.TriggeredEventMethod;
