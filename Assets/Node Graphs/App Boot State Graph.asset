@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Wait For Seconds
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -744, y: -136}
+  position: {x: -712, y: -72}
   ports:
     keys:
     - input
@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Name: Exit
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 1192, y: 8}
+  position: {x: 1320, y: -88}
   ports:
     keys:
     - input
@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Name: Wait For Seconds
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -328, y: 88}
+  position: {x: -8, y: -88}
   ports:
     keys:
     - input
@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Name: Widget
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -712, y: 72}
+  position: {x: -472, y: -88}
   ports:
     keys:
     - input
@@ -196,8 +196,8 @@ MonoBehaviour:
   - {fileID: 4856943063715546301}
   - {fileID: 1673378582075409754}
   type: 1
-  currentNode: {fileID: -6339528577443172159}
-  completed: 1
+  currentNode: {fileID: 1673378582075409754}
+  completed: 0
 --- !u!114 &395459579569198672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,7 +211,7 @@ MonoBehaviour:
   m_Name: Wait For Seconds
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 152, y: 56}
+  position: {x: 424, y: -88}
   ports:
     keys:
     - input
@@ -257,7 +257,7 @@ MonoBehaviour:
   m_Name: Screen
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 904, y: 104}
+  position: {x: 1080, y: -104}
   ports:
     keys:
     - input
@@ -304,7 +304,7 @@ MonoBehaviour:
   m_Name: Wait For Event
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -472, y: -120}
+  position: {x: -248, y: -88}
   ports:
     keys:
     - input
@@ -350,7 +350,7 @@ MonoBehaviour:
   m_Name: Wait For Seconds
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 680, y: 136}
+  position: {x: 856, y: -88}
   ports:
     keys:
     - input
@@ -396,7 +396,7 @@ MonoBehaviour:
   m_Name: Screen
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1000, y: 72}
+  position: {x: -936, y: -88}
   ports:
     keys:
     - input
@@ -443,7 +443,7 @@ MonoBehaviour:
   m_Name: Screen
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 440, y: 56}
+  position: {x: 648, y: -104}
   ports:
     keys:
     - input
@@ -490,7 +490,7 @@ MonoBehaviour:
   m_Name: Entry
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1016, y: -136}
+  position: {x: -1160, y: -120}
   ports:
     keys:
     - output
@@ -524,7 +524,7 @@ MonoBehaviour:
   m_Name: Widget
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -72, y: -40}
+  position: {x: 200, y: -104}
   ports:
     keys:
     - input

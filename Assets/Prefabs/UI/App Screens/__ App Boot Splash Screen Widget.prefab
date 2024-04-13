@@ -165,11 +165,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3265665341194908849}
-  - {fileID: 3265665340474928472}
   - {fileID: 3265665339886081096}
   - {fileID: 3265665340351610167}
-  - {fileID: 3265665341712371980}
   m_Father: {fileID: 3265665340347939898}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -292,13 +289,13 @@ MonoBehaviour:
     constriants: []
   - name: App License Info Displayer Widget
     referenceType: 30
-    uIPlacementType: 2
+    uIPlacementType: 0
     containerType: 14
     initialVisibilityState: 1
     constriants: []
   - name: Copyright Tag Displayer Widget
     referenceType: 18
-    uIPlacementType: 2
+    uIPlacementType: 0
     containerType: 14
     initialVisibilityState: 1
     constriants:
@@ -332,13 +329,13 @@ MonoBehaviour:
     value: {fileID: 3265665340838845935}
     displayLayerContainerList:
     - name: Default Layer
-      value: {fileID: 0}
+      value: {fileID: 3265665340474928472}
       containerLayerType: 0
     - name: Background Layer
-      value: {fileID: 0}
+      value: {fileID: 3265665341194908849}
       containerLayerType: 1
     - name: Foreground Layer
-      value: {fileID: 0}
+      value: {fileID: 3265665341712371980}
       containerLayerType: 2
     initialVisibilityState: 0
   widgetsContainer: {fileID: 0}
@@ -452,13 +449,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3265665340838845932}
-  m_Father: {fileID: 3265665339848669259}
+  m_Father: {fileID: 3265665341107432885}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -20}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3265665340571076979
 GameObject:
@@ -769,10 +766,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 3265665341194908849}
   - {fileID: 3265665341548095576}
-  - {fileID: 2821576192809682851}
-  - {fileID: 906151151937034372}
   - {fileID: 5110208478855157228}
+  - {fileID: 3265665340474928472}
+  - {fileID: 2821576192809682851}
+  - {fileID: 3265665341712371980}
+  - {fileID: 906151151937034372}
   m_Father: {fileID: 3265665340726711770}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -847,13 +847,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3265665339848669259}
+  m_Father: {fileID: 3265665341107432885}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -20}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3265665341548095579
 GameObject:
@@ -944,13 +944,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3265665339848669259}
+  m_Father: {fileID: 3265665341107432885}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -20}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3529143818390729116
 GameObject:
