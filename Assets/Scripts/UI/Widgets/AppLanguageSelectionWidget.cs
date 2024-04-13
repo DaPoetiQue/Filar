@@ -48,27 +48,37 @@ namespace Com.RedicalGames.Filar
                 {
                     var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
 
-                    var languages = appDatabaseManagerInstance.GetDropdownContent<AppData.LocaleType>().data;
-                    var appLanguages = appDatabaseManagerInstance.GetUIScreenGroupContentTemplate("Languages", AppData.InputType.DropDown, placeHolder: "English", contents: languages, dropdownActionType: AppData.InputDropDownActionType.LanguageSelection);
+                    var languageFormatReplacement = ("_SouthAfrica", " [South Africa]");
 
-                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "App Language Selection Widget Configure Failed - Localization Manager Instance Is Not Initialized Yet - Invalid Operation."));
+                    callbackResults.SetResult(AppData.Helpers.GetFormatedTextStrings(appDatabaseManagerInstance.GetDropdownContent<AppData.LocaleType>().data, false, languageFormatReplacement));
 
-                    if(callbackResults.Success())
+                    if (callbackResults.Success())
                     {
-                        var localizationManagerInstance = AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
+                        var languages = AppData.Helpers.GetFormatedTextStrings(appDatabaseManagerInstance.GetDropdownContent<AppData.LocaleType>().data, false, languageFormatReplacement).GetData();
 
-                        callbackResults.SetResult(localizationManagerInstance.GetCurrentLanguage());
+                        var appLanguages = appDatabaseManagerInstance.GetUIScreenGroupContentTemplate("Languages", AppData.InputType.DropDown, placeHolder: "English", contents: languages, dropdownActionType: AppData.InputDropDownActionType.LanguageSelection);
+
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "App Language Selection Widget Configure Failed - Localization Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
                         if (callbackResults.Success())
                         {
-                            SetActionDropdownContent((int)localizationManagerInstance.GetCurrentLanguage().GetData(), languagesSetCallbackResults =>
+                            var localizationManagerInstance = AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
+
+                            callbackResults.SetResult(localizationManagerInstance.GetCurrentLanguage());
+
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(languagesSetCallbackResults);
+                                SetActionDropdownContent((int)localizationManagerInstance.GetCurrentLanguage().GetData(), languagesSetCallbackResults =>
+                                {
+                                    callbackResults.SetResult(languagesSetCallbackResults);
 
-                                if (callbackResults.UnSuccessful())
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                            }, appLanguages);
+                                }, appLanguages);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

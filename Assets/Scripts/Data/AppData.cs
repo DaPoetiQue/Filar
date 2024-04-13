@@ -58880,6 +58880,108 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public static CallbackDataList<string> GetFormatedTextStrings(List<string> values, bool addWhiteSpaces, params (string oldString, string newString)[] stringOverrides)
+            {
+                var callbackResults = new CallbackDataList<string>(GetAppStringArrayValid(GetArray(values), "Values", "Get Formated Text Strings Failed - Values Are Null - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetAppComponentsValid(stringOverrides, "String Overrides", "Get Formated Text Strings Failed - String Overrides Are Null - Invalid Operation."));
+
+                    if(callbackResults.Success())
+                    {
+                       var replacedStrings = new List<string>();
+
+                        for (int i = 0; i < values.Count; i++)
+                        {
+                            var validatedStrings = new List<string>();
+
+                            for (int j = 0; j < stringOverrides.Length; j++)
+                            {
+                                var formattedValue = values[i].Replace(stringOverrides[j].oldString, stringOverrides[j].newString);
+                                validatedStrings.Add(formattedValue);
+                            }
+
+                            if (validatedStrings.Count > 0)
+                            {
+
+                                if (!string.IsNullOrEmpty(validatedStrings[validatedStrings.Count - 1]))
+                                    replacedStrings.Add(validatedStrings[validatedStrings.Count - 1]);
+                            }
+                        }
+
+                        callbackResults.SetResult(GetAppStringArrayValid(GetArray(replacedStrings), "Replaced Strings", "Get Formated Text Strings Failed - Replaced Strings Are Null - Invalid Operation."));
+
+                        var formattedStrings = new List<string>();
+
+                        for (int i = 0; i < replacedStrings.Count; i++)
+                        {
+                            var text = new StringBuilder();
+
+                            for (int j = 0; j < replacedStrings[i].Length; j++)
+                            {
+                                string newText = replacedStrings[i][j].ToString();
+
+                                if (newText.Length > 0)
+                                {
+                                    if (char.IsUpper(newText[0]) && j != 0 && addWhiteSpaces)
+                                    {
+                                        text.Append(" ").Append(newText);
+                                    }
+                                    else
+                                        text.Append(newText);
+                                }
+                            }
+
+                            if (text.Length > 0)
+                                formattedStrings.Add(text.ToString());
+                        }
+
+                        callbackResults.SetResult(GetAppStringArrayValid(GetArray(formattedStrings), "Formatted Strings", "Get Formated Text Strings Failed - Formatted Strings Are Null - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.result = $"Get Formated Text Strings Success - {formattedStrings.Count} Values Have Been Successfully Formatted.";
+                            callbackResults.data = formattedStrings;
+                        }
+                    }
+                    else
+                    {
+                        var formattedStrings = new List<string>();
+
+                        for (int i = 0; i < values.Count; i++)
+                        {
+                            var text = new StringBuilder();
+
+                            for (int j = 0; j < values[i].Length; j++)
+                            {
+                                string newText = values[i][j].ToString();
+
+                                if (char.IsUpper(newText[0]) && j != 0 && addWhiteSpaces)
+                                {
+                                    text.Append(" ").Append(newText);
+                                }
+                                else
+                                    text.Append(newText);
+                            }
+
+                            if(text.Length > 0)
+                                formattedStrings.Add(text.ToString());
+                        }
+
+                        callbackResults.SetResult(GetAppStringArrayValid(GetArray(formattedStrings), "FormattedStrings", "Get Formated Text Strings Failed - Values Are Null - Invalid Operation."));
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.result = $"Get Formated Text Strings Success - {formattedStrings.Count} Values Have Been Successfully Formatted.";
+                            callbackResults.data = formattedStrings;
+                        }
+                    }
+                }
+
+                return callbackResults;
+            }
+
             public static void GetValue(float value, Action<CallbackData<float>> callback, string callbackFailFallbackResults = null)
             {
                 CallbackData<float> callbackResults = new CallbackData<float>();
