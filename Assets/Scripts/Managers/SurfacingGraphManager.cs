@@ -739,21 +739,21 @@ namespace Com.RedicalGames.Filar
                         if (callbackResults.Success())
                         {
                             var surfacingManagerInstance = AppData.Helpers.GetAppComponentValid(SurfacingManager.Instance, "Surfacing Manager Instance").GetData();
-                            var screenWidgetStateNode = graph.GetCurrentNode().GetData() as WidgetNode;
+                            var widgetNode = graph.GetCurrentNode().GetData() as WidgetNode;
 
-                            callbackResults.SetResult(screenWidgetStateNode.GetWidgetType());
+                            callbackResults.SetResult(widgetNode.GetWidgetType());
 
                             if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(screenWidgetStateNode.GetState());
+                                callbackResults.SetResult(widgetNode.GetState());
 
                                 if (callbackResults.Success())
                                 {
-                                    switch (screenWidgetStateNode.GetState().GetData())
+                                    switch (widgetNode.GetState().GetData())
                                     {
                                         case AppData.UIVisibilityStateEvent.Show:
 
-                                            surfacingManagerInstance.SurfaceWidget(screenWidgetStateNode.GetWidgetType().GetData(), popUpSurfacedCallbackResults =>
+                                            surfacingManagerInstance.SurfaceWidget(widgetNode.GetWidgetType().GetData(), popUpSurfacedCallbackResults =>
                                             {
                                                 callbackResults.SetResult(popUpSurfacedCallbackResults);
 
@@ -777,13 +777,14 @@ namespace Com.RedicalGames.Filar
                                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     });
                                                 }
-                                            });
+
+                                            }, widgetNode.GetScreenBlurConfig().GetData());
 
                                             break;
 
                                         case AppData.UIVisibilityStateEvent.Hide:
 
-                                            surfacingManagerInstance.HidePopUp(screenWidgetStateNode.GetWidgetType().GetData(), popUpSurfacedCallbackResults =>
+                                            surfacingManagerInstance.HidePopUp(widgetNode.GetWidgetType().GetData(), popUpSurfacedCallbackResults =>
                                             {
                                                 callbackResults.SetResult(popUpSurfacedCallbackResults);
 
@@ -807,7 +808,8 @@ namespace Com.RedicalGames.Filar
                                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                     });
                                                 }
-                                            });
+
+                                            }, widgetNode.GetScreenBlurConfig()?.GetData());
 
                                             break;
                                     }

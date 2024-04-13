@@ -36856,7 +36856,7 @@ namespace Com.RedicalGames.Filar
 
             #region Show Screen Widget Functions
 
-            public void ShowWidget(WidgetType widgetType, Action<Callback> callback = null)
+            public void ShowWidget(WidgetType widgetType, Action<Callback> callback = null, ScreenBlurConfig blurConfig = null)
             {
                 Callback callbackResults = new Callback(GetWidget(widgetType));
 
@@ -36867,6 +36867,7 @@ namespace Com.RedicalGames.Filar
                     ShowWidget(widget, callback: showWidgetWithConfigCallbackResults =>
                     {
                         callbackResults.SetResult(showWidgetWithConfigCallbackResults);
+
                     });
                 }
                 else
@@ -36975,7 +36976,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void ShowWidget(Widget widget, Action<Callback> callback = null)
+            public void ShowWidget(Widget widget, Action<Callback> callback = null, ScreenBlurConfig blurConfig = null)
             {
                 Callback callbackResults = new Callback(widget.WidgetReady());
 
@@ -36985,23 +36986,48 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        Blur(widget.GetScreenBlurConfig().GetData(), screenBlurCallbackResults =>
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(blurConfig, "Blur Config", "Show Widget Has No Blur Config Override - Continuing Execution."));
+
+                        if (callbackResults.Success())
                         {
-                            callbackResults.SetResult(screenBlurCallbackResults);
-
-                            if (callbackResults.Success())
+                            Blur(blurConfig, screenBlurCallbackResults =>
                             {
-                                widget.ShowWidget(widget.GetType().GetData(), widgetShownCallbackResults =>
-                                {
-                                    callbackResults.SetResult(widgetShownCallbackResults);
+                                callbackResults.SetResult(screenBlurCallbackResults);
 
-                                    if(callbackResults.UnSuccessful())
-                                        Log(callbackResults.resultCode, callbackResults.result, this);
-                                });
-                            }
-                            else
-                                Log(callbackResults.resultCode, callbackResults.result, this);
-                        });
+                                if (callbackResults.Success())
+                                {
+                                    widget.ShowWidget(widget.GetType().GetData(), widgetShownCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(widgetShownCallbackResults);
+
+                                        if (callbackResults.UnSuccessful())
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                            });
+                        }
+                        else
+                        {
+                            Blur(widget.GetScreenBlurConfig().GetData(), screenBlurCallbackResults =>
+                            {
+                                callbackResults.SetResult(screenBlurCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    widget.ShowWidget(widget.GetType().GetData(), widgetShownCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(widgetShownCallbackResults);
+
+                                        if (callbackResults.UnSuccessful())
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                            });
+                        }
                     }
                     else
                         Log(callbackResults.resultCode, callbackResults.result, this);
@@ -54212,7 +54238,7 @@ namespace Com.RedicalGames.Filar
         #region Screen Blur Config
 
         [Serializable]
-        public class ScreenBlurConfig : DataDebugger
+        public class ScreenBlurConfig
         {
             #region Components
 
@@ -54244,9 +54270,9 @@ namespace Com.RedicalGames.Filar
                 var callbackResults = new CallbackData<ScreenUIPlacementType>(GetBlurScreenPlacementType());
 
                 if(callbackResults.Success())
-                    callbackResults.result = $"Initialized Success - Screen Blur Config : {GetName()} Has Been Initialized Successfully - With Blur Screen Placement Type Set To : {blurScreenPlacementType}.";
+                    callbackResults.result = $"Initialized Success - Screen Blur Config Has Been Initialized Successfully - With Blur Screen Placement Type Set To : {blurScreenPlacementType}.";
                 else
-                    callbackResults.result = $"Initialized Failed - Screen Blur Config : {GetName()} Has Not Been Initialized Yet - Initialization Failed with Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}.";
+                    callbackResults.result = $"Initialized Failed - Screen Blur Config Has Not Been Initialized Yet - Initialization Failed with Code : {callbackResults.GetResultCode} - Results : {callbackResults.GetResult}.";
 
                 return callbackResults;
             }
@@ -54255,12 +54281,12 @@ namespace Com.RedicalGames.Filar
 
             public void SetBlurActiveState(bool active, Action<Callback> callback = null)
             {
-                var callbackResults = new CallbackData<ScreenUIPlacementType>(Helpers.GetAppEnumValueValid(blurScreenPlacementType, "Blur Screen Placement Type", $"Set Blur Active State Failed - Blur Screen Placement Type Value For : {GetName()} Is Set To Default : {blurScreenPlacementType} - Invalid Operation."));
+                var callbackResults = new CallbackData<ScreenUIPlacementType>(Helpers.GetAppEnumValueValid(blurScreenPlacementType, "Blur Screen Placement Type", $"Set Blur Active State Failed - Blur Screen Placement Type Value Is Set To Default : {blurScreenPlacementType} - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
                     this.active = active;
-                    callbackResults.result = $"Set Blur Active State Success - Blur Screen State  For : {GetName()} Is Set To : {active} And The Placement Type Value Is Set To : {blurScreenPlacementType} - From A Parameter Value.";
+                    callbackResults.result = $"Set Blur Active State Success - Blur Screen State Is Set To : {active} And The Placement Type Value Is Set To : {blurScreenPlacementType} - From A Parameter Value.";
                 }
 
                 callback?.Invoke(callbackResults);
@@ -54268,12 +54294,12 @@ namespace Com.RedicalGames.Filar
 
             public void SetBlurPlacementType(ScreenUIPlacementType blurScreenPlacementType, Action<Callback> callback = null)
             {
-                var callbackResults = new CallbackData<ScreenUIPlacementType>(Helpers.GetAppEnumValueValid(blurScreenPlacementType, "Blur Screen Placement Type", $"Set Blur Screen Placement Type Failed - Blur Screen Placement Type Parameter Value For : {GetName()} Is Set To Default : {blurScreenPlacementType} - Invalid Operation."));
+                var callbackResults = new CallbackData<ScreenUIPlacementType>(Helpers.GetAppEnumValueValid(blurScreenPlacementType, "Blur Screen Placement Type", $"Set Blur Screen Placement Type Failed - Blur Screen Placement Type Parameter Value Is Set To Default : {blurScreenPlacementType} - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
                     this.blurScreenPlacementType = blurScreenPlacementType;
-                    callbackResults.result = $"Set Blur Screen Placement Type Success - Blur Screen Placement Type Value For : {GetName()} Is Set To : {blurScreenPlacementType} - From A Parameter Value.";
+                    callbackResults.result = $"Set Blur Screen Placement Type Success - Blur Screen Placement Type Value Is Set To : {blurScreenPlacementType} - From A Parameter Value.";
                 }
 
                 callback?.Invoke(callbackResults);
@@ -54289,12 +54315,12 @@ namespace Com.RedicalGames.Filar
                 {
                     if (active)
                     {
-                        callbackResults.result = $"Blur Screen Success - Blur Screen : {GetName()} Is Active And The Placement Type Is Set To : {GetBlurScreenPlacementType().GetData()}";
+                        callbackResults.result = $"Blur Screen Success - Blur Screen Is Active And The Placement Type Is Set To : {GetBlurScreenPlacementType().GetData()}";
                         callbackResults.data = GetBlurScreenPlacementType().GetData();
                     }
                     else
                     {
-                        callbackResults.result = $"Blur Screen Unsuccessful - Blur Screen : {GetName()} Is Not Set To Active And The Placement Type Is Set To : {GetBlurScreenPlacementType().GetData()}";
+                        callbackResults.result = $"Blur Screen Unsuccessful - Blur Screen Is Not Set To Active And The Placement Type Is Set To : {GetBlurScreenPlacementType().GetData()}";
                         callbackResults.data = default;
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
@@ -54313,11 +54339,11 @@ namespace Com.RedicalGames.Filar
                 {
                     if (active)
                     {
-                        callbackResults.result = $"Get Active State Success - Screen Blur Config : {GetName()} Is Active And The Placement Type Is Set To : {GetBlurScreenPlacementType().GetData()}";
+                        callbackResults.result = $"Get Active State Success - Screen Blur Config Is Active And The Placement Type Is Set To : {GetBlurScreenPlacementType().GetData()}";
                     }
                     else
                     {
-                        callbackResults.result = $"Get Active State Unsuccessful - Screen Blur Config : {GetName()} Is Not Set To Active And The Placement Type Is Set To : {GetBlurScreenPlacementType().GetData()}";
+                        callbackResults.result = $"Get Active State Unsuccessful - Screen Blur Config Is Not Set To Active And The Placement Type Is Set To : {GetBlurScreenPlacementType().GetData()}";
                         callbackResults.resultCode = Helpers.WarningCode;
                     }
                 }
@@ -54327,11 +54353,11 @@ namespace Com.RedicalGames.Filar
 
             public CallbackData<ScreenUIPlacementType> GetBlurScreenPlacementType()
             {
-                var callbackResults = new CallbackData<ScreenUIPlacementType>(Helpers.GetAppEnumValueValid(blurScreenPlacementType, "Blur Screen Placement Type", $"Blur Screen Failed - Blur Screen Placement Type Value For : {GetName()} Is Set To Default : {blurScreenPlacementType} - Invalid Operation."));
+                var callbackResults = new CallbackData<ScreenUIPlacementType>(Helpers.GetAppEnumValueValid(blurScreenPlacementType, "Blur Screen Placement Type", $"Blur Screen Failed - Blur Screen Placement Type Value Is Set To Default : {blurScreenPlacementType} - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
-                    callbackResults.result = $"Get Blur Screen Placement Type Success - Blur Screen : {GetName()}'s Placement Type Is Set To : {blurScreenPlacementType}";
+                    callbackResults.result = $"Get Blur Screen Placement Type Success - Blur Screen's Placement Type Is Set To : {blurScreenPlacementType}";
                     callbackResults.data = blurScreenPlacementType;
                 }
 

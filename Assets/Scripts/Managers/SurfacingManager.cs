@@ -124,7 +124,7 @@ namespace Com.RedicalGames.Filar
 
         #region Surface Widgets
 
-        public void SurfaceWidget(AppData.WidgetType widgetType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null)
+        public void SurfaceWidget(AppData.WidgetType widgetType, Action<AppData.CallbackData<AppData.SurfacingResults>> callback = null, AppData.ScreenBlurConfig screenBlurConfig = null)
         {
             var callbackResults = new AppData.CallbackData<AppData.SurfacingResults>(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Show Pop Up Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
@@ -157,7 +157,8 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
+
+                        }, screenBlurConfig);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -204,6 +205,7 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
                         });
                     }
                     else
@@ -961,7 +963,6 @@ namespace Com.RedicalGames.Filar
                                                                         }
 
                                                                         #endregion
-
 
                                                                         #region Constraints
 

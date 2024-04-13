@@ -1,5 +1,55 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8281471264852431435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88e6d019d766b714b88016ba0013ce80, type: 3}
+  m_Name: Widget
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 1560, y: -104}
+  ports:
+    keys:
+    - input
+    - output
+    values:
+    - _fieldName: input
+      _node: {fileID: -8281471264852431435}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: output
+        node: {fileID: 6443255578538683821}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: output
+      _node: {fileID: -8281471264852431435}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: input
+        node: {fileID: -6339528577443172159}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  widget: 24
+  state: 2
+  screenBlurConfig:
+    active: 0
+    blurScreenPlacementType: 0
+  input: 0
+  output: 0
 --- !u!114 &-7767379819974612778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59,7 +109,7 @@ MonoBehaviour:
   m_Name: Exit
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 1320, y: -88}
+  position: {x: 1816, y: -88}
   ports:
     keys:
     - input
@@ -70,7 +120,7 @@ MonoBehaviour:
         PublicKeyToken=b77a5c561934e089
       connections:
       - fieldName: output
-        node: {fileID: 1673378582075409754}
+        node: {fileID: -8281471264852431435}
         reroutePoints: []
       _direction: 0
       _connectionType: 0
@@ -168,6 +218,9 @@ MonoBehaviour:
       _dynamic: 0
   widget: 43
   state: 2
+  screenBlurConfig:
+    active: 1
+    blurScreenPlacementType: 2
   input: 0
   output: 0
 --- !u!114 &11400000
@@ -195,8 +248,10 @@ MonoBehaviour:
   - {fileID: 7688695725690396013}
   - {fileID: 4856943063715546301}
   - {fileID: 1673378582075409754}
+  - {fileID: 6443255578538683821}
+  - {fileID: -8281471264852431435}
   type: 1
-  currentNode: {fileID: 1673378582075409754}
+  currentNode: {fileID: -4263076203943574093}
   completed: 0
 --- !u!114 &395459579569198672
 MonoBehaviour:
@@ -281,7 +336,7 @@ MonoBehaviour:
         PublicKeyToken=b77a5c561934e089
       connections:
       - fieldName: input
-        node: {fileID: -6339528577443172159}
+        node: {fileID: 6443255578538683821}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
@@ -381,6 +436,52 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   seconds: 1
+  input: 0
+  output: 0
+--- !u!114 &6443255578538683821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dff03090e566be47a8488a324685064, type: 3}
+  m_Name: Wait For Seconds
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 1304, y: -88}
+  ports:
+    keys:
+    - input
+    - output
+    values:
+    - _fieldName: input
+      _node: {fileID: 6443255578538683821}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: output
+        node: {fileID: 1673378582075409754}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: output
+      _node: {fileID: 6443255578538683821}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: input
+        node: {fileID: -8281471264852431435}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  seconds: 2
   input: 0
   output: 0
 --- !u!114 &7329097091748179627
@@ -556,5 +657,8 @@ MonoBehaviour:
       _dynamic: 0
   widget: 43
   state: 1
+  screenBlurConfig:
+    active: 0
+    blurScreenPlacementType: 0
   input: 0
   output: 0

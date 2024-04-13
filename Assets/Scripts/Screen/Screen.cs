@@ -46,7 +46,10 @@ namespace Com.RedicalGames.Filar
 
                                 InitializeLoadingScreen(initializationCallbackResults =>
                                 {
+                                    callbackResults.SetResult(initializationCallbackResults);
 
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 });
 
                                 break;
@@ -206,7 +209,35 @@ namespace Com.RedicalGames.Filar
 
         private void InitializeLoadingScreen(Action<AppData.Callback> callback = null)
         {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "Initialize Loading Screen Failed - App Database Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
+            if(callbackResults.Success())
+            {
+                var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                if (callbackResults.Success())
+                {
+                    var imageDisplayerWidget = GetWidget(AppData.WidgetType.ImageDisplayerWidget).GetData();
+
+                    var splashImage = appDatabaseManagerInstance.GetRandomSplashImage().GetData();
+
+                    imageDisplayerWidget.SetUIImageDisplayer(AppData.ScreenImageType.Splash, splashImage, true, splashImageSetCallbackResults => 
+                    {
+                        callbackResults.SetResult(splashImageSetCallbackResults);
+
+                        if(callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callbackResults.SetResult(GetWidget(AppData.WidgetType.ImageDisplayerWidget));
+
+            callback?.Invoke(callbackResults);
         }
 
         private void InitializeLandingPageScreen(Action<AppData.Callback> callback = null)

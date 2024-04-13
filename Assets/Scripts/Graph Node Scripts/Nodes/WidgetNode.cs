@@ -14,6 +14,10 @@ namespace Com.RedicalGames.Filar
 		[SerializeField]
 		private AppData.UIVisibilityStateEvent state = AppData.UIVisibilityStateEvent.None;
 
+		[Space(5)]
+		[SerializeField]
+		protected AppData.ScreenBlurConfig screenBlurConfig = new AppData.ScreenBlurConfig();
+
 		[Input]
 		public int input;
 
@@ -53,6 +57,18 @@ namespace Com.RedicalGames.Filar
 				callbackResults.result = $"Get State Success - State Is Set To : {state}.";
 				callbackResults.data = state;
 			}
+
+			return callbackResults;
+		}
+
+		public AppData.CallbackData<AppData.ScreenBlurConfig> GetScreenBlurConfig()
+        {
+			var callbackResults = new AppData.CallbackData<AppData.ScreenBlurConfig>();
+
+			callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(screenBlurConfig, "Screen Blur Config", "Get Screen Blur Config Failed - Screen Blur Config Value Is Null - Invalid Operation."));
+
+			if (callbackResults.Success())
+				callbackResults.data = screenBlurConfig;
 
 			return callbackResults;
 		}

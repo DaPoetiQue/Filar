@@ -424,6 +424,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
+    buttonTitletKey: 0
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
@@ -2526,6 +2527,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
+    buttonTitletKey: 0
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
@@ -4352,7 +4354,7 @@ MonoBehaviour:
   transitionType: 1
   transitionSpeed: 0
   transitionableUIMountList: []
-  initialVisibilityState: 1
+  initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []
   eventActionsConfig:
