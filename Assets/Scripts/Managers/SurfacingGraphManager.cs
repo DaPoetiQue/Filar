@@ -578,6 +578,44 @@ namespace Com.RedicalGames.Filar
 
                         break;
 
+                    case AppData.GraphNodeType.ConditionalNode:
+
+                        var conditionalNode = graph.GetCurrentNode().GetData() as ConditionalNode;
+
+                        callbackResults.SetResult(conditionalNode.GetCondition());
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.SetResult(OnExecutionalCondition(conditionalNode.GetCondition().GetData()));
+
+                            if(callbackResults.Success())
+                            {
+                                ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                {
+                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                }, "isTrue");
+                            }
+                            else
+                            {
+                                ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                {
+                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                }, "isFalse");
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                        break;
+
                     case AppData.GraphNodeType.CurrentScreenNode:
 
                         callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Execute Graph Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
@@ -1069,7 +1107,44 @@ namespace Com.RedicalGames.Filar
             await Task.Yield();
         }
 
-        private async void ProccessNextNode(SurfacingNodeGraph graph, Action<AppData.Callback> callback = null)
+        private AppData.Callback OnExecutionalCondition(AppData.AppExecutionalConditionType conditionType)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(conditionType, "Condition Type", $"On Executional Condition Failed - Condition Type Parameter Value Is Set To Default : {conditionType} - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance", "On Executional Condition Failed - App Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance").GetData();
+
+                    switch (conditionType)
+                    {
+                        case AppData.AppExecutionalConditionType.AppLanguageSelected:
+
+                            callbackResults.SetResult(appManagerInstance.GetAppSettingsDataFile());
+
+                            if (callbackResults.Success())
+                            {
+
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            break;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        private async void ProccessNextNode(SurfacingNodeGraph graph, Action<AppData.Callback> callback = null, string portName = "output")
         {
             var callbackResults = new AppData.Callback(graph.GetCurrentNode());
 
@@ -1077,7 +1152,7 @@ namespace Com.RedicalGames.Filar
             {
                 foreach (NodePort port in graph.GetCurrentNode().GetData().Ports)
                 {
-                    if (port.fieldName == "output")
+                    if (port.fieldName == portName)
                     {
                         callbackResults.SetResult(graph.SetCurrentNode(port.Connection.node as BaseNode));
 
