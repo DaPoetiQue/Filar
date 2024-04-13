@@ -697,26 +697,24 @@ namespace Com.RedicalGames.Filar
 
                         if(callbackResults.Success())
                         {
-                            var dataPath = appDatabaseManagerInstance.GetDataPath(GetSettingsFileName().GetData(), settingsStorageDirectory, AppData.FileExtensionType.JSON).GetData();
+                            settingsStorageDirectory.SetPath(appDatabaseManagerInstance.GetDataPath(GetSettingsFileName().GetData(), settingsStorageDirectory, AppData.FileExtensionType.JSON).GetData());
 
-                            appDatabaseManagerInstance.FileFound(dataPath, pathFoundCallbackResults =>
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "Cache App Settings Data File Failed - Localization Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                            if (callbackResults.Success())
                             {
-                                callbackResults.SetResult(pathFoundCallbackResults);
+                                var localizationManagerInstance = AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
 
-                                if (callbackResults.UnSuccessful())
+                                callbackResults.SetResult(localizationManagerInstance.GetCurrentLanguage());
+
+                                if (callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "Cache App Settings Data File Failed - Localization Manager Instance Is Not Initialized Yet - Invalid Operation."));
-
-                                    if (callbackResults.Success())
+                                    appDatabaseManagerInstance.FileFound(settingsStorageDirectory.GetPath(), pathFoundCallbackResults =>
                                     {
-                                        var localizationManagerInstance = AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
+                                        callbackResults.SetResult(pathFoundCallbackResults);
 
-                                        callbackResults.SetResult(localizationManagerInstance.GetCurrentLanguage());
-
-                                        if (callbackResults.Success())
+                                        if (callbackResults.UnSuccessful())
                                         {
-                                            settingsStorageDirectory.SetPath(dataPath);
-
                                             var appSettingsDataFile = new AppData.AppSettingsDataFile();
 
                                             appSettingsDataFile.SetAppLanguage((int)localizationManagerInstance.GetCurrentLanguage().GetData());
@@ -730,16 +728,31 @@ namespace Com.RedicalGames.Filar
                                             });
                                         }
                                         else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        {
+                                            callbackResults.SetResult(GetAppSettingsDataFile());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                GetAppSettingsDataFile().GetData().SetAppLanguage((int)localizationManagerInstance.GetCurrentLanguage().GetData());
+
+                                                appDatabaseManagerInstance.CreateData(GetAppSettingsDataFile().GetData(), settingsStorageDirectory, fileCreatedCallbackResults =>
+                                                {
+                                                    callbackResults.SetResult(fileCreatedCallbackResults);
+
+                                                    if (callbackResults.UnSuccessful())
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                    });
                                 }
                                 else
-                                {
-                                    LogWarning($"Log_Infos//: Override File Here - Settings File Not Found At Path : {dataPath}", this);
-                                }
-                            });
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -778,25 +791,35 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            var dataPath = appDatabaseManagerInstance.GetDataPath(GetSettingsFileName().GetData(), settingsStorageDirectory, AppData.FileExtensionType.JSON).GetData();
+                            settingsStorageDirectory.SetPath(appDatabaseManagerInstance.GetDataPath(GetSettingsFileName().GetData(), settingsStorageDirectory, AppData.FileExtensionType.JSON).GetData());
 
-                            appDatabaseManagerInstance.FileFound(dataPath, pathFoundCallbackResults =>
+                            appDatabaseManagerInstance.FileFound(settingsStorageDirectory.GetPath(), pathFoundCallbackResults =>
                             {
                                 callbackResults.SetResult(pathFoundCallbackResults);
 
                                 if (callbackResults.Success())
                                 {
-                                    LogSuccess($"Log_Infos//: Settings File Found At Path : {dataPath}", this);
+                                    LogSuccess($"Log_Infos//: Settings File Found At Path : {settingsStorageDirectory.GetPath()}", this);
 
-                                    callbackResults.result = $"Get App Settings Data File Success - Settings File Found At Path : {dataPath}.";
+                                    callbackResults.result = $"Get App Settings Data File Success - Settings File Found At Path : {settingsStorageDirectory.GetPath()}.";
 
                                     // Deserialize Data.
+
+                                    appDatabaseManagerInstance.LoadData<AppData.AppSettingsDataFile>(settingsStorageDirectory, settingFileLoadedCallbackResults => 
+                                    {
+                                        callbackResults.SetResult(settingFileLoadedCallbackResults);
+
+                                        if(callbackResults.Success())
+                                        {
+                                            callbackResults.result = "App Settings Data File Has Been Loaded Successfully.";
+                                            callbackResults.data = settingFileLoadedCallbackResults.GetData();
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
                                 }
                                 else
-                                {
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    LogWarning($"Log_Infos//: Settings File Not Found At Path : {dataPath}", this);
-                                }
                             });
                         }
                         else

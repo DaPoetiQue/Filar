@@ -48,7 +48,8 @@ namespace Com.RedicalGames.Filar
             None,
             InitialLoad,
             UserSignedIn,
-            UserSignedOut
+            UserSignedOut,
+            AppLanguageSelected
         }
 
         public enum GraphNodeType

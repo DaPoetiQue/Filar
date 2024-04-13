@@ -279,7 +279,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public async void ChangeLanguage(AppData.LocaleType LocaleType, Action<AppData.Callback> callback = null)
+        public async void ChangeLanguage(AppData.LocaleType localeType, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback();
 
@@ -287,16 +287,36 @@ namespace Com.RedicalGames.Filar
 
             if (LocalizationSettings.InitializationOperation.Task.IsCompletedSuccessfully && LocalizationSettings.InitializationOperation.Task.Exception == null)
             {
-                LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[(int)LocaleType];
+                LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[(int)localeType];
 
-                callbackResults.result = $"Change Language Success - App Languge Has Been Successfully Changed To : {LocaleType}";
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                SetCurrentLanguage(localeType, currentLanguageSetCallbackResults => 
+                {
+                    callbackResults.SetResult(currentLanguageSetCallbackResults);
+
+                    if (callbackResults.UnSuccessful())
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                });
             }
             else
             {
-                callbackResults.result = $"Change Language Failed - App Languge Couldn'nt Changed To : {LocaleType} - Error Message : {LocalizationSettings.InitializationOperation.Task.Exception.Message} - Invalid Operation.";
+                callbackResults.result = $"Change Language Failed - App Languge Couldn'nt Changed To : {localeType} - Error Message : {LocalizationSettings.InitializationOperation.Task.Exception.Message} - Invalid Operation.";
                 callbackResults.resultCode = AppData.Helpers.WarningCode;
             }
+
+            callback?.Invoke(callbackResults);
+        }
+
+        private void SetCurrentLanguage(AppData.LocaleType localeType, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.CallbackData<AppData.LocaleType>(AppData.Helpers.GetAppEnumValueValid(localeType, "Locale Type", $"Set Current Language Failed - Locale Type Parameter Value Is Set To Default : {localeType} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                currentLanguage = localeType;
+                callbackResults.result = $"Set current Language Success - App Languge Has Been Successfully Changed To : {localeType}";
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             callback?.Invoke(callbackResults);
         }

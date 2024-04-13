@@ -1,31 +1,28 @@
 using System.IO;
+using UnityEngine; 
 using UnityEditor;
 
 namespace Com.RedicalGames.Filar
 {
     public class AppDataEditor : Editor
     {
-        #region Components
-
-        static string appDataMetaStoragePath = "C:\\Users\\hlula\\Documents\\Development\\Designar Main App\\Filar\\Assets\\App.meta";
-        static string appDataStorageDirectory = "C:\\Users\\hlula\\Documents\\Development\\Designar Main App\\Filar\\Assets\\App";
-
-        #endregion
-
         #region Main
 
-        [MenuItem("Filar/App/Clear Data", true)]
+        [MenuItem("Filar/App/Clear Data #R", true)]
         private static bool CanClearAppData()
         {
-            return File.Exists(appDataMetaStoragePath);
+            return File.Exists(GetAppDataMetaStoragePath()) || Directory.Exists(GetAppDataStorageDirectory());
         }
 
         [MenuItem("Filar/App/Clear Data #R")]
         private static void CreateContentLoadManager()
         {
-            Directory.Delete(appDataStorageDirectory, true);
-            File.Delete(appDataMetaStoragePath);
+            Directory.Delete(GetAppDataStorageDirectory(), true);
+            File.Delete(GetAppDataMetaStoragePath());
         }
+
+        private static string GetAppDataStorageDirectory() => Path.Combine(Application.dataPath, "App");
+        private static string GetAppDataMetaStoragePath() => Path.Combine(Application.dataPath, "App.meta");
 
         #endregion
     }
