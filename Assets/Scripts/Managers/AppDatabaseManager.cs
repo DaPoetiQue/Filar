@@ -8487,16 +8487,21 @@ namespace Com.RedicalGames.Filar
                                 }
                                 else
                                 {
-                                    LogWarning($" <<<<< Deleting Data From : {data.storageData.path}", this);
-
                                     File.Delete(data.storageData.path);
 
                                     if (!File.Exists(data.storageData.path))
+                                    {
                                         File.WriteAllText(data.storageData.path, JSONString);
 
-                                    callbackResults.result = $"Created New Data Success : Replaced Asset : {data.name} At Path : {data.storageData.path}";
-                                    callbackResults.data = data;
-                                    callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                        callbackResults.result = $"Created New Data Success : Replaced Asset : {data.name} At Path : {data.storageData.path}";
+                                        callbackResults.data = data;
+                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = $"Failed To Override File : {data.name} - At Path : {data.storageData.path}.";
+                                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                    }
                                 }
                             }
                             else

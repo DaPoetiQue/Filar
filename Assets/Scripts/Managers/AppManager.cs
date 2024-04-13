@@ -733,9 +733,11 @@ namespace Com.RedicalGames.Filar
 
                                             if (callbackResults.Success())
                                             {
-                                                GetAppSettingsDataFile().GetData().SetAppLanguage((int)localizationManagerInstance.GetCurrentLanguage().GetData());
+                                                var settingsFileData = GetAppSettingsDataFile().GetData();
 
-                                                appDatabaseManagerInstance.CreateData(GetAppSettingsDataFile().GetData(), settingsStorageDirectory, fileCreatedCallbackResults =>
+                                                settingsFileData.SetAppLanguage((int)localizationManagerInstance.GetCurrentLanguage().GetData());
+
+                                                appDatabaseManagerInstance.CreateData(settingsFileData, settingsStorageDirectory, fileCreatedCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(fileCreatedCallbackResults);
 
