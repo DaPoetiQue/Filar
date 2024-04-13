@@ -8848,6 +8848,33 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
+        #region App Settings
+
+        [Serializable]
+        public class AppSettingsDataFile : SerializableData
+        {
+            #region Components
+
+            public int appLanguage;
+            public bool isDefaultLanguage = true;
+
+            #endregion
+
+            #region Main
+
+            public void SetAppLanguage(int appLanguage)
+            {
+                this.appLanguage = appLanguage;
+                isDefaultLanguage = false;
+            }
+
+            public int GetAppLanguage() => appLanguage;
+
+            #endregion
+        }
+
+        #endregion
+
         #region Session Storage
 
         public static class SessionStorage<K, V> where K : SessionComponent where V : class

@@ -1083,7 +1083,11 @@ namespace Com.RedicalGames.Filar
                         if (!appDirectories.Contains(appDirectory))
                         {
                             appDirectories.Add(appDirectory);
-                            callbackResults.result = $"Created And Added Directory : {appDirectory.directory} To App Directories.";
+
+                            InitializeLocalStorage(initializeLocalStorageCallbackResults => 
+                            {
+                                callbackResults.SetResult(initializeLocalStorageCallbackResults);
+                            });
                         }
                         else
                             callbackResults.result = $"Directory : {appDirectory.directory} Already Exist In App Directories.";
@@ -1198,16 +1202,16 @@ namespace Com.RedicalGames.Filar
 
                 if(callbackResults.Success())
                 {
-                    AppData.Helpers.ListComponentHasEqualDataSize<AppData.StorageDirectoryData, AppData.StorageDirectoryData>(appDirectories, defaultDirectories, hasEqualComponentsCallbackResults => 
-                    {
-                        callbackResults.result = hasEqualComponentsCallbackResults.result;
-                        callbackResults.resultCode = hasEqualComponentsCallbackResults.resultCode;
+                    //AppData.Helpers.ListComponentHasEqualDataSize<AppData.StorageDirectoryData, AppData.StorageDirectoryData>(appDirectories, defaultDirectories, hasEqualComponentsCallbackResults => 
+                    //{
+                    //    callbackResults.result = hasEqualComponentsCallbackResults.result;
+                    //    callbackResults.resultCode = hasEqualComponentsCallbackResults.resultCode;
 
-                        if (callbackResults.Success())
-                            callbackResults.result = $" {appDirectories.Count} : App Directory Storage Data(s) Has Been Initialized Successfully";
-                        else
-                            callbackResults.result = $"Failed To Initialize App Storage Directory Data With Results : {callbackResults.result}";
-                    });
+                    //    if (callbackResults.Success())
+                    //        callbackResults.result = $" {appDirectories.Count} : App Directory Storage Data(s) Has Been Initialized Successfully";
+                    //    else
+                    //        callbackResults.result = $"Failed To Initialize App Storage Directory Data With Results : {callbackResults.result}";
+                    //});
                 }
             }
 
@@ -2611,7 +2615,7 @@ namespace Com.RedicalGames.Filar
                                         {
                                             AppData.AssetField newField = field;
 
-                                            string validPath = GetAppDirectory(field.directoryType).projectDirectory;
+                                            string validPath = GetAppDirectory(field.directoryType).GetData().projectDirectory;
                                             string newDirectory = Path.Combine(validPath, assetData.name);
 
                                             // Create New Directory.
@@ -3441,9 +3445,6 @@ namespace Com.RedicalGames.Filar
 
                     if (Directory.Exists(directoryData.directory))
                     {
-                        if (!appDirectories.Contains(directoryData))
-                            appDirectories.Add(directoryData);
-
                         callbackResults.result = "Success : Directory Exists.";
                         callbackResults.data = directoryData;
                         callbackResults.resultCode = AppData.Helpers.SuccessCode;
@@ -3532,28 +3533,30 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        public AppData.StorageDirectoryData GetAppDirectory(AppData.StorageType directoryType)
+        public AppData.CallbackData<AppData.StorageDirectoryData> GetAppDirectory(AppData.StorageType directoryType)
         {
+            var callbackResults = new AppData.CallbackData<AppData.StorageDirectoryData>();
+
             try
             {
-                AppData.StorageDirectoryData directoryData = new AppData.StorageDirectoryData();
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(appDirectories, "App Directories", "Get App Directory Failed - App Directories Are Null - Invalid Operation."));
 
-                if (appDirectories != null)
+                if (callbackResults.Success())
                 {
-                    foreach (AppData.StorageDirectoryData directory in appDirectories)
-                    {
-                        if (directory.type == directoryType)
-                        {
-                            directoryData = directory;
+                    var directoryData = appDirectories.Find(directory => directory.type == directoryType);
 
-                            break;
-                        }
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(directoryData, "Directory Data", $"Get App Directory Failed - Couldn't Find Directory Data Of Type : {directoryType} - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get App Directory Success - Directory Data Of Type : {directoryType} Has Been Successfully Found.";
+                        callbackResults.data = directoryData;
                     }
                 }
                 else
-                    Debug.LogWarning("--> App Directories Are Null.");
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                return directoryData;
+                return callbackResults;
             }
             catch (Exception exception)
             {
@@ -8449,7 +8452,7 @@ namespace Com.RedicalGames.Filar
         {
             AppData.CallbackData<T> callbackResults = new AppData.CallbackData<T>();
 
-            DirectoryFound(directoryData.rootDirectory, directoryCheckCallback =>
+            DirectoryFound(directoryData.directory, directoryCheckCallback =>
             {
                 callbackResults.result = directoryCheckCallback.result;
                 callbackResults.resultCode = directoryCheckCallback.resultCode;
@@ -8598,7 +8601,7 @@ namespace Com.RedicalGames.Filar
 
             if (!string.IsNullOrEmpty(fileName) && directoryData != null && extensionType != AppData.FileExtensionType.NONE)
             {
-                var pathData = Path.Combine(directoryData.rootDirectory, fileName + $".{extensionType.ToString().ToLower()}");
+                var pathData = Path.Combine(directoryData.directory, fileName + $".{extensionType.ToString().ToLower()}");
                 var path = pathData.Replace("\\", "/");
 
                 callbackResults.result = $"Path : {path} Has Been Found For File Name : {fileName}.";

@@ -27,11 +27,11 @@ namespace Com.RedicalGames.Filar
 
         protected override async void Init()
         {
-            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName(), "App Database Manager Instance Is Not Yet Initialized."));
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "App Database Manager Instance Is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {
-                var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.GetName()).GetData();
+                var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
 
                 callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
 
@@ -61,31 +61,75 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    ChangeLanguage(GetCurrentLanguage().GetData(), async languageChangedCallbackResults =>
+                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance", "App Manager Instance Is Not Yet Initialized."));
+
+                                    if(callbackResults.Success())
                                     {
-                                        callbackResults.SetResult(languageChangedCallbackResults);
+                                        var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance").GetData();
 
-                                        if (callbackResults.Success())
+                                        callbackResults.SetResult(appManagerInstance.GetAppSettingsDataFile());
+
+                                        if(callbackResults.Success())
                                         {
-                                            this.localeConfigDataPacket = localeConfigDataPacket;
+                                            var loadedAppLanguage = (AppData.LocaleType)appManagerInstance.GetAppSettingsDataFile().GetData().GetAppLanguage();
 
-                                            if (generateLanguageRestriction)
+                                            ChangeLanguage(loadedAppLanguage, async languageChangedCallbackResults =>
                                             {
-                                                databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
+                                                callbackResults.SetResult(languageChangedCallbackResults);
 
-                                                string languageFile = JsonUtility.ToJson(languageRestriction);
+                                                if (callbackResults.Success())
+                                                {
+                                                    this.localeConfigDataPacket = localeConfigDataPacket;
 
-                                                Dictionary<string, object> languageFileObject = new Dictionary<string, object>();
-                                                languageFileObject.Add("Localization-Filar", languageFile);
+                                                    if (generateLanguageRestriction)
+                                                    {
+                                                        databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
 
-                                                await databaseReference.Child("Filar Localization").Child("Language Restrictions").UpdateChildrenAsync(languageFileObject);
-                                            }
+                                                        string languageFile = JsonUtility.ToJson(languageRestriction);
 
-                                            LocalizationSettings.SelectedLocaleChanged += OnAppLanguageChangedEvent;
+                                                        Dictionary<string, object> languageFileObject = new Dictionary<string, object>();
+                                                        languageFileObject.Add("Localization-Filar", languageFile);
+
+                                                        await databaseReference.Child("Filar Localization").Child("Language Restrictions").UpdateChildrenAsync(languageFileObject);
+                                                    }
+
+                                                    LocalizationSettings.SelectedLocaleChanged += OnAppLanguageChangedEvent;
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
                                         }
                                         else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
+                                        {
+                                            ChangeLanguage(GetCurrentLanguage().GetData(), async languageChangedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(languageChangedCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    this.localeConfigDataPacket = localeConfigDataPacket;
+
+                                                    if (generateLanguageRestriction)
+                                                    {
+                                                        databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
+
+                                                        string languageFile = JsonUtility.ToJson(languageRestriction);
+
+                                                        Dictionary<string, object> languageFileObject = new Dictionary<string, object>();
+                                                        languageFileObject.Add("Localization-Filar", languageFile);
+
+                                                        await databaseReference.Child("Filar Localization").Child("Language Restrictions").UpdateChildrenAsync(languageFileObject);
+                                                    }
+
+                                                    LocalizationSettings.SelectedLocaleChanged += OnAppLanguageChangedEvent;
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

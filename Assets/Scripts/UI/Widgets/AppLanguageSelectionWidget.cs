@@ -173,7 +173,7 @@ namespace Com.RedicalGames.Filar
                     {
                         var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance").GetData();
 
-                        appManagerInstance.SetAppLanguageInfo(appLanguageInfoSetCallbackResults => 
+                        appManagerInstance.CacheAppSettingsDataFile(appLanguageInfoSetCallbackResults => 
                         {
                             callbackResults.SetResult(appLanguageInfoSetCallbackResults);
                         

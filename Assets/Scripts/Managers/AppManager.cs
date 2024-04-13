@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.Android;
+using System.IO;
 
 namespace Com.RedicalGames.Filar
 {
@@ -32,7 +33,11 @@ namespace Com.RedicalGames.Filar
 
         [Space(5)]
         [SerializeField]
-        bool startBootSequence = false;
+        private string settingsFileName = "settings";
+
+        [Space(5)]
+        [SerializeField]
+        private bool startBootSequence = false;
 
         #region Loading Data
 
@@ -154,131 +159,136 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, async screenUIManagerInstanceCallbackResults =>
+                        if (callbackResults.Success())
                         {
-                            callbackResults.SetResults(screenUIManagerInstanceCallbackResults);
-
-                            if (callbackResults.Success())
+                            AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, async screenUIManagerInstanceCallbackResults =>
                             {
-                                callbackResults.SetResults(databaseManager.GetAssetBundlesLibrary());
+                                callbackResults.SetResults(screenUIManagerInstanceCallbackResults);
 
                                 if (callbackResults.Success())
                                 {
-                                    databaseManager.LoadSplashImagesDataOnInitialization();
-                                    databaseManager.GetAssetBundlesLibrary().GetData().Initialize();
-
-                                    var screenUIManager = screenUIManagerInstanceCallbackResults.GetData();
-                                    var onScreenInitializationTaskResultsCallback = await screenUIManager.OnScreenInitAsync();
-
-                                    callbackResults.SetResult(onScreenInitializationTaskResultsCallback);
+                                    callbackResults.SetResults(databaseManager.GetAssetBundlesLibrary());
 
                                     if (callbackResults.Success())
                                     {
-                                        databaseManager.GetScreenLoadInfoInstanceFromLibrary(AppData.ScreenType.SplashScreen, splashScreenLoadInfoCallbackResults =>
+                                        databaseManager.LoadSplashImagesDataOnInitialization();
+                                        databaseManager.GetAssetBundlesLibrary().GetData().Initialize();
+
+                                        var screenUIManager = screenUIManagerInstanceCallbackResults.GetData();
+                                        var onScreenInitializationTaskResultsCallback = await screenUIManager.OnScreenInitAsync();
+
+                                        callbackResults.SetResult(onScreenInitializationTaskResultsCallback);
+
+                                        if (callbackResults.Success())
                                         {
-                                            callbackResults.SetResults(splashScreenLoadInfoCallbackResults);
-
-                                            if (callbackResults.Success())
+                                            databaseManager.GetScreenLoadInfoInstanceFromLibrary(AppData.ScreenType.SplashScreen, splashScreenLoadInfoCallbackResults =>
                                             {
-                                                var splashScreenLoadInfo = splashScreenLoadInfoCallbackResults?.GetData();
+                                                callbackResults.SetResults(splashScreenLoadInfoCallbackResults);
 
-                                                #region Trigger Splash Image
-
-                                                screenUIManager.GetScreen(AppData.ScreenType.LoadingScreen, loadingScreenCallbackResults =>
+                                                if (callbackResults.Success())
                                                 {
-                                                    callbackResults.SetResults(loadingScreenCallbackResults);
+                                                    var splashScreenLoadInfo = splashScreenLoadInfoCallbackResults?.GetData();
 
-                                                    if (callbackResults.Success())
+                                                    #region Trigger Splash Image
+
+                                                    screenUIManager.GetScreen(AppData.ScreenType.LoadingScreen, loadingScreenCallbackResults =>
                                                     {
-                                                        if (splashScreenLoadInfo != null)
+                                                        callbackResults.SetResults(loadingScreenCallbackResults);
+
+                                                        if (callbackResults.Success())
                                                         {
-                                                            AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance", async loadingManagerCallbackResults =>
+                                                            if (splashScreenLoadInfo != null)
                                                             {
-                                                                callbackResults.SetResults(loadingManagerCallbackResults);
-
-                                                                if (callbackResults.Success())
+                                                                AppData.Helpers.GetAppComponentValid(LoadingManager.Instance, "Loading Manager Instance", async loadingManagerCallbackResults =>
                                                                 {
-                                                                    var loadingManager = loadingManagerCallbackResults.GetData();
-                                                                    var currentScreenView = loadingScreenCallbackResults.GetData();
-
-                                                                    splashScreenLoadInfo.SetReferencedScreen(currentScreenView);
-
-                                                                    var splashDisplayerWidgetCallbackResults = currentScreenView.GetWidget(AppData.WidgetType.ImageDisplayerWidget);
-
-                                                                    callbackResults.SetResults(splashDisplayerWidgetCallbackResults);
+                                                                    callbackResults.SetResults(loadingManagerCallbackResults);
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        callbackResults.SetResult(splashDisplayerWidgetCallbackResults.GetData().Initialized());
+                                                                        var loadingManager = loadingManagerCallbackResults.GetData();
+                                                                        var currentScreenView = loadingScreenCallbackResults.GetData();
+
+                                                                        splashScreenLoadInfo.SetReferencedScreen(currentScreenView);
+
+                                                                        var splashDisplayerWidgetCallbackResults = currentScreenView.GetWidget(AppData.WidgetType.ImageDisplayerWidget);
+
+                                                                        callbackResults.SetResults(splashDisplayerWidgetCallbackResults);
 
                                                                         if (callbackResults.Success())
                                                                         {
-                                                                            var splashDisplayerWidget = splashDisplayerWidgetCallbackResults.GetData();
+                                                                            callbackResults.SetResult(splashDisplayerWidgetCallbackResults.GetData().Initialized());
 
-                                                                            await loadingManager.LoadScreen(splashScreenLoadInfo, async showSplashScreenCallbackResults =>
+                                                                            if (callbackResults.Success())
                                                                             {
-                                                                                callbackResults.SetResult(showSplashScreenCallbackResults);
+                                                                                var splashDisplayerWidget = splashDisplayerWidgetCallbackResults.GetData();
 
-                                                                                if (callbackResults.Success())
+                                                                                await loadingManager.LoadScreen(splashScreenLoadInfo, async showSplashScreenCallbackResults =>
                                                                                 {
-                                                                                    currentScreenView.ShowWidget(splashDisplayerWidget);
-
-                                                                                    callbackResults.SetResult(databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary());
+                                                                                    callbackResults.SetResult(showSplashScreenCallbackResults);
 
                                                                                     if (callbackResults.Success())
                                                                                     {
-                                                                                        var initialLoadInfo = databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary().GetData();
+                                                                                        currentScreenView.ShowWidget(splashDisplayerWidget);
 
-                                                                                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, "Network Manager Instance Is Not Yet Initialized."));
+                                                                                        callbackResults.SetResult(databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary());
 
                                                                                         if (callbackResults.Success())
                                                                                         {
-                                                                                            var networkManager = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name).GetData();
+                                                                                            var initialLoadInfo = databaseManager.GetInitialScreenLoadInfoInstanceFromLibrary().GetData();
 
-                                                                                            if (networkManager.Connected)
-                                                                                                initialLoadInfo.RemoveSequenceInstanceData(AppData.LoadingSequenceID.CheckingNetworkConnection);
+                                                                                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name, "Network Manager Instance Is Not Yet Initialized."));
 
-                                                                                            initialLoadInfo.SetReferencedScreen(currentScreenView);
-
-                                                                                            await loadingManager.LoadScreen(initialLoadInfo, initialLoadInfoCallbackResults =>
+                                                                                            if (callbackResults.Success())
                                                                                             {
-                                                                                                callbackResults.SetResult(initialLoadInfoCallbackResults);
-                                                                                            });
+                                                                                                var networkManager = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, NetworkManager.Instance.name).GetData();
+
+                                                                                                if (networkManager.Connected)
+                                                                                                    initialLoadInfo.RemoveSequenceInstanceData(AppData.LoadingSequenceID.CheckingNetworkConnection);
+
+                                                                                                initialLoadInfo.SetReferencedScreen(currentScreenView);
+
+                                                                                                await loadingManager.LoadScreen(initialLoadInfo, initialLoadInfoCallbackResults =>
+                                                                                                {
+                                                                                                    callbackResults.SetResult(initialLoadInfoCallbackResults);
+                                                                                                });
+                                                                                            }
                                                                                         }
                                                                                     }
-                                                                                }
-                                                                            });
+                                                                                });
+                                                                            }
                                                                         }
                                                                     }
-                                                                }
-                                                                else
-                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                                                            }, "Screen UI Manager Instance Is Not Yet Initialized");
+                                                                }, "Screen UI Manager Instance Is Not Yet Initialized");
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                         }
                                                         else
                                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
+                                                    });
 
-                                                #endregion
-                                            }
-                                            else
-                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        });
+                                                    #endregion
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     }
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-                        }, "Screen UI Manager Instance Is Not Yet Initialized");
+                            }, "Screen UI Manager Instance Is Not Yet Initialized");
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -665,13 +675,158 @@ namespace Com.RedicalGames.Filar
 
         #region App Language
 
-        public void SetAppLanguageInfo(Action<AppData.Callback> callback = null)
+        public void CacheAppSettingsDataFile(Action<AppData.Callback> callback = null)
         {
-            var callbackResults = new AppData.Callback();
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "Cache App Settings Data File Failed - App Database Manager Instance Is Not Initialized Yet - Invalid Operation."));
 
-            callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            if (callbackResults.Success())
+            {
+                var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                callbackResults.SetResult(appDatabaseManagerInstance.GetAppDirectory(AppData.StorageType.Settings_Storage));
+
+                if (callbackResults.Success())
+                {
+                    var settingsStorageDirectory = appDatabaseManagerInstance.GetAppDirectory(AppData.StorageType.Settings_Storage).GetData();
+
+                    callbackResults.SetResult(GetSettingsFileName());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(appDatabaseManagerInstance.GetDataPath(GetSettingsFileName().GetData(), settingsStorageDirectory, AppData.FileExtensionType.JSON));
+
+                        if(callbackResults.Success())
+                        {
+                            var dataPath = appDatabaseManagerInstance.GetDataPath(GetSettingsFileName().GetData(), settingsStorageDirectory, AppData.FileExtensionType.JSON).GetData();
+
+                            appDatabaseManagerInstance.FileFound(dataPath, pathFoundCallbackResults =>
+                            {
+                                callbackResults.SetResult(pathFoundCallbackResults);
+
+                                if (callbackResults.UnSuccessful())
+                                {
+                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance", "Cache App Settings Data File Failed - Localization Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var localizationManagerInstance = AppData.Helpers.GetAppComponentValid(LocalizationManager.Instance, "Localization Manager Instance").GetData();
+
+                                        callbackResults.SetResult(localizationManagerInstance.GetCurrentLanguage());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            settingsStorageDirectory.SetPath(dataPath);
+
+                                            var appSettingsDataFile = new AppData.AppSettingsDataFile();
+
+                                            appSettingsDataFile.SetAppLanguage((int)localizationManagerInstance.GetCurrentLanguage().GetData());
+
+                                            appDatabaseManagerInstance.CreateData(appSettingsDataFile, settingsStorageDirectory, fileCreatedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(fileCreatedCallbackResults);
+
+                                                if (callbackResults.UnSuccessful())
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                {
+                                    LogWarning($"Log_Infos//: Override File Here - Settings File Not Found At Path : {dataPath}", this);
+                                }
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             callback?.Invoke(callbackResults);
+        }
+
+        public AppData.CallbackData<AppData.AppSettingsDataFile> GetAppSettingsDataFile()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.AppSettingsDataFile>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "Get App Settings Data File Failed - App Database Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                callbackResults.SetResult(appDatabaseManagerInstance.GetAppDirectory(AppData.StorageType.Settings_Storage));
+
+                if (callbackResults.Success())
+                {
+                    var settingsStorageDirectory = appDatabaseManagerInstance.GetAppDirectory(AppData.StorageType.Settings_Storage).GetData();
+
+                    callbackResults.SetResult(GetSettingsFileName());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(appDatabaseManagerInstance.GetDataPath(GetSettingsFileName().GetData(), settingsStorageDirectory, AppData.FileExtensionType.JSON));
+
+                        if (callbackResults.Success())
+                        {
+                            var dataPath = appDatabaseManagerInstance.GetDataPath(GetSettingsFileName().GetData(), settingsStorageDirectory, AppData.FileExtensionType.JSON).GetData();
+
+                            appDatabaseManagerInstance.FileFound(dataPath, pathFoundCallbackResults =>
+                            {
+                                callbackResults.SetResult(pathFoundCallbackResults);
+
+                                if (callbackResults.Success())
+                                {
+                                    LogSuccess($"Log_Infos//: Settings File Found At Path : {dataPath}", this);
+
+                                    callbackResults.result = $"Get App Settings Data File Success - Settings File Found At Path : {dataPath}.";
+
+                                    // Deserialize Data.
+                                }
+                                else
+                                {
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    LogWarning($"Log_Infos//: Settings File Not Found At Path : {dataPath}", this);
+                                }
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        private AppData.CallbackData<string> GetSettingsFileName()
+        {
+            var callbackResults = new AppData.CallbackData<string>(AppData.Helpers.GetAppStringValueNotNullOrEmpty(settingsFileName, "Settings File Name", "Get Settings File Name Failed - Settings File Name Value Is Null - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.result = $"Get Settings File Name Success - Settings File Name Value Is Set To : {settingsFileName}.";
+                callbackResults.data = settingsFileName;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
         }
 
         #endregion

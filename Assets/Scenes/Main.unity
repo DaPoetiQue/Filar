@@ -475,7 +475,6 @@ MonoBehaviour:
       name: 
       value: 0
     screenBlurConfig:
-      name: 
       active: 0
       blurScreenPlacementType: 3
     booleanOptionsGroup:
@@ -604,7 +603,6 @@ MonoBehaviour:
       name: 
       value: 0
     screenBlurConfig:
-      name: 
       active: 0
       blurScreenPlacementType: 3
     booleanOptionsGroup:
@@ -781,7 +779,6 @@ MonoBehaviour:
       name: 
       value: 0
     screenBlurConfig:
-      name: 
       active: 0
       blurScreenPlacementType: 3
     booleanOptionsGroup:
@@ -1067,7 +1064,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1216,7 +1212,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -1323,7 +1318,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1700,7 +1694,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -1807,7 +1800,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -2337,7 +2329,6 @@ MonoBehaviour:
       name: 
       value: 0
     screenBlurConfig:
-      name: 
       active: 0
       blurScreenPlacementType: 3
     booleanOptionsGroup:
@@ -2461,7 +2452,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -2568,7 +2558,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -2709,7 +2698,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -2816,7 +2804,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -3040,7 +3027,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -3147,7 +3133,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -3954,7 +3939,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -4084,7 +4068,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -4214,7 +4197,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -4420,7 +4402,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -4527,7 +4508,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -4729,7 +4709,6 @@ MonoBehaviour:
               name: 
               value: 0
             screenBlurConfig:
-              name: 
               active: 0
               blurScreenPlacementType: 3
             booleanOptionsGroup:
@@ -4925,7 +4904,6 @@ MonoBehaviour:
               name: 
               value: 0
             screenBlurConfig:
-              name: 
               active: 0
               blurScreenPlacementType: 3
             booleanOptionsGroup:
@@ -5119,7 +5097,6 @@ MonoBehaviour:
             name: 
             value: 0
           screenBlurConfig:
-            name: 
             active: 0
             blurScreenPlacementType: 3
           booleanOptionsGroup:
@@ -5308,7 +5285,6 @@ MonoBehaviour:
             name: 
             value: 0
           screenBlurConfig:
-            name: 
             active: 0
             blurScreenPlacementType: 3
           booleanOptionsGroup:
@@ -5497,7 +5473,6 @@ MonoBehaviour:
             name: 
             value: 0
           screenBlurConfig:
-            name: 
             active: 0
             blurScreenPlacementType: 3
           booleanOptionsGroup:
@@ -5687,7 +5662,6 @@ MonoBehaviour:
             name: 
             value: 0
           screenBlurConfig:
-            name: 
             active: 0
             blurScreenPlacementType: 3
           booleanOptionsGroup:
@@ -5876,7 +5850,6 @@ MonoBehaviour:
             name: 
             value: 0
           screenBlurConfig:
-            name: 
             active: 0
             blurScreenPlacementType: 3
           booleanOptionsGroup:
@@ -6065,7 +6038,6 @@ MonoBehaviour:
             name: 
             value: 0
           screenBlurConfig:
-            name: 
             active: 0
             blurScreenPlacementType: 3
           booleanOptionsGroup:
@@ -6266,7 +6238,6 @@ MonoBehaviour:
               name: 
               value: 0
             screenBlurConfig:
-              name: 
               active: 0
               blurScreenPlacementType: 3
             booleanOptionsGroup:
@@ -6455,7 +6426,6 @@ MonoBehaviour:
               name: 
               value: 0
             screenBlurConfig:
-              name: 
               active: 0
               blurScreenPlacementType: 3
             booleanOptionsGroup:
@@ -6645,7 +6615,6 @@ MonoBehaviour:
               name: 
               value: 0
             screenBlurConfig:
-              name: 
               active: 0
               blurScreenPlacementType: 3
             booleanOptionsGroup:
@@ -6835,7 +6804,6 @@ MonoBehaviour:
             name: 
             value: 0
           screenBlurConfig:
-            name: 
             active: 0
             blurScreenPlacementType: 3
           booleanOptionsGroup:
@@ -7024,7 +6992,6 @@ MonoBehaviour:
             name: 
             value: 0
           screenBlurConfig:
-            name: 
             active: 0
             blurScreenPlacementType: 3
           booleanOptionsGroup:
@@ -7213,7 +7180,6 @@ MonoBehaviour:
             name: 
             value: 0
           screenBlurConfig:
-            name: 
             active: 0
             blurScreenPlacementType: 3
           booleanOptionsGroup:
@@ -7545,7 +7511,6 @@ MonoBehaviour:
       name: 
       value: 0
     screenBlurConfig:
-      name: 
       active: 0
       blurScreenPlacementType: 3
     booleanOptionsGroup:
@@ -7673,7 +7638,6 @@ MonoBehaviour:
       name: 
       value: 0
     screenBlurConfig:
-      name: 
       active: 0
       blurScreenPlacementType: 3
     booleanOptionsGroup:
@@ -7844,7 +7808,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -7951,7 +7914,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -8092,7 +8054,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -8199,7 +8160,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -9086,7 +9046,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -9193,7 +9152,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -9390,7 +9348,6 @@ MonoBehaviour:
       name: 
       value: 0
     screenBlurConfig:
-      name: 
       active: 0
       blurScreenPlacementType: 3
     booleanOptionsGroup:
@@ -9518,7 +9475,6 @@ MonoBehaviour:
       name: 
       value: 0
     screenBlurConfig:
-      name: 
       active: 0
       blurScreenPlacementType: 3
     booleanOptionsGroup:
@@ -9646,7 +9602,6 @@ MonoBehaviour:
       name: 
       value: 0
     screenBlurConfig:
-      name: 
       active: 0
       blurScreenPlacementType: 3
     booleanOptionsGroup:
@@ -9774,7 +9729,6 @@ MonoBehaviour:
       name: 
       value: 0
     screenBlurConfig:
-      name: 
       active: 0
       blurScreenPlacementType: 3
     booleanOptionsGroup:
@@ -9932,7 +9886,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -10039,7 +9992,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -10234,7 +10186,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -10422,7 +10373,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -10556,7 +10506,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -10663,7 +10612,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -11108,7 +11056,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -11215,7 +11162,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -11703,7 +11649,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -11810,7 +11755,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -11951,7 +11895,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -12058,7 +12001,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -12252,7 +12194,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -12443,7 +12384,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -12634,7 +12574,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -12970,7 +12909,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -13077,7 +13015,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -13225,7 +13162,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -14059,7 +13995,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -14166,7 +14101,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -14360,7 +14294,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -14626,7 +14559,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -14733,7 +14665,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -14881,7 +14812,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -15140,6 +15070,7 @@ MonoBehaviour:
     message: Filar requires access to device Storage to read and write data.
     type: 2
     granted: 0
+  settingsFileName: appSettings
   startBootSequence: 0
 --- !u!1 &1478371150
 GameObject:
@@ -15312,7 +15243,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -15419,7 +15349,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -15999,7 +15928,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -16106,7 +16034,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -16339,7 +16266,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -16446,7 +16372,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -16590,7 +16515,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -16697,7 +16621,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -17122,7 +17045,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -17229,7 +17151,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -17370,7 +17291,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -17477,7 +17397,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -17764,7 +17683,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -17871,7 +17789,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -18014,7 +17931,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -18121,7 +18037,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -18536,7 +18451,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -18643,7 +18557,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -19421,7 +19334,6 @@ MonoBehaviour:
           name: 
           value: 0
         screenBlurConfig:
-          name: 
           active: 0
           blurScreenPlacementType: 3
         booleanOptionsGroup:
@@ -19552,7 +19464,6 @@ MonoBehaviour:
           name: 
           value: 0
         screenBlurConfig:
-          name: 
           active: 0
           blurScreenPlacementType: 3
         booleanOptionsGroup:
@@ -19683,7 +19594,6 @@ MonoBehaviour:
           name: 
           value: 0
         screenBlurConfig:
-          name: 
           active: 0
           blurScreenPlacementType: 3
         booleanOptionsGroup:
@@ -19814,7 +19724,6 @@ MonoBehaviour:
           name: 
           value: 0
         screenBlurConfig:
-          name: 
           active: 0
           blurScreenPlacementType: 3
         booleanOptionsGroup:
@@ -19945,7 +19854,6 @@ MonoBehaviour:
           name: 
           value: 0
         screenBlurConfig:
-          name: 
           active: 0
           blurScreenPlacementType: 3
         booleanOptionsGroup:
@@ -20076,7 +19984,6 @@ MonoBehaviour:
           name: 
           value: 0
         screenBlurConfig:
-          name: 
           active: 0
           blurScreenPlacementType: 3
         booleanOptionsGroup:
@@ -20390,7 +20297,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: 
     active: 0
     blurScreenPlacementType: 3
   scroller:
@@ -20497,7 +20403,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
