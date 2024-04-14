@@ -20,7 +20,10 @@ namespace Com.RedicalGames.Filar
 		public int input;
 
 		[Output]
-		public int output;
+		public int successCode;
+
+		[Output]
+		public int timedOut;
 
 		#endregion
 

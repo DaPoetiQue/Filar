@@ -1088,6 +1088,8 @@ namespace Com.RedicalGames.Filar
                             {
                                 callbackResults.SetResult(waitForEventNode.GetTimeOut());
 
+                                var timedOut = false;
+
                                 if(callbackResults.Success())
                                 {
                                     var timeout = waitForEventNode.GetTimeOut().GetData();
@@ -1105,6 +1107,7 @@ namespace Com.RedicalGames.Filar
                                     }
                                     else
                                     {
+                                        timedOut = true;
                                         callbackResults.result = "Execution Failed With Timeout.";
                                         callbackResults.resultCode = AppData.Helpers.WarningCode;
                                     }
@@ -1134,10 +1137,25 @@ namespace Com.RedicalGames.Filar
 
                                         if (callbackResults.UnSuccessful())
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
+
+                                    }, "successCode");
                                 }
                                 else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                {
+                                    if(timedOut)
+                                    {
+                                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        }, "timedOut");
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
