@@ -60,7 +60,10 @@ namespace Com.RedicalGames.Filar
             CheckNetworkConnection,
             CheckCompitability,
             DownloadContent,
-            DownloadUserProfile
+            DownloadUserProfile,
+            ConnectClientToServer,
+            SignInApp,
+            SignInUser
         }
 
         public enum GraphNodeType

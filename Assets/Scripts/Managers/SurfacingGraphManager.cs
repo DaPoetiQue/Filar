@@ -1328,11 +1328,30 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
+                            case AppData.ExecutiveActionType.ConnectClientToServer:
+
+                                break;
+
                             case AppData.ExecutiveActionType.DownloadContent:
+
+                                var downloadPostEntryDataAsyncCallbackResults = await appManagerInstance.DownloadPostEntryDataAsync();
+
+                                callbackResults.SetResult(downloadPostEntryDataAsyncCallbackResults);
+
+                                if(callbackResults.UnSuccessful())
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                 break;
 
                             case AppData.ExecutiveActionType.DownloadUserProfile:
+
+                                break;
+
+                            case AppData.ExecutiveActionType.SignInApp:
+
+                                break;
+
+                            case AppData.ExecutiveActionType.SignInUser:
 
                                 break;
                         }
