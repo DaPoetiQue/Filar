@@ -51,6 +51,7 @@ namespace Com.RedicalGames.Filar
             UserSignedOut,
             AppLanguageSelected,
             PermissionsGranted,
+            NetworkConnected
         }
 
         public enum ExecutiveActionType
@@ -60,7 +61,7 @@ namespace Com.RedicalGames.Filar
             CheckNetworkConnection,
             CheckCompitability,
             DownloadContent,
-            DownloadUserProfile,
+            SyncUserProfile,
             ConnectClientToServer,
             SignInApp,
             SignInUser

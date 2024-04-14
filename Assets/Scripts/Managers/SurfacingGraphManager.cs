@@ -1284,77 +1284,127 @@ namespace Com.RedicalGames.Filar
                     {
                         var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
 
-                        switch(actionType)
+                        callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance", " Is Not Yet Initialized - Invalid Operation."));
+
+                        if (callbackResults.Success())
                         {
-                            case AppData.ExecutiveActionType.RequestAppUserPermissions:
+                            var networkManager = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance").GetData();
 
-                                var checkUserAppUserPermissionsStatus = await appManagerInstance.PermissionsGranted();
+                            callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Profile Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
-                                callbackResults.SetResult(checkUserAppUserPermissionsStatus);
+                            if (callbackResults.Success())
+                            {
+                                var profileManager = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
 
-                                if(callbackResults.UnSuccessful())
+                                switch (actionType)
                                 {
+                                    case AppData.ExecutiveActionType.RequestAppUserPermissions:
 
-                                }
+                                        var checkUserAppUserPermissionsStatus = await appManagerInstance.PermissionsGranted();
 
-                                break;
+                                        callbackResults.SetResult(checkUserAppUserPermissionsStatus);
 
-                            case AppData.ExecutiveActionType.CheckNetworkConnection:
+                                        if (callbackResults.UnSuccessful())
+                                        {
 
-                                callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance", " Is Not Yet Initialized - Invalid Operation."));
+                                        }
 
-                                if (callbackResults.Success())
-                                {
-                                    var networkManager = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance").GetData();
+                                        break;
 
-                                    if (callbackResults.Success())
-                                    {
+                                    case AppData.ExecutiveActionType.CheckNetworkConnection:
+
                                         var networkConnectionCallbackResults = await networkManager.CheckConnectionStatus();
 
                                         callbackResults.SetResult(networkConnectionCallbackResults);
 
-                                        if(callbackResults.UnSuccessful())
+                                        if (callbackResults.UnSuccessful())
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    }
-                                    else
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        break;
+
+                                    case AppData.ExecutiveActionType.CheckCompitability:
+
+                                        var getCompatibilityStatusAsyncCallbackResultsTask = await appManagerInstance.GetCompatibilityStatusAsync();
+
+                                        callbackResults.SetResult(getCompatibilityStatusAsyncCallbackResultsTask);
+
+                                        if (callbackResults.UnSuccessful())
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        break;
+
+                                    case AppData.ExecutiveActionType.ConnectClientToServer:
+
+                                        var serverConnectedCallbackResults = await networkManager.ServerConnected();
+
+                                        callbackResults.SetResult(serverConnectedCallbackResults);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var synchronizingAppInfoCallbackResults = await appManagerInstance.SynchronizingAppInfo();
+
+                                            callbackResults.SetResult(synchronizingAppInfoCallbackResults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var checkEntryPointAsyncCallbackResults = await appManagerInstance.CheckEntryPointAsync();
+
+                                                callbackResults.SetResult(checkEntryPointAsyncCallbackResults);
+
+                                                if (callbackResults.UnSuccessful())
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        break;
+
+                                    case AppData.ExecutiveActionType.DownloadContent:
+
+                                        var downloadPostEntryDataAsyncCallbackResults = await appManagerInstance.DownloadPostEntryDataAsync();
+
+                                        callbackResults.SetResult(downloadPostEntryDataAsyncCallbackResults);
+
+                                        if (callbackResults.UnSuccessful())
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        break;
+
+                                    case AppData.ExecutiveActionType.SyncUserProfile:
+
+                                        var synchronizingProfileCallbackResults = await profileManager.SynchronizingProfile();
+
+                                        callbackResults.SetResult(synchronizingProfileCallbackResults);
+
+                                        if (callbackResults.UnSuccessful())
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        break;
+
+                                    case AppData.ExecutiveActionType.SignInApp:
+
+                                        var appSignInAsyncCallbackResults = await profileManager.AppSignInAsync();
+
+                                        callbackResults.SetResult(appSignInAsyncCallbackResults);
+
+                                        if (callbackResults.UnSuccessful())
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        break;
+
+                                    case AppData.ExecutiveActionType.SignInUser:
+
+                                        break;
                                 }
-                                else
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                break;
-
-                            case AppData.ExecutiveActionType.CheckCompitability:
-
-                                break;
-
-                            case AppData.ExecutiveActionType.ConnectClientToServer:
-
-                                break;
-
-                            case AppData.ExecutiveActionType.DownloadContent:
-
-                                var downloadPostEntryDataAsyncCallbackResults = await appManagerInstance.DownloadPostEntryDataAsync();
-
-                                callbackResults.SetResult(downloadPostEntryDataAsyncCallbackResults);
-
-                                if(callbackResults.UnSuccessful())
-                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                break;
-
-                            case AppData.ExecutiveActionType.DownloadUserProfile:
-
-                                break;
-
-                            case AppData.ExecutiveActionType.SignInApp:
-
-                                break;
-
-                            case AppData.ExecutiveActionType.SignInUser:
-
-                                break;
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
