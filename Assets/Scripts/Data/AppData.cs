@@ -60048,6 +60048,50 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public static CallbackData<float> GetAppFloatValueAssigned(float value, string name = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                var callbackResults = new CallbackData<float>();
+
+                if (value > 0.0f)
+                {
+                    callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"Float Value : {name ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.data = value;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Float Value : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static CallbackData<int> GetAppIntValueAssigned(int value, string name = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                var callbackResults = new CallbackData<int>();
+
+                if (value > 0.0f)
+                {
+                    callbackResults.result = (successOperationFallbackResults != null) ? successOperationFallbackResults : $"Int Value : {name ?? "Name Unsassigned"} Is Valid.";
+                    callbackResults.data = value;
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"Int Value : {name ?? "Name Unsassigned"} Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
             public static CallbackData<string> GetAppStringValueEqual(string valueA, string valueB, string name = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
             {
                 var callbackResults = new CallbackData<string>(GetAppStringValueNotNullOrEmpty(valueA, name ?? "Name Not Assigned", "Get String Value Equal Failed - Value A Parameter Value Is Null / Empty - Invalid operation"));

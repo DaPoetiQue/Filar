@@ -12,6 +12,10 @@ namespace Com.RedicalGames.Filar
 		[SerializeField]
 		private AppData.EventType eventType = AppData.EventType.None;
 
+		[Space(5)]
+		[SerializeField]
+		private float timeout;
+
 		[Input]
 		public int input;
 
@@ -50,6 +54,19 @@ namespace Com.RedicalGames.Filar
 			callbackResults.result = "This Is A Wait For Event Node.";
 			callbackResults.data = AppData.GraphNodeType.WaitForEventNode;
 			callbackResults.resultCode = AppData.Helpers.SuccessCode;
+
+			return callbackResults;
+		}
+
+		public AppData.CallbackData<float> GetTimeOut()
+        {
+			var callbackResults = new AppData.CallbackData<float>(AppData.Helpers.GetAppFloatValueAssigned(timeout, "Timeout", $"Get Time Out Failed - Time Out Is Set To Default : {timeout} - Invalid Operation."));
+
+			if(callbackResults.Success())
+            {
+				callbackResults.result = $"Get Time Out Success - Time Out Is Set To : {timeout}";
+				callbackResults.data = timeout;
+			}
 
 			return callbackResults;
 		}

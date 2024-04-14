@@ -1086,16 +1086,58 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                while (appEventsManagerInstance.GetCurrentEvent().GetData() != waitForEventNode.GetEventType().GetData())
-                                    await Task.Yield();
+                                callbackResults.SetResult(waitForEventNode.GetTimeOut());
 
-                                ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                if(callbackResults.Success())
                                 {
-                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
+                                    var timeout = waitForEventNode.GetTimeOut().GetData();
 
-                                    if (callbackResults.UnSuccessful())
-                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                });
+                                    while (appEventsManagerInstance.GetCurrentEvent().GetData() != waitForEventNode.GetEventType().GetData() && timeout > 0.0f)
+                                    {
+                                        timeout -= 1.0f * Time.deltaTime;
+                                        await Task.Yield();
+                                    }
+
+                                    if(appEventsManagerInstance.GetCurrentEvent().GetData() == waitForEventNode.GetEventType().GetData())
+                                    {
+                                        callbackResults.result = "Execution Completed Successfully.";
+                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = "Execution Failed With Timeout.";
+                                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                                    }
+                                }
+                                else
+                                {
+                                    while (appEventsManagerInstance.GetCurrentEvent().GetData() != waitForEventNode.GetEventType().GetData())
+                                        await Task.Yield();
+
+                                    if (appEventsManagerInstance.GetCurrentEvent().GetData() == waitForEventNode.GetEventType().GetData())
+                                    {
+                                        callbackResults.result = "Execution Completed Successfully.";
+                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                    }
+                                    else
+                                    {
+                                        callbackResults.result = "Execution Failed With With Unknown Error - Please Check Here.";
+                                        callbackResults.resultCode = AppData.Helpers.WarningCode;
+                                    }
+                                }
+
+                                if (callbackResults.Success())
+                                {
+                                    ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                    {
+                                        callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                        if (callbackResults.UnSuccessful())
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    });
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

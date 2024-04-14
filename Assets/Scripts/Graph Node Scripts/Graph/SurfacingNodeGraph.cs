@@ -270,31 +270,6 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public AppData.Callback ExitGraph()
-        {
-            var callbackResults = new AppData.Callback(Completed());
-
-            if (callbackResults.UnSuccessful())
-            {
-                if (GetGraphMode().GetData() == AppData.GraphMode.Repeat)
-                {
-                    Reset(true, resetedCallbackResults =>
-                    {
-                        callbackResults.SetResult(resetedCallbackResults);
-
-                        if (callbackResults.Success())
-                            callbackResults.result = $"Graph : {name} Has Been Successfully Restarted.";
-                    });
-                }
-                else
-                    callbackResults.result = $"Graph : {name} Has Been Successfully Completed.";
-            }
-            else
-                callbackResults.result = $"Graph : {name} Has Been Successfully Completed.";
-
-            return callbackResults;
-        }
-
         public AppData.Callback InProgress()
         {
             var callbackResults = new AppData.Callback(GetCurrentNode());
