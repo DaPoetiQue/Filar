@@ -117,10 +117,7 @@ MonoBehaviour:
       _node: {fileID: -6339528577443172159}
       _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
-      connections:
-      - fieldName: output
-        node: {fileID: 1673378582075409754}
-        reroutePoints: []
+      connections: []
       _direction: 0
       _connectionType: 0
       _typeConstraint: 0
@@ -382,8 +379,8 @@ MonoBehaviour:
   - {fileID: -2690111646476083336}
   - {fileID: -235869126532484939}
   type: 1
-  currentNode: {fileID: 0}
-  completed: 0
+  currentNode: {fileID: 1673378582075409754}
+  completed: 1
 --- !u!114 &395459579569198672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -465,10 +462,7 @@ MonoBehaviour:
       _node: {fileID: 1673378582075409754}
       _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
-      connections:
-      - fieldName: input
-        node: {fileID: -6339528577443172159}
-        reroutePoints: []
+      connections: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0

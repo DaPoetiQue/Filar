@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using XNode;
 
@@ -191,7 +192,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public AppData.Callback CheckPrerequisiteGraphs()
+        public async Task<AppData.Callback> CheckPrerequisiteGraphs()
         {
             var callbackResults = new AppData.Callback(GetPrerequisiteGraphs());
 
@@ -199,10 +200,10 @@ namespace Com.RedicalGames.Filar
             {
                 for (int i = 0; i < GetPrerequisiteGraphs().GetData().Count; i++)
                 {
-                    callbackResults.SetResult(GetPrerequisiteGraphs().GetData()[i].Completed());
+                    while(GetPrerequisiteGraphs().GetData()[i].Completed().UnSuccessful())
+                        await Task.Yield();
 
-                    if (callbackResults.UnSuccessful())
-                        break;
+                    callbackResults.SetResult(GetPrerequisiteGraphs().GetData()[i].Completed());
                 }
             }
             else
@@ -257,6 +258,31 @@ namespace Com.RedicalGames.Filar
                         callbackResults.SetResult(resetedCallbackResults);
 
                         if(callbackResults.Success())
+                            callbackResults.result = $"Graph : {name} Has Been Successfully Restarted.";
+                    });
+                }
+                else
+                    callbackResults.result = $"Graph : {name} Has Been Successfully Completed.";
+            }
+            else
+                callbackResults.result = $"Graph : {name} Has Been Successfully Completed.";
+
+            return callbackResults;
+        }
+
+        public AppData.Callback ExitGraph()
+        {
+            var callbackResults = new AppData.Callback(Completed());
+
+            if (callbackResults.UnSuccessful())
+            {
+                if (GetGraphMode().GetData() == AppData.GraphMode.Repeat)
+                {
+                    Reset(true, resetedCallbackResults =>
+                    {
+                        callbackResults.SetResult(resetedCallbackResults);
+
+                        if (callbackResults.Success())
                             callbackResults.result = $"Graph : {name} Has Been Successfully Restarted.";
                     });
                 }

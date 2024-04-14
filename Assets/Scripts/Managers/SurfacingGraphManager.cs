@@ -492,8 +492,8 @@ namespace Com.RedicalGames.Filar
                 if(callbackResults.Success())
                 {
                     var entryGraphs = GetGraphs().GetData().FindAll(graph => graph.GetCurrentNode().Success()).
-                        Where(graph => graph.GetEntryEventType().GetData() == entry && graph.CheckPrerequisiteGraphs().Success() 
-                        && graph.Completed().UnSuccessful() && graph.InProgress().UnSuccessful()).ToList();
+                        Where(graph => graph.GetEntryEventType().GetData() == entry && 
+                        graph.Completed().UnSuccessful() && graph.InProgress().UnSuccessful()).ToList();
 
                     callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(entryGraphs, "Entry Graphs", $"On Graph Entry Failed - There Are No Entry Graphs Found - Invalid Operation."));
 
@@ -568,13 +568,22 @@ namespace Com.RedicalGames.Filar
                 {
                     case AppData.GraphNodeType.EntryNode:
 
-                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
-                        {
-                            callbackResults.SetResult(proccessNextNodeCallbackResults);
+                        var checkPrerequisiteGraphCallbackResults = await graph.CheckPrerequisiteGraphs();
 
-                            if (callbackResults.UnSuccessful())
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
+                        callbackResults.SetResult(checkPrerequisiteGraphCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                            {
+                                callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                if (callbackResults.UnSuccessful())
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                         break;
 
@@ -1269,16 +1278,29 @@ namespace Com.RedicalGames.Filar
                 {
                     if (port.fieldName == portName)
                     {
-                        callbackResults.SetResult(graph.SetCurrentNode(port.Connection.node as BaseNode));
+                        if (port.Connection != null)
+                        {
+                            callbackResults.SetResult(graph.SetCurrentNode(port.Connection.node as BaseNode));
 
-                        if (callbackResults.Success())
+                            if (callbackResults.Success())
+                                break;
+                        }
+                        else
+                        {
+                            callbackResults.result = "There Is No Connection To This Node Output - Exiting Graph";
+                            callbackResults.resultCode = AppData.Helpers.WarningCode;
+
                             break;
+                        }
                     }
                     else
                         continue;
                 }
 
-                await ExecuteGraph(graph);
+                if(callbackResults.Success())
+                    await ExecuteGraph(graph);
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
