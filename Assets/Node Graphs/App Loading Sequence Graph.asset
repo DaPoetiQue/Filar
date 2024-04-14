@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Entry
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -584, y: -200}
+  position: {x: -696, y: -200}
   ports:
     keys:
     - output
@@ -48,25 +48,26 @@ MonoBehaviour:
   m_Name: Wait For Event
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 376, y: 56}
+  position: {x: 424, y: 24}
   ports:
     keys:
     - input
-    - output
+    - successCode
+    - timedOut
     values:
     - _fieldName: input
       _node: {fileID: -4395333932193430955}
       _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
       connections:
-      - fieldName: output
-        node: {fileID: -1833256732747952602}
+      - fieldName: successCode
+        node: {fileID: 2574203152285461689}
         reroutePoints: []
       _direction: 0
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
-    - _fieldName: output
+    - _fieldName: successCode
       _node: {fileID: -4395333932193430955}
       _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
@@ -78,9 +79,23 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
+    - _fieldName: timedOut
+      _node: {fileID: -4395333932193430955}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: input
+        node: {fileID: -1833256732747952602}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
   eventType: 23
+  timeout: 3
   input: 0
-  output: 0
+  successCode: 0
+  timedOut: 0
 --- !u!114 &-2419095983949249953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -94,7 +109,7 @@ MonoBehaviour:
   m_Name: Execute Action
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 616, y: -72}
+  position: {x: 696, y: -72}
   ports:
     keys:
     - input
@@ -109,7 +124,7 @@ MonoBehaviour:
       - fieldName: successCode
         node: {fileID: 6473973080367797896}
         reroutePoints: []
-      - fieldName: output
+      - fieldName: successCode
         node: {fileID: -4395333932193430955}
         reroutePoints: []
       _direction: 0
@@ -157,7 +172,7 @@ MonoBehaviour:
   m_Name: Popup
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 136, y: 40}
+  position: {x: -24, y: 40}
   ports:
     keys:
     - input
@@ -171,6 +186,9 @@ MonoBehaviour:
       - fieldName: errorCode
         node: {fileID: 6473973080367797896}
         reroutePoints: []
+      - fieldName: timedOut
+        node: {fileID: -4395333932193430955}
+        reroutePoints: []
       _direction: 0
       _connectionType: 0
       _typeConstraint: 0
@@ -181,7 +199,7 @@ MonoBehaviour:
         PublicKeyToken=b77a5c561934e089
       connections:
       - fieldName: input
-        node: {fileID: -4395333932193430955}
+        node: {fileID: 2574203152285461689}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
@@ -248,9 +266,68 @@ MonoBehaviour:
   - {fileID: 5623841831042139045}
   - {fileID: 7922441085177940750}
   - {fileID: 4687498104817714712}
+  - {fileID: 2574203152285461689}
   type: 1
-  currentNode: {fileID: 0}
-  completed: 0
+  currentNode: {fileID: 4687498104817714712}
+  completed: 1
+--- !u!114 &2574203152285461689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d6e54811f8426d40a12e9805b17d3e9, type: 3}
+  m_Name: Wait For Event
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 200, y: 168}
+  ports:
+    keys:
+    - input
+    - successCode
+    - timedOut
+    values:
+    - _fieldName: input
+      _node: {fileID: 2574203152285461689}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: output
+        node: {fileID: -1833256732747952602}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: successCode
+      _node: {fileID: 2574203152285461689}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: input
+        node: {fileID: -4395333932193430955}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: timedOut
+      _node: {fileID: 2574203152285461689}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  eventType: 21
+  timeout: 0
+  input: 0
+  successCode: 0
+  timedOut: 0
 --- !u!114 &4687498104817714712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -295,7 +372,7 @@ MonoBehaviour:
   m_Name: Current Screen
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -360, y: -104}
+  position: {x: -472, y: -104}
   ports:
     keys:
     - output
@@ -381,7 +458,7 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
-  action: 0
+  action: 4
   input: 0
   successCode: 0
   errorCode: 0
@@ -398,7 +475,7 @@ MonoBehaviour:
   m_Name: Execute Action
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -120, y: -88}
+  position: {x: -232, y: -88}
   ports:
     keys:
     - input

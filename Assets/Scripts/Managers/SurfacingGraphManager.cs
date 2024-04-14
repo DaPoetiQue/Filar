@@ -1301,6 +1301,27 @@ namespace Com.RedicalGames.Filar
 
                             case AppData.ExecutiveActionType.CheckNetworkConnection:
 
+                                callbackResults.SetResults(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance", " Is Not Yet Initialized - Invalid Operation."));
+
+                                if (callbackResults.Success())
+                                {
+                                    var networkManager = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance").GetData();
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var networkConnectionCallbackResults = await networkManager.CheckConnectionStatus();
+
+                                        callbackResults.SetResult(networkConnectionCallbackResults);
+
+                                        if(callbackResults.UnSuccessful())
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
                                 break;
 
                             case AppData.ExecutiveActionType.CheckCompitability:
