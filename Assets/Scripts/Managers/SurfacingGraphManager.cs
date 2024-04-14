@@ -586,7 +586,9 @@ namespace Com.RedicalGames.Filar
 
                         if(callbackResults.Success())
                         {
-                            callbackResults.SetResult(OnExecutionalCondition(conditionalNode.GetCondition().GetData()));
+                            var executeConditionalStatementCallbackResultsTask = await OnExecutionalCondition(conditionalNode.GetCondition().GetData());
+
+                            callbackResults.SetResult(executeConditionalStatementCallbackResultsTask);
 
                             if(callbackResults.Success())
                             {
@@ -609,6 +611,46 @@ namespace Com.RedicalGames.Filar
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                 }, "isFalse");
+                            }
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                        break;
+
+                    case AppData.GraphNodeType.ExecuteActionNode:
+
+                        var executeActionNode = graph.GetCurrentNode().GetData() as ExecuteActionNode;
+
+                        callbackResults.SetResult(executeActionNode.GetAction());
+
+                        if (callbackResults.Success())
+                        {
+                            var executeConditionalActionStatementCallbackResultsTask = await OnExecutionalAction(executeActionNode.GetAction().GetData());
+
+                            callbackResults.SetResult(executeConditionalActionStatementCallbackResultsTask);
+
+                            if (callbackResults.Success())
+                            {
+                                ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                {
+                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                }, "successCode");
+                            }
+                            else
+                            {
+                                ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                {
+                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                }, "errorCode");
                             }
                         }
                         else
@@ -1107,7 +1149,7 @@ namespace Com.RedicalGames.Filar
             await Task.Yield();
         }
 
-        private AppData.Callback OnExecutionalCondition(AppData.AppExecutionalConditionType conditionType)
+        private async Task<AppData.Callback> OnExecutionalCondition(AppData.AppExecutionalConditionType conditionType)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(conditionType, "Condition Type", $"On Executional Condition Failed - Condition Type Parameter Value Is Set To Default : {conditionType} - Invalid Operation."));
 
@@ -1133,7 +1175,80 @@ namespace Com.RedicalGames.Filar
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                             break;
+
+                        case AppData.AppExecutionalConditionType.PermissionsGranted:
+
+                            var permissionsGrantedCallbackResultsTask = await appManagerInstance.PermissionsGranted();
+
+                            callbackResults.SetResult(permissionsGrantedCallbackResultsTask);
+
+                            if(callbackResults.UnSuccessful())
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            break;
                     }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        private async Task<AppData.Callback> OnExecutionalAction(AppData.ExecutiveActionType actionType)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(actionType, "Action Type", $"On Executional Action Failed - Action Type Parameter Value Is Set To Default : {actionType} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance", "On Executional Condition Failed - App Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance").GetData();
+
+                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "On Executional Condition Failed - App Database Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                        switch(actionType)
+                        {
+                            case AppData.ExecutiveActionType.RequestAppUserPermissions:
+
+                                var checkUserAppUserPermissionsStatus = await appManagerInstance.PermissionsGranted();
+
+                                callbackResults.SetResult(checkUserAppUserPermissionsStatus);
+
+                                if(callbackResults.UnSuccessful())
+                                {
+
+                                }
+
+                                break;
+
+                            case AppData.ExecutiveActionType.CheckNetworkConnection:
+
+                                break;
+
+                            case AppData.ExecutiveActionType.CheckCompitability:
+
+                                break;
+
+                            case AppData.ExecutiveActionType.DownloadContent:
+
+                                break;
+
+                            case AppData.ExecutiveActionType.DownloadUserProfile:
+
+                                break;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

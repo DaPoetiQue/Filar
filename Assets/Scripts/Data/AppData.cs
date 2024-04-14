@@ -49,7 +49,18 @@ namespace Com.RedicalGames.Filar
             InitialLoad,
             UserSignedIn,
             UserSignedOut,
-            AppLanguageSelected
+            AppLanguageSelected,
+            PermissionsGranted,
+        }
+
+        public enum ExecutiveActionType
+        {
+            None,
+            RequestAppUserPermissions,
+            CheckNetworkConnection,
+            CheckCompitability,
+            DownloadContent,
+            DownloadUserProfile
         }
 
         public enum GraphNodeType
@@ -68,7 +79,8 @@ namespace Com.RedicalGames.Filar
             WaitForSecondsNode,
             TriggerEventNode,
             HighlightScreenInputNode,
-            ConditionalNode
+            ConditionalNode,
+            ExecuteActionNode
         }
 
         public enum GraphEntryEventType

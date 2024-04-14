@@ -572,20 +572,35 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                var permissionInfoQueue = AppData.Helpers.GetAppComponentsValid(AppData.Helpers.GetQueue(permissionInfos), queueIdentifier: "", failedOperationFallbackResults: "", "").data;
+                callbackResults.SetResult(GetScriptExecutionMode());
 
-                while(permissionInfoQueue.Count > 0)
+                if (callbackResults.Success())
                 {
-                    var permisionInfo = permissionInfoQueue.Dequeue();
+                    if (GetScriptExecutionMode().GetData() != AppData.BuildType.Debug)
+                    {
+                        var permissionInfoQueue = AppData.Helpers.GetAppComponentsValid(AppData.Helpers.GetQueue(permissionInfos), queueIdentifier: "", failedOperationFallbackResults: "", "").data;
 
-                    while(permisionInfo.IsGranted == false)
-                        await Task.Delay(100);
+                        while (permissionInfoQueue.Count > 0)
+                        {
+                            var permisionInfo = permissionInfoQueue.Dequeue();
 
-                    await Task.Yield();
+                            while (permisionInfo.IsGranted == false)
+                                await Task.Delay(100);
+
+                            await Task.Yield();
+                        }
+
+                        callbackResults.result = "Permissions Granted.";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = "Permissions Granted.";
+                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                    }
                 }
-
-                callbackResults.result = "Permissions Granted.";
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             return callbackResults;
