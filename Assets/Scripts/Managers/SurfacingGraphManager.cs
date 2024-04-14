@@ -86,15 +86,15 @@ namespace Com.RedicalGames.Filar
 
                             if (callbackResults.Success())
                             {
-                                appEventsManagerInstance.InvokeEvent(AppData.EventType.OnStart, onStartEventTriggeredCallbackResults =>
+                                OnConfig(graphsConfiguredCallbackResults =>
                                 {
-                                    callbackResults.SetResult(onStartEventTriggeredCallbackResults);
+                                    callbackResults.SetResult(graphsConfiguredCallbackResults);
 
                                     if (callbackResults.Success())
                                     {
-                                        OnConfig(graphsConfiguredCallbackResults =>
+                                        appEventsManagerInstance.InvokeEvent(AppData.EventType.OnStart, onStartEventTriggeredCallbackResults =>
                                         {
-                                            callbackResults.SetResult(graphsConfiguredCallbackResults);
+                                            callbackResults.SetResult(onStartEventTriggeredCallbackResults);
 
                                             if (callbackResults.UnSuccessful())
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
