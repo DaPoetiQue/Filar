@@ -23,12 +23,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - Graph
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 304e8834654138d4bbc4dd3e6be2663b
-    m_Address: Prerequisite Test
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Graph
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4bd67b5485d83c54b9727801564601a1
     m_Address: Welcome FTUE
     m_ReadOnly: 0

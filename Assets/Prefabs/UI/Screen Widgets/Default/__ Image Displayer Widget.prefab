@@ -529,7 +529,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -582,6 +581,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
+    buttonTitletKey: 0
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
@@ -718,7 +718,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -769,7 +768,7 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     fieldActionInputs: []
-    placeHolderText: 
+    placeHolderTextKey: 0
     placeholderTextDisplayer: {fileID: 0}
     characterLimit: 0
     valueType: 0
@@ -909,7 +908,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1101,7 +1099,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1291,7 +1288,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1342,6 +1338,8 @@ MonoBehaviour:
       textWidgets: []
       imageWidgets: []
     actionType: 0
+    labelTextKey: 0
+    labelTextDisplayer: {fileID: 0}
     initialSelectionState: 0
     initialInteractabilityState: 0
   dropdownComponentConfig:
@@ -1480,7 +1478,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1667,7 +1664,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1853,7 +1849,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -2037,7 +2032,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -2223,7 +2217,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -2373,7 +2366,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 2
   type: 36
   widgetLayouts:
@@ -2484,9 +2477,8 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 0
   screenBlurConfig:
-    name: Splash Displayer Widget
-    active: 0
-    blurScreenPlacementType: 0
+    active: 1
+    blurScreenPlacementType: 2
   scroller:
     value: {fileID: 0}
     movementType: 0
@@ -2591,7 +2583,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:

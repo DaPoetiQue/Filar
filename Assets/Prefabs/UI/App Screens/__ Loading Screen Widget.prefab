@@ -217,7 +217,7 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  titleDisplayer: {fileID: 0}
+  screenTitleLocalizationKey: 0
   screenWidgetType: 1
   type: 8
   widgetLayouts: []
@@ -250,6 +250,20 @@ MonoBehaviour:
     containerType: 14
     initialVisibilityState: 2
     constriants: []
+  - name: Content Download pop Up
+    referenceType: 44
+    uIPlacementType: 2
+    containerType: 14
+    initialVisibilityState: 2
+    constriants:
+    - {fileID: 11400000, guid: dcdd662b0d0666d41b0c5fe79d21d414, type: 2}
+  - name: Connection status pop Up
+    referenceType: 45
+    uIPlacementType: 2
+    containerType: 14
+    initialVisibilityState: 2
+    constriants:
+    - {fileID: 11400000, guid: dcdd662b0d0666d41b0c5fe79d21d414, type: 2}
   dynamicContainerList:
   - {fileID: 788115758341435691}
   - {fileID: 3090725572040038037}

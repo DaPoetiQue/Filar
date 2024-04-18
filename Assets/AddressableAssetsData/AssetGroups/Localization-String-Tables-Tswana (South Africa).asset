@@ -10,16 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Localization-String-Tables-Southern Sotho (South Africa) (st-ZA)
+  m_Name: Localization-String-Tables-Tswana (South Africa)
   m_EditorClassIdentifier: 
-  m_GroupName: Localization-String-Tables-Southern Sotho (South Africa) (st-ZA)
+  m_GroupName: Localization-String-Tables-Tswana (South Africa)
   m_Data:
     m_SerializedData: []
-  m_GUID: 632dbe02e9361474794b3f0bdd38f3ee
-  m_SerializeEntries: []
+  m_GUID: bc681823793e0ff48a077f015d71907e
+  m_SerializeEntries:
+  - m_GUID: fcfaafa78d909954eaf8107bd56ee1db
+    m_Address: Filar Locales_tn-ZA
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-tn-ZA
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 09c3fc00f95ca8a49a86bb88139bfdfe, type: 2}
-    - {fileID: 11400000, guid: 0ae88c4535bc12d459874b83ca7363cf, type: 2}
+    - {fileID: 11400000, guid: 06923e6ddf1b7304986cf5d8c93aec82, type: 2}
+    - {fileID: 11400000, guid: 50b765cf98cdc264c9ff7cdab659cb95, type: 2}

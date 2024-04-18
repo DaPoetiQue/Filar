@@ -454,11 +454,11 @@ namespace Com.RedicalGames.Filar
 
         public async Task<AppData.Callback> SynchronizingProfile()
         {
-            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager Is Not Yet Initialized."));
+            AppData.Callback callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "Database Manager Is Not Yet Initialized - Invalid Operation."));
 
             if(callbackResults.Success())
             {
-                var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
+                var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
 
                 await FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
                 {

@@ -504,7 +504,13 @@ namespace Com.RedicalGames.Filar
             if(callbackResults.Success())
             {
                 var databaseManager = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name).data;
-                await databaseManager.InitializeDatabase();
+
+                var databaseInitializationCallbackResultsTask =  await databaseManager.InitializeDatabase();
+
+                callbackResults.SetResult(databaseInitializationCallbackResultsTask);
+
+                if (callbackResults.UnSuccessful())
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
 
             return callbackResults;

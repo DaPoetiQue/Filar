@@ -98,7 +98,7 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
-  seconds: 2
+  seconds: 1
   input: 0
   output: 0
 --- !u!114 &-6339528577443172159
@@ -388,8 +388,8 @@ MonoBehaviour:
   - {fileID: -2690111646476083336}
   - {fileID: -235869126532484939}
   type: 1
-  currentNode: {fileID: 0}
-  completed: 0
+  currentNode: {fileID: -6339528577443172159}
+  completed: 1
 --- !u!114 &395459579569198672
 MonoBehaviour:
   m_ObjectHideFlags: 0

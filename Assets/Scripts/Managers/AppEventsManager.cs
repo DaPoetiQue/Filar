@@ -234,6 +234,7 @@ namespace Com.RedicalGames.Filar
                     AppData.ActionEvents._OnNetworkFailedEvent += () => eventMethod?.Invoke(AppData.EventType.OnNetworkFailedEvent);
                     AppData.ActionEvents._OnAppLanguageChanged += () => eventMethod?.Invoke(AppData.EventType.OnAppLanguageChanged);
                     AppData.ActionEvents._OnActionButtonPressEvent += () => eventMethod?.Invoke(AppData.EventType.OnActionButtonPress);
+                    AppData.ActionEvents._OnProgressPercentageEvent += value => eventMethod?.Invoke(AppData.EventType.OnActionButtonPress);
                 }
                 else
                 {
@@ -249,7 +250,70 @@ namespace Com.RedicalGames.Filar
                     AppData.ActionEvents._OnNetworkFailedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnNetworkFailedEvent);
                     AppData.ActionEvents._OnAppLanguageChanged -= () => eventMethod?.Invoke(AppData.EventType.OnAppLanguageChanged);
                     AppData.ActionEvents._OnActionButtonPressEvent -= () => eventMethod?.Invoke(AppData.EventType.OnActionButtonPress);
+                    AppData.ActionEvents._OnProgressPercentageEvent -= value => eventMethod?.Invoke(AppData.EventType.OnActionButtonPress);
                 }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void OnEventSubscription(Action<string> eventMethod, AppData.EventType eventType, bool subscribe = true, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", "On Event Subscription Failed - Event Menthod Parameter Value Is Not Assigned."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(eventType, "Timed Event Type", $"On Event Subscription Failed - Typed Event Parameter Value Is Set To Default : {eventType}"));
+
+                if (callbackResults.Success())
+                {
+                    switch (eventType)
+                    {
+                        case AppData.EventType.OnProgressPercentage:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnProgressPercentageEvent += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnProgressPercentageEvent -= eventMethod.Invoke;
+
+                            break;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        public void OnEventSubscription(Action<int> eventMethod, AppData.EventType eventType, bool subscribe = true, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", "On Event Subscription Failed - Event Menthod Parameter Value Is Not Assigned."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(eventType, "Timed Event Type", $"On Event Subscription Failed - Typed Event Parameter Value Is Set To Default : {eventType}"));
+
+                if (callbackResults.Success())
+                {
+                    switch (eventType)
+                    {
+                        case AppData.EventType.OnProgressPercentageIntValue:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnProgressPercentageIntValueEvent += eventMethod.Invoke;
+                            else
+                                AppData.ActionEvents._OnProgressPercentageIntValueEvent -= eventMethod.Invoke;
+
+                            break;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -679,6 +743,12 @@ namespace Com.RedicalGames.Filar
             }
 
             callback?.Invoke(callbackResults);
+        }
+
+        public void InvokeEvent(int progress)
+        {
+            AppData.ActionEvents.OnProgressPercentageEvent($"{progress}%");
+            AppData.ActionEvents.OnProgressPercentageIntValueEvent(progress);
         }
 
         public void InvokeEvent(string eventName, Action<AppData.Callback> callback = null)

@@ -519,6 +519,7 @@ namespace Com.RedicalGames.Filar
                         var postContentsURL = publishingManager.PostContentsURL;
 
                         var modelBytes = await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier().GetData()).Child(post.GetUniqueIdentifier().GetData()).Child("Model").GetBytesAsync(int.MaxValue);
+
                         var profilePictureThumbnail = await storageReference.Child(postContentsURL).Child(post.GetRootIdentifier().GetData()).Child(post.GetUniqueIdentifier().GetData()).Child("Thumbnail").GetBytesAsync(int.MaxValue);
 
                         StorageContentLoadUpdate(post, modelBytes, profilePictureThumbnail);
@@ -881,11 +882,17 @@ namespace Com.RedicalGames.Filar
 
                                     if (!postsDatabase.Contains(post))
                                     {
-                                        var updatedPostTaskResults = await InitializeStorage(post);
-                                        postsDatabase.Add(post);
+                                        var updatedPostTaskResultsTask = await InitializeStorage(post);
 
-                                        callbackResults.result = "Server Post Added Successfully To The Local Database";
-                                        callbackResults.resultCode = AppData.Helpers.SuccessCode;
+                                        callbackResults.SetResult(updatedPostTaskResultsTask);
+
+                                        if (callbackResults.Success())
+                                        {
+                                            postsDatabase.Add(post);
+                                            callbackResults.result = "Server Post Added Successfully To The Local Database";
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                     }
                                     else
                                     {

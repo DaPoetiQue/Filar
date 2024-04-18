@@ -70,6 +70,7 @@ namespace Com.RedicalGames.Filar
         }
 
         public static Vector2 GetWidgetScale(this RectTransform reference) => reference.sizeDelta;
+        public static Vector3 GetWidgetLocalScale(this RectTransform reference) => reference.localScale;
         public static Vector2 GetWidgetPosition(this RectTransform reference) => reference.anchoredPosition;
         public static Vector3 GetWidgetRotationAngle(this RectTransform reference) => reference.localEulerAngles;
         public static Quaternion GetWidgetRotation(this RectTransform reference) => reference.rotation;
@@ -108,6 +109,7 @@ namespace Com.RedicalGames.Filar
 
         public static void SetWidgetScale(this RectTransform reference, Vector2 scale) => reference.sizeDelta = scale;
         public static void SetWidgetScale(this RectTransform reference, int width, int height) => reference.sizeDelta = new Vector2(width, height);
+        public static void SetWidgetScale(this RectTransform reference, Vector3 scale) => reference.localScale = scale;
 
         public static void SetWidgetPosition(this RectTransform reference, Vector2 position) => reference.anchoredPosition = position;
         public static void SetWidgetRotation(this RectTransform reference, Vector3 rotationAngle) => reference.localEulerAngles = rotationAngle;

@@ -233,7 +233,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidgetTransitionInProgressEvent()
         {
-            throw new NotImplementedException();
+           
         }
 
         protected override void OnActionButtonInputs(AppData.UIButton<AppData.ButtonConfigDataPacket> actionButton)

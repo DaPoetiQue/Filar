@@ -51,7 +51,8 @@ namespace Com.RedicalGames.Filar
             UserSignedOut,
             AppLanguageSelected,
             PermissionsGranted,
-            NetworkConnected
+            NetworkConnected,
+            UserDeviceAccessPermitted
         }
 
         public enum ExecutiveActionType
@@ -64,7 +65,10 @@ namespace Com.RedicalGames.Filar
             SyncUserProfile,
             ConnectClientToServer,
             SignInApp,
-            SignInUser
+            SignInUser,
+            SelectInitialPost,
+            BootLoadSequence,
+            ScreenLoadSequence,
         }
 
         public enum GraphNodeType
@@ -84,7 +88,19 @@ namespace Com.RedicalGames.Filar
             TriggerEventNode,
             HighlightScreenInputNode,
             ConditionalNode,
-            ExecuteActionNode
+            ExecuteActionNode,
+            LoadingSequenceNode
+        }
+
+        public enum LoadingSequenceState
+        {
+            None,
+            NetworkConnection,
+            CompatibilityStatus,
+            SynchronizingProfile,
+            AppSignIn,
+            ServerConnection,
+            DownloadPostEntry
         }
 
         public enum GraphEntryEventType
@@ -288,7 +304,9 @@ namespace Com.RedicalGames.Filar
             ScreenNotificationPopUpWidget,
             SuccessNotificationPopUpWidget,
             DynamicUITextDisplayerWidget,
-            AppLanguageSelectionWidget
+            AppLanguageSelectionWidget,
+            ProgressBarWidget,
+            ConnectionStatusWidget
         }
 
         public enum UIComponentType
@@ -696,6 +714,7 @@ namespace Com.RedicalGames.Filar
             PostLikeCountDisplayer,
             PostDislikeCountDisplayer,
             PostCommentsCountDisplayer,
+            ProgressPercentageDisplayer,
             None
         }
 
@@ -720,7 +739,8 @@ namespace Com.RedicalGames.Filar
             Splash,
             SelectionFrame,
             Icon,
-            Background
+            Background,
+            ProgressBar
         }
 
         public enum UIStateType
@@ -954,7 +974,8 @@ namespace Com.RedicalGames.Filar
         {
             None,
             Default,
-            Translate
+            Translate,
+            Popup
         }
 
         public enum BuildType
@@ -1017,6 +1038,7 @@ namespace Com.RedicalGames.Filar
             SplashImageTransitionSpeed,
             PreviewModeOrbitDampingSpeed,
             PreviewModeOrbitDistance,
+            ProgressReportTransitionalSpeed,
             None
         }
 
@@ -28838,7 +28860,7 @@ namespace Com.RedicalGames.Filar
             private Vector3 originRotationAngle = Vector3.zero;
 
             private Vector2 transitionPosition = Vector2.zero;
-            private Vector2 transitionScale = Vector2.zero;
+            private Vector3 transitionScale = Vector3.zero;
             private Vector3 transitionRotation = Vector3.zero;
 
             private Dictionary<TransitionableEventType, List<Action>> registeredEvents = new Dictionary<TransitionableEventType, List<Action>>();
@@ -29349,7 +29371,9 @@ namespace Com.RedicalGames.Filar
 
                             case UITransitionType.Scale:
 
-                                source.SetWidgetScale(Vector2.Lerp(source.sizeDelta, GetTransitionDestination().scale, transitionSpeed * Time.deltaTime));
+                                LogInfo($"Loggin_Yo : From Scale : {source.GetWidgetLocalScale()} - To Scale : {GetTransitionDestination().scale} ", this);
+
+                                source.SetWidgetScale(Vector3.Lerp(source.GetWidgetLocalScale(), GetTransitionDestination().scale, transitionSpeed * Time.deltaTime));
 
                                 break;
 
@@ -29466,18 +29490,18 @@ namespace Com.RedicalGames.Filar
             private void SetSourceOriginPose(RectTransform sourcePose)
             {
                 originPosition = sourcePose.GetWidgetPosition();
-                originScale = sourcePose.GetWidgetScale();
+                originScale = sourcePose.GetWidgetLocalScale();
                 originRotationAngle = sourcePose.GetWidgetRotationAngle();
             }
 
             private void OnSetTransitionDestination(RectTransform targetPose)
             {
                 transitionPosition = targetPose.GetWidgetPosition();
-                transitionScale = targetPose.GetWidgetScale();
+                transitionScale = targetPose.GetWidgetLocalScale();
                 transitionRotation = targetPose.GetWidgetRotationAngle();
             }
 
-            private void SetTransitionDestination((Vector2 position, Vector2 scale, Vector3 rotationAngle) targetPose)
+            private void SetTransitionDestination((Vector2 position, Vector3 scale, Vector3 rotationAngle) targetPose)
             {
                 transitionPosition = targetPose.position;
                 transitionScale = targetPose.scale;
@@ -29486,10 +29510,10 @@ namespace Com.RedicalGames.Filar
 
             private void SetTransitionDestination(object targetObject)
             {
-                (Vector2 position, Vector2 scale, Vector3 rotationAngle)? targetPose = targetObject as (Vector2 position, Vector2 scale, Vector3 rotationAngle)?;
+                (Vector2 position, Vector3 scale, Vector3 rotationAngle)? targetPose = targetObject as (Vector2 position, Vector3 scale, Vector3 rotationAngle)?;
 
                 transitionPosition = (Vector2)targetPose?.position;
-                transitionScale = (Vector2)targetPose?.scale;
+                transitionScale = (Vector3)targetPose?.scale;
                 transitionRotation = (Vector3)targetPose?.rotationAngle;
             }
 
@@ -29579,7 +29603,7 @@ namespace Com.RedicalGames.Filar
 
             private (Vector2 position, Vector2 scale, Vector3 rotationAngle) GetSourceOriginPose() => (originPosition, originScale, originRotationAngle);
 
-            private (Vector2 position, Vector2 scale, Vector3 rotationAngle) GetTransitionDestination() => (transitionPosition, transitionScale, transitionRotation);
+            private (Vector2 position, Vector3 scale, Vector3 rotationAngle) GetTransitionDestination() => (transitionPosition, transitionScale, transitionRotation);
 
             public CallbackData<float> GetTransitionSpeed()
             {
@@ -29777,7 +29801,7 @@ namespace Com.RedicalGames.Filar
 
                     case UITransitionType.Scale:
 
-                        var scaleDistance = GetTransitionDistance(transitionableComponent.GetWidgetScale(), GetTransitionDestination().scale);
+                        var scaleDistance = GetTransitionDistance(transitionableComponent.GetWidgetLocalScale(), GetTransitionDestination().scale);
 
                         if (GetTransitionEventTriggerDistanceReached(scaleDistance).Success())
                         {
@@ -39339,6 +39363,55 @@ namespace Com.RedicalGames.Filar
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                             break;
+
+                                        case TransitionType.Popup:
+
+                                            callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                                callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Visible));
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    layoutView.ShowLayout(layoutShouCallbackRessults =>
+                                                    {
+                                                        callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var visibleMount = GetTransitionableUIMount(UIVisibilityState.Visible).GetData();
+
+                                                            callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                transitionalComponent.InvokeTransition(visibleMount, UITransitionType.Scale, UITransitionStateType.Once, invokedTransitionCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(invokedTransitionCallbackResults);
+
+                                                                    if (callbackResults.Success())
+                                                                        OnEnabled();
+                                                                    else
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                });
+                                                            }
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                            break;
                                     }
                                 }
                                 else
@@ -39431,6 +39504,55 @@ namespace Com.RedicalGames.Filar
                                                         if (callbackResults.Success())
                                                         {
                                                             transitionalComponent.InvokeTransition(visibleMount, UITransitionType.Translate, UITransitionStateType.Once, invokedTransitionCallbackResults =>
+                                                            {
+                                                                callbackResults.SetResult(invokedTransitionCallbackResults);
+
+                                                                if (callbackResults.Success())
+                                                                    OnEnabled();
+                                                                else
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            });
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                });
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                        break;
+
+                                    case TransitionType.Popup:
+
+                                        callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                        if (callbackResults.Success())
+                                        {
+                                            var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                            callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Visible));
+
+                                            if (callbackResults.Success())
+                                            {
+                                                layoutView.ShowLayout(layoutShouCallbackRessults =>
+                                                {
+                                                    callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        var visibleMount = GetTransitionableUIMount(UIVisibilityState.Visible).GetData();
+
+                                                        callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            transitionalComponent.InvokeTransition(visibleMount, UITransitionType.Scale, UITransitionStateType.Once, invokedTransitionCallbackResults =>
                                                             {
                                                                 callbackResults.SetResult(invokedTransitionCallbackResults);
 
@@ -39569,6 +39691,58 @@ namespace Com.RedicalGames.Filar
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                     break;
+
+                                case TransitionType.Popup:
+
+                                    callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                        callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Visible));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            layoutView.ShowLayout(layoutShouCallbackRessults =>
+                                            {
+                                                callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var visibleMount = GetTransitionableUIMount(UIVisibilityState.Visible).GetData();
+
+                                                    callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        transitionalComponent.InvokeTransition(visibleMount, UITransitionType.Scale, UITransitionStateType.Once, invokedTransitionCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(invokedTransitionCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                                OnEnabled();
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                            while (transitionalComponent.HasCompletedTransition(UITransitionType.Scale).UnSuccessful())
+                                                await Task.Yield();
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                    break;
                             }
                         }
                         else
@@ -39672,6 +39846,35 @@ namespace Com.RedicalGames.Filar
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                            break;
+
+                                        case TransitionType.Popup:
+
+                                            layoutView.HideLayout(layoutHideCallbackRessults =>
+                                            {
+                                                callbackResults.SetResult(layoutHideCallbackRessults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    OnScreenWidgetHiddenEvent();
+                                                    OnDisabled();
+
+                                                    if (GetType().GetData().GetType() == typeof(ScreenType))
+                                                        GenericActionEvents<Screen>.OnScreenHiddenEvent(this as Screen);
+
+                                                    if (GetType().GetData().GetType() == typeof(WidgetType))
+                                                        GenericActionEvents<Widget>.OnWidgetHiddenEvent(this as Widget);
+
+                                                    if (GetType().GetData().GetType() == typeof(TabViewType))
+                                                        GenericActionEvents<TabView<WidgetType>>.OnTabViewHiddenEvent(this as TabView<WidgetType>);
+
+                                                    if (GetType().GetData().GetType() == typeof(SelectableWidgetType))
+                                                        GenericActionEvents<SelectableWidget>.OnSelectableWidgetHiddenEvent(this as SelectableWidget);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
 
                                             break;
                                     }
@@ -39779,6 +39982,37 @@ namespace Com.RedicalGames.Filar
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                                         break;
+
+                                    case TransitionType.Popup:
+
+                                        layoutView.HideLayout(layoutHideCallbackRessults =>
+                                        {
+                                            callbackResults.SetResult(layoutHideCallbackRessults);
+
+                                            if (callbackResults.Success())
+                                            {
+                                                layoutView.GetLayoutWidgetRect().GetData().SetWidgetScale(Vector3.zero);
+
+                                                OnScreenWidgetHiddenEvent();
+                                                OnDisabled();
+
+                                                if (GetType().GetData().GetType() == typeof(ScreenType))
+                                                    GenericActionEvents<Screen>.OnScreenHiddenEvent(this as Screen);
+
+                                                if (GetType().GetData().GetType() == typeof(WidgetType))
+                                                    GenericActionEvents<Widget>.OnWidgetHiddenEvent(this as Widget);
+
+                                                if (GetType().GetData().GetType() == typeof(TabViewType))
+                                                    GenericActionEvents<TabView<WidgetType>>.OnTabViewHiddenEvent(this as TabView<WidgetType>);
+
+                                                if (GetType().GetData().GetType() == typeof(SelectableWidgetType))
+                                                    GenericActionEvents<SelectableWidget>.OnSelectableWidgetHiddenEvent(this as SelectableWidget);
+                                            }
+                                            else
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+
+                                        break;
                                 }
                             }
                             else
@@ -39883,6 +40117,58 @@ namespace Com.RedicalGames.Filar
                                             });
 
                                             while (transitionalComponent.HasCompletedTransition(UITransitionType.Translate).UnSuccessful())
+                                                await Task.Yield();
+                                        }
+                                        else
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                    break;
+
+                                case TransitionType.Popup:
+
+                                    callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                        callbackResults.SetResult(GetTransitionableUIMount(UIVisibilityState.Hidden));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            layoutView.ShowLayout(layoutShouCallbackRessults =>
+                                            {
+                                                callbackResults.SetResult(layoutShouCallbackRessults);
+
+                                                if (callbackResults.Success())
+                                                {
+                                                    var hiddenMount = GetTransitionableUIMount(UIVisibilityState.Hidden).GetData();
+
+                                                    callbackResults.SetResult(transitionalComponent.Initialized());
+
+                                                    if (callbackResults.Success())
+                                                    {
+                                                        transitionalComponent.InvokeTransition(hiddenMount, UITransitionType.Scale, UITransitionStateType.Once, invokedTransitionCallbackResults =>
+                                                        {
+                                                            callbackResults.SetResult(invokedTransitionCallbackResults);
+
+                                                            if (callbackResults.Success())
+                                                                OnDisabled();
+                                                            else
+                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                        });
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+
+                                            while (transitionalComponent.HasCompletedTransition(UITransitionType.Scale).UnSuccessful())
                                                 await Task.Yield();
                                         }
                                         else
@@ -40372,25 +40658,8 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    if (GetTransitionType().GetData() == TransitionType.Translate)
-                    {
-                        if (transitionSpeed > 0.0f)
-                        {
-                            callbackResults.result = $"Transition Speed Is Set To : {transitionSpeed}";
-                            callbackResults.data = transitionSpeed;
-                        }
-                        else
-                        {
-                            callbackResults.result = $"Get Transition Speed Failed - Transition Speed For : {GetName()} - Of Type : {GetType().GetData()} Is Set To Default : 0";
-                            callbackResults.resultCode = Helpers.ErrorCode;
-                        }
-                    }
-                    else
-                    {
-                        callbackResults.result = $"Get Transition Speed Failed - Transition Type For : {GetName()} - Of Type : {GetType().GetData()} Is Set To : {GetTransitionType().GetData()} - Please Set Transition Type To Translate.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = Helpers.WarningCode; 
-                    }
+                    callbackResults.result = $"Transition Speed Is Set To : {transitionSpeed}";
+                    callbackResults.data = transitionSpeed;
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -45256,7 +45525,7 @@ namespace Com.RedicalGames.Filar
 
                                                                     case UIVisibilityState.Hidden:
 
-                                                                        //HideWidget(onInitialization: true, callback: hideWidgetCallbackResults =>
+                                                                        //HideWidget(hideWidgetCallbackResults =>
                                                                         //{
                                                                         //    callbackResults.SetResult(hideWidgetCallbackResults);
                                                                         //});
@@ -45270,50 +45539,96 @@ namespace Com.RedicalGames.Filar
 
                                                                     if (callbackResults.Success())
                                                                     {
-                                                                        if (GetTransitionType().GetData() == TransitionType.Translate)
+                                                                        callbackResults.SetResult(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Data base Manager Instance", "App Data base Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+                                                                        if (callbackResults.Success())
                                                                         {
-                                                                            callbackResults.SetResult(GetTransitionableUIMounts());
+                                                                            var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Data base Manager Instance").GetData();
 
-                                                                            if (callbackResults.Success())
+                                                                            switch (GetTransitionType().GetData())
                                                                             {
-                                                                                callbackResults.SetResult(GetLayoutView().GetData().GetLayoutWidgetRect());
+                                                                                case TransitionType.Translate:
 
-                                                                                if (callbackResults.Success())
-                                                                                {
-                                                                                    callbackResults.SetResult(Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Data base Manager Instance", "App Data base Manager Instance Is Not Yet Initialized."));
+                                                                                    callbackResults.SetResult(GetTransitionableUIMounts());
 
                                                                                     if (callbackResults.Success())
                                                                                     {
-                                                                                        callbackResults.SetResult(GetTransitionSpeed());
+                                                                                        callbackResults.SetResult(GetLayoutView().GetData().GetLayoutWidgetRect());
 
                                                                                         if (callbackResults.Success())
                                                                                         {
-                                                                                            var appDatabaseManagerInstance = Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Data base Manager Instance", "App Data base Manager Instance Is Not Yet Initialized.").GetData();
+                                                                                            callbackResults.SetResult(GetTransitionSpeed());
 
-                                                                                            var layoutView = GetLayoutView().GetData().GetLayoutWidgetRect().GetData();
-
-                                                                                            var transitionableUIComponentData = new TransitionableUIComponent(layoutView, UITransitionType.Translate, UITransitionStateType.Once, GetTransitionSpeed().GetData());
-
-                                                                                            SetTransitionableUIComponent(transitionableUIComponentData, transitionableCallbackResults =>
+                                                                                            if (callbackResults.Success())
                                                                                             {
-                                                                                                callbackResults.SetResult(transitionableCallbackResults);
-                                                                                            });
+                                                                                                var layoutView = GetLayoutView().GetData().GetLayoutWidgetRect().GetData();
+
+                                                                                                var transitionableUIComponentData = new TransitionableUIComponent(layoutView, UITransitionType.Translate, UITransitionStateType.Once, GetTransitionSpeed().GetData());
+
+                                                                                                SetTransitionableUIComponent(transitionableUIComponentData, transitionableCallbackResults =>
+                                                                                                {
+                                                                                                    callbackResults.SetResult(transitionableCallbackResults);
+                                                                                                });
+                                                                                            }
+                                                                                            else
+                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                                         }
                                                                                         else
                                                                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                                     }
                                                                                     else
                                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                                }
-                                                                                else
-                                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                            }
-                                                                            else
-                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                                        }
 
-                                                                        callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().GetData()}'s State Packet Has Been Initialized Successfully.";
-                                                                        callbackResults.data = widgetStatePacket;
+                                                                                    break;
+
+                                                                                case TransitionType.Popup:
+
+                                                                                    callbackResults.SetResult(GetTransitionableUIMounts());
+
+                                                                                    if (callbackResults.Success())
+                                                                                    {
+                                                                                        callbackResults.SetResult(GetLayoutView().GetData().GetLayoutWidgetRect());
+
+                                                                                        if (callbackResults.Success())
+                                                                                        {
+                                                                                            callbackResults.SetResult(GetTransitionSpeed());
+
+                                                                                            if (callbackResults.Success())
+                                                                                            {
+                                                                                                var layoutView = GetLayoutView().GetData().GetLayoutWidgetRect().GetData();
+
+                                                                                                var transitionableUIComponentData = new TransitionableUIComponent(layoutView, UITransitionType.Scale, UITransitionStateType.Once, GetTransitionSpeed().GetData());
+
+                                                                                                SetTransitionableUIComponent(transitionableUIComponentData, transitionableCallbackResults =>
+                                                                                                {
+                                                                                                    callbackResults.SetResult(transitionableCallbackResults);
+
+                                                                                                    if(callbackResults.Success())
+                                                                                                    {
+                                                                                                        //if(GetInitialVisibilityState().GetData() == UIVisibilityState.Hidden)
+                                                                                                        //    layoutView.SetWidgetScale(Vector3.zero);
+                                                                                                    }
+                                                                                                    else
+                                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                                });
+                                                                                            }
+                                                                                            else
+                                                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                        }
+                                                                                        else
+                                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                                    }
+                                                                                    else
+                                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                                                    break;
+                                                                            }
+
+                                                                            callbackResults.result = $"Widget : {GetName()} Of Type : {GetType().GetData()}'s State Packet Has Been Initialized Successfully.";
+                                                                            callbackResults.data = widgetStatePacket;
+                                                                        }
+                                                                        else
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                                     }
                                                                     else
                                                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -61560,7 +61875,9 @@ namespace Com.RedicalGames.Filar
             OnScreenChangedEvent,
             OnScreenRefreshed,
             OnActionButtonClicked,
-            OnAppLanguageChanged
+            OnAppLanguageChanged,
+            OnProgressPercentage,
+            OnProgressPercentageIntValue
         }
 
         public enum TransitionableEventType
@@ -62813,6 +63130,9 @@ namespace Com.RedicalGames.Filar
 
             public static event TransformNoParam _OnGetContentPreviewContainer;
 
+            public static event ParamVoid<string> _OnProgressPercentageEvent;
+            public static event ParamVoid<int> _OnProgressPercentageIntValueEvent;
+
             #endregion
 
             #region Callbacks
@@ -62905,6 +63225,9 @@ namespace Com.RedicalGames.Filar
             public static void OnCheckboxValueChanged(bool value, CheckboxConfigDataPacket checkboxConfig) => _OnCheckboxValueChanged?.Invoke(value, checkboxConfig);
 
             public static void OnScreenLoadInProgressEvent(float progress) => _OnScreenLoadInProgressEvent?.Invoke(progress);
+
+            public static void OnProgressPercentageEvent(string percentageString) => _OnProgressPercentageEvent?.Invoke(percentageString);
+            public static void OnProgressPercentageIntValueEvent(int percentageIntValue) => _OnProgressPercentageIntValueEvent?.Invoke(percentageIntValue);
 
             public static Transform OnGetContentPreviewContainer()
             {

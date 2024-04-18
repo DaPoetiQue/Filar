@@ -1197,7 +1197,6 @@ namespace Com.RedicalGames.Filar
 
             if(callbackResults.Success())
             {
-
                 LogInfo($"Log_cat/::: Surfaced Inturuptables Found : { GetSurfacedInteruptableWidgets().GetData().Count}", this);
 
                 int surfaceCount = GetSurfacedInteruptableWidgets().GetData().Count;
