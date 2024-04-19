@@ -9,7 +9,7 @@ namespace Com.RedicalGames.Filar
 		#region Components
 
 		[SerializeField]
-		private List<AppData.LoadingSequenceState> sequences = new List<AppData.LoadingSequenceState>();
+		private List<AppData.ProgressReportInfoState> sequences = new List<AppData.ProgressReportInfoState>();
 
 		[Input]
 		public int input;
@@ -31,9 +31,9 @@ namespace Com.RedicalGames.Filar
 
 		}
 
-		public AppData.CallbackDataList<AppData.LoadingSequenceState> GetSequences()
+		public AppData.CallbackDataList<AppData.ProgressReportInfoState> GetSequences()
         {
-			var callbackResults = new AppData.CallbackDataList<AppData.LoadingSequenceState>(AppData.Helpers.GetAppEnumValuesValid(sequences, "Sequences", "Get Sequences Failed - There Are No Sequences Assigned - Invalid Operation."));
+			var callbackResults = new AppData.CallbackDataList<AppData.ProgressReportInfoState>(AppData.Helpers.GetAppEnumValuesValid(sequences, "Sequences", "Get Sequences Failed - There Are No Sequences Assigned - Invalid Operation."));
 
 			if(callbackResults.Success())
             {

@@ -50,9 +50,9 @@ namespace Com.RedicalGames.Filar
                     {
                         var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
 
-                        appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetShown, AppData.EventType.OnWidgetShownEvent, true);
-                        appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetHidden, AppData.EventType.OnWidgetHiddenEvent, true);
-                        appEventsManagerInstance.OnEventSubscription<AppData.TabView<AppData.WidgetType>>(OnTabViewShownEvent, AppData.EventType.OnTabViewShownEvent, true);
+                        appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetShown, AppData.EventType.OnWidgetShown, true);
+                        appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetHidden, AppData.EventType.OnWidgetHidden, true);
+                        appEventsManagerInstance.OnEventSubscription<AppData.TabView<AppData.WidgetType>>(OnTabViewShownEvent, AppData.EventType.OnTabViewShown, true);
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

@@ -18,10 +18,7 @@ namespace Com.RedicalGames.Filar
         #region Main
 
         public AppData.Callback Initialized()
-        {
-            var callbackResults = new AppData.Callback(GetDynamicUITextComponents());
-            return callbackResults;
-        }
+            => new AppData.Callback(GetDynamicUITextComponents());
 
         public AppData.CallbackDataList<AppData.DynamicUITextComponent> GetDynamicUITextComponents()
         {

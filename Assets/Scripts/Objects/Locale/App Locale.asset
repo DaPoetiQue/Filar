@@ -1015,6 +1015,182 @@ MonoBehaviour:
       m_FallbackState: 0
       m_WaitForCompletion: 0
       m_LocalVariables: []
+  - name: Network Connection Progress Report Title Locale Key
+    key: 95
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 52319539200
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Network Connection Progress Report Info Locale Key
+    key: 96
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 685843992576
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: App Compatibility Check Progress Report Title Locale Key
+    key: 97
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 2625504071680
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: App Compatibility Check Progress Report Info Locale Key
+    key: 98
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 2720735744000
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Profile Sync Progress Report Title Locale Key
+    key: 99
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 2921861009408
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Profile Sync Progress Report Info Locale Key
+    key: 100
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 2983177539584
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: App Sign In Progress Report Title Locale Key
+    key: 101
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 2921861009408
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: App Sign In Progress Report Info Locale Key
+    key: 102
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 3332105883648
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Server Connection Progress Report Title Locale Key
+    key: 103
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 1366277541888
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Server Connection Progress Report Info Locale Key
+    key: 104
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 2272347869184
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: App Info sync Progress Report Title Locale Key
+    key: 105
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 1366277541888
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: App Info sync Progress Report Info Locale Key
+    key: 106
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 2168803086336
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: App Entry Point Progress Report Title Locale Key
+    key: 107
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 1366277541888
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: App Entry Point Progress Report Info Locale Key
+    key: 108
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 2272347869184
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Post Download Progress Report Title Locale Key
+    key: 109
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 1366277541888
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+  - name: Post Download Progress Report Info Locale Key
+    key: 110
+    value:
+      m_TableReference:
+        m_TableCollectionName: GUID:d0b9865b7ad79a44e8dfd231446b3e7e
+      m_TableEntryReference:
+        m_KeyId: 2433555943424
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
   references:
     version: 2
     RefIds: []

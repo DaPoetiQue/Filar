@@ -35,6 +35,7 @@ namespace Com.RedicalGames.Filar
 
                 appEventsManagerInstance.OnEventSubscription(ProgressUpdateEvent, AppData.EventType.OnLateUpdate, true, progressUpdateEventCallbackResults => { callbackResults.SetResult(progressUpdateEventCallbackResults); });
                 appEventsManagerInstance.OnEventSubscription(PercentageIntValueProgressReportEvent, AppData.EventType.OnProgressPercentageIntValue, true, eventSubscriptionCallbackResults => { callbackResults.SetResult(eventSubscriptionCallbackResults); });
+                appEventsManagerInstance.OnEventSubscription<AppData.ProgressReportInfoComponent>(ProgressInfoEvent, AppData.EventType.OnProgressInfo, true, eventSubscriptionCallbackResults => { callbackResults.SetResult(eventSubscriptionCallbackResults); });
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -119,6 +120,47 @@ namespace Com.RedicalGames.Filar
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
                     #endregion
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+        }
+
+        private void ProgressInfoEvent(AppData.ProgressReportInfoComponent infoConfigData)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(infoConfigData, "Info Config Data", $"Progress Info Event For : {GetName()} Failed - Info Config Data Parameter Value Is Null - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.SetResult(infoConfigData.GetKeys());
+
+                if (callbackResults.Success())
+                {
+                    var titleKey = infoConfigData.GetKeys().GetData().infoTitleKey;
+                    var infoKey = infoConfigData.GetKeys().GetData().infoKey;
+
+                    callbackResults.SetResult(GetUITextDisplayer(AppData.ScreenTextType.TitleDisplayer));
+
+                    if (callbackResults.Success())
+                    {
+                        var titleDisplayer = GetUITextDisplayer(AppData.ScreenTextType.TitleDisplayer).GetData();
+
+                        callbackResults.SetResult(GetUITextDisplayer(AppData.ScreenTextType.InfoDisplayer));
+
+                        if (callbackResults.Success())
+                        {
+                            var infoDisplayer = GetUITextDisplayer(AppData.ScreenTextType.InfoDisplayer).GetData();
+
+                            titleDisplayer.SetTitleLocalized(titleKey, titleKeySetCallbackResults => { callbackResults.SetResult(titleKeySetCallbackResults); });
+                            infoDisplayer.SetTitleLocalized(infoKey, infoKeySetCallbackResults => { callbackResults.SetResult(infoKeySetCallbackResults); });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

@@ -92,7 +92,7 @@ namespace Com.RedicalGames.Filar
             LoadingSequenceNode
         }
 
-        public enum LoadingSequenceState
+        public enum ProgressReportInfoState
         {
             None,
             NetworkConnection,
@@ -100,7 +100,9 @@ namespace Com.RedicalGames.Filar
             SynchronizingProfile,
             AppSignIn,
             ServerConnection,
-            DownloadPostEntry
+            SynchronizingAppInfo,
+            CheckAppEntryPoint,
+            DownloadPostEntry,
         }
 
         public enum GraphEntryEventType
@@ -372,6 +374,13 @@ namespace Com.RedicalGames.Filar
             EmailAlreadyInUseUnverifiedMessage,
             OnClosePopUpWarningMessage,
             NewAppUpdatesMessage,
+        }
+
+        public enum ProgressReportType
+        {
+            None,
+            LoadingSequenceReport,
+            PublishingReport
         }
 
         public enum InputActionButtonType
@@ -799,7 +808,8 @@ namespace Com.RedicalGames.Filar
             SceneConfigData,
             ScreenConfigData,
             LocaleConfigData,
-            DynamicUITextContentConfigData
+            DynamicUITextContentConfigData,
+            ProgressReportInfo
         }
 
         public enum GraphType
@@ -1632,7 +1642,124 @@ namespace Com.RedicalGames.Filar
             content_ContactUs,
             info_ContactUsEmail,
             info_ContactUsPhone,
-            title_SelectAppLanguage
+            title_SelectAppLanguage,
+            title_NetworkConnectionProgressReport,
+            info_NetworkConnectionProgressReport,
+            title_AppCompatibilityCheckProgressReport,
+            info_AppCompatibilityCheckProgressReport,
+            title_ProfileSyncProgressReport,
+            info_ProfileSyncProgressReport,
+            title_AppSignInProgressReport,
+            info_AppSignInProgressReport,
+            title_ServerConnectionProgressReport,
+            info_ServerConnectionProgressReport,
+            title_AppInfoSyncProgressReport,
+            info_AppInfoSyncProgressReport,
+            title_AppEntryPointProgressReport,
+            info_AppEntryPointProgressReport,
+            title_PostDownloadProgressReport,
+            info_PostDownloadProgressReport
+        }
+
+        #endregion
+
+        #region Localized Info Container
+
+        [Serializable]
+        public class ProgressReportInfoComponent : DataDebugger
+        {
+            #region Components
+
+            [SerializeField]
+            private ProgressReportInfoState progressReportInfoState = ProgressReportInfoState.None;
+
+            [Space(5)]
+            [SerializeField]
+            private LocalizationKey progressReportTitleKey = LocalizationKey.None;
+
+            [Space(5)]
+            [SerializeField]
+            private LocalizationKey progressReportInfoKey = LocalizationKey.None;
+
+            #endregion
+
+            #region Main
+
+            public ProgressReportInfoComponent()
+            {
+
+            }
+
+            public ProgressReportInfoComponent(LocalizationKey infoTitleKey, LocalizationKey infoKey)
+            {
+                this.progressReportTitleKey = infoTitleKey;
+                this.progressReportInfoKey = infoKey;
+            }
+
+            public Callback Initialized()
+            {
+                var callbackResults = new Callback(GetKeys());
+                return callbackResults;
+            }
+
+            public CallbackData<ProgressReportInfoState> GetState()
+            {
+                var callbackResults = new CallbackData<ProgressReportInfoState>(Helpers.GetAppEnumValueValid(progressReportInfoState, "Progress Report Info State", $"Get State Failed - Progress Report Info State Is Set To Default : {progressReportInfoState} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get State Success - Progress Report Info State Is Set To : {progressReportInfoState}.";
+                    callbackResults.data = progressReportInfoState;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<LocalizationKey> GetTitle()
+            {
+                var callbackResults = new CallbackData<LocalizationKey>(Helpers.GetAppEnumValueValid(progressReportTitleKey, "Progress Report Title Key", $"Get Title Failed - Progress Report Title Key Is Set To Default : {progressReportTitleKey} - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Title Success - Progress Report Title Key Is Set To : {progressReportTitleKey}.";
+                    callbackResults.data = progressReportTitleKey;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<LocalizationKey> Getinfo()
+            {
+                var callbackResults = new CallbackData<LocalizationKey>(Helpers.GetAppEnumValueValid(progressReportInfoKey, "Progress Report Info Key", $"Get Info Failed - Progress Report Info Key Value Is Set To Default : {progressReportInfoKey} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Info Success - Progress Report Info Key Is Set To : {progressReportInfoKey}.";
+                    callbackResults.data = progressReportInfoKey;
+                }
+
+                return callbackResults;
+            }
+
+            public CallbackData<(LocalizationKey infoTitleKey, LocalizationKey infoKey)> GetKeys()
+            {
+                var callbackResults = new CallbackData<(LocalizationKey infoTitleKey, LocalizationKey infoKey)>(Helpers.GetAppEnumValueValid(progressReportTitleKey, "Progress Report Info Title Key", $"Get Info Title Key Failed - Info Title Key Value Is Set To Default : {progressReportTitleKey} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppEnumValueValid(progressReportInfoKey, "Info Key", $"Get Info Key Failed - Info Title Key Value Is Set To Default : {progressReportInfoKey} - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Keys Success - Info Keys Values Are Set To - Info Title Key : {progressReportTitleKey} - Info Key : {progressReportInfoKey}.";
+                        callbackResults.data = (progressReportTitleKey, progressReportInfoKey);
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
         }
 
         #endregion
@@ -4921,6 +5048,60 @@ namespace Com.RedicalGames.Filar
                         else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            #endregion
+
+            #region Config Message Data
+
+            public CallbackData<ProgressReportInfoConfigDataPacket> GetLoadedProgressReportInfoDataPacket(ProgressReportType progressReportType)
+            {
+                var callbackResults = new CallbackData<ProgressReportInfoConfigDataPacket>(Helpers.GetAppEnumValueValid(progressReportType, "Progress Report Type", $"Get Loaded Progress Report Info Data Packet Failed - Progress Report Type Parameter Value Is Set To Default : {progressReportType}  - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetLoadedConfigData(ConfigDataType.ProgressReportInfo));
+
+                    if (callbackResults.Success())
+                    {
+                        var progressReportInfoConfigDataPackets = GetLoadedConfigData(ConfigDataType.ProgressReportInfo).GetData();
+
+                        foreach (var progressReportInfoConfigDataPacket in progressReportInfoConfigDataPackets)
+                        {
+                            var progressReportInfoConfigData = progressReportInfoConfigDataPacket as ProgressReportInfoConfigDataPacket;
+
+                            callbackResults.SetResult(Helpers.GetAppComponentValid(progressReportInfoConfigData, "Progress Report Info Config Data", "Failed To Cast Progress Report Info Config Data From Scriptable Config Data Packet."));
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.SetResult(progressReportInfoConfigData.GetConfigType());
+
+                                if (callbackResults.Success())
+                                {
+                                    if (progressReportInfoConfigData.GetConfigType().GetData() == progressReportType)
+                                    {
+                                        callbackResults.result = $"Get Loaded Progress Report Info Data Packet Success : {progressReportInfoConfigData.GetName()} - Of Type : {progressReportType} Has Been Loaded Successfully.";
+                                        callbackResults.data = progressReportInfoConfigData;
+
+                                        break;
+                                    }
+                                    else
+                                        continue;
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -61854,22 +62035,22 @@ namespace Com.RedicalGames.Filar
             OnPostsInitializationStartedEvent,
             OnPostsInitializationInProgressEvent,
             OnPostsInitializationCompletedEvent,
-            OnScreenShownEvent,
-            OnScreenHiddenEvent,
-            OnScreenTransitionInProgressEvent,
-            OnWidgetShownEvent,
-            OnWidgetHiddenEvent,
-            OnWidgetTransitionInProgressEvent,
-            OnSelectableWidgetShownEvent,
-            OnSelectableWidgetHiddenEvent,
-            OnSelectableWidgetTransitionInProgressEvent,
+            OnScreenShown,
+            OnScreenHidden,
+            OnScreenTransitionInProgress,
+            OnWidgetShown,
+            OnWidgetHidden,
+            OnWidgetTransitionInProgress,
+            OnSelectableWidgetShown,
+            OnSelectableWidgetHidden,
+            OnSelectableWidgetTransitionInProgress,
             OnActionButtonPress,
-            OnPostSelectedEvent,
+            OnPostSelected,
             OnNetworkConnectedEvent,
             OnShowTabViewEvent,
             OnShowTabViewAsyncEvent,
-            OnTabViewShownEvent,
-            OnTabViewHiddenEvent,
+            OnTabViewShown,
+            OnTabViewHidden,
             OnDownloadStarted,
             OnDownloadCompleted,
             OnScreenChangedEvent,
@@ -61877,7 +62058,8 @@ namespace Com.RedicalGames.Filar
             OnActionButtonClicked,
             OnAppLanguageChanged,
             OnProgressPercentage,
-            OnProgressPercentageIntValue
+            OnProgressPercentageIntValue,
+            OnProgressInfo
         }
 
         public enum TransitionableEventType
@@ -62990,6 +63172,8 @@ namespace Com.RedicalGames.Filar
 
             public static event ParamVoid<T> _OnPostSelectedEvent;
 
+            public static event ParamVoid<T> _OnProgressInfoEvent;
+
             #endregion
 
             #region Callbacks
@@ -63011,6 +63195,8 @@ namespace Com.RedicalGames.Filar
             public static void OnSelectableWidgetTransitionInProgressEvent(T selectable) => _OnSelectableWidgetTransitionInProgressEvent?.Invoke(selectable);
 
             public static void OnPostSelectedEvent(T post) => _OnPostSelectedEvent?.Invoke(post);
+
+            public static void OnProgressInfoEvent(T progressInfoConfig) => _OnProgressInfoEvent?.Invoke(progressInfoConfig);
 
             #endregion
         }
@@ -63382,7 +63568,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case EventType.OnScreenShownEvent:
+                            case EventType.OnScreenShown:
 
                                 if (subscribe)
                                     GenericActionEvents<T>._OnScreenShownEvent += eventAction.TriggeredEventMethod;
@@ -63391,7 +63577,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case EventType.OnScreenHiddenEvent:
+                            case EventType.OnScreenHidden:
 
                                 if (subscribe)
                                     GenericActionEvents<T>._OnScreenHiddenEvent += eventAction.TriggeredEventMethod;
@@ -63400,7 +63586,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case EventType.OnScreenTransitionInProgressEvent:
+                            case EventType.OnScreenTransitionInProgress:
 
                                 if (subscribe)
                                     GenericActionEvents<T>._OnScreenTransitionInProgressEvent += eventAction.TriggeredEventMethod;
@@ -63409,7 +63595,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case EventType.OnWidgetShownEvent:
+                            case EventType.OnWidgetShown:
 
                                 //var unityAction = new UnityAction<T>(eventAction.TriggeredEventMethod);
 
@@ -63420,7 +63606,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case EventType.OnWidgetHiddenEvent:
+                            case EventType.OnWidgetHidden:
 
                                 //if (subscribe)
                                 //    GenericActionEvents<T>._OnWidgetHiddenEvent += eventAction.TriggeredEventMethod;
@@ -63429,7 +63615,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case EventType.OnWidgetTransitionInProgressEvent:
+                            case EventType.OnWidgetTransitionInProgress:
 
                                 if (subscribe)
                                     GenericActionEvents<T>._OnWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;
@@ -63438,7 +63624,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case EventType.OnSelectableWidgetShownEvent:
+                            case EventType.OnSelectableWidgetShown:
 
                                 if (subscribe)
                                     GenericActionEvents<T>._OnSelectableWidgetShownEvent += eventAction.TriggeredEventMethod;
@@ -63447,7 +63633,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case EventType.OnSelectableWidgetHiddenEvent:
+                            case EventType.OnSelectableWidgetHidden:
 
                                 if (subscribe)
                                     GenericActionEvents<T>._OnSelectableWidgetHiddenEvent += eventAction.TriggeredEventMethod;
@@ -63456,7 +63642,7 @@ namespace Com.RedicalGames.Filar
 
                                 break;
 
-                            case EventType.OnSelectableWidgetTransitionInProgressEvent:
+                            case EventType.OnSelectableWidgetTransitionInProgress:
 
                                 if (subscribe)
                                     GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent += eventAction.TriggeredEventMethod;

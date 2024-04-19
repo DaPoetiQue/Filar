@@ -494,32 +494,59 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public async Task<AppData.Callback> ProcessLoadingSequence(List<AppData.LoadingSequenceState> sequences, IProgress<int> progressReport)
+        public async Task<AppData.Callback> ProcessLoadingSequence(List<AppData.ProgressReportInfoState> sequences, IProgress<int> progressReport)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValuesValid(sequences, "Sequences", "Process Loading Sequence Failed - There Are No Sequences Assigned - Invalid Operation."));
 
             if (callbackResults.Success())
             {
-                for (int i = 0; i < sequences.Count; i++)
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "ProcessLoadingSequence Failed - App Database Manager Instance Is Not initialized Yet - Invalid Operation."));
+
+                if (callbackResults.Success())
                 {
-                    callbackResults.SetResult(GetSequenceFunction(sequences[i]));
+                    var appDatabaseManagerInstance = AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance").GetData();
+
+                    callbackResults.SetResult(appDatabaseManagerInstance.GetAssetBundlesLibrary());
 
                     if (callbackResults.Success())
                     {
-                        var task = GetSequenceFunction(sequences[i]).GetData();
-                        var processSequenceCallbackResultsTask = await ProcessSequence(task, sequences.Count, i, progressReport);
+                        var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                        callbackResults.SetResult(processSequenceCallbackResultsTask);
+                        callbackResults.SetResult(assetBundlesLibrary.GetLoadedProgressReportInfoDataPacket(AppData.ProgressReportType.LoadingSequenceReport));
 
-                        if (callbackResults.UnSuccessful())
+                        if (callbackResults.Success())
+                        {
+                            var loadingSequenceReport = assetBundlesLibrary.GetLoadedProgressReportInfoDataPacket(AppData.ProgressReportType.LoadingSequenceReport).GetData();
+
+                            for (int i = 0; i < sequences.Count; i++)
+                            {
+                                callbackResults.SetResult(GetSequenceFunction(sequences[i], loadingSequenceReport));
+
+                                if (callbackResults.Success())
+                                {
+                                    var task = GetSequenceFunction(sequences[i], loadingSequenceReport).GetData();
+                                    var processSequenceCallbackResultsTask = await ProcessSequence(task, sequences.Count, i, progressReport);
+
+                                    callbackResults.SetResult(processSequenceCallbackResultsTask);
+
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                }
+                                else
+                                {
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                    break;
+                                }
+                            }
+                        }
+                        else
                             Log(callbackResults.resultCode, callbackResults.result, this);
                     }
                     else
-                    {
                         Log(callbackResults.resultCode, callbackResults.result, this);
-                        break;
-                    }
                 }
+                else
+                    Log(callbackResults.resultCode, callbackResults.result, this);
             }
             else
                 Log(callbackResults.resultCode, callbackResults.result, this);
@@ -553,70 +580,124 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        private AppData.CallbackData<Func<Task>> GetSequenceFunction(AppData.LoadingSequenceState sequenceType)
+        private AppData.CallbackData<Func<Task>> GetSequenceFunction(AppData.ProgressReportInfoState sequenceType, ProgressReportInfoConfigDataPacket progressReportInfoConfig)
         {
             var callbackResults = new AppData.CallbackData<Func<Task>>(AppData.Helpers.GetAppEnumValueValid(sequenceType, "Sequence Type", $"Get Sequence Function Failed - Sequence Type Parameter Value Is Set To Default : {sequenceType} - Invalid Operation."));
 
             if (callbackResults.Success())
             {
-                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance", "Get Sequence Function Failed - Network Manager Instance Is Not Yet Initialized - Invalid Operation."));
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(progressReportInfoConfig, "Progress Report Info Config", "Get Sequence Function Failed - Progress Report Info Config Parameter Value Is Null - Invalid Operation."));
 
                 if (callbackResults.Success())
                 {
-                    var networkManagerInstance = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance").GetData();
-
-                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance", "Get Sequence Function Failed - App Manager Instance Is Not Yet Initialized - Invalid Operation."));
+                    callbackResults.SetResult(progressReportInfoConfig.Initialized());
 
                     if (callbackResults.Success())
                     {
-                        var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Database Manager Instance").GetData();
-
-                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Get Sequence Function Failed - Profile Manager Instance Is Not Yet Initialized - Invalid Operation."));
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance", "Get Sequence Function Failed - Network Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
                         if (callbackResults.Success())
                         {
-                            var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
+                            var networkManagerInstance = AppData.Helpers.GetAppComponentValid(NetworkManager.Instance, "Network Manager Instance").GetData();
 
-                            switch (sequenceType)
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Manager Instance", "Get Sequence Function Failed - App Manager Instance Is Not Yet Initialized - Invalid Operation."));
+
+                            if (callbackResults.Success())
                             {
-                                case AppData.LoadingSequenceState.NetworkConnection:
+                                var appManagerInstance = AppData.Helpers.GetAppComponentValid(AppManager.Instance, "App Database Manager Instance").GetData();
 
-                                    callbackResults.data = networkManagerInstance.OnCheckNetworkConnectionStatus;
+                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance", "Get Sequence Function Failed - Profile Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
-                                    break;
+                                if (callbackResults.Success())
+                                {
+                                    var profileManagerInstance = AppData.Helpers.GetAppComponentValid(ProfileManager.Instance, "Profile Manager Instance").GetData();
 
-                                case AppData.LoadingSequenceState.CompatibilityStatus:
+                                    callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "Get Sequence Function Failed - App Events Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
-                                    callbackResults.data = appManagerInstance.GetCompatibilityStatusAsync;
+                                    if (callbackResults.Success())
+                                    {
+                                        var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
 
-                                    break;
+                                        callbackResults.SetResult(progressReportInfoConfig.GetProgressReportInfoComponent(sequenceType));
 
-                                case AppData.LoadingSequenceState.SynchronizingProfile:
+                                        if (callbackResults.Success())
+                                        {
+                                            var progressInfoConfig = progressReportInfoConfig.GetProgressReportInfoComponent(sequenceType).GetData();
 
-                                    callbackResults.data = profileManagerInstance.SynchronizingProfile;
+                                            appEventsManagerInstance.InvokeEvent(AppData.EventType.OnProgressInfo, progressInfoConfig, eventInvokedCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(eventInvokedCallbackResults);
 
-                                    break;
+                                                if (callbackResults.Success())
+                                                {
+                                                    switch (sequenceType)
+                                                    {
+                                                        case AppData.ProgressReportInfoState.NetworkConnection:
 
-                                case AppData.LoadingSequenceState.AppSignIn:
+                                                            callbackResults.data = networkManagerInstance.OnCheckNetworkConnectionStatus;
 
-                                    callbackResults.data = profileManagerInstance.AppSignInAsync;
+                                                            break;
 
-                                    break;
+                                                        case AppData.ProgressReportInfoState.CompatibilityStatus:
 
-                                case AppData.LoadingSequenceState.ServerConnection:
+                                                            callbackResults.data = appManagerInstance.GetCompatibilityStatusAsync;
 
-                                    callbackResults.data = networkManagerInstance.ServerConnected;
+                                                            break;
 
-                                    break;
+                                                        case AppData.ProgressReportInfoState.SynchronizingProfile:
 
-                                case AppData.LoadingSequenceState.DownloadPostEntry:
+                                                            callbackResults.data = profileManagerInstance.SynchronizingProfile;
 
-                                    callbackResults.data = appManagerInstance.DownloadPostEntryDataAsync;
+                                                            break;
 
-                                    break;
+                                                        case AppData.ProgressReportInfoState.AppSignIn:
+
+                                                            callbackResults.data = profileManagerInstance.AppSignInAsync;
+
+                                                            break;
+
+                                                        case AppData.ProgressReportInfoState.ServerConnection:
+
+                                                            callbackResults.data = networkManagerInstance.ServerConnected;
+
+                                                            break;
+
+                                                        case AppData.ProgressReportInfoState.SynchronizingAppInfo:
+
+                                                            callbackResults.data = appManagerInstance.SynchronizingAppInfo;
+
+                                                            break;
+
+                                                        case AppData.ProgressReportInfoState.CheckAppEntryPoint:
+
+                                                            callbackResults.data = appManagerInstance.CheckEntryPointAsync;
+
+                                                            break;
+
+                                                        case AppData.ProgressReportInfoState.DownloadPostEntry:
+
+                                                            callbackResults.data = appManagerInstance.DownloadPostEntryDataAsync;
+
+                                                            break;
+                                                    }
+
+                                                    callbackResults.result = $"Get Sequence Function Success - Sequence Type : {sequenceType} - Has Been Successfully Found.";
+                                                }
+                                                else
+                                                    Log(callbackResults.resultCode, callbackResults.result, this);
+                                            });
+                                        }
+                                        else
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
+                                    }
+                                    else
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
+                                }
+                                else
+                                    Log(callbackResults.resultCode, callbackResults.result, this);
                             }
-
-                            callbackResults.result = $"Get Sequence Function Success - Sequence Type : {sequenceType} - Has Been Successfully Found.";
+                            else
+                                Log(callbackResults.resultCode, callbackResults.result, this);
                         }
                         else
                             Log(callbackResults.resultCode, callbackResults.result, this);

@@ -80,13 +80,13 @@ namespace Com.RedicalGames.Filar
                         {
                             var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
 
-                            appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenShownEvent, AppData.EventType.OnScreenShownEvent, true);
-                            appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenHiddenEvent, AppData.EventType.OnScreenHiddenEvent, true);
+                            appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenShownEvent, AppData.EventType.OnScreenShown, true);
+                            appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenHiddenEvent, AppData.EventType.OnScreenHidden, true);
 
                             appEventsManagerInstance.OnEventSubscription(OnUpdateEvent, AppData.EventType.OnUpdate, true);
                             appEventsManagerInstance.OnEventSubscription(OnResetEventCameraScenePose, AppData.EventType.OnUpdate, true);
 
-                            appEventsManagerInstance.OnEventSubscription<AppData.Post>(OnPostSelected, AppData.EventType.OnPostSelectedEvent, true);
+                            appEventsManagerInstance.OnEventSubscription<AppData.Post>(OnPostSelected, AppData.EventType.OnPostSelected, true);
 
                             SetDefaultEventCameraScenePose(GetEventCameraScene().GetData(), poseSetCallbackResults => 
                             {

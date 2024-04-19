@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 573ff3aa468c6ab41a4d49c6dd361bc7, type: 3}
+  m_Name: Progress Report Info Config Data Packet
+  m_EditorClassIdentifier: 
+  type: 6
+  configType: 1
+  progressReportInfoComponents:
+  - name: Network Connection Check Status Report Info
+    progressReportInfoState: 1
+    progressReportTitleKey: 95
+    progressReportInfoKey: 96
+  - name: App Compatibility Check Status Report Info
+    progressReportInfoState: 2
+    progressReportTitleKey: 97
+    progressReportInfoKey: 98
+  - name: Profile Sync Status Report Info
+    progressReportInfoState: 3
+    progressReportTitleKey: 99
+    progressReportInfoKey: 100
+  - name: App sign In Status Report Info
+    progressReportInfoState: 4
+    progressReportTitleKey: 101
+    progressReportInfoKey: 102
+  - name: Server Connection Status Report Info
+    progressReportInfoState: 5
+    progressReportTitleKey: 103
+    progressReportInfoKey: 104
+  - name: App Info Sync Status Report Info
+    progressReportInfoState: 6
+    progressReportTitleKey: 105
+    progressReportInfoKey: 106
+  - name: Server Entry Point Check  Status Report Info
+    progressReportInfoState: 7
+    progressReportTitleKey: 107
+    progressReportInfoKey: 108
+  - name: Post Download Status Report Info
+    progressReportInfoState: 8
+    progressReportTitleKey: 109
+    progressReportInfoKey: 110

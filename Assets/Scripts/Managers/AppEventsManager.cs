@@ -333,7 +333,7 @@ namespace Com.RedicalGames.Filar
                 {
                     switch (eventType)
                     {
-                        case AppData.EventType.OnScreenShownEvent:
+                        case AppData.EventType.OnScreenShown:
 
                             if (subscribe)
                                 AppData.GenericActionEvents<T>._OnScreenShownEvent += eventMethod.Invoke;
@@ -342,7 +342,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnScreenHiddenEvent:
+                        case AppData.EventType.OnScreenHidden:
 
                             if (subscribe)
                                 AppData.GenericActionEvents<T>._OnScreenHiddenEvent += eventMethod.Invoke;
@@ -351,7 +351,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnScreenTransitionInProgressEvent:
+                        case AppData.EventType.OnScreenTransitionInProgress:
 
                             if (subscribe)
                                 AppData.GenericActionEvents<T>._OnScreenTransitionInProgressEvent += eventMethod.Invoke;
@@ -360,7 +360,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnWidgetShownEvent:
+                        case AppData.EventType.OnWidgetShown:
 
                             if (subscribe)
                                 AppData.GenericActionEvents<T>._OnWidgetShownEvent += eventMethod.Invoke;
@@ -369,7 +369,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnWidgetHiddenEvent:
+                        case AppData.EventType.OnWidgetHidden:
 
                             if (subscribe)
                                 AppData.GenericActionEvents<T>._OnWidgetHiddenEvent += eventMethod.Invoke;
@@ -378,7 +378,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnWidgetTransitionInProgressEvent:
+                        case AppData.EventType.OnWidgetTransitionInProgress:
 
                             if (subscribe)
                                 AppData.GenericActionEvents<T>._OnWidgetTransitionInProgressEvent += eventMethod.Invoke;
@@ -387,7 +387,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnSelectableWidgetShownEvent:
+                        case AppData.EventType.OnSelectableWidgetShown:
 
                             if (subscribe)
                                 AppData.GenericActionEvents<T>._OnSelectableWidgetShownEvent += eventMethod.Invoke;
@@ -396,7 +396,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnSelectableWidgetHiddenEvent:
+                        case AppData.EventType.OnSelectableWidgetHidden:
 
                             if (subscribe)
                                 AppData.GenericActionEvents<T>._OnSelectableWidgetHiddenEvent += eventMethod.Invoke;
@@ -405,7 +405,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnSelectableWidgetTransitionInProgressEvent:
+                        case AppData.EventType.OnSelectableWidgetTransitionInProgress:
 
                             if (subscribe)
                                 AppData.GenericActionEvents<T>._OnSelectableWidgetTransitionInProgressEvent += eventMethod.Invoke;
@@ -414,7 +414,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnPostSelectedEvent:
+                        case AppData.EventType.OnPostSelected:
 
                             if (subscribe)
                                 AppData.GenericActionEvents<T>._OnPostSelectedEvent += eventMethod.Invoke;
@@ -423,7 +423,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnTabViewShownEvent:
+                        case AppData.EventType.OnTabViewShown:
 
                             if (subscribe)
                                 AppData.GenericActionEvents<T>._OnTabViewShownEvent += eventMethod.Invoke;
@@ -432,12 +432,21 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case AppData.EventType.OnTabViewHiddenEvent:
+                        case AppData.EventType.OnTabViewHidden:
 
                             if (subscribe)
                                 AppData.GenericActionEvents<T>._OnTabViewHiddenEvent += eventMethod.Invoke;
                             else
                                 AppData.GenericActionEvents<T>._OnTabViewHiddenEvent -= eventMethod.Invoke;
+
+                            break;
+
+                        case AppData.EventType.OnProgressInfo:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnProgressInfoEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnProgressInfoEvent -= eventMethod.Invoke;
 
                             break;
                     }
@@ -749,6 +758,106 @@ namespace Com.RedicalGames.Filar
         {
             AppData.ActionEvents.OnProgressPercentageEvent($"{progress}%");
             AppData.ActionEvents.OnProgressPercentageIntValueEvent(progress);
+        }
+
+        public void InvokeEvent<T>(AppData.EventType eventType, T eventData, Action<AppData.Callback> callback = null) where T : class
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(eventType, "Event type", $"Invoke Event Failed - Event Type Parameter Value Is set To Default : {eventType} - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(eventData, "Event Data", $"Invoke Event Of Type : {eventType} Failed - Event Data Parameter Value Is Null - Invalid operation."));
+
+                if (callbackResults.Success())
+                {
+                    switch (eventType)
+                    {
+                        case AppData.EventType.OnScreenShown:
+
+                            AppData.GenericActionEvents<T>.OnScreenShownEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnScreenHidden:
+
+                            AppData.GenericActionEvents<T>.OnScreenHiddenEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnScreenTransitionInProgress:
+
+                            AppData.GenericActionEvents<T>.OnScreenTransitionInProgressEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnWidgetShown:
+
+                            AppData.GenericActionEvents<T>.OnWidgetShownEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnWidgetHidden:
+
+                            AppData.GenericActionEvents<T>.OnWidgetHiddenEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnWidgetTransitionInProgress:
+
+                            AppData.GenericActionEvents<T>.OnWidgetTransitionInProgressEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnSelectableWidgetShown:
+
+                            AppData.GenericActionEvents<T>.OnSelectableWidgetShownEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnSelectableWidgetHidden:
+
+                            AppData.GenericActionEvents<T>.OnSelectableWidgetHiddenEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnSelectableWidgetTransitionInProgress:
+
+                            AppData.GenericActionEvents<T>.OnSelectableWidgetTransitionInProgressEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnPostSelected:
+
+                            AppData.GenericActionEvents<T>.OnPostSelectedEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnTabViewShown:
+
+                            AppData.GenericActionEvents<T>.OnTabViewShownEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnTabViewHidden:
+
+                            AppData.GenericActionEvents<T>.OnTabViewHiddenEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnProgressInfo:
+
+                            AppData.GenericActionEvents<T>.OnProgressInfoEvent(eventData);
+
+                            break;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
         }
 
         public void InvokeEvent(string eventName, Action<AppData.Callback> callback = null)

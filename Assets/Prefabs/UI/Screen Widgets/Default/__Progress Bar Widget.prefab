@@ -2104,7 +2104,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -20, y: -25}
+  m_AnchoredPosition: {x: -20, y: -42}
   m_SizeDelta: {x: -60, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8397963616085609433
@@ -4287,8 +4287,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 135, y: -68}
-  m_SizeDelta: {x: 250, y: 50}
+  m_AnchoredPosition: {x: 164.39526, y: -75}
+  m_SizeDelta: {x: 309.7807, y: 41.1902}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6759377783747600501
 CanvasRenderer:
@@ -4318,7 +4318,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: '[NONE]'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 56807dc564134494b9fc44a86e4cfd3f, type: 2}
   m_sharedMaterial: {fileID: -2370664526074735393, guid: 56807dc564134494b9fc44a86e4cfd3f, type: 2}
@@ -4348,9 +4348,9 @@ MonoBehaviour:
   m_fontSize: 10
   m_fontSizeBase: 10
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 10
+  m_fontSizeMax: 55
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -5957,7 +5957,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    title: {fileID: 0}
+    title: {fileID: 4998734292453307777}
     fieldUIImageList: []
     value: {fileID: 4998734292453307777}
     dataPackets:
@@ -6087,7 +6087,7 @@ MonoBehaviour:
       sceneAssetTransitionSpeed: 0
       isRootFolder: 0
       referencedActionButtonDataList: []
-      textType: 5
+      textType: 8
       tabID: 0
       visibilityState: 0
     widgets:
@@ -8715,17 +8715,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Downloading
+  m_text: '[None]'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
-  m_sharedMaterial: {fileID: 3428160781138848488, guid: 0b1c8d452d4fc334ca62c1990f86dc28, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 87603e0477096844083a276c4eb3bed0, type: 2}
+  m_sharedMaterial: {fileID: 8647444548989666112, guid: 87603e0477096844083a276c4eb3bed0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4290800904
+  m_fontColor: {r: 0.03137255, g: 0.42745098, b: 0.7529412, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -8742,12 +8742,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
+  m_fontSize: 16
   m_fontSizeBase: 12
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 16
+  m_fontSizeMax: 55
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -10354,7 +10354,7 @@ MonoBehaviour:
         value: {fileID: 0}
         color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
         resultsType: 4
-    title: {fileID: 0}
+    title: {fileID: 408565781727497170}
     fieldUIImageList: []
     value: {fileID: 408565781727497170}
     dataPackets:
@@ -10926,12 +10926,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 10
+  m_fontSize: 11.4
   m_fontSizeBase: 10
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 10
+  m_fontSizeMax: 55
   m_fontStyle: 1
   m_HorizontalAlignment: 4
   m_VerticalAlignment: 512

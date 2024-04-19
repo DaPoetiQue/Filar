@@ -61,14 +61,14 @@ namespace Com.RedicalGames.Filar
             {
                 var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
 
-                appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenEnterEvent, AppData.EventType.OnScreenShownEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
-                appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenExitEvent, AppData.EventType.OnScreenHiddenEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
+                appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenEnterEvent, AppData.EventType.OnScreenShown, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
+                appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenExitEvent, AppData.EventType.OnScreenHidden, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
 
-                appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnScreenBluredEvent, AppData.EventType.OnWidgetShownEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
-                appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnScreenFocusedEvent, AppData.EventType.OnWidgetHiddenEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
+                appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnScreenBluredEvent, AppData.EventType.OnWidgetShown, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
+                appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnScreenFocusedEvent, AppData.EventType.OnWidgetHidden, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
 
-                appEventsManagerInstance.OnEventSubscription<AppData.TabView<AppData.WidgetType>>(OnScreenBluredEvent, AppData.EventType.OnTabViewShownEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
-                appEventsManagerInstance.OnEventSubscription<AppData.TabView<AppData.WidgetType>>(OnScreenFocusedEvent, AppData.EventType.OnTabViewHiddenEvent, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
+                appEventsManagerInstance.OnEventSubscription<AppData.TabView<AppData.WidgetType>>(OnScreenBluredEvent, AppData.EventType.OnTabViewShown, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
+                appEventsManagerInstance.OnEventSubscription<AppData.TabView<AppData.WidgetType>>(OnScreenFocusedEvent, AppData.EventType.OnTabViewHidden, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
 
                 appEventsManagerInstance.OnEventSubscription(OnAppEvents, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
 
@@ -1489,7 +1489,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        private async Task<AppData.Callback> ProcessLoadingSequence(List<AppData.LoadingSequenceState> sequences)
+        private async Task<AppData.Callback> ProcessLoadingSequence(List<AppData.ProgressReportInfoState> sequences)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValuesValid(sequences, "Sequences", "Process Loading Sequence Failed - There Are No Sequences Assigned - Invalid Operation."));
 

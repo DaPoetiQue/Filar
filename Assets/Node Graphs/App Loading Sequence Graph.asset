@@ -227,7 +227,7 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
-  sequences: 0100000002000000040000000500000006000000
+  sequences: 0100000002000000050000000600000007000000080000000300000004000000
   input: 0
   successCode: 0
   errorCode: 0
@@ -367,7 +367,7 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
-  seconds: 2
+  seconds: 5
   input: 0
   output: 0
 --- !u!114 &-19903960845841893
@@ -416,7 +416,7 @@ MonoBehaviour:
   widget: 44
   state: 1
   screenBlurConfig:
-    active: 1
+    active: 0
     blurScreenPlacementType: 2
   input: 0
   output: 0
@@ -447,8 +447,8 @@ MonoBehaviour:
   - {fileID: -3196582865458820873}
   - {fileID: -1162719336057333743}
   type: 1
-  currentNode: {fileID: -3196582865458820873}
-  completed: 0
+  currentNode: {fileID: 6930177644510066637}
+  completed: 1
 --- !u!114 &1694974648765632592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -541,7 +541,7 @@ MonoBehaviour:
   widget: 44
   state: 2
   screenBlurConfig:
-    active: 1
+    active: 0
     blurScreenPlacementType: 2
   input: 0
   output: 0
