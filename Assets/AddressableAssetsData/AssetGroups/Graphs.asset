@@ -23,14 +23,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - Graph
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4bd67b5485d83c54b9727801564601a1
-    m_Address: Welcome FTUE
+  - m_GUID: e164d8093b10f9a428e674f2bf8d58cf
+    m_Address: App Boot State Graph
     m_ReadOnly: 0
     m_SerializedLabels:
     - Graph
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e164d8093b10f9a428e674f2bf8d58cf
-    m_Address: App Boot State Graph
+  - m_GUID: c5e03adb99e6811409f5eb74ca3f713e
+    m_Address: Landing screen Initialization
     m_ReadOnly: 0
     m_SerializedLabels:
     - Graph

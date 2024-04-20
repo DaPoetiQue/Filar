@@ -69,6 +69,7 @@ namespace Com.RedicalGames.Filar
             SelectInitialPost,
             BootLoadSequence,
             ScreenLoadSequence,
+            RefreshScreenData
         }
 
         public enum GraphNodeType
@@ -9735,7 +9736,6 @@ namespace Com.RedicalGames.Filar
                     var hierachy = objectSplitResultsList[1];
 
                     var meshSplitResultsList = meshResults.Split(meshSplit);
-
 
                     if (meshSplitResultsList != null && meshSplitResultsList.Length > 0)
                     {

@@ -282,10 +282,10 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
             {
-                var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+                //var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
 
-                appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenShownEvent, AppData.EventType.OnScreenShown, true);
-                appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenHiddenEvent, AppData.EventType.OnScreenHidden, true);
+                //appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenShownEvent, AppData.EventType.OnScreenShown, true);
+                //appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenHiddenEvent, AppData.EventType.OnScreenHidden, true);
             }
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -4002,6 +4002,8 @@ namespace Com.RedicalGames.Filar
 
                                     if (IsServerAppInfoDatabaseInitialized)
                                     {
+                                        LogInfo("Log_Info//: Page Refreshed", this);
+
                                         assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(refreshedScreen.GetScreenType().GetData(), AppData.ContentContainerType.PostContainer, AppData.ContainerViewSpaceType.Screen, async containerCallbackResults =>
                                         {
                                             callbackResults.SetResult(containerCallbackResults);

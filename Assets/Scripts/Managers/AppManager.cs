@@ -552,7 +552,7 @@ namespace Com.RedicalGames.Filar
 
         public async Task<AppData.CallbackData<AppData.AppInfo>> DownloadPostEntryDataAsync()
         {
-            var callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, AppDatabaseManager.Instance.name, "Database Manager is Not Yet Initialized."));
+            var callbackResults = new AppData.CallbackData<AppData.AppInfo>(AppData.Helpers.GetAppComponentValid(AppDatabaseManager.Instance, "App Database Manager Instance", "Download Post Entry Data Async Failed - App Database Manager is Not Yet Initialized."));
 
             if (callbackResults.Success())
             {

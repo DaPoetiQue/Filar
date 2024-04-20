@@ -234,7 +234,18 @@ namespace Com.RedicalGames.Filar
                     AppData.ActionEvents._OnNetworkFailedEvent += () => eventMethod?.Invoke(AppData.EventType.OnNetworkFailedEvent);
                     AppData.ActionEvents._OnAppLanguageChanged += () => eventMethod?.Invoke(AppData.EventType.OnAppLanguageChanged);
                     AppData.ActionEvents._OnActionButtonPressEvent += () => eventMethod?.Invoke(AppData.EventType.OnActionButtonPress);
-                    AppData.ActionEvents._OnProgressPercentageEvent += value => eventMethod?.Invoke(AppData.EventType.OnActionButtonPress);
+                    AppData.ActionEvents._OnProgressPercentageEvent += value => eventMethod?.Invoke(AppData.EventType.OnProgressPercentage);
+                    AppData.ActionEvents._OnProgressPercentageIntValueEvent += value => eventMethod?.Invoke(AppData.EventType.OnProgressPercentageIntValue);
+
+                    AppData.GenericActionEvents<Screen>._OnScreenShownEvent += value => eventMethod?.Invoke(AppData.EventType.OnScreenShown);
+                    AppData.GenericActionEvents<Screen>._OnScreenHiddenEvent += value => eventMethod?.Invoke(AppData.EventType.OnScreenHidden);
+                    AppData.GenericActionEvents<Screen>._OnScreenTransitionInProgressEvent += value => eventMethod?.Invoke(AppData.EventType.OnScreenTransitionInProgress);
+                    AppData.GenericActionEvents<AppData.Widget>._OnWidgetShownEvent += value => eventMethod?.Invoke(AppData.EventType.OnWidgetShown);
+                    AppData.GenericActionEvents<AppData.Widget>._OnWidgetHiddenEvent += value => eventMethod?.Invoke(AppData.EventType.OnWidgetHidden);
+                    AppData.GenericActionEvents<AppData.Widget>._OnWidgetTransitionInProgressEvent += value => eventMethod?.Invoke(AppData.EventType.OnWidgetTransitionInProgress);
+                    AppData.GenericActionEvents<AppData.SelectableWidget>._OnSelectableWidgetShownEvent += value => eventMethod?.Invoke(AppData.EventType.OnSelectableWidgetShown);
+                    AppData.GenericActionEvents<AppData.SelectableWidget>._OnSelectableWidgetHiddenEvent += value => eventMethod?.Invoke(AppData.EventType.OnSelectableWidgetHidden);
+                    AppData.GenericActionEvents<AppData.SelectableWidget>._OnSelectableWidgetTransitionInProgressEvent += value => eventMethod?.Invoke(AppData.EventType.OnSelectableWidgetTransitionInProgress);
                 }
                 else
                 {
@@ -250,7 +261,18 @@ namespace Com.RedicalGames.Filar
                     AppData.ActionEvents._OnNetworkFailedEvent -= () => eventMethod?.Invoke(AppData.EventType.OnNetworkFailedEvent);
                     AppData.ActionEvents._OnAppLanguageChanged -= () => eventMethod?.Invoke(AppData.EventType.OnAppLanguageChanged);
                     AppData.ActionEvents._OnActionButtonPressEvent -= () => eventMethod?.Invoke(AppData.EventType.OnActionButtonPress);
-                    AppData.ActionEvents._OnProgressPercentageEvent -= value => eventMethod?.Invoke(AppData.EventType.OnActionButtonPress);
+                    AppData.ActionEvents._OnProgressPercentageEvent -= value => eventMethod?.Invoke(AppData.EventType.OnProgressPercentage);
+                    AppData.ActionEvents._OnProgressPercentageIntValueEvent -= value => eventMethod?.Invoke(AppData.EventType.OnProgressPercentageIntValue);
+
+                    AppData.GenericActionEvents<Screen>._OnScreenShownEvent -= value => eventMethod?.Invoke(AppData.EventType.OnScreenShown);
+                    AppData.GenericActionEvents<Screen>._OnScreenHiddenEvent -= value => eventMethod?.Invoke(AppData.EventType.OnScreenHidden);
+                    AppData.GenericActionEvents<Screen>._OnScreenTransitionInProgressEvent -= value => eventMethod?.Invoke(AppData.EventType.OnScreenTransitionInProgress);
+                    AppData.GenericActionEvents<AppData.Widget>._OnWidgetShownEvent -= value => eventMethod?.Invoke(AppData.EventType.OnWidgetShown);
+                    AppData.GenericActionEvents<AppData.Widget>._OnWidgetHiddenEvent -= value => eventMethod?.Invoke(AppData.EventType.OnWidgetHidden);
+                    AppData.GenericActionEvents<AppData.Widget>._OnWidgetTransitionInProgressEvent -= value => eventMethod?.Invoke(AppData.EventType.OnWidgetTransitionInProgress);
+                    AppData.GenericActionEvents<AppData.SelectableWidget>._OnSelectableWidgetShownEvent -= value => eventMethod?.Invoke(AppData.EventType.OnSelectableWidgetShown);
+                    AppData.GenericActionEvents<AppData.SelectableWidget>._OnSelectableWidgetHiddenEvent -= value => eventMethod?.Invoke(AppData.EventType.OnSelectableWidgetHidden);
+                    AppData.GenericActionEvents<AppData.SelectableWidget>._OnSelectableWidgetTransitionInProgressEvent -= value => eventMethod?.Invoke(AppData.EventType.OnSelectableWidgetTransitionInProgress);
                 }
             }
             else
@@ -760,6 +782,13 @@ namespace Com.RedicalGames.Filar
             AppData.ActionEvents.OnProgressPercentageIntValueEvent(progress);
         }
 
+        /// <summary>
+        /// Trigger Generic Events.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="eventType"></param>
+        /// <param name="eventData"></param>
+        /// <param name="callback"></param>
         public void InvokeEvent<T>(AppData.EventType eventType, T eventData, Action<AppData.Callback> callback = null) where T : class
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(eventType, "Event type", $"Invoke Event Failed - Event Type Parameter Value Is set To Default : {eventType} - Invalid Operation."));
