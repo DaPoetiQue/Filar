@@ -86,7 +86,7 @@ namespace Com.RedicalGames.Filar
                             {
                                 var percentageDisplayer = GetUITextDisplayer(AppData.ScreenTextType.ProgressPercentageDisplayer).GetData().GetValue().GetData();
 
-                                if (GetProgressBarValue().GetData() > 0)
+                                if (GetProgressBarValue().GetData() > progressBar.fillAmount)
                                 {
                                     var fillAmountValue = Mathf.Lerp(progressBar.fillAmount, GetProgressBarValue().GetData(), appDatabaseManagerInstance.GetDefaultExecutionValue(AppData.RuntimeExecution.ProgressReportTransitionalSpeed).value * Time.smoothDeltaTime);
                                     progressBar.fillAmount = fillAmountValue;

@@ -354,25 +354,27 @@ namespace Com.RedicalGames.Filar
         {
             AppData.Callback callbackResults = new AppData.Callback();
 
-            do
+            while (databaseReference == null)
             {
-                await Task.Delay(1000);
-
                 databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
+                await Task.Delay(1000);
+            }
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(databaseReference, "Database Reference", "Initialize Database Failed - Database Reference Value Is Not Assigned Yet."));
+
+            if (callbackResults.Success())
+            {
+                LogInfo($"Logged_info//: Initializing Database.", this);
 
                 FirebaseDatabase.DefaultInstance.GetReference("Filar Authentications").Child("User Profiles").ValueChanged += OnAppInfoDatabaseUpdate;
                 FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Post Info Database").ValueChanged += OnPostsDatabaseUpdate;
                 FirebaseDatabase.DefaultInstance.GetReference("Posts Runtime Data").Child("Post Content Database").ValueChanged += OnPostsDatabaseUpdate;
                 FirebaseDatabase.DefaultInstance.GetReference("Filar Localization").Child("Language Restrictions").ValueChanged += OnLocalizationDatabaseUpdate;
 
-                await Task.Delay(1000);
-
                 callbackResults.result = "Database Initialized Successfully";
-                callbackResults.resultCode = AppData.Helpers.SuccessCode;
-
-                await Task.Delay(1000);
             }
-            while (databaseReference == null);
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             return callbackResults;
         }
@@ -410,7 +412,11 @@ namespace Com.RedicalGames.Filar
                             IsSplashImagesLibraryInitialized = true;
                     });
                 }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
             #endregion
 
@@ -871,6 +877,8 @@ namespace Com.RedicalGames.Filar
                         {
                             if (valueChangedEvent.Snapshot.ChildrenCount > 0)
                             {
+                                LogInfo($"Logged_info//: Updating : {valueChangedEvent.Snapshot.ChildrenCount} Posts.", this);
+
                                 postsDatabase = new List<AppData.Post>();
 
                                 var postsSnapshots = valueChangedEvent.Snapshot.Children;
@@ -909,6 +917,8 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
+                                        LogInfo($"Logged_info//: Posts Snaps Added : {postsDatabase.Count}", this);
+
                                         callbackResults.SetResult(GetSortedList(postsDatabase, AppData.SortType.DateModified));
 
                                         if (callbackResults.Success())
@@ -4024,6 +4034,8 @@ namespace Com.RedicalGames.Filar
 
                                                     if (callbackResults.Success())
                                                     {
+                                                        LogInfo($"Logged_Info//: Create : {getPostsTaskResults.GetData().Count} - Posts.", this);
+
                                                         callbackResults.SetResult(GetSortedList(getPostsTaskResults.data, AppData.SortType.DateModified));
 
                                                         if (callbackResults.Success())

@@ -1528,13 +1528,18 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
+                        while (loadingManagerInstance.IsProcessRunning)
+                            await Task.Yield();
+
                         var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
 
                         var progressReport = new Progress<int>(appEventsManagerInstance.InvokeEvent);
 
+                        LogInfo($"Logged_Info//: Process Loading Sequence- Fire Once.", this);
+
                         var processSequenceCallbackResultsTask = await loadingManagerInstance.ProcessLoadingSequence(sequences, progressReport);
 
-                        if(callbackResults.UnSuccessful())
+                        if (callbackResults.UnSuccessful())
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
