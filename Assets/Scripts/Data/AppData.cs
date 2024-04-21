@@ -6757,7 +6757,7 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            Helpers.GetAppComponentValid(content, content.GetName(), async hasScreenWidgetCallbackResults =>
+                            Helpers.GetAppComponentValid(content, content.GetName(), hasScreenWidgetCallbackResults =>
                             {
                                 callbackResults.SetResult(hasScreenWidgetCallbackResults);
 
@@ -6784,25 +6784,6 @@ namespace Com.RedicalGames.Filar
 
                                                 if (updateContainer)
                                                     OnUpdatedContainerSize();
-
-                                                callbackResults.SetResult(Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized."));
-
-                                                if (callbackResults.Success())
-                                                {
-                                                    var screenUIManager = Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
-
-                                                    callbackResults.SetResult(screenUIManager.GetCurrentScreen());
-
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        var screen = screenUIManager.GetCurrentScreen().GetData();
-                                                        screen.HideWidget(WidgetType.LoadingWidget);
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

@@ -199,7 +199,7 @@ MonoBehaviour:
   m_Name: Loading Sequence
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1608, y: -200}
+  position: {x: -1608, y: -232}
   ports:
     keys:
     - input
@@ -239,7 +239,7 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
-  sequences: 0100000002000000050000000600000007000000080000000300000004000000
+  sequences: 0100000002000000050000000600000008000000070000000300000004000000
   input: 0
   successCode: 0
   errorCode: 0
@@ -379,10 +379,10 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
-  widget: 44
+  widget: 45
   state: 1
   screenBlurConfig:
-    active: 0
+    active: 1
     blurScreenPlacementType: 2
   input: 0
   output: 0
@@ -411,8 +411,8 @@ MonoBehaviour:
   - {fileID: -1162719336057333743}
   - {fileID: -5689474334612324496}
   type: 1
-  currentNode: {fileID: -5492355286524093173}
-  completed: 0
+  currentNode: {fileID: 6930177644510066637}
+  completed: 1
 --- !u!114 &1814648347888823511
 MonoBehaviour:
   m_ObjectHideFlags: 0

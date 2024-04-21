@@ -877,8 +877,6 @@ namespace Com.RedicalGames.Filar
                         {
                             if (valueChangedEvent.Snapshot.ChildrenCount > 0)
                             {
-                                LogInfo($"Logged_info//: Updating : {valueChangedEvent.Snapshot.ChildrenCount} Posts.", this);
-
                                 postsDatabase = new List<AppData.Post>();
 
                                 var postsSnapshots = valueChangedEvent.Snapshot.Children;
@@ -917,8 +915,6 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        LogInfo($"Logged_info//: Posts Snaps Added : {postsDatabase.Count}", this);
-
                                         callbackResults.SetResult(GetSortedList(postsDatabase, AppData.SortType.DateModified));
 
                                         if (callbackResults.Success())
@@ -4512,10 +4508,10 @@ namespace Com.RedicalGames.Filar
             {
                 var postManagerInstance = AppData.Helpers.GetAppComponentValid(PostManager.Instance, "Post Manager Instance").GetData();
 
-                AppData.ActionEvents.OnDownloadStartedEvent();
-
-                while (!postManagerInstance.HasPost)
+                while (postManagerInstance.HasPost == false)
                     await Task.Yield();
+
+                AppData.ActionEvents.OnDownloadStartedEvent();
 
                 callbackResults.SetResult(postManagerInstance.GetPost());
 
@@ -4537,105 +4533,87 @@ namespace Com.RedicalGames.Filar
 
                         if (callbackResults.Success())
                         {
-                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name, "Screen UI Manager Instance Is Not Yet Initialized."));
+                            var storedSessionDataCallbackResults = AppData.SessionStorage<AppData.Post, ScenePostContentHandler>.GetStoredSessionData(post);
+
+                            callbackResults.SetResult(storedSessionDataCallbackResults);
 
                             if (callbackResults.Success())
                             {
-                                var screenUIManager = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, ScreenUIManager.Instance.name).data;
+                                var model = storedSessionDataCallbackResults.GetData();
 
-                                var currentScreenCallbackResults = screenUIManager.GetCurrentScreen();
+                                model.GetModel().GetData().SetActive(true);
 
-                                callbackResults.SetResult(currentScreenCallbackResults);
+                                container.AddContent(model, false, true, true, contentAddedCallbackResults =>
+                                {
+                                    callbackResults.SetResult(contentAddedCallbackResults);
+                                });
+                            }
+                            else
+                            {
+                                callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SceneCameraEventManager.Instance, "Scene Camera Event Manager Instance", "Scene Camera Event Manager Instance Is Not Yet Initialized."));
 
                                 if (callbackResults.Success())
                                 {
-                                    var currentScreen = currentScreenCallbackResults.GetData();
+                                    var sceneCameraEventManagerInstance = AppData.Helpers.GetAppComponentValid(SceneCameraEventManager.Instance, "Scene Camera Event Manager Instance").GetData();
 
-                                    var storedSessionDataCallbackResults = AppData.SessionStorage<AppData.Post, ScenePostContentHandler>.GetStoredSessionData(post);
+                                    var modelData = GetPostContentData(post).GetData().model;
+                                    var uncompressedModelData = AppData.Helpers.UnCompressByteArrayToString(modelData);
 
-                                    callbackResults.SetResult(storedSessionDataCallbackResults);
+                                    AppData.ContentGenerator contentGenerator = new AppData.ContentGenerator(uncompressedModelData);
+                                    var modelTaskResults = await contentGenerator.GetGameObject(post.GetTitle());
+
+                                    callbackResults.SetResult(modelTaskResults);
 
                                     if (callbackResults.Success())
                                     {
-                                        var model = storedSessionDataCallbackResults.GetData();
+                                        var postContentHandler = modelTaskResults.GetData().AddComponent<ScenePostContentHandler>();
+                                        postContentHandler.SetPost(post);
+                                        postContentHandler.SetContent(modelTaskResults.GetData());
 
-                                        model.GetModel().GetData().SetActive(true);
-
-                                        container.AddContent(model, false, true, true, contentAddedCallbackResults =>
+                                        postContentHandler.Initialize(sceneCameraEventManagerInstance.GetSceneEventCamera(screenType).GetData(), selectableAssetsInitializationCallbackResults =>
                                         {
-                                            callbackResults.SetResult(contentAddedCallbackResults);
-                                        });
-                                    }
-                                    else
-                                    {
-                                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(SceneCameraEventManager.Instance, "Scene Camera Event Manager Instance", "Scene Camera Event Manager Instance Is Not Yet Initialized."));
-
-                                        if (callbackResults.Success())
-                                        {
-                                            var sceneCameraEventManagerInstance = AppData.Helpers.GetAppComponentValid(SceneCameraEventManager.Instance, "Scene Camera Event Manager Instance").GetData();
-
-                                            var modelData = GetPostContentData(post).GetData().model;
-                                            var uncompressedModelData = AppData.Helpers.UnCompressByteArrayToString(modelData);
-
-                                            AppData.ContentGenerator contentGenerator = new AppData.ContentGenerator(uncompressedModelData);
-                                            var modelTaskResults = await contentGenerator.GetGameObject(post.GetTitle());
-
-                                            callbackResults.SetResult(modelTaskResults);
+                                            callbackResults.SetResult(selectableAssetsInitializationCallbackResults);
 
                                             if (callbackResults.Success())
                                             {
-                                                var postContentHandler = modelTaskResults.GetData().AddComponent<ScenePostContentHandler>();
-                                                postContentHandler.SetPost(post);
-                                                postContentHandler.SetContent(modelTaskResults.GetData());
+                                                var storeSessionDataCallbackResults = AppData.SessionStorage<AppData.Post, ScenePostContentHandler>.Store(post, postContentHandler);
 
-                                                postContentHandler.Initialize(sceneCameraEventManagerInstance.GetSceneEventCamera(screenType).GetData(), selectableAssetsInitializationCallbackResults => 
+                                                callbackResults.SetResult(storeSessionDataCallbackResults);
+
+                                                if (callbackResults.Success())
                                                 {
-                                                    callbackResults.SetResult(selectableAssetsInitializationCallbackResults);
-
-                                                    if (callbackResults.Success())
+                                                    container.AddContent(postContentHandler, false, false, true, contentAddedCallbackResults =>
                                                     {
-                                                        var storeSessionDataCallbackResults = AppData.SessionStorage<AppData.Post, ScenePostContentHandler>.Store(post, postContentHandler);
-
-                                                        callbackResults.SetResult(storeSessionDataCallbackResults);
+                                                        callbackResults.SetResult(contentAddedCallbackResults);
 
                                                         if (callbackResults.Success())
                                                         {
-                                                            container.AddContent(postContentHandler, false, false, true, contentAddedCallbackResults =>
+                                                            postManagerInstance.AddPostsContents(postContentAddedCallbackResults =>
                                                             {
-                                                                callbackResults.SetResult(contentAddedCallbackResults);
+                                                                callbackResults.SetResult(postContentAddedCallbackResults);
 
-                                                                if (callbackResults.Success())
-                                                                {
-                                                                    postManagerInstance.AddPostsContents(postContentAddedCallbackResults =>
-                                                                    {
-                                                                        callbackResults.SetResult(postContentAddedCallbackResults);
-
-                                                                    }, postContentHandler);
-                                                                }
-                                                                else
-                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                            });
+                                                            }, postContentHandler);
                                                         }
                                                         else
                                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
+                                                    });
+                                                }
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                        }
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
                                     }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
                                 else
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                         }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                 }
                 else
