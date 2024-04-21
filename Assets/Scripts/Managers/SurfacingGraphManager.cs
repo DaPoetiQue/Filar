@@ -22,6 +22,9 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         private List<SurfacingNodeGraph> loadedGraphs = new List<SurfacingNodeGraph>();
 
+        [SerializeField]
+        private List<SurfacingNodeGraph> processedGraphs = new List<SurfacingNodeGraph>();
+
         #endregion
 
         #region Main
@@ -481,7 +484,7 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        private async void OnGraphEntry(AppData.GraphEntryEventType entry, Action<AppData.Callback> callback = null)
+        private void OnGraphEntry(AppData.GraphEntryEventType entry, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValueValid(entry, "Entry", $"On Graph Entry Failed - Entry Parameter Value Is Set To Default : {entry} - Invalid Operation."));
 
@@ -499,12 +502,33 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        var graphExecutionTasks = new List<Task>();
-
                         for (int i = 0; i < entryGraphs.Count; i++)
-                            graphExecutionTasks.Add(ExecuteGraph(entryGraphs[i]));
+                        {
+                            callbackResults.SetResult(IsGraphNodeNotProcessed(entryGraphs[i]));
 
-                        await Task.WhenAll(graphExecutionTasks);
+                            if(callbackResults.Success())
+                            {
+                                AddGraphToProcessedList(entryGraphs[i], graphAddedToListCallbackResults => 
+                                {
+                                    callbackResults.SetResult(graphAddedToListCallbackResults);
+
+                                    if(callbackResults.Success())
+                                    {
+                                        ExecuteGraphNode(entryGraphs[i], executedGraphNodeCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(executedGraphNodeCallbackResults);
+
+                                            if (callbackResults.UnSuccessful())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
@@ -558,7 +582,7 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        private async Task ExecuteGraph(SurfacingNodeGraph graph)
+        private async void ExecuteGraphNode(SurfacingNodeGraph graph, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.CallbackData<Task>(graph.Completed());
 
@@ -593,13 +617,13 @@ namespace Com.RedicalGames.Filar
 
                         callbackResults.SetResult(conditionalNode.GetCondition());
 
-                        if(callbackResults.Success())
+                        if (callbackResults.Success())
                         {
                             var executeConditionalStatementCallbackResultsTask = await OnExecutionalCondition(conditionalNode.GetCondition().GetData());
 
                             callbackResults.SetResult(executeConditionalStatementCallbackResultsTask);
 
-                            if(callbackResults.Success())
+                            if (callbackResults.Success())
                             {
                                 ProccessNextNode(graph, proccessNextNodeCallbackResults =>
                                 {
@@ -673,7 +697,7 @@ namespace Com.RedicalGames.Filar
 
                         callbackResults.SetResult(loadingSequenceNode.GetSequences());
 
-                        if(callbackResults.Success())
+                        if (callbackResults.Success())
                         {
                             var processLoadingSequenceCallbackResultsTask = await ProcessLoadingSequence(loadingSequenceNode.GetSequences().GetData());
 
@@ -779,15 +803,15 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        switch(screenNode.GetState().GetData())
+                                        switch (screenNode.GetState().GetData())
                                         {
                                             case AppData.UIVisibilityStateEvent.Show:
 
-                                                screenUIManagerInstance.ShowScreenNode(screenNode.GetScreenType().GetData(), showScreenCallbackResults => 
+                                                screenUIManagerInstance.ShowScreenNode(screenNode.GetScreenType().GetData(), showScreenCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(showScreenCallbackResults);
 
-                                                    if(callbackResults.Success())
+                                                    if (callbackResults.Success())
                                                     {
                                                         if (callbackResults.Success())
                                                         {
@@ -818,7 +842,7 @@ namespace Com.RedicalGames.Filar
 
                                             case AppData.UIVisibilityStateEvent.Hide:
 
-                                                screenUIManagerInstance.HideScreenNode(screenNode.GetScreenType().GetData(), hideScreenCallbackResults => 
+                                                screenUIManagerInstance.HideScreenNode(screenNode.GetScreenType().GetData(), hideScreenCallbackResults =>
                                                 {
                                                     callbackResults.SetResult(hideScreenCallbackResults);
 
@@ -979,7 +1003,7 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    switch(screenPopUpStateNode.GetState().GetData())
+                                    switch (screenPopUpStateNode.GetState().GetData())
                                     {
                                         case AppData.UIVisibilityStateEvent.Show:
 
@@ -1116,7 +1140,7 @@ namespace Com.RedicalGames.Filar
 
                         callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "Execute Graph Failed - App Events Manager Instance Is Not Yet Initialized - Invalid Operation."));
 
-                        if(callbackResults.Success())
+                        if (callbackResults.Success())
                         {
                             var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
 
@@ -1130,7 +1154,7 @@ namespace Com.RedicalGames.Filar
 
                                 var timedOut = false;
 
-                                if(callbackResults.Success())
+                                if (callbackResults.Success())
                                 {
                                     var timeout = waitForEventNode.GetTimeOut().GetData();
 
@@ -1140,7 +1164,7 @@ namespace Com.RedicalGames.Filar
                                         await Task.Yield();
                                     }
 
-                                    if(appEventsManagerInstance.GetCurrentEvent().GetData() == waitForEventNode.GetEventType().GetData())
+                                    if (appEventsManagerInstance.GetCurrentEvent().GetData() == waitForEventNode.GetEventType().GetData())
                                     {
                                         callbackResults.result = "Execution Completed Successfully.";
                                         callbackResults.resultCode = AppData.Helpers.SuccessCode;
@@ -1182,7 +1206,7 @@ namespace Com.RedicalGames.Filar
                                 }
                                 else
                                 {
-                                    if(timedOut)
+                                    if (timedOut)
                                     {
                                         ProccessNextNode(graph, proccessNextNodeCallbackResults =>
                                         {
@@ -1255,7 +1279,7 @@ namespace Com.RedicalGames.Filar
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
-            await Task.Yield();
+            callback?.Invoke(callbackResults);
         }
 
         private async Task<AppData.Callback> OnExecutionalCondition(AppData.AppExecutionalConditionType conditionType)
@@ -1528,14 +1552,9 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        while (loadingManagerInstance.IsProcessRunning)
-                            await Task.Yield();
-
                         var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
 
                         var progressReport = new Progress<int>(appEventsManagerInstance.InvokeEvent);
-
-                        LogInfo($"Logged_Info//: Process Loading Sequence- Fire Once.", this);
 
                         var processSequenceCallbackResultsTask = await loadingManagerInstance.ProcessLoadingSequence(sequences, progressReport);
 
@@ -1583,8 +1602,16 @@ namespace Com.RedicalGames.Filar
                         continue;
                 }
 
-                if(callbackResults.Success())
-                    await ExecuteGraph(graph);
+                if (callbackResults.Success())
+                {
+                    ExecuteGraphNode(graph, executeGraphNodeCallbackResults => 
+                    {
+                        callbackResults.SetResult(executeGraphNodeCallbackResults);
+
+                        if(callbackResults.UnSuccessful())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
@@ -1609,6 +1636,70 @@ namespace Com.RedicalGames.Filar
 
             return callbackResults;
         }
+
+        #region Processed Graphs
+
+        private AppData.Callback IsGraphNodeNotProcessed(SurfacingNodeGraph surfacingNodeGraph)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(surfacingNodeGraph, "Surfacing Node Graph", "Is Graph Processed Failed - Surfacing Node Graph Parameter Value Is Null - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                if (!processedGraphs.Contains(surfacingNodeGraph))
+                    callbackResults.result = $"Graph Not Processed Success - Graph : {surfacingNodeGraph.name} Has Not Been Processed Yet.";
+                else
+                {
+                    callbackResults.result = $"Graph Not Processed Failed - Graph : {surfacingNodeGraph.name} Has Already Been Processed.";
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        private void AddGraphToProcessedList(SurfacingNodeGraph surfacingNodeGraph, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(surfacingNodeGraph, "Surfacing Node Graph", "Add Graph To Processed List Failed - Surfacing Node Graph Parameter Value Is Null - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                if (!processedGraphs.Contains(surfacingNodeGraph))
+                {
+                    processedGraphs.Add(surfacingNodeGraph);
+                    callbackResults.result = $"Add Graph To Processed List Success - Graph : {surfacingNodeGraph.name} Has Not Been Processed Yet.";
+                }
+                else
+                {
+                    callbackResults.result = $"Add Graph To Processed List Failed - Graph : {surfacingNodeGraph.name} Has Already Been Added To Processed List.";
+                    callbackResults.resultCode = AppData.Helpers.WarningCode;
+                }
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
+        private AppData.CallbackDataList<SurfacingNodeGraph> GetProcessedGraphs()
+        {
+            var callbackResults = new AppData.CallbackDataList<SurfacingNodeGraph>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(processedGraphs, "Processed Graphs", "Get Processed Graphs Failed - There Are No Processed Graphs Found - Invalid Operation."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"Get Processed Graphs Success - There Are {processedGraphs.Count} Processed Graphs Found.";
+                callbackResults.data = processedGraphs;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        #endregion
 
         #endregion
     }

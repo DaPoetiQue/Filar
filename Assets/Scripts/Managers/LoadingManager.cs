@@ -17,9 +17,6 @@ namespace Com.RedicalGames.Filar
 
         bool OnShowSplashScreen { get; set; } = true;
 
-        [SerializeField]
-        private bool processRunning = false;
-
         #endregion
 
         #region Main
@@ -497,10 +494,6 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
-        public bool IsProcessRunning { get; private set; }
-
-        private List<int> progressList = new List<int>();
-
         public async Task<AppData.Callback> ProcessLoadingSequence(List<AppData.ProgressReportInfoState> sequences, IProgress<int> progressReport)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppEnumValuesValid(sequences, "Sequences", "Process Loading Sequence Failed - There Are No Sequences Assigned - Invalid Operation."));
@@ -525,36 +518,19 @@ namespace Com.RedicalGames.Filar
                         {
                             var loadingSequenceReport = assetBundlesLibrary.GetLoadedProgressReportInfoDataPacket(AppData.ProgressReportType.LoadingSequenceReport).GetData();
 
-                            LogInfo($"Logged_Info//: Begin Process Sequence - Fire Once.", this);
-
-                            IsProcessRunning = true;
-
                             for (int i = 0; i < sequences.Count; i++)
                             {
                                 callbackResults.SetResult(GetSequenceFunction(sequences[i], loadingSequenceReport));
 
                                 if (callbackResults.Success())
                                 {
-                                    if (!progressList.Contains(i))
-                                    {
-                                        while (IsProccessRunning())
-                                            await Task.Yield();
+                                    var task = GetSequenceFunction(sequences[i], loadingSequenceReport).GetData();
+                                    var processSequenceCallbackResultsTask = await ProcessSequence(task, sequences.Count, i, progressReport);
 
-                                        var task = GetSequenceFunction(sequences[i], loadingSequenceReport).GetData();
-                                        var processSequenceCallbackResultsTask = await ProcessSequence(task, sequences.Count, i, progressReport);
+                                    callbackResults.SetResult(processSequenceCallbackResultsTask);
 
-                                        callbackResults.SetResult(processSequenceCallbackResultsTask);
-
-                                        if (callbackResults.Success())
-                                        {
-                                            SetProccessState(false);
-                                            progressList.Add(i);
-                                        }
-                                        else
-                                            Log(callbackResults.resultCode, callbackResults.result, this);
-                                    }
-                                    else
-                                        break;
+                                    if (callbackResults.UnSuccessful())
+                                        Log(callbackResults.resultCode, callbackResults.result, this);
                                 }
                                 else
                                 {
@@ -562,9 +538,6 @@ namespace Com.RedicalGames.Filar
                                     break;
                                 }
                             }
-
-                            if (callbackResults.Success())
-                                  IsProcessRunning = true;
                         }
                         else
                             Log(callbackResults.resultCode, callbackResults.result, this);
@@ -587,9 +560,6 @@ namespace Com.RedicalGames.Filar
 
             if(callbackResults.Success())
             {
-                SetProccessState(true);
-                LogInfo($"Logged_Info//: Process Sequence @ index : {processIndex}", this);
-
                 await sequence.Invoke();
 
                 if(progressReport != null)
@@ -743,12 +713,6 @@ namespace Com.RedicalGames.Filar
 
             return callbackResults;
         }
-
-        private void SetProccessState(bool isRunning)
-            => processRunning = isRunning;
-
-        public bool IsProccessRunning() 
-            => processRunning;
 
         #endregion
     }
