@@ -69,7 +69,7 @@ namespace Com.RedicalGames.Filar
                                     callbackResults.SetResult(splashImageHandler.GetImageComponent());
 
                                     if (callbackResults.Success())
-                                        transitionableSplashImageComponent = new AppData.TransitionableUIComponent(splashImageHandler.GetImageComponent().GetData().GetWidgetRect(), AppData.UITransitionType.Default, AppData.UITransitionStateType.Once, databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.SplashImageTransitionSpeed).value);
+                                        transitionableSplashImageComponent = new AppData.TransitionableUIComponent(splashImageHandler.GetImageComponent().GetData().GetWidgetRect(), AppData.UITransitionType.Translate, AppData.UITransitionStateType.Once, databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.SplashImageTransitionSpeed).value);
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
@@ -78,6 +78,8 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                            OnLoadInProgressEvent();
                         }
 
                         break;
@@ -121,7 +123,7 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget(Action<AppData.Callback> callback = null)
         {
-    
+            
         }
 
         private void OnTriggerTransitions(Action<AppData.Callback> callback = null)
@@ -132,11 +134,11 @@ namespace Com.RedicalGames.Filar
             {
                 var splashImageHandler = GetImageInputHandler(AppData.ScreenImageType.Splash).GetData();
 
-                callbackResults.SetResult(splashImageHandler.GetTransitionableUIMounts());
+                callbackResults.SetResult(GetTransitionableUIMounts());
 
                 if(callbackResults.Success())
                 {
-                    var mounts = splashImageHandler.GetTransitionableUIMounts().GetData();
+                    var mounts = GetTransitionableUIMounts().GetData();
 
                     callbackResults.SetResult(GetTransitionableSplashImageComponent());
 
@@ -150,7 +152,7 @@ namespace Com.RedicalGames.Filar
                         {
                             var mount = mounts[1];
 
-                            transitionableUI.InvokeTransition(mount, AppData.UITransitionType.Default, transitionInvokedCallbackResults =>
+                            transitionableUI.InvokeTransition(mount, AppData.UITransitionType.Translate, transitionInvokedCallbackResults =>
                             {
                                 callbackResults.SetResult(transitionInvokedCallbackResults);
                             });
@@ -243,11 +245,11 @@ namespace Com.RedicalGames.Filar
                             {
                                 var splashImageHandler = GetImageInputHandler(AppData.ScreenImageType.Splash).GetData();
 
-                                callbackResults.SetResult(splashImageHandler.GetTransitionableUIMounts());
+                                callbackResults.SetResult(GetTransitionableUIMounts());
 
                                 if (callbackResults.Success())
                                 {
-                                    var mounts = splashImageHandler.GetTransitionableUIMounts().GetData();
+                                    var mounts = GetTransitionableUIMounts().GetData();
 
                                     transitionableUI.SetTransitionDestination(mounts[GetRandomIndexValue(mounts.Count)]);
 

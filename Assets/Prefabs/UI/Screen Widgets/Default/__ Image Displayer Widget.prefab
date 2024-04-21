@@ -308,7 +308,7 @@ GameObject:
   - component: {fileID: 2803885940288519432}
   - component: {fileID: 5563881068430270284}
   m_Layer: 5
-  m_Name: Splash Displayer
+  m_Name: __Splash Displayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2269,32 +2269,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-  transitionableUIMounts:
-  - name: Transitionable Mount Point_A
-    mount: {fileID: 5076367614078071572}
-    transitionSpeed: 0.05
-    eventTriggerDistance: 1
-    mountType: 1
-  - name: Transitionable Mount Point_B
-    mount: {fileID: 8995848151324278909}
-    transitionSpeed: 0.05
-    eventTriggerDistance: 1
-    mountType: 2
-  - name: Transitionable Mount Point_C
-    mount: {fileID: 8531172401905646905}
-    transitionSpeed: 0.05
-    eventTriggerDistance: 1
-    mountType: 3
-  - name: Transitionable Mount Point_D
-    mount: {fileID: 2461676790618313308}
-    transitionSpeed: 0.05
-    eventTriggerDistance: 1
-    mountType: 4
-  - name: Transitionable Mount Point_E
-    mount: {fileID: 931211683796750782}
-    transitionSpeed: 0.05
-    eventTriggerDistance: 1
-    mountType: 5
 --- !u!114 &5563881068430270284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2342,7 +2316,7 @@ RectTransform:
   - {fileID: 4045238753872912960}
   - {fileID: 2803885941493698666}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -2379,8 +2353,33 @@ MonoBehaviour:
   orderInLayer: 0
   instantiationOrderID: 0
   transitionType: 1
-  transitionSpeed: 0
-  transitionableUIMountList: []
+  transitionSpeed: 2.5
+  transitionableUIMountList:
+  - name: Transitionable Mount Point_A
+    mount: {fileID: 5076367614078071572}
+    transitionSpeed: 2.5
+    eventTriggerDistance: 1
+    mountType: 1
+  - name: Transitionable Mount Point_B
+    mount: {fileID: 8995848151324278909}
+    transitionSpeed: 2.5
+    eventTriggerDistance: 1
+    mountType: 1
+  - name: Transitionable Mount Point_C
+    mount: {fileID: 8531172401905646905}
+    transitionSpeed: 2.5
+    eventTriggerDistance: 1
+    mountType: 1
+  - name: Transitionable Mount Point_D
+    mount: {fileID: 2461676790618313308}
+    transitionSpeed: 2.5
+    eventTriggerDistance: 1
+    mountType: 1
+  - name: Transitionable Mount Point_E
+    mount: {fileID: 931211683796750782}
+    transitionSpeed: 2.5
+    eventTriggerDistance: 1
+    mountType: 1
   initialVisibilityState: 2
   referencedWidgetDependencyAssets: []
   dynamicContainerList: []

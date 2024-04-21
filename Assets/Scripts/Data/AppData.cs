@@ -45482,7 +45482,7 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(inputActionHandler.GetTransitionableUIMounts());
+                        callbackResults.SetResult(GetTransitionableUIMounts());
 
                         if (callbackResults.Success())
                             callbackResults.data = inputActionHandler;

@@ -45,12 +45,6 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        #region Transitions
-
-        public List<AppData.TransitionableUIMountComponent<AppData.UIMountType>> transitionableUIMounts = new List<AppData.TransitionableUIMountComponent<AppData.UIMountType>>();
-
-        #endregion
-
         #endregion
 
         #endregion
@@ -668,24 +662,6 @@ namespace Com.RedicalGames.Filar
 
             if (callbackResults.Success())
                 callbackResults.data = imageComponentConfig;
-            else
-                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-            return callbackResults;
-        }
-
-        #endregion
-
-        #region Transitionable UI Mounts
-
-        public AppData.CallbackDataList<AppData.TransitionableUIMountComponent<AppData.UIMountType>> GetTransitionableUIMounts()
-        {
-            var callbackResults = new AppData.CallbackDataList<AppData.TransitionableUIMountComponent<AppData.UIMountType>>();
-
-            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(transitionableUIMounts, "Transitionable UI Mounts", $"Get Transitionable UI Mounts Failed - There Are No Transitionable UI Mounts Initialized For : {GetName()}"));
-
-            if (callbackResults.Success())
-                callbackResults.data = transitionableUIMounts;
             else
                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
