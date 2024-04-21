@@ -36670,7 +36670,7 @@ namespace Com.RedicalGames.Filar
 
             #region Show View Async
 
-            public async Task<CallbackData<Screen>> ShowViewAsync()
+            public async Task<CallbackData<Screen>> ShowViewAsync(ScreenBlurConfig blurConfig = null)
             {
                 var callbackResults = new CallbackData<Screen>(GetTransitionType());
 
@@ -36678,13 +36678,35 @@ namespace Com.RedicalGames.Filar
                 {
                     if (GetTransitionType().GetData() == TransitionType.Default)
                     {
-                        var showScreenCallbackResults = await GetScreenView().ShowScreenViewAsync();
-                        callbackResults.SetResult(showScreenCallbackResults);
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(blurConfig, "Blur Config", "Show View Async With Blur Config Not Initialized."));
 
-                        if (callbackResults.Success())
-                            GenericActionEvents<Screen>.OnScreenShownEvent(this as Screen);
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.SetResult(Blur(blurConfig));
+
+                            if(callbackResults.Success())
+                            {
+                                var showScreenCallbackResults = await GetScreenView().ShowScreenViewAsync();
+                                callbackResults.SetResult(showScreenCallbackResults);
+
+                                if (callbackResults.Success())
+                                    GenericActionEvents<Screen>.OnScreenShownEvent(this as Screen);
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
                         else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        {
+                            var showScreenCallbackResults = await GetScreenView().ShowScreenViewAsync();
+                            callbackResults.SetResult(showScreenCallbackResults);
+
+                            if (callbackResults.Success())
+                                GenericActionEvents<Screen>.OnScreenShownEvent(this as Screen);
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
                     }
                     else
                     {
@@ -36714,7 +36736,7 @@ namespace Com.RedicalGames.Filar
 
             #region Hide View Async
 
-            public async Task<CallbackData<Screen>> HideViewSync()
+            public async Task<CallbackData<Screen>> HideViewSync(ScreenBlurConfig blurConfig = null)
             {
                 var callbackResults = new CallbackData<Screen>(GetTransitionType());
 
@@ -36722,13 +36744,35 @@ namespace Com.RedicalGames.Filar
                 {
                     if (GetTransitionType().GetData() == TransitionType.Default)
                     {
-                        var hideScreenCallbackResults = await GetScreenView().HideScreenViewAsync();
-                        callbackResults.SetResult(hideScreenCallbackResults);
+                        callbackResults.SetResult(Helpers.GetAppComponentValid(blurConfig, "Blur Config", "Hide View Async With Blur Config Not Initialized."));
 
                         if (callbackResults.Success())
-                            GenericActionEvents<Screen>.OnScreenHiddenEvent(this as Screen);
+                        {
+                            callbackResults.SetResult(Blur(blurConfig));
+
+                            if (callbackResults.Success())
+                            {
+                                var hideScreenCallbackResults = await GetScreenView().HideScreenViewAsync();
+                                callbackResults.SetResult(hideScreenCallbackResults);
+
+                                if (callbackResults.Success())
+                                    GenericActionEvents<Screen>.OnScreenHiddenEvent(this as Screen);
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
                         else
-                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        {
+                            var hideScreenCallbackResults = await GetScreenView().HideScreenViewAsync();
+                            callbackResults.SetResult(hideScreenCallbackResults);
+
+                            if (callbackResults.Success())
+                                GenericActionEvents<Screen>.OnScreenHiddenEvent(this as Screen);
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
                     }
                     else
                     {
@@ -54770,7 +54814,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected ScreenUIPlacementType blurScreenPlacementType = ScreenUIPlacementType.None;
+            protected ScreenUIPlacementType blurScreenPlacementType = ScreenUIPlacementType.Default;
 
             #endregion
 
@@ -61836,9 +61880,9 @@ namespace Com.RedicalGames.Filar
         {
             //void Init(Action<CallbackData<ScreenUIData>> callBack = null);
 
-            Task<CallbackData<Screen>> ShowViewAsync();
+            Task<CallbackData<Screen>> ShowViewAsync(ScreenBlurConfig blurConfig = null);
 
-            Task<CallbackData<Screen>> HideViewSync();
+            Task<CallbackData<Screen>> HideViewSync(ScreenBlurConfig blurConfig = null);
 
             UIVisibilityState GetUIScreenInitialVisibility();
 

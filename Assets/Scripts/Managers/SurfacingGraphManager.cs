@@ -802,73 +802,89 @@ namespace Com.RedicalGames.Filar
 
                                     if (callbackResults.Success())
                                     {
-                                        switch (screenNode.GetState().GetData())
+                                        callbackResults.SetResult(screenNode.GetScreenBlurConfig());
+
+                                        if (callbackResults.Success())
                                         {
-                                            case AppData.UIVisibilityStateEvent.Show:
+                                            var blurConfig = screenNode.GetScreenBlurConfig().GetData();
 
-                                                screenUIManagerInstance.ShowScreenNode(screenNode.GetScreenType().GetData(), showScreenCallbackResults =>
+                                            callbackResults.SetResult(blurConfig.Initialized());
+
+                                            if (callbackResults.Success())
+                                            {
+                                                switch (screenNode.GetState().GetData())
                                                 {
-                                                    callbackResults.SetResult(showScreenCallbackResults);
+                                                    case AppData.UIVisibilityStateEvent.Show:
 
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        if (callbackResults.Success())
+                                                        screenUIManagerInstance.ShowScreenNode(screenNode.GetScreenType().GetData(), blurConfig, showScreenCallbackResults =>
                                                         {
-                                                            ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                                            callbackResults.SetResult(showScreenCallbackResults);
+
+                                                            if (callbackResults.Success())
                                                             {
-                                                                callbackResults.SetResult(proccessNextNodeCallbackResults);
+                                                                if (callbackResults.Success())
+                                                                {
+                                                                    ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(proccessNextNodeCallbackResults);
 
-                                                                if (callbackResults.UnSuccessful())
-                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                            });
-                                                        }
-                                                        else
-                                                        {
-                                                            graph.Reset(callback: graphResetedCallbackResults =>
-                                                            {
-                                                                callbackResults.SetResult(graphResetedCallbackResults);
+                                                                        if (callbackResults.UnSuccessful())
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    });
+                                                                }
+                                                                else
+                                                                {
+                                                                    graph.Reset(callback: graphResetedCallbackResults =>
+                                                                    {
+                                                                        callbackResults.SetResult(graphResetedCallbackResults);
 
-                                                                if (callbackResults.UnSuccessful())
-                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                            });
-                                                        }
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                });
-
-                                                break;
-
-                                            case AppData.UIVisibilityStateEvent.Hide:
-
-                                                screenUIManagerInstance.HideScreenNode(screenNode.GetScreenType().GetData(), hideScreenCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(hideScreenCallbackResults);
-
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        ProccessNextNode(graph, proccessNextNodeCallbackResults =>
-                                                        {
-                                                            callbackResults.SetResult(proccessNextNodeCallbackResults);
-
-                                                            if (callbackResults.UnSuccessful())
+                                                                        if (callbackResults.UnSuccessful())
+                                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                    });
+                                                                }
+                                                            }
+                                                            else
                                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                                         });
-                                                    }
-                                                    else
-                                                    {
-                                                        graph.Reset(callback: graphResetedCallbackResults =>
+
+                                                        break;
+
+                                                    case AppData.UIVisibilityStateEvent.Hide:
+
+                                                        screenUIManagerInstance.HideScreenNode(screenNode.GetScreenType().GetData(), blurConfig, hideScreenCallbackResults =>
                                                         {
-                                                            callbackResults.SetResult(graphResetedCallbackResults);
+                                                            callbackResults.SetResult(hideScreenCallbackResults);
 
-                                                            if (callbackResults.UnSuccessful())
-                                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                            if (callbackResults.Success())
+                                                            {
+                                                                ProccessNextNode(graph, proccessNextNodeCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(proccessNextNodeCallbackResults);
+
+                                                                    if (callbackResults.UnSuccessful())
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                });
+                                                            }
+                                                            else
+                                                            {
+                                                                graph.Reset(callback: graphResetedCallbackResults =>
+                                                                {
+                                                                    callbackResults.SetResult(graphResetedCallbackResults);
+
+                                                                    if (callbackResults.UnSuccessful())
+                                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                                });
+                                                            }
                                                         });
-                                                    }
-                                                });
 
-                                                break;
+                                                        break;
+                                                }
+                                            }
+                                            else
+                                                Log(callbackResults.resultCode, callbackResults.result, this);
                                         }
+                                        else
+                                            Log(callbackResults.resultCode, callbackResults.result, this);
                                     }
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

@@ -184,6 +184,9 @@ MonoBehaviour:
       _dynamic: 0
   screen: 8
   state: 1
+  screenBlurConfig:
+    active: 1
+    blurScreenPlacementType: 2
   input: 0
   output: 0
 --- !u!114 &-3196582865458820873
@@ -288,6 +291,9 @@ MonoBehaviour:
       _dynamic: 0
   screen: 7
   state: 2
+  screenBlurConfig:
+    active: 0
+    blurScreenPlacementType: 1
   input: 0
   output: 0
 --- !u!114 &-1162719336057333743

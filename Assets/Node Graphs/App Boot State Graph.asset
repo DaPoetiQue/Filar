@@ -481,6 +481,9 @@ MonoBehaviour:
       _dynamic: 0
   screen: 8
   state: 2
+  screenBlurConfig:
+    active: 1
+    blurScreenPlacementType: 2
   input: 0
   output: 0
 --- !u!114 &3064556262253802233
@@ -812,6 +815,9 @@ MonoBehaviour:
       _dynamic: 0
   screen: 9
   state: 2
+  screenBlurConfig:
+    active: 0
+    blurScreenPlacementType: 0
   input: 0
   output: 0
 --- !u!114 &7688695725690396013
@@ -827,7 +833,7 @@ MonoBehaviour:
   m_Name: Screen
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 696, y: -120}
+  position: {x: 696, y: -200}
   ports:
     keys:
     - input
@@ -862,6 +868,9 @@ MonoBehaviour:
       _dynamic: 0
   screen: 9
   state: 1
+  screenBlurConfig:
+    active: 0
+    blurScreenPlacementType: 0
   input: 0
   output: 0
 --- !u!114 &7915653251390207684
