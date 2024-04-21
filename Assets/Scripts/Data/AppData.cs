@@ -309,6 +309,7 @@ namespace Com.RedicalGames.Filar
             DynamicUITextDisplayerWidget,
             AppLanguageSelectionWidget,
             ProgressBarWidget,
+            ProgressRadialWidget,
             ConnectionStatusWidget
         }
 

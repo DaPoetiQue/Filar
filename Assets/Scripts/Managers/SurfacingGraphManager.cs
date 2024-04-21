@@ -22,7 +22,6 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         private List<SurfacingNodeGraph> loadedGraphs = new List<SurfacingNodeGraph>();
 
-        [SerializeField]
         private List<SurfacingNodeGraph> processedGraphs = new List<SurfacingNodeGraph>();
 
         #endregion

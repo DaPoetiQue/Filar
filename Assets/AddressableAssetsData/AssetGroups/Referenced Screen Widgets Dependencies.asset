@@ -77,6 +77,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Widget
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a74a813092d281643a72423cef02b7af
+    m_Address: Progress Radial Widget
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Widget
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ec15f0c1c9492c94fad18daa6184bacb, type: 2}
   m_SchemaSet:

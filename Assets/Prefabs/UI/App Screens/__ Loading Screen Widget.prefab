@@ -258,12 +258,18 @@ MonoBehaviour:
     constriants:
     - {fileID: 11400000, guid: dcdd662b0d0666d41b0c5fe79d21d414, type: 2}
   - name: Connection status pop Up
-    referenceType: 45
+    referenceType: 46
     uIPlacementType: 2
     containerType: 14
     initialVisibilityState: 2
     constriants:
     - {fileID: 11400000, guid: dcdd662b0d0666d41b0c5fe79d21d414, type: 2}
+  - name: Radial Progress status pop Up
+    referenceType: 45
+    uIPlacementType: 2
+    containerType: 14
+    initialVisibilityState: 2
+    constriants: []
   dynamicContainerList:
   - {fileID: 788115758341435691}
   - {fileID: 3090725572040038037}
