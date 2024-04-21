@@ -4543,7 +4543,9 @@ namespace Com.RedicalGames.Filar
 
                                 model.GetModel().GetData().SetActive(true);
 
-                                container.AddContent(model, false, true, true, contentAddedCallbackResults =>
+                                var screenBlurConfig = new AppData.ScreenBlurConfig(false, AppData.ScreenUIPlacementType.Default);
+
+                                container.AddContent(model, false, true, true, screenBlurConfig, contentAddedCallbackResults =>
                                 {
                                     callbackResults.SetResult(contentAddedCallbackResults);
                                 });
@@ -4582,7 +4584,9 @@ namespace Com.RedicalGames.Filar
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    container.AddContent(postContentHandler, false, false, true, contentAddedCallbackResults =>
+                                                    var screenBlurConfig = new AppData.ScreenBlurConfig(true, AppData.ScreenUIPlacementType.ForeGround);
+
+                                                    container.AddContent(postContentHandler, false, false, true, screenBlurConfig, contentAddedCallbackResults =>
                                                     {
                                                         callbackResults.SetResult(contentAddedCallbackResults);
 
@@ -4682,7 +4686,9 @@ namespace Com.RedicalGames.Filar
 
                                             model.GetModel().GetData().SetActive(true);
 
-                                            container.AddContent(model, false, true, true, contentAddedCallbackResults =>
+                                            var screenBlurConfig = new AppData.ScreenBlurConfig(false, AppData.ScreenUIPlacementType.Default);
+
+                                            container.AddContent(model, false, true, true, screenBlurConfig, contentAddedCallbackResults =>
                                             {
                                                 callbackResults.SetResult(contentAddedCallbackResults);
                                             });
@@ -4725,7 +4731,9 @@ namespace Com.RedicalGames.Filar
 
                                                                 if (callbackResults.Success())
                                                                 {
-                                                                    container.AddContent(postContentHandler, false, true, true, contentAddedCallbackResults =>
+                                                                    var screenBlurConfig = new AppData.ScreenBlurConfig(false, AppData.ScreenUIPlacementType.Default);
+
+                                                                    container.AddContent(postContentHandler, false, true, true, screenBlurConfig, contentAddedCallbackResults =>
                                                                     {
                                                                         callbackResults.SetResult(contentAddedCallbackResults);
 

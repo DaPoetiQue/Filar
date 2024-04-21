@@ -6745,7 +6745,7 @@ namespace Com.RedicalGames.Filar
 
             #region Contents
 
-            public void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, Action<Callback> callback = null) where T : SelectableWidgetComponent
+            public void AddContent<T>(T content, bool keepWorldPosition = false, bool isActive = true, bool updateContainer = false, ScreenBlurConfig loadingSpinnerWidgetBlurConfig = null, Action<Callback> callback = null) where T : SelectableWidgetComponent
             {
                 try
                 {
@@ -6784,6 +6784,43 @@ namespace Com.RedicalGames.Filar
 
                                                 if (updateContainer)
                                                     OnUpdatedContainerSize();
+
+                                                callbackResults.SetResult(Helpers.GetAppComponentValid(loadingSpinnerWidgetBlurConfig, "Blur Config", "Add Content With Hidding Loading Spinner Is Not Assigned."));
+
+                                                if(callbackResults.Success())
+                                                {
+                                                    callbackResults.SetResult(Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance", "Add Content Failed - Screen UI Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                                                    if(callbackResults.Success())
+                                                    {
+                                                        var screenUIManagerInstance = Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                                                        callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreen());
+
+                                                        if (callbackResults.Success())
+                                                        {
+                                                            var screen = screenUIManagerInstance.GetCurrentScreen().GetData();
+
+                                                            screen.HideWidget(WidgetType.LoadingWidget, widgetHiddenCallbackResults => 
+                                                            {
+                                                                callbackResults.SetResult(widgetHiddenCallbackResults);
+
+                                                                if(callbackResults.UnSuccessful())
+                                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                                            }, loadingSpinnerWidgetBlurConfig);
+                                                        }
+                                                        else
+                                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    }
+                                                    else
+                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                }
+                                                else
+                                                {
+                                                    callbackResults.result = "Add Content With Hidding Loading Spinner Is Not Assigned - Successfully Continuing Execution.";
+                                                    callbackResults.resultCode = Helpers.SuccessCode;
+                                                }
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

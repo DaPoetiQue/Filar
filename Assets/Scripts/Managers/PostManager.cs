@@ -235,7 +235,9 @@ namespace Com.RedicalGames.Filar
                                                             {
                                                                 var postContent = GetPostContent(post).GetData();
 
-                                                                container.AddContent(postContent, false, true, true, contentAddedCallbackResults =>
+                                                                var screenBlurConfig = new AppData.ScreenBlurConfig(false, AppData.ScreenUIPlacementType.Default);
+
+                                                                container.AddContent(postContent, false, true, true, screenBlurConfig, contentAddedCallbackResults =>
                                                                 {
                                                                     callbackResults.SetResult(contentAddedCallbackResults);
 
@@ -311,7 +313,9 @@ namespace Com.RedicalGames.Filar
                                                     {
                                                         var postContent = GetPostContent(post).GetData();
 
-                                                        container.AddContent(postContent, false, true, true, contentAddedCallbackResults =>
+                                                        var screenBlurConfig = new AppData.ScreenBlurConfig(false, AppData.ScreenUIPlacementType.Default);
+
+                                                        container.AddContent(postContent, false, true, true, screenBlurConfig, contentAddedCallbackResults =>
                                                         {
                                                             callbackResults.SetResult(contentAddedCallbackResults);
 
