@@ -186,7 +186,7 @@ MonoBehaviour:
   state: 1
   screenBlurConfig:
     active: 1
-    blurScreenPlacementType: 2
+    blurScreenPlacementType: 0
   input: 0
   output: 0
 --- !u!114 &-3196582865458820873
@@ -293,7 +293,7 @@ MonoBehaviour:
   state: 2
   screenBlurConfig:
     active: 0
-    blurScreenPlacementType: 1
+    blurScreenPlacementType: 0
   input: 0
   output: 0
 --- !u!114 &-1162719336057333743
@@ -389,7 +389,7 @@ MonoBehaviour:
   state: 1
   screenBlurConfig:
     active: 1
-    blurScreenPlacementType: 2
+    blurScreenPlacementType: 0
   input: 0
   output: 0
 --- !u!114 &11400000
@@ -417,8 +417,8 @@ MonoBehaviour:
   - {fileID: -1162719336057333743}
   - {fileID: -5689474334612324496}
   type: 1
-  currentNode: {fileID: 6930177644510066637}
-  completed: 1
+  currentNode: {fileID: -3196582865458820873}
+  completed: 0
 --- !u!114 &1814648347888823511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -466,7 +466,7 @@ MonoBehaviour:
   state: 2
   screenBlurConfig:
     active: 1
-    blurScreenPlacementType: 2
+    blurScreenPlacementType: 0
   input: 0
   output: 0
 --- !u!114 &4984186765550847915

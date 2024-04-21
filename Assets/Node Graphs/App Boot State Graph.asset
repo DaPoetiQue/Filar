@@ -483,7 +483,7 @@ MonoBehaviour:
   state: 2
   screenBlurConfig:
     active: 1
-    blurScreenPlacementType: 2
+    blurScreenPlacementType: 0
   input: 0
   output: 0
 --- !u!114 &3064556262253802233

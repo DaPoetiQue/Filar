@@ -4537,13 +4537,13 @@ namespace Com.RedicalGames.Filar
 
                             callbackResults.SetResult(storedSessionDataCallbackResults);
 
+                            var screenBlurConfig = new AppData.ScreenBlurConfig(true, AppData.ScreenUIPlacementType.Default);
+
                             if (callbackResults.Success())
                             {
                                 var model = storedSessionDataCallbackResults.GetData();
 
                                 model.GetModel().GetData().SetActive(true);
-
-                                var screenBlurConfig = new AppData.ScreenBlurConfig(false, AppData.ScreenUIPlacementType.Default);
 
                                 container.AddContent(model, false, true, true, screenBlurConfig, contentAddedCallbackResults =>
                                 {
@@ -4584,8 +4584,6 @@ namespace Com.RedicalGames.Filar
 
                                                 if (callbackResults.Success())
                                                 {
-                                                    var screenBlurConfig = new AppData.ScreenBlurConfig(true, AppData.ScreenUIPlacementType.ForeGround);
-
                                                     container.AddContent(postContentHandler, false, false, true, screenBlurConfig, contentAddedCallbackResults =>
                                                     {
                                                         callbackResults.SetResult(contentAddedCallbackResults);

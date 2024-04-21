@@ -231,7 +231,7 @@ MonoBehaviour:
   transitionableUIMountList: []
   initialVisibilityState: 2
   referencedWidgetDependencyAssets:
-  - name: Image Displayer Widget
+  - name: Background Splash Displayer Widget
     referenceType: 36
     uIPlacementType: 1
     containerType: 14
@@ -250,23 +250,23 @@ MonoBehaviour:
     containerType: 14
     initialVisibilityState: 2
     constriants: []
-  - name: Content Download pop Up
-    referenceType: 44
-    uIPlacementType: 2
+  - name: Connection status pop Up
+    referenceType: 46
+    uIPlacementType: 0
     containerType: 14
     initialVisibilityState: 2
     constriants:
     - {fileID: 11400000, guid: dcdd662b0d0666d41b0c5fe79d21d414, type: 2}
-  - name: Connection status pop Up
-    referenceType: 46
-    uIPlacementType: 2
+  - name: Progress Bar Widget
+    referenceType: 44
+    uIPlacementType: 0
     containerType: 14
     initialVisibilityState: 2
     constriants:
     - {fileID: 11400000, guid: dcdd662b0d0666d41b0c5fe79d21d414, type: 2}
   - name: Radial Progress status pop Up
     referenceType: 45
-    uIPlacementType: 2
+    uIPlacementType: 0
     containerType: 14
     initialVisibilityState: 2
     constriants: []
@@ -772,10 +772,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 45980627133997665}
-  - {fileID: 45980628693252298}
-  - {fileID: 45980628830645825}
   - {fileID: 7685170639638761031}
+  - {fileID: 45980628693252298}
   - {fileID: 45980627707284285}
+  - {fileID: 45980628830645825}
   - {fileID: 45980628181332839}
   - {fileID: 45980628361793436}
   - {fileID: 3224757040882035339}
