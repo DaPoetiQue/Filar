@@ -18,7 +18,10 @@ namespace Com.RedicalGames.Filar
 		public int successCode;
 
 		[Output]
-		public int errorCode;
+		public int	internalError, 
+					networkError,
+					serverError, 
+					storageError;
 
 		#endregion
 

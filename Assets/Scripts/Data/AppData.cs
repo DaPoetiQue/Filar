@@ -1523,7 +1523,8 @@ namespace Com.RedicalGames.Filar
             EmailVerificationPopUp,
             EmailVerificationSentPopUp,
             VerifiedEmailAlreadyInUsePopUp,
-            UnverifiedEmailAlreadyInUsePopUp
+            UnverifiedEmailAlreadyInUsePopUp,
+            ContactFilarPopUp
         }
 
         public enum TooltipTemplateType
@@ -29713,10 +29714,10 @@ namespace Com.RedicalGames.Filar
 
             private void SetTransitionDestination(object targetObject)
             {
-                (Vector2 position, Vector3 scale, Vector3 rotationAngle)? targetPose = targetObject as (Vector2 position, Vector3 scale, Vector3 rotationAngle)?;
+                (Vector2 position, Vector2 scale, Vector3 rotationAngle)? targetPose = targetObject as (Vector2 position, Vector2 scale, Vector3 rotationAngle)?;
 
                 transitionPosition = (Vector2)targetPose?.position;
-                transitionScale = (Vector3)targetPose?.scale;
+                transitionScale = (Vector2)targetPose?.scale;
                 transitionRotation = (Vector3)targetPose?.rotationAngle;
             }
 

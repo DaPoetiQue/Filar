@@ -1,5 +1,49 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7042821694834812762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f670a967d836014786a5ba6e5363715, type: 3}
+  m_Name: Popup
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1144, y: 440}
+  ports:
+    keys:
+    - input
+    - output
+    values:
+    - _fieldName: input
+      _node: {fileID: -7042821694834812762}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: storageError
+        node: {fileID: -3196582865458820873}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: output
+      _node: {fileID: -7042821694834812762}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  popupTemplate: 0
+  state: 0
+  input: 0
+  output: 0
 --- !u!114 &-6652897066235662370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,7 +251,10 @@ MonoBehaviour:
     keys:
     - input
     - successCode
-    - errorCode
+    - internalError
+    - networkError
+    - serverError
+    - storageError
     values:
     - _fieldName: input
       _node: {fileID: -3196582865458820873}
@@ -233,11 +280,50 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
-    - _fieldName: errorCode
+    - _fieldName: internalError
       _node: {fileID: -3196582865458820873}
       _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
-      connections: []
+      connections:
+      - fieldName: input
+        node: {fileID: 6558821523990565806}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: networkError
+      _node: {fileID: -3196582865458820873}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: input
+        node: {fileID: 8988575465578313272}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: serverError
+      _node: {fileID: -3196582865458820873}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: input
+        node: {fileID: 4945820093588575086}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: storageError
+      _node: {fileID: -3196582865458820873}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: input
+        node: {fileID: -7042821694834812762}
+        reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
@@ -245,7 +331,10 @@ MonoBehaviour:
   sequences: 0100000002000000050000000600000008000000070000000300000004000000
   input: 0
   successCode: 0
-  errorCode: 0
+  internalError: 0
+  networkError: 0
+  serverError: 0
+  storageError: 0
 --- !u!114 &-2645912851392787660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -418,6 +507,10 @@ MonoBehaviour:
   - {fileID: -5689474334612324496}
   - {fileID: 8348827550267115734}
   - {fileID: 3467734836641259236}
+  - {fileID: 8988575465578313272}
+  - {fileID: 6558821523990565806}
+  - {fileID: 4945820093588575086}
+  - {fileID: -7042821694834812762}
   type: 1
   currentNode: {fileID: 6930177644510066637}
   completed: 1
@@ -517,6 +610,50 @@ MonoBehaviour:
   eventType: 1
   input: 0
   output: 0
+--- !u!114 &4945820093588575086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f670a967d836014786a5ba6e5363715, type: 3}
+  m_Name: Popup
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1144, y: 280}
+  ports:
+    keys:
+    - input
+    - output
+    values:
+    - _fieldName: input
+      _node: {fileID: 4945820093588575086}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: serverError
+        node: {fileID: -3196582865458820873}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: output
+      _node: {fileID: 4945820093588575086}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  popupTemplate: 0
+  state: 0
+  input: 0
+  output: 0
 --- !u!114 &4984186765550847915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -561,6 +698,50 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   screen: 8
+  input: 0
+  output: 0
+--- !u!114 &6558821523990565806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f670a967d836014786a5ba6e5363715, type: 3}
+  m_Name: Popup
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1144, y: -8}
+  ports:
+    keys:
+    - input
+    - output
+    values:
+    - _fieldName: input
+      _node: {fileID: 6558821523990565806}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: internalError
+        node: {fileID: -3196582865458820873}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: output
+      _node: {fileID: 6558821523990565806}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  popupTemplate: 6
+  state: 2
   input: 0
   output: 0
 --- !u!114 &6930177644510066637
@@ -638,5 +819,49 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   eventType: 2
+  input: 0
+  output: 0
+--- !u!114 &8988575465578313272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f670a967d836014786a5ba6e5363715, type: 3}
+  m_Name: Popup
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1144, y: 136}
+  ports:
+    keys:
+    - input
+    - output
+    values:
+    - _fieldName: input
+      _node: {fileID: 8988575465578313272}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: networkError
+        node: {fileID: -3196582865458820873}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: output
+      _node: {fileID: 8988575465578313272}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  popupTemplate: 1
+  state: 2
   input: 0
   output: 0

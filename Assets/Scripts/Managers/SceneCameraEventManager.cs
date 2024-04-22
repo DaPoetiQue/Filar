@@ -25,6 +25,8 @@ namespace Com.RedicalGames.Filar
         private float rotationSpeed; // Mouse sensitivity
         private float damping;
 
+        [SerializeField]
+        [Range(0, 10)]
         private float distance = 5.0f; // Distance from the target
 
         private float currentX = 0.0f;
@@ -427,10 +429,6 @@ namespace Com.RedicalGames.Filar
 
             return callbackResults;
         }
-
-        #endregion
-
-        #region Camera Functions
 
         #endregion
 
