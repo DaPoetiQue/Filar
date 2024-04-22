@@ -199,7 +199,6 @@ namespace Com.RedicalGames.Filar
             }
         }
 
-
         protected override void OnFingerMoved(Finger finger)
         {
             if (isFingerDown)

@@ -199,9 +199,42 @@ namespace Com.RedicalGames.Filar
                     }
                     else
                     {
-                        callbackResults.result = $"Get Selectable Assets Failed - There Are No Selectable Assets Found For : {GetName()} - {GetName()}'s Child Count IS : {GetModel().GetData().transform.childCount} - Invalid Operation.";
-                        callbackResults.data = default;
-                        callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                        var selectable = GetModel().GetData().transform.GetComponent<SelectableSceneAssetHandler>();
+
+                        callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(selectable, "Selectable", $"Get Selectable Assets Failed - Couldn't Find Selectable Component For : {GetName()} - Invalid Operation."));
+
+                        if (callbackResults.Success())
+                        {
+                            if (!selectableAssets.Contains(selectable))
+                            {
+                                selectableAssets.Add(selectable);
+
+                                if (selectableAssets.Contains(selectable))
+                                    callbackResults.result = $"Add Selectable Asset Success : {selectable.GetName()} have Been Added To Selectable Assets For : {GetName()}";
+                                else
+                                {
+                                    callbackResults.result = $"Add Selectable Asset Failed - Selectable Asset : {selectable.GetName()} Couldn't Be Been Added To Selectable Assets For : {GetName()} - Invalid Operation.";
+                                    callbackResults.resultCode = AppData.Helpers.ErrorCode;
+                                }
+                            }
+                            else
+                            {
+                                callbackResults.result = $"Add Selectable Asset Failed - Selectable Asset : {selectable.GetName()} Already Exists In Selectable Assets For : {GetName()} - Invalid Operation.";
+                                callbackResults.resultCode = AppData.Helpers.WarningCode;
+                            }
+
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentsValid(selectableAssets, "Selectable Assets", $"Get Selectable Assets Failed - There Are No Selectable Assets Found For : {GetName()} - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                callbackResults.result = $"Get Selectable Assets Success - {selectableAssets.Count} : Selectable Asset(s) Value For : {GetName()} Has Been Successfully Initialized.";
+                                callbackResults.data = selectableAssets;
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                 }
             }

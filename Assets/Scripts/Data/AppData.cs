@@ -9858,6 +9858,9 @@ namespace Com.RedicalGames.Filar
                                             meshRenderer.sharedMaterial = meshData.material;
                                             meshRenderer.UpdateGIMaterials();
 
+                                            loadedRootParentGameObject.AddComponent<MeshCollider>().convex = true;
+                                            loadedRootParentGameObject.AddComponent<SelectableSceneAssetHandler>();
+
                                             var loadedRootTransformData = (rootGameObjectTransformData.transform.name, loadedRootParentGameObject, rootGameObjectTransformData.transformInfo.parentName);
                                             var loadedRootTransform = (rootGameObjectTransformData.transform.localPosition, rootGameObjectTransformData.transform.localScale, rootGameObjectTransformData.transform.localEulerAngles);
 
