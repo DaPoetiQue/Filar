@@ -78,8 +78,6 @@ namespace Com.RedicalGames.Filar
                             }
                             else
                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                            OnLoadInProgressEvent();
                         }
 
                         break;
