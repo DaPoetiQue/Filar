@@ -3718,13 +3718,15 @@ MonoBehaviour:
   - name: Landing Page Camera
     eventCamera: {fileID: 555689117}
     screenType: 7
-    transitionableUIMountList:
-    - name: Menu Open Mount
+    transitionType: 2
+    transitionState: 1
+    transitionableMounts:
+    - name: On Post Widget Visible Mount
       mount: {fileID: 1231959794}
       transitionSpeed: 2.5
       eventTriggerDistance: 1
       mountType: 1
-    - name: Menu Closed Mount
+    - name: On Post Widget Hidden Mount
       mount: {fileID: 1770299843}
       transitionSpeed: 2.5
       eventTriggerDistance: 1
@@ -13240,7 +13242,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1231959792}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 800, z: -4250}
+  m_LocalPosition: {x: 0, y: 600, z: -4250}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16305,7 +16307,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1770299841}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 800, z: -4000}
+  m_LocalPosition: {x: 0, y: 800, z: -3650}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

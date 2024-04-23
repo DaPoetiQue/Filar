@@ -5904,7 +5904,15 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            private List<WorldSpaceTransitionableMountComponent<UIVisibilityState>> transitionableUIMountList = new List<WorldSpaceTransitionableMountComponent<UIVisibilityState>>();
+            private UITransitionType transitionType = UITransitionType.None;
+
+            [Space(5)]
+            [SerializeField]
+            private UITransitionStateType transitionState = UITransitionStateType.None;
+
+            [Space(5)]
+            [SerializeField]
+            private List<WorldSpaceTransitionableMountComponent<UIVisibilityState>> transitionableMounts = new List<WorldSpaceTransitionableMountComponent<UIVisibilityState>>();
 
             private WorldSpaceTransitionableComponent transitionableComponent;
 
@@ -5915,6 +5923,64 @@ namespace Com.RedicalGames.Filar
             #endregion
 
             #region Main
+
+            public void Config(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTransitionType());
+
+                    if(callbackResults.Success())
+                        transitionableComponent = new WorldSpaceTransitionableComponent(eventCamera.transform, GetTransitionType().GetData(), GetTransitionStateType().GetData(), 5.0f);
+                    else
+                    {
+                        callbackResults.result = $"Transition Are Not Enabled For Camera : {GetName()} - Continuing Execution.";
+                        callbackResults.resultCode = Helpers.SuccessCode;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
+
+            public void InvokeTransition(int mountIndex, Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(Initialized());
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(GetTransitionableComponent());
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetTransitionableMountAtIndex(mountIndex));
+
+                        if (callbackResults.Success())
+                        {
+                            var mount = GetTransitionableMountAtIndex(mountIndex).GetData();
+
+                            GetTransitionableComponent().GetData().InvokeTransition(mount, onTransitionCallbackResults => 
+                            {
+                                callbackResults.SetResult(onTransitionCallbackResults);
+
+                                if(callbackResults.UnSuccessful())
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                callback?.Invoke(callbackResults);
+            }
 
             public CallbackData<Camera> GetEventCamera()
             {
@@ -5950,6 +6016,40 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public CallbackData<UITransitionType> GetTransitionType()
+            {
+                var callbackResults = new CallbackData<UITransitionType>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(transitionType, "Transition Type", $"Get Transition Type Failed - Transition Type For : {GetName()} Value Is Set To Default : {transitionType} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Transition Type Success - Transition Type For : {GetName()} Value Is Set To : {transitionType}";
+                    callbackResults.data = transitionType;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            public CallbackData<UITransitionStateType> GetTransitionStateType()
+            {
+                var callbackResults = new CallbackData<UITransitionStateType>();
+
+                callbackResults.SetResult(Helpers.GetAppEnumValueValid(transitionState, "Transition State Type", $"Get Transition State Type Failed - Transition State Type For : {GetName()} Value Is Set To Default : {transitionState} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Transition State Type Success - Transition State Type For : {GetName()} Value Is Set To : {transitionState}";
+                    callbackResults.data = transitionState;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
             public Callback Active()
             {
                 var callbackResults = new Callback(Initialized());
@@ -5970,12 +6070,93 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            private Callback Initialized()
+            public Callback Initialized()
             {
                 var callbackResults = new Callback(GetEventCamera());
 
                 if (callbackResults.Success())
+                {
                     callbackResults.SetResult(GetScreenType());
+
+                    if(callbackResults.Success())
+                    {
+                        callbackResults.SetResult(GetTransitionType());
+
+                        if(callbackResults.Success())
+                        {
+                            callbackResults.SetResult(GetTransitionableMounts());
+
+                            if (callbackResults.Success())
+                                callbackResults.SetResult(GetTransitionStateType());
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                        {
+                            callbackResults.result = $"There Are No Transitions Set For Camera : {GetName()} - Continuing Execution.";
+                            callbackResults.resultCode = Helpers.SuccessCode;
+                        }
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private CallbackData<WorldSpaceTransitionableComponent> GetTransitionableComponent()
+            {
+                var callbackResults = new CallbackData<WorldSpaceTransitionableComponent>(Helpers.GetAppComponentValid(transitionableComponent, "Transitionable Component",
+                    "Get Transitionable Component Failed - Transitionable Component Value Is Null - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+
+                    callbackResults.result = $"Get Transitionable Component Success - A Transitionable Component Is Found.";
+                    callbackResults.data = transitionableComponent;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private CallbackDataList<WorldSpaceTransitionableMountComponent<UIVisibilityState>> GetTransitionableMounts()
+            {
+                var callbackResults = new CallbackDataList<WorldSpaceTransitionableMountComponent<UIVisibilityState>>(Helpers.GetAppComponentsValid(transitionableMounts, "Transitionable Mounts",
+                    "Get Transitionable Mounts Failed - There Are No Transitionable Mounts Found - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.result = $"Get Transitionable Mounts Success - There Are {transitionableMounts.Count} Transitionable Mounts Found";
+                    callbackResults.data = transitionableMounts;
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                return callbackResults;
+            }
+
+            private CallbackData<WorldSpaceTransitionableMountComponent<UIVisibilityState>> GetTransitionableMountAtIndex(int index)
+            {
+                var callbackResults = new CallbackData<WorldSpaceTransitionableMountComponent<UIVisibilityState>>(GetTransitionableMounts());
+
+                if (callbackResults.Success())
+                {
+                    if(index <= GetTransitionableMounts().GetData().Count - 1)
+                    {
+                        callbackResults.result = $"Get Transitionable Mount At index : {index} Success.";
+                        callbackResults.data = GetTransitionableMounts().GetData()[index];
+                    }
+                    else
+                    {
+                        callbackResults.result = $"Get Transitionable Mount At index : {index} Failed - Index Is out Of Range - Found : {GetTransitionableMounts().GetData().Count} Items - Invalid Operation.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = Helpers.ErrorCode;
+                    }
+                }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
 
@@ -30962,6 +31143,14 @@ namespace Com.RedicalGames.Filar
 
             #region Rect Transform
 
+            public WorldSpaceTransitionableComponent(Transform source, UITransitionType transitionType, UITransitionStateType transitionState)
+            {
+                this.source = source;
+                this.transitionType = transitionType;
+                this.transitionState = transitionState;
+
+                SetSourceOriginPose(this.source);
+            }
 
             public WorldSpaceTransitionableComponent(Transform source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false)
             {

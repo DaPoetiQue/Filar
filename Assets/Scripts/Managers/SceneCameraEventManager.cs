@@ -85,6 +85,10 @@ namespace Com.RedicalGames.Filar
                             appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenShownEvent, AppData.EventType.OnScreenShown, true);
                             appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenHiddenEvent, AppData.EventType.OnScreenHidden, true);
 
+                            // Temp Test - Remove After.
+                            appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetShownEvent, AppData.EventType.OnWidgetShown, true);
+                            appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetHiddenEvent, AppData.EventType.OnWidgetHidden, true);
+
                             appEventsManagerInstance.OnEventSubscription(OnUpdateEvent, AppData.EventType.OnUpdate, true);
                             appEventsManagerInstance.OnEventSubscription(OnResetEventCameraScenePose, AppData.EventType.OnUpdate, true);
 
@@ -93,6 +97,34 @@ namespace Com.RedicalGames.Filar
                             SetDefaultEventCameraScenePose(GetEventCameraScene().GetData(), poseSetCallbackResults => 
                             {
                                 callbackResults.SetResult(poseSetCallbackResults);
+
+                                if(callbackResults.Success())
+                                {
+                                    for (int i = 0; i < GetSceneEventCameras().GetData().Count; i++)
+                                    {
+                                        var sceneEventCamera = GetSceneEventCameras().GetData()[i];
+
+                                        callbackResults.SetResult(sceneEventCamera.Initialized());
+
+                                        if(callbackResults.Success())
+                                        {
+                                            sceneEventCamera.Config(sceneEventCameraConfiguredCallbackResults => 
+                                            {
+                                                callbackResults.SetResult(sceneEventCameraConfiguredCallbackResults);
+
+                                                if(callbackResults.UnSuccessful())
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                        {
+                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             });
                         }
                         else
@@ -141,6 +173,60 @@ namespace Com.RedicalGames.Filar
         }
 
         #endregion
+
+        private void OnWidgetShownEvent(AppData.Widget widget)
+        {
+            var callbackResults = new AppData.Callback();
+
+            if(widget.GetType().GetData() == AppData.WidgetType.PostsWidget)
+            {
+                callbackResults.SetResult(GetSceneEventCamera(screen.GetType().GetData()));
+
+                if (callbackResults.Success())
+                {
+                    LogInfo($"Logger_Cats: // Invoking Camera Transitions.", this);
+
+                    var eventCamera = GetSceneEventCamera(screen.GetType().GetData()).GetData();
+
+                    eventCamera.InvokeTransition(0, transitionInvokedCallbackResults =>
+                    {
+                        callbackResults.SetResult(transitionInvokedCallbackResults);
+
+                        if (callbackResults.Success())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+        }
+
+        private void OnWidgetHiddenEvent(AppData.Widget widget)
+        {
+            var callbackResults = new AppData.Callback();
+
+            if (widget.GetType().GetData() == AppData.WidgetType.PostsWidget)
+            {
+                callbackResults.SetResult(GetSceneEventCamera(screen.GetType().GetData()));
+
+                if (callbackResults.Success())
+                {
+                    LogInfo($"Logger_Cats: // Invoking Camera Transitions.", this);
+
+                    var eventCamera = GetSceneEventCamera(screen.GetType().GetData()).GetData();
+
+                    eventCamera.InvokeTransition(1, transitionInvokedCallbackResults =>
+                    {
+                        callbackResults.SetResult(transitionInvokedCallbackResults);
+
+                        if (callbackResults.Success())
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+        }
 
         private void OnPostSelected(AppData.Post post)
         {
