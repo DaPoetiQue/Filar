@@ -215,11 +215,11 @@ namespace Com.RedicalGames.Filar
                                                 {
                                                     var assetBundles = databaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                                                    callbackResults.SetResult(assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene));
+                                                    callbackResults.SetResult(assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ViewSpaceType.WorldSpace));
 
                                                     if (callbackResults.Success())
                                                     {
-                                                        var container = assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene).GetData();
+                                                        var container = assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ViewSpaceType.WorldSpace).GetData();
 
                                                         SetInProgress(true);
 
@@ -293,11 +293,11 @@ namespace Com.RedicalGames.Filar
                                         {
                                             var assetBundles = databaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                                            callbackResults.SetResult(assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene));
+                                            callbackResults.SetResult(assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ViewSpaceType.WorldSpace));
 
                                             if (callbackResults.Success())
                                             {
-                                                var container = assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene).GetData();
+                                                var container = assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ViewSpaceType.WorldSpace).GetData();
 
                                                 SetInProgress(true);
 

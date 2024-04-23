@@ -182,7 +182,7 @@ namespace Com.RedicalGames.Filar
                         {
                             var assetBundles = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                            callbackResults.SetResult(assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene));
+                            callbackResults.SetResult(assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ViewSpaceType.WorldSpace));
 
                             if (callbackResults.Success())
                             {
@@ -194,7 +194,7 @@ namespace Com.RedicalGames.Filar
 
                                 if (callbackResults.Success())
                                 {
-                                    var container = assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene).GetData();
+                                    var container = assetBundles.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ViewSpaceType.WorldSpace).GetData();
 
                                     var clearContainerCallbackResultsTask = await container.ClearAsync(true, 0.5f);
 

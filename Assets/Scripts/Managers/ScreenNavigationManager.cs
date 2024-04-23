@@ -92,7 +92,7 @@ namespace Com.RedicalGames.Filar
                         {
                             var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                            assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenType().GetData(), AppData.ContentContainerType.FolderStuctureContent, AppData.ContainerViewSpaceType.Screen, dynamicContainerCallbackResults => 
+                            assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenType().GetData(), AppData.ContentContainerType.FolderStuctureContent, AppData.ViewSpaceType.ScreenSpace, dynamicContainerCallbackResults => 
                             {
                                 callbackResults.SetResult(dynamicContainerCallbackResults);
 

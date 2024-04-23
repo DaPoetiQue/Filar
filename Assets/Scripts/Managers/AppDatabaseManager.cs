@@ -4010,7 +4010,7 @@ namespace Com.RedicalGames.Filar
                                     {
                                         LogInfo("Log_Info//: Page Refreshed", this);
 
-                                        assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(refreshedScreen.GetScreenType().GetData(), AppData.ContentContainerType.PostContainer, AppData.ContainerViewSpaceType.Screen, async containerCallbackResults =>
+                                        assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(refreshedScreen.GetScreenType().GetData(), AppData.ContentContainerType.PostContainer, AppData.ViewSpaceType.ScreenSpace, async containerCallbackResults =>
                                         {
                                             callbackResults.SetResult(containerCallbackResults);
 
@@ -4519,7 +4519,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var post = postManagerInstance.GetPost().GetData();
 
-                    var containerCallbackResults = assetBundlesLibrary.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene);
+                    var containerCallbackResults = assetBundlesLibrary.GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ViewSpaceType.WorldSpace);
 
                     callbackResults.SetResult(containerCallbackResults);
 
@@ -4650,7 +4650,7 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        var containerCallbackResults = GetAssetBundlesLibrary().GetData().GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ContainerViewSpaceType.Scene);
+                        var containerCallbackResults = GetAssetBundlesLibrary().GetData().GetDynamicContainer<DynamicContentContainer>(AppData.ScreenType.LandingPageScreen, AppData.ContentContainerType.SceneContentsContainer, AppData.ViewSpaceType.WorldSpace);
 
                         callbackResults.SetResult(containerCallbackResults);
 

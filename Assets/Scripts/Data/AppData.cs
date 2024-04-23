@@ -5680,7 +5680,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public void GetDynamicContainer<T>(ScreenType screenType, ContentContainerType containerType, ContainerViewSpaceType viewSpaceType, Action<CallbackData<T>> callback) where T : DynamicContainerBase
+            public void GetDynamicContainer<T>(ScreenType screenType, ContentContainerType containerType, ViewSpaceType viewSpaceType, Action<CallbackData<T>> callback) where T : DynamicContainerBase
             {
                 var callbackResults = new CallbackData<T>();
 
@@ -5710,7 +5710,7 @@ namespace Com.RedicalGames.Filar
                 callback?.Invoke(callbackResults);
             }
 
-            public CallbackData<T> GetDynamicContainer<T>(ScreenType screenType, ContentContainerType containerType, ContainerViewSpaceType viewSpaceType) where T : DynamicContainerBase
+            public CallbackData<T> GetDynamicContainer<T>(ScreenType screenType, ContentContainerType containerType, ViewSpaceType viewSpaceType) where T : DynamicContainerBase
             {
                 var callbackResults = new CallbackData<T>();
 
@@ -6071,11 +6071,11 @@ namespace Com.RedicalGames.Filar
 
         #region Container  Data Types
 
-        public enum ContainerViewSpaceType
+        public enum ViewSpaceType
         {
             None,
-            Scene,
-            Screen
+            WorldSpace,
+            ScreenSpace
         }
 
         #endregion
@@ -6272,15 +6272,15 @@ namespace Com.RedicalGames.Filar
 
             #region Container Data
 
-            public CallbackData<T> GetContainer<T>(ContainerViewSpaceType viewSpaceType) where T : Transform
+            public CallbackData<T> GetContainer<T>(ViewSpaceType viewSpaceType) where T : Transform
             {
                 CallbackData<T> callbackResults = new CallbackData<T>();
 
-                if (viewSpaceType != ContainerViewSpaceType.None)
+                if (viewSpaceType != ViewSpaceType.None)
                 {
                     switch (viewSpaceType)
                     {
-                        case ContainerViewSpaceType.Screen:
+                        case ViewSpaceType.ScreenSpace:
 
                             callbackResults.result = "Screen Container Found.";
                             callbackResults.data = sceneContainer as T;
@@ -6288,7 +6288,7 @@ namespace Com.RedicalGames.Filar
 
                             break;
 
-                        case ContainerViewSpaceType.Scene:
+                        case ViewSpaceType.WorldSpace:
 
                             callbackResults.result = "Scene Container Found.";
                             callbackResults.data = screenContainer as T;
@@ -6383,16 +6383,16 @@ namespace Com.RedicalGames.Filar
 
             #region Size Data
 
-            public float GetWidth(ContainerViewSpaceType viewSpaceType) => (width != 0)? width : ((viewSpaceType == ContainerViewSpaceType.Screen)? screenContainer.sizeDelta.x : sceneContainer.transform.localScale.x);
-            public float GetHeight(ContainerViewSpaceType viewSpaceType) => (height != 0) ? height : ((viewSpaceType == ContainerViewSpaceType.Screen) ? screenContainer.sizeDelta.y : sceneContainer.transform.localScale.y);
+            public float GetWidth(ViewSpaceType viewSpaceType) => (width != 0)? width : ((viewSpaceType == ViewSpaceType.ScreenSpace)? screenContainer.sizeDelta.x : sceneContainer.transform.localScale.x);
+            public float GetHeight(ViewSpaceType viewSpaceType) => (height != 0) ? height : ((viewSpaceType == ViewSpaceType.ScreenSpace) ? screenContainer.sizeDelta.y : sceneContainer.transform.localScale.y);
             public float GetDepth() => (depth != 0)? depth : sceneContainer.transform.localScale.x;
 
             #endregion
 
             #region Position Data
 
-            public float GetXPosition(ContainerViewSpaceType viewSpaceType) => (xPosition != 0) ? xPosition : ((viewSpaceType == ContainerViewSpaceType.Screen) ? screenContainer.anchoredPosition.x : sceneContainer.transform.position.x);
-            public float GetYPosition(ContainerViewSpaceType viewSpaceType) => (yPosition != 0) ? yPosition : ((viewSpaceType == ContainerViewSpaceType.Screen) ? screenContainer.anchoredPosition.y : sceneContainer.transform.position.y);
+            public float GetXPosition(ViewSpaceType viewSpaceType) => (xPosition != 0) ? xPosition : ((viewSpaceType == ViewSpaceType.ScreenSpace) ? screenContainer.anchoredPosition.x : sceneContainer.transform.position.x);
+            public float GetYPosition(ViewSpaceType viewSpaceType) => (yPosition != 0) ? yPosition : ((viewSpaceType == ViewSpaceType.ScreenSpace) ? screenContainer.anchoredPosition.y : sceneContainer.transform.position.y);
             public float GetZPosition() => (zPosition != 0)? zPosition : sceneContainer.transform.position.z;
 
             public Vector3 GetPosition() => new Vector3(xPosition, yPosition, zPosition);
@@ -6419,7 +6419,7 @@ namespace Com.RedicalGames.Filar
 
             [Space(5)]
             [SerializeField]
-            protected ContainerViewSpaceType viewSpace = ContainerViewSpaceType.None;
+            protected ViewSpaceType viewSpace = ViewSpaceType.None;
 
             [Space(5)]
             [SerializeField]
@@ -6569,7 +6569,7 @@ namespace Com.RedicalGames.Filar
 
             public void SetContentContainerType(ContentContainerType containerType) => this.containerType = containerType;
 
-            public void SetContainerViewSpaceType(ContainerViewSpaceType viewSpace) => this.viewSpace = viewSpace;
+            public void SetContainerViewSpaceType(ViewSpaceType viewSpace) => this.viewSpace = viewSpace;
 
             public void SetScreenUIPlacementType(ScreenUIPlacementType screenViewUIPlacementType) => this.screenViewUIPlacementType = screenViewUIPlacementType;
 
@@ -6585,7 +6585,7 @@ namespace Com.RedicalGames.Filar
 
                 if (callbackResults.Success())
                 {
-                    if (GetViewSpace().data == ContainerViewSpaceType.Screen)
+                    if (GetViewSpace().data == ViewSpaceType.ScreenSpace)
                     {
                         callbackResults.result = $"Screen Container : {name} Found";
                         callbackResults.data = GetComponent<RectTransform>() as T;
@@ -6594,7 +6594,7 @@ namespace Com.RedicalGames.Filar
                         return callbackResults;
                     }
 
-                    if (GetViewSpace().data == ContainerViewSpaceType.Scene)
+                    if (GetViewSpace().data == ViewSpaceType.WorldSpace)
                     {
                         callbackResults.result = $"Scene Container : {name} Found";
                         callbackResults.data = GetComponent<Transform>() as T;
@@ -6656,7 +6656,7 @@ namespace Com.RedicalGames.Filar
                 {
                     var viewSpace = GetViewSpace().GetData();
 
-                    if (viewSpace == ContainerViewSpaceType.Screen)
+                    if (viewSpace == ViewSpaceType.ScreenSpace)
                     {
                         if (screenViewUIPlacementType != ScreenUIPlacementType.None)
                         {
@@ -6690,11 +6690,11 @@ namespace Com.RedicalGames.Filar
                 {
                     switch (GetViewSpace().data)
                     {
-                        case ContainerViewSpaceType.Screen:
+                        case ViewSpaceType.ScreenSpace:
 
                             break;
 
-                        case ContainerViewSpaceType.Scene:
+                        case ViewSpaceType.WorldSpace:
 
                             break;
                     }
@@ -6703,11 +6703,11 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
-            public CallbackData<ContainerViewSpaceType> GetViewSpace()
+            public CallbackData<ViewSpaceType> GetViewSpace()
             {
-                CallbackData<ContainerViewSpaceType> callbackResults = new CallbackData<ContainerViewSpaceType>();
+                CallbackData<ViewSpaceType> callbackResults = new CallbackData<ViewSpaceType>();
 
-                if (viewSpace != ContainerViewSpaceType.None)
+                if (viewSpace != ViewSpaceType.None)
                 {
                     callbackResults.result = $"Container : {GetName()}'s View Space Type Is Set To : {viewSpace}";
                     callbackResults.data = viewSpace;
@@ -7258,13 +7258,13 @@ namespace Com.RedicalGames.Filar
                 {
                     switch (GetViewSpace().data)
                     {
-                        case ContainerViewSpaceType.Screen:
+                        case ViewSpaceType.ScreenSpace:
 
                             GetContainer<RectTransform>().data.sizeDelta = size;
 
                             break;
 
-                        case ContainerViewSpaceType.Scene:
+                        case ViewSpaceType.WorldSpace:
 
                             GetContainer<Transform>().data.localScale = size;
 
@@ -34381,7 +34381,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                                    assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenType().GetData(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicContainerCallbackResults =>
+                                    assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenType().GetData(), ContentContainerType.FolderStuctureContent, ViewSpaceType.ScreenSpace, dynamicContainerCallbackResults =>
                                     {
                                         callbackResults.SetResult(dynamicContainerCallbackResults);
 
@@ -47177,7 +47177,7 @@ namespace Com.RedicalGames.Filar
                                                         {
                                                             var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                                                            assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenType().GetData(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicContainerCallbackResults =>
+                                                            assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenType().GetData(), ContentContainerType.FolderStuctureContent, ViewSpaceType.ScreenSpace, dynamicContainerCallbackResults =>
                                                             {
                                                                 callbackResults.SetResult(dynamicContainerCallbackResults);
 
@@ -47875,7 +47875,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                                    assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenType().GetData(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicContainerCallbackResults =>
+                                    assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenType().GetData(), ContentContainerType.FolderStuctureContent, ViewSpaceType.ScreenSpace, dynamicContainerCallbackResults =>
                                     {
                                         callbackResults.SetResult(dynamicContainerCallbackResults);
 
@@ -47927,7 +47927,7 @@ namespace Com.RedicalGames.Filar
                                 {
                                     var assetBundlesLibrary = appDatabaseManagerInstance.GetAssetBundlesLibrary().GetData();
 
-                                    assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenType().GetData(), ContentContainerType.FolderStuctureContent, ContainerViewSpaceType.Screen, dynamicContainerCallbackResults =>
+                                    assetBundlesLibrary.GetDynamicContainer<DynamicWidgetsContainer>(screenUIManager.GetCurrentScreenType().GetData(), ContentContainerType.FolderStuctureContent, ViewSpaceType.ScreenSpace, dynamicContainerCallbackResults =>
                                     {
                                         callbackResults.SetResult(dynamicContainerCallbackResults);
 
@@ -55704,14 +55704,14 @@ namespace Com.RedicalGames.Filar
             public ContentContainerType type;
 
             [Space(5)]
-            public ContainerViewSpaceType viewSpace;
+            public ViewSpaceType viewSpace;
 
             #endregion
 
             #region Components
 
             public ContentContainerType GetContainerType() => type;
-            public ContainerViewSpaceType GetContainerViewSpaceType() => viewSpace;
+            public ViewSpaceType GetContainerViewSpaceType() => viewSpace;
 
             #endregion
         }
@@ -61780,7 +61780,7 @@ namespace Com.RedicalGames.Filar
 
             void SetScreenType(ScreenType screenType);
             void SetContentContainerType(ContentContainerType containerType);
-            void SetContainerViewSpaceType(ContainerViewSpaceType viewSpace);
+            void SetContainerViewSpaceType(ViewSpaceType viewSpace);
             void SetScreenUIPlacementType(ScreenUIPlacementType screenViewUIPlacementType);
             void SetOrderInLayerType(OrderInLayerType orderInLayerType);
 
@@ -61790,7 +61790,7 @@ namespace Com.RedicalGames.Filar
 
             CallbackData<T> GetContainer<T>() where T : Transform;
 
-            CallbackData<ContainerViewSpaceType> GetViewSpace();
+            CallbackData<ViewSpaceType> GetViewSpace();
 
             CallbackData<ContentContainerType> GetContainerType();
 
