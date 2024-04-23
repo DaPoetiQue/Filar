@@ -10,7 +10,7 @@ namespace Com.RedicalGames.Filar
         #region Components
 
         [SerializeField]
-        private AppData.TransitionableComponent transitionableSplashImageComponent;
+        private AppData.ScreenSpaceTransitionableComponent transitionableSplashImageComponent;
 
         private List<int> randomGeneratedIndexList = new List<int>();
 
@@ -69,7 +69,7 @@ namespace Com.RedicalGames.Filar
                                     callbackResults.SetResult(splashImageHandler.GetImageComponent());
 
                                     if (callbackResults.Success())
-                                        transitionableSplashImageComponent = new AppData.TransitionableComponent(splashImageHandler.GetImageComponent().GetData().GetWidgetRect(), AppData.UITransitionType.Translate, AppData.UITransitionStateType.Once, databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.SplashImageTransitionSpeed).value);
+                                        transitionableSplashImageComponent = new AppData.ScreenSpaceTransitionableComponent(splashImageHandler.GetImageComponent().GetData().GetWidgetRect(), AppData.UITransitionType.Translate, AppData.UITransitionStateType.Once, databaseManager.GetDefaultExecutionValue(AppData.RuntimeExecution.SplashImageTransitionSpeed).value);
                                     else
                                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
@@ -381,9 +381,9 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        private AppData.CallbackData<AppData.TransitionableComponent> GetTransitionableSplashImageComponent()
+        private AppData.CallbackData<AppData.ScreenSpaceTransitionableComponent> GetTransitionableSplashImageComponent()
         {
-            var callbackResults = new AppData.CallbackData<AppData.TransitionableComponent>(AppData.Helpers.GetAppComponentValid(transitionableSplashImageComponent, "Transitionable Splash Image Component", $"Get Transitionable Splash Image Component Failed - Transitionable Splash Image Component Is Not Initialized For : {GetName()} - Of Type {GetType().GetData()}."));
+            var callbackResults = new AppData.CallbackData<AppData.ScreenSpaceTransitionableComponent>(AppData.Helpers.GetAppComponentValid(transitionableSplashImageComponent, "Transitionable Splash Image Component", $"Get Transitionable Splash Image Component Failed - Transitionable Splash Image Component Is Not Initialized For : {GetName()} - Of Type {GetType().GetData()}."));
 
             if(callbackResults.Success())
             {

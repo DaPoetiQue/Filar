@@ -69,6 +69,8 @@ namespace Com.RedicalGames.Filar
             return Enumerable.Range(0, source.Length / chunkLength).Select(x => source.Substring(x * chunkLength, chunkLength));
         }
 
+        #region Widget Getters
+
         public static Vector2 GetWidgetScale(this RectTransform reference) => reference.sizeDelta;
         public static Vector3 GetWidgetLocalScale(this RectTransform reference) => reference.localScale;
         public static Vector2 GetWidgetPosition(this RectTransform reference) => reference.anchoredPosition;
@@ -79,6 +81,11 @@ namespace Com.RedicalGames.Filar
         public static (Vector2 position, Vector2 scale, Vector3 rotationAngle) GetWidgetPoseAngle(this RectTransform reference) => (reference.GetWidgetPosition(), reference.GetWidgetScale(), reference.GetWidgetRotationAngle());
         public static (Vector2 position, Vector2 scale, Quaternion rotation) GetWidgetPose(this RectTransform reference) => (reference.GetWidgetPosition(), reference.GetWidgetScale(), reference.GetWidgetRotation());
         public static (Vector2 position, Vector2 scale, Quaternion rotation) GetWidgetPoseLocal(this RectTransform reference) => (reference.GetWidgetPosition(), reference.GetWidgetScale(), reference.GetWidgetRotationLocal());
+
+        #endregion
+
+        #region Widget Setters
+
         public static void SetWidgetPose(this RectTransform reference, Vector2 position, Vector2 scale, Vector3 rotationAngle)
         {
             reference.SetWidgetPosition(position);
@@ -116,6 +123,73 @@ namespace Com.RedicalGames.Filar
         public static void SetWidgetRotationLocal(this RectTransform reference, Quaternion rotation) => reference.localRotation = rotation;
         public static void SetWidgetRotation(this RectTransform reference, Quaternion rotation) => reference.rotation = rotation;
 
+        #endregion
+
+        #region Object Setters
+
+        public static void SetObjectPose(this Transform reference, Vector3 position, Vector3 scale, Vector3 rotationAngle)
+        {
+            reference.SetObjectPosition(position);
+            reference.SetObjectScale(scale);
+            reference.SetObjectRotationAngle(rotationAngle);
+        }
+
+        public static void SetObjectPose(this Transform reference, (Vector3 position, Vector3 scale, Vector3 rotationAngle) pose)
+        {
+            reference.SetObjectPosition(pose.position);
+            reference.SetObjectScale(pose.scale);
+            reference.SetObjectRotationAngle(pose.rotationAngle);
+        }
+
+        public static void SetObjectPose(this Transform reference, (Vector3 position, Vector3 scale, Quaternion rotation) pose)
+        {
+            reference.SetObjectPosition(pose.position);
+            reference.SetObjectScale(pose.scale);
+            reference.SetObjectRotation(pose.rotation);
+        }
+
+        public static void SetObjectPose(this Transform reference, Vector3 position, Vector3 scale, Quaternion rotation)
+        {
+            reference.SetObjectPosition(position);
+            reference.SetObjectScale(scale);
+            reference.SetObjectRotation(rotation);
+        }
+
+        public static void SetObjectPoseLocal(this Transform reference, Vector3 position, Vector3 scale, Quaternion localRotation)
+        {
+            reference.SetObjectLocalPosition(position);
+            reference.SetObjectScale(scale);
+            reference.SetObjectRotationLocal(localRotation);
+        }
+
+        public static void SetObjectScale(this Transform reference, Vector3 scale) => reference.localScale = scale;
+
+        public static void SetObjectPosition(this Transform reference, Vector3 position) => reference.position = position;
+        public static void SetObjectLocalPosition(this Transform reference, Vector3 localPosition) => reference.localPosition = localPosition;
+        public static void SetObjectRotationAngle(this Transform reference, Vector3 rotationAngle) => reference.localEulerAngles = rotationAngle;
+        public static void SetObjectRotationLocal(this Transform reference, Quaternion rotation) => reference.localRotation = rotation;
+        public static void SetObjectRotation(this Transform reference, Quaternion rotation) => reference.rotation = rotation;
+
+        #endregion
+
+        #region Object Getters
+
+        public static Vector3 GetObjectScale(this Transform reference) => reference.localScale;
+        public static Vector3 GetObjectPosition(this Transform reference) => reference.position;
+        public static Vector3 GetObjectLocalPosition(this Transform reference) => reference.localPosition;
+        public static Vector3 GetObjectRotationAngle(this Transform reference) => reference.localEulerAngles;
+        public static Quaternion GetObjectRotation(this Transform reference) => reference.rotation;
+        public static Quaternion GetObjectRotationLocal(this Transform reference) => reference.localRotation;
+
+        public static (Vector3 position, Vector3 scale, Vector3 rotationAngle) GetObjectPoseAngle(this Transform reference) => (reference.GetObjectLocalPosition(), reference.GetObjectScale(), reference.GetObjectRotationAngle());
+        public static (Vector3 position, Vector3 scale, Quaternion rotation) GetObjectPose(this Transform reference) => (reference.GetObjectPosition(), reference.GetObjectScale(), reference.GetObjectRotation());
+        public static (Vector3 position, Vector3 scale, Quaternion rotation) GetObjectPoseLocal(this Transform reference) => (reference.GetObjectLocalPosition(), reference.GetObjectScale(), reference.GetObjectRotationLocal());
+
+
+        public static string GetName(this Transform reference) => reference.name;
+
+        #endregion
+
         public static string GetName(this RectTransform reference) => reference.name; 
 
         public static bool AssignedAndValid(this RectTransform reference) => reference != null;
@@ -142,8 +216,6 @@ namespace Com.RedicalGames.Filar
         public static void SetName(this GameObject gameObject, string name) => gameObject.name = name;
         public static string GetName(this GameObject gameObject) => gameObject.name;
         public static RectTransform GetWidgetRect(this GameObject gameObject) => gameObject.GetComponent<RectTransform>();
-
-        public static string GetName(this Transform reference) => reference.name;
 
         public static void SetPose(this Transform reference, (Vector3 position, Vector3 scale, Quaternion rotation) pose)
         {

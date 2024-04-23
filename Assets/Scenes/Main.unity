@@ -13256,7 +13256,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1231959792}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1221599b0a2d854e958afa512c92f63, type: 3}
+  m_Script: {fileID: 11500000, guid: bb8516ae819dca6409c7d10cc15047cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   logAttributes:
@@ -13264,7 +13264,6 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  viewSpace: 1
 --- !u!1 &1268208008
 GameObject:
   m_ObjectHideFlags: 0
@@ -16322,7 +16321,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1770299841}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1221599b0a2d854e958afa512c92f63, type: 3}
+  m_Script: {fileID: 11500000, guid: bb8516ae819dca6409c7d10cc15047cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   logAttributes:
@@ -16330,7 +16329,6 @@ MonoBehaviour:
     enabledExceptionLogs: 0
     logCatInfo:
       debugClassLogCat: 
-  viewSpace: 1
 --- !u!1 &1774736082
 GameObject:
   m_ObjectHideFlags: 0
