@@ -50433,6 +50433,8 @@ namespace Com.RedicalGames.Filar
                         {
                             if (dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData() == GetType().GetData())
                             {
+                                ActionEvents.OnHideWidgetTriggerEvent(GetType().GetData());
+
                                 SubscribeToEvents(callback: subscriptionCallbackResults =>
                                 {
                                     if (subscriptionCallbackResults.UnSuccessful())
@@ -50476,6 +50478,8 @@ namespace Com.RedicalGames.Filar
                     {
                         if (widgetType == GetType().GetData())
                         {
+                            ActionEvents.OnShowWidgetTriggerEvent(widgetType);
+
                             SubscribeToEvents(callback: subscriptionCallbackResults =>
                             {
                                 if (subscriptionCallbackResults.UnSuccessful())
@@ -50519,6 +50523,8 @@ namespace Com.RedicalGames.Filar
                         {
                             if (dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData() == GetType().GetData())
                             {
+                                ActionEvents.OnShowWidgetTriggerEvent(GetType().GetData());
+
                                 SubscribeToEvents(callback: subscriptionCallbackResults =>
                                 {
                                     if (subscriptionCallbackResults.UnSuccessful())
@@ -50565,6 +50571,8 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
+                        ActionEvents.OnShowWidgetTriggerEvent(GetType().GetData());
+
                         var showSelectedLayoutAsyncCallbackResultsTask = await ShowSelectedLayoutAsync(GetDefaultLayoutType().GetData());
                         callbackResults.SetResult(showSelectedLayoutAsyncCallbackResultsTask);
 
@@ -50599,6 +50607,8 @@ namespace Com.RedicalGames.Filar
                         {
                             if (dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData() == GetType().GetData())
                             {
+                                ActionEvents.OnShowWidgetTriggerEvent(GetType().GetData());
+
                                 var showSelectedLayoutAsyncCallbackResultsTask = await ShowSelectedLayoutAsync(GetDefaultLayoutType().GetData());
 
                                 callbackResults.SetResult(showSelectedLayoutAsyncCallbackResultsTask);
@@ -50653,6 +50663,8 @@ namespace Com.RedicalGames.Filar
                         {
                             if (dataPackets.GetReferencedWidgetType().GetData().GetValue().GetData() == GetType().GetData())
                             {
+                                ActionEvents.OnShowWidgetTriggerEvent(GetType().GetData());
+
                                 SubscribeToEvents(callback: subscriptionCallbackResults =>
                                 {
                                     if (subscriptionCallbackResults.UnSuccessful())
@@ -50732,6 +50744,8 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
+                        ActionEvents.OnHideWidgetTriggerEvent(GetType().GetData());
+
                         HideSelectedLayout(GetDefaultLayoutType().GetData(), hideLayoutCallbackResults =>
                         {
                             callbackResults.SetResult(hideLayoutCallbackResults);
@@ -50786,6 +50800,8 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
+                        ActionEvents.OnHideWidgetTriggerEvent(GetType().GetData());
+
                         var hideSelectedLayoutAsyncCallbackResultsTask = await HideSelectedLayoutAsync(GetDefaultLayoutType().GetData());
                         callbackResults.SetResult(hideSelectedLayoutAsyncCallbackResultsTask);
                     }
@@ -64163,7 +64179,9 @@ namespace Com.RedicalGames.Filar
             OnAppLanguageChanged,
             OnProgressPercentage,
             OnProgressPercentageIntValue,
-            OnProgressInfo
+            OnProgressInfo,
+            OnShowWidgetTrigger,
+            OnHideWidgetTrigger
         }
 
         public enum TransitionableEventType
@@ -65423,6 +65441,9 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<string> _OnProgressPercentageEvent;
             public static event ParamVoid<int> _OnProgressPercentageIntValueEvent;
 
+            public static event ParamVoid<WidgetType> _OnShowWidgetTriggerEvent;
+            public static event ParamVoid<WidgetType> _OnHideWidgetTriggerEvent;
+
             #endregion
 
             #region Callbacks
@@ -65518,6 +65539,9 @@ namespace Com.RedicalGames.Filar
 
             public static void OnProgressPercentageEvent(string percentageString) => _OnProgressPercentageEvent?.Invoke(percentageString);
             public static void OnProgressPercentageIntValueEvent(int percentageIntValue) => _OnProgressPercentageIntValueEvent?.Invoke(percentageIntValue);
+
+            public static void OnShowWidgetTriggerEvent(WidgetType triggeredWidgetType) => _OnShowWidgetTriggerEvent?.Invoke(triggeredWidgetType);
+            public static void OnHideWidgetTriggerEvent(WidgetType triggeredWidgetType) => _OnHideWidgetTriggerEvent?.Invoke(triggeredWidgetType);
 
             public static Transform OnGetContentPreviewContainer()
             {

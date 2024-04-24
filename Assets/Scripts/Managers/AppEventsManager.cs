@@ -482,6 +482,46 @@ namespace Com.RedicalGames.Filar
             callback?.Invoke(callbackResults);
         }
 
+        public void OnDynamicEventSubscription(Action<Enum> eventMethod, AppData.EventType eventType, bool subscribe = true, Action<AppData.Callback> callback = null)
+        {
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", "On Event Subscription Failed - Event Menthod Parameter Value Is Not Assigned."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(eventType, "Timed Event Type", $"On Event Subscription Failed - Typed Event Parameter Value Is Set To Default : {eventType}"));
+
+                if (callbackResults.Success())
+                {
+                    switch (eventType)
+                    {
+                        case AppData.EventType.OnShowWidgetTrigger:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnShowWidgetTriggerEvent += value => eventMethod.Invoke(value);
+                            else
+                                AppData.ActionEvents._OnShowWidgetTriggerEvent -= value => eventMethod.Invoke(value);
+
+                            break;
+
+                        case AppData.EventType.OnHideWidgetTrigger:
+
+                            if (subscribe)
+                                AppData.ActionEvents._OnHideWidgetTriggerEvent += value => eventMethod.Invoke(value);
+                            else
+                                AppData.ActionEvents._OnHideWidgetTriggerEvent -= value => eventMethod.Invoke(value);
+
+                            break;
+                    }
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            callback?.Invoke(callbackResults);
+        }
+
         public void OnEventSubscription(Action<AppData.TabViewType> eventMethod, AppData.EventType eventType, bool subscribe = true, Action<AppData.Callback> callback = null)
         {
             var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(eventMethod, "Event Method", "On Event Subscription Failed - Event Menthod Parameter Value Is Not Assigned."));

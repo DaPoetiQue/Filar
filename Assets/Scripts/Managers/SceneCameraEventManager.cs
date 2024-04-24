@@ -85,9 +85,9 @@ namespace Com.RedicalGames.Filar
                             appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenShownEvent, AppData.EventType.OnScreenShown, true);
                             appEventsManagerInstance.OnEventSubscription<Screen>(OnScreenHiddenEvent, AppData.EventType.OnScreenHidden, true);
 
-                            // Temp Test - Remove After.
-                            appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetShownEvent, AppData.EventType.OnWidgetShown, true);
-                            appEventsManagerInstance.OnEventSubscription<AppData.Widget>(OnWidgetHiddenEvent, AppData.EventType.OnWidgetHidden, true);
+                            // Open For Improvements.
+                            appEventsManagerInstance.OnDynamicEventSubscription(OnShowWidgetTriggerEvent, AppData.EventType.OnShowWidgetTrigger, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
+                            appEventsManagerInstance.OnDynamicEventSubscription(OnHideWidgetTriggerEvent, AppData.EventType.OnHideWidgetTrigger, true, subscribedToEventCallbackResults => { callbackResults.SetResult(subscribedToEventCallbackResults); });
 
                             appEventsManagerInstance.OnEventSubscription(OnUpdateEvent, AppData.EventType.OnUpdate, true);
                             appEventsManagerInstance.OnEventSubscription(OnResetEventCameraScenePose, AppData.EventType.OnUpdate, true);
@@ -174,58 +174,118 @@ namespace Com.RedicalGames.Filar
 
         #endregion
 
-        private void OnWidgetShownEvent(AppData.Widget widget)
+        private void OnShowWidgetTriggerEvent(Enum eventType)
         {
-            var callbackResults = new AppData.Callback();
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance",
+                "On Show Widget Trigger Event Failed - Screen UI Manager Instance Is not Initialized Yet - Invalid Operation."));
 
-            if(widget.GetType().GetData() == AppData.WidgetType.PostsWidget)
+            if(callbackResults.Success())
             {
-                callbackResults.SetResult(GetSceneEventCamera(screen.GetType().GetData()));
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreenType());  
 
                 if (callbackResults.Success())
                 {
-                    LogInfo($"Logger_Cats: // Invoking Camera Transitions.", this);
+                    var triggeredWidgetType = (AppData.WidgetType)eventType;
 
-                    var eventCamera = GetSceneEventCamera(screen.GetType().GetData()).GetData();
+                    callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(triggeredWidgetType, "Triggered Widget Type",
+                        $"On Show Widget Trigger Event Failed - Triggered Widget Type Parameter value Is Set To Default : {triggeredWidgetType} - Invalid Operation."));
 
-                    eventCamera.InvokeTransition(0, transitionInvokedCallbackResults =>
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(transitionInvokedCallbackResults);
+                        callbackResults.SetResult(GetSceneEventCamera(screenUIManagerInstance.GetCurrentScreenType().GetData()));
 
                         if (callbackResults.Success())
+                        {
+                            var currentventCamera = GetSceneEventCamera(screen.GetType().GetData()).GetData();
+
+                            switch (screenUIManagerInstance.GetCurrentScreenType().GetData())
+                            {
+                                case AppData.ScreenType.LandingPageScreen:
+
+                                    if (triggeredWidgetType == AppData.WidgetType.PostsWidget)
+                                    {
+                                        currentventCamera.InvokeTransition(0, transitionInvokedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(transitionInvokedCallbackResults);
+
+                                            if (callbackResults.Success())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+
+                                    break;
+                            }
+                        }
+                        else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                    });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
-        private void OnWidgetHiddenEvent(AppData.Widget widget)
+        private void OnHideWidgetTriggerEvent(Enum eventType)
         {
-            var callbackResults = new AppData.Callback();
+            var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance",
+                "On Show Widget Trigger Event Failed - Screen UI Manager Instance Is not Initialized Yet - Invalid Operation."));
 
-            if (widget.GetType().GetData() == AppData.WidgetType.PostsWidget)
+            if (callbackResults.Success())
             {
-                callbackResults.SetResult(GetSceneEventCamera(screen.GetType().GetData()));
+                var screenUIManagerInstance = AppData.Helpers.GetAppComponentValid(ScreenUIManager.Instance, "Screen UI Manager Instance").GetData();
+
+                callbackResults.SetResult(screenUIManagerInstance.GetCurrentScreenType());
 
                 if (callbackResults.Success())
                 {
-                    LogInfo($"Logger_Cats: // Invoking Camera Transitions.", this);
+                    var triggeredWidgetType = (AppData.WidgetType)eventType;
 
-                    var eventCamera = GetSceneEventCamera(screen.GetType().GetData()).GetData();
+                    callbackResults.SetResult(AppData.Helpers.GetAppEnumValueValid(triggeredWidgetType, "Triggered Widget Type",
+                        $"On Show Widget Trigger Event Failed - Triggered Widget Type Parameter value Is Set To Default : {triggeredWidgetType} - Invalid Operation."));
 
-                    eventCamera.InvokeTransition(1, transitionInvokedCallbackResults =>
+                    if (callbackResults.Success())
                     {
-                        callbackResults.SetResult(transitionInvokedCallbackResults);
+                        callbackResults.SetResult(GetSceneEventCamera(screenUIManagerInstance.GetCurrentScreenType().GetData()));
 
                         if (callbackResults.Success())
+                        {
+                            var currentventCamera = GetSceneEventCamera(screen.GetType().GetData()).GetData();
+
+                            switch (screenUIManagerInstance.GetCurrentScreenType().GetData())
+                            {
+                                case AppData.ScreenType.LandingPageScreen:
+
+                                    if (triggeredWidgetType == AppData.WidgetType.PostsWidget)
+                                    {
+                                        currentventCamera.InvokeTransition(1, transitionInvokedCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(transitionInvokedCallbackResults);
+
+                                            if (callbackResults.Success())
+                                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                        });
+                                    }
+
+                                    break;
+                            }
+                        }
+                        else
                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                    });
+                    }
+                    else
+                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                 }
                 else
                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
             }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
 
         private void OnPostSelected(AppData.Post post)
