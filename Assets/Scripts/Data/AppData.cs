@@ -5932,8 +5932,8 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.SetResult(GetTransitionType());
 
-                    if(callbackResults.Success())
-                        transitionableComponent = new WorldSpaceTransitionableComponent(eventCamera.transform, GetTransitionType().GetData(), GetTransitionStateType().GetData(), 5.0f);
+                    if (callbackResults.Success())
+                        transitionableComponent = new WorldSpaceTransitionableComponent(eventCamera.transform, GetTransitionType().GetData(), GetTransitionStateType().GetData(), 5.0f, false);
                     else
                     {
                         callbackResults.result = $"Transition Are Not Enabled For Camera : {GetName()} - Continuing Execution.";
@@ -5962,11 +5962,11 @@ namespace Com.RedicalGames.Filar
                         {
                             var mount = GetTransitionableMountAtIndex(mountIndex).GetData();
 
-                            GetTransitionableComponent().GetData().InvokeTransition(mount, onTransitionCallbackResults => 
+                            GetTransitionableComponent().GetData().InvokeTransition(mount, onTransitionCallbackResults =>
                             {
                                 callbackResults.SetResult(onTransitionCallbackResults);
 
-                                if(callbackResults.UnSuccessful())
+                                if (callbackResults.UnSuccessful())
                                     Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                             });
                         }
@@ -29859,66 +29859,52 @@ namespace Com.RedicalGames.Filar
 
                     if (callbackResults.Success())
                     {
-                        var source = GetSource().GetData();
-                        var transitionSpeed = GetTransitionSpeed().GetData();
-
-                        switch (GetTransitionType().GetData())
-                        {
-                            case UITransitionType.Default:
-
-                                source.SetWidgetPosition(Vector2.Lerp(source.GetWidgetPosition(), GetTransitionDestination().position, transitionSpeed * Time.deltaTime));
-                                source.SetWidgetScale(Vector2.Lerp(source.sizeDelta, GetTransitionDestination().scale, transitionSpeed * Time.deltaTime));
-                                source.SetWidgetRotation(Vector3.Slerp(source.GetWidgetRotationAngle(), GetTransitionDestination().rotationAngle, transitionSpeed * Time.deltaTime));
-
-                                break;
-
-                            case UITransitionType.Translate:
-                                
-                                source.SetWidgetPosition(Vector2.Lerp(source.GetWidgetPosition(), GetTransitionDestination().position, transitionSpeed * Time.deltaTime));
-
-                                break;
-
-                            case UITransitionType.Scale:
-
-                                LogInfo($"Loggin_Yo : From Scale : {source.GetWidgetLocalScale()} - To Scale : {GetTransitionDestination().scale} ", this);
-
-                                source.SetWidgetScale(Vector3.Lerp(source.GetWidgetLocalScale(), GetTransitionDestination().scale, transitionSpeed * Time.deltaTime));
-
-                                break;
-
-                            case UITransitionType.Rotate:
-
-                                source.SetWidgetRotation(Vector3.Slerp(source.GetWidgetRotationAngle(), GetTransitionDestination().rotationAngle, transitionSpeed * Time.deltaTime));
-
-                                break;
-                        }
-
-                        callbackResults.SetResult(HasCompletedTransition(GetTransitionType().GetData()));
+                        callbackResults.SetResult(GetSource());
 
                         if (callbackResults.Success())
                         {
-                            switch (GetTransitionStateType().GetData())
+                            var source = GetSource().GetData();
+                            var transitionSpeed = GetTransitionSpeed().GetData();
+
+                            switch (GetTransitionType().GetData())
                             {
-                                case UITransitionStateType.Once:
+                                case UITransitionType.Default:
 
-                                    CancelTransition(transitionCanceledCallbackResults =>
-                                    {
-                                        callbackResults.SetResult(transitionCanceledCallbackResults);
-
-                                        if (callbackResults.Success())
-                                            onTransitionCompletedEventAction?.Invoke();
-                                        else
-                                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                    });
+                                    source.SetWidgetPosition(Vector2.Lerp(source.GetWidgetPosition(), GetTransitionDestination().position, transitionSpeed * Time.deltaTime));
+                                    source.SetWidgetScale(Vector2.Lerp(source.sizeDelta, GetTransitionDestination().scale, transitionSpeed * Time.deltaTime));
+                                    source.SetWidgetRotation(Vector3.Slerp(source.GetWidgetRotationAngle(), GetTransitionDestination().rotationAngle, transitionSpeed * Time.deltaTime));
 
                                     break;
 
-                                case UITransitionStateType.Boomerang:
+                                case UITransitionType.Translate:
 
-                                    callbackResults.SetResult(IsOriginPose(GetTransitionType().GetData()));
+                                    source.SetWidgetPosition(Vector2.Lerp(source.GetWidgetPosition(), GetTransitionDestination().position, transitionSpeed * Time.deltaTime));
 
-                                    if (callbackResults.Success())
-                                    {
+                                    break;
+
+                                case UITransitionType.Scale:
+
+                                    LogInfo($"Loggin_Yo : From Scale : {source.GetWidgetLocalScale()} - To Scale : {GetTransitionDestination().scale} ", this);
+
+                                    source.SetWidgetScale(Vector3.Lerp(source.GetWidgetLocalScale(), GetTransitionDestination().scale, transitionSpeed * Time.deltaTime));
+
+                                    break;
+
+                                case UITransitionType.Rotate:
+
+                                    source.SetWidgetRotation(Vector3.Slerp(source.GetWidgetRotationAngle(), GetTransitionDestination().rotationAngle, transitionSpeed * Time.deltaTime));
+
+                                    break;
+                            }
+
+                            callbackResults.SetResult(HasCompletedTransition(GetTransitionType().GetData()));
+
+                            if (callbackResults.Success())
+                            {
+                                switch (GetTransitionStateType().GetData())
+                                {
+                                    case UITransitionStateType.Once:
+
                                         CancelTransition(transitionCanceledCallbackResults =>
                                         {
                                             callbackResults.SetResult(transitionCanceledCallbackResults);
@@ -29928,21 +29914,42 @@ namespace Com.RedicalGames.Filar
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         });
-                                    }
-                                    else
-                                        SetTransitionDestination(GetSourceOriginPose());
 
-                                    break;
+                                        break;
 
-                                case UITransitionStateType.Loop:
+                                    case UITransitionStateType.Boomerang:
+
+                                        callbackResults.SetResult(IsOriginPose(GetTransitionType().GetData()));
+
+                                        if (callbackResults.Success())
+                                        {
+                                            CancelTransition(transitionCanceledCallbackResults =>
+                                            {
+                                                callbackResults.SetResult(transitionCanceledCallbackResults);
+
+                                                if (callbackResults.Success())
+                                                    onTransitionCompletedEventAction?.Invoke();
+                                                else
+                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                            });
+                                        }
+                                        else
+                                            SetTransitionDestination(GetSourceOriginPose());
+
+                                        break;
+
+                                    case UITransitionStateType.Loop:
 
 
 
-                                    break;
+                                        break;
+                                }
                             }
+                            else
+                                onTransitionInProgressEventAction?.Invoke();
                         }
                         else
-                            onTransitionInProgressEventAction?.Invoke();
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                     }
                     else
                     {
@@ -31152,6 +31159,18 @@ namespace Com.RedicalGames.Filar
                 SetSourceOriginPose(this.source);
             }
 
+            public WorldSpaceTransitionableComponent(Transform source, WorldSpaceTransitionableMountComponent<UIVisibilityState> transitionDestination,  UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false)
+            {
+                this.source = source;
+                this.transitionType = transitionType;
+                this.transitionState = transitionState;
+                this.transitionSpeed = transitionSpeed;
+                this.randomize = randomize;
+
+                SetSourceOriginPose(this.source);
+                SetTransitionDestination(transitionDestination);
+            }
+
             public WorldSpaceTransitionableComponent(Transform source, UITransitionType transitionType, UITransitionStateType transitionState, float transitionSpeed, bool randomize = false)
             {
                 this.source = source;
@@ -31586,7 +31605,7 @@ namespace Com.RedicalGames.Filar
                         {
                             case UITransitionType.Default:
 
-                                source.SetObjectPosition(Vector3.Lerp(source.GetObjectPosition(), GetTransitionDestination().position, transitionSpeed * Time.deltaTime));
+                                source.SetObjectLocalPosition(Vector3.Lerp(source.GetObjectLocalPosition(), GetTransitionDestination().position, transitionSpeed * Time.deltaTime));
                                 source.SetObjectScale(Vector3.Lerp(source.GetObjectScale(), GetTransitionDestination().scale, transitionSpeed * Time.deltaTime));
                                 source.SetObjectRotationAngle(Vector3.Slerp(source.GetObjectRotationAngle(), GetTransitionDestination().rotationAngle, transitionSpeed * Time.deltaTime));
 
@@ -31594,7 +31613,7 @@ namespace Com.RedicalGames.Filar
 
                             case UITransitionType.Translate:
 
-                                source.SetObjectPosition(Vector3.Lerp(source.GetObjectPosition(), GetTransitionDestination().position, transitionSpeed * Time.deltaTime));
+                                source.SetObjectLocalPosition(Vector3.Lerp(source.GetObjectLocalPosition(), GetTransitionDestination().position, transitionSpeed * Time.deltaTime));
 
                                 break;
 
@@ -31717,7 +31736,7 @@ namespace Com.RedicalGames.Filar
 
             private void OnSetTransitionDestination(WorldSpaceTransitionableComponentMountHandler targetPose)
             {
-                transitionPosition = targetPose.GetPosition().GetData();
+                transitionPosition = targetPose.GetLocalPosition().GetData();
                 transitionScale = targetPose.GetScale().GetData();
                 transitionRotation = targetPose.GetRotationAngle().GetData();
             }
@@ -32453,7 +32472,7 @@ namespace Com.RedicalGames.Filar
                         if (callbackResults.Success())
                         {
                             SetTransitionDestination(target.GetMount().GetData());
-                            //SetTransitionSpeed(target.GetTransitionSpeed().GetData());
+                            SetTransitionSpeed(target.GetTransitionSpeed().GetData());
 
                             SubscribeToEvents(subscribedToEventCallbackResults =>
                             {

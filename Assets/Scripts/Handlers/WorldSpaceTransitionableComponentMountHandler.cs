@@ -29,6 +29,21 @@ namespace Com.RedicalGames.Filar
             return callbackResults;
         }
 
+        public AppData.CallbackData<Vector3> GetLocalPosition()
+        {
+            var callbackResults = new AppData.CallbackData<Vector3>(GetTarget());
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = $"Get Local Position Sucess - Local Position Is Set At : {GetTarget().GetData().GetObjectLocalPosition()}.";
+                callbackResults.data = GetTarget().GetData().GetObjectLocalPosition();
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
         public AppData.CallbackData<Vector3> GetScale()
         {
             var callbackResults = new AppData.CallbackData<Vector3>(GetTarget());
@@ -121,6 +136,7 @@ namespace Com.RedicalGames.Filar
 
                 callbackResults.result = $"Get Target Success - Target Has Been Found From Component.";
                 callbackResults.data = target;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
 
             return callbackResults;
