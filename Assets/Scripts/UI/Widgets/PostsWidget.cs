@@ -90,7 +90,6 @@ namespace Com.RedicalGames.Filar
                                     }
                                     else
                                     {
-                                        SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
                                         SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
 
                                         screen.ShowWidget(this);
@@ -100,8 +99,8 @@ namespace Com.RedicalGames.Filar
 
                                 case AppData.InputActionButtonType.HidePostsButton:
 
-                                    SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
-                                    SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+                                    //SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
+                                    //SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
 
                                     SetActionButtonTitle(AppData.InputActionButtonType.ShowPostsButton, "Posts");
 
@@ -147,12 +146,12 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidget(Action<AppData.Callback> callback = null)
         {
-
+            SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
         }
 
         protected override void OnScreenWidget(AppData.SceneConfigDataPacket configDataPacket, Action<AppData.Callback> callback = null)
         {
-           
+            SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
         }
 
         protected override void OnScrollerValueChanged(Vector2 value) => scroller.Update();
@@ -179,14 +178,14 @@ namespace Com.RedicalGames.Filar
 
         protected override void OnScreenWidgetShownEvent()
         {    
-            //SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
+            SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Shown);
             SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Hidden);
         }
 
         protected override void OnScreenWidgetHiddenEvent()
         {
-            //SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
-            //SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
+            SetActionButtonState(AppData.InputActionButtonType.ShowPostsButton, AppData.InputUIState.Shown);
+            SetActionButtonState(AppData.InputActionButtonType.HidePostsButton, AppData.InputUIState.Hidden);
         }
 
         protected override void OnScreenWidgetTransitionInProgressEvent()
