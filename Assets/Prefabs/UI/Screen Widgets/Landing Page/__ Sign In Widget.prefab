@@ -669,7 +669,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -722,6 +721,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
+    buttonTitletKey: 0
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
@@ -858,7 +858,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1049,7 +1048,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1241,7 +1239,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1431,7 +1428,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1622,7 +1618,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1809,7 +1804,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -1995,7 +1989,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -2179,7 +2172,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -2365,7 +2357,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -2418,7 +2409,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-  transitionableUIMounts: []
 --- !u!1 &5756737564961562909
 GameObject:
   m_ObjectHideFlags: 0
@@ -2584,7 +2574,6 @@ MonoBehaviour:
     isInitialized: 0
   selectableAssetType: 5
   screenBlurConfig:
-    name: Sign In Widget
     active: 1
     blurScreenPlacementType: 0
   scroller:
@@ -2691,7 +2680,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -3046,7 +3034,7 @@ MonoBehaviour:
   textView: 15
   imagenView: 12
   buttonComponentConfig:
-    name: 
+    name: Sign_Up_Sign_In Selection Button Config
     selectionStatesInfo:
       name: 
       states:
@@ -3181,7 +3169,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -3234,6 +3221,7 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
+    buttonTitletKey: 0
   inputFieldComponentConfig:
     name: 
     selectionStatesInfo:
@@ -3370,7 +3358,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -3561,7 +3548,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -3753,7 +3739,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -3943,7 +3928,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -4134,7 +4118,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -4321,7 +4304,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -4507,7 +4489,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -4691,7 +4672,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -4877,7 +4857,6 @@ MonoBehaviour:
         name: 
         value: 0
       screenBlurConfig:
-        name: 
         active: 0
         blurScreenPlacementType: 3
       booleanOptionsGroup:
@@ -4930,7 +4909,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-  transitionableUIMounts: []
 --- !u!1 &5756737565992309195
 GameObject:
   m_ObjectHideFlags: 0

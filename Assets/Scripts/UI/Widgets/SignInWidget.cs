@@ -181,12 +181,6 @@ namespace Com.RedicalGames.Filar
                                     screen.HideWidget(this);
 
                                     break;
-
-                                case AppData.InputActionButtonType.SignInViewChangeButton:
-
-                                    SwitchPage();
-
-                                    break;
                             }
                         }
                         else
@@ -197,22 +191,6 @@ namespace Com.RedicalGames.Filar
 
             }, "Screen UI Manager Instance Is Not Yet Initialized.");
 
-        }
-
-        private void SwitchPage(AppData.TabViewType viewType = AppData.TabViewType.None)
-        {
-        //    var callbackResults = new AppData.Callback();
-
-        //    isInitialView = !isInitialView;
-
-        //    SetActionButtonState(AppData.InputActionButtonType.SignInViewChangeButton, AppData.InputUIState.Disabled);
-
-        //    string buttonTitle = (isInitialView) ? "Signing In" : "Signing Up";
-
-        //    SetActionButtonTitle(AppData.InputActionButtonType.SignInViewChangeButton, buttonTitle);
-        //    SetActionButtonState(AppData.InputActionButtonType.SignInViewChangeButton, AppData.InputUIState.Enabled);
-
-        //    SetActionButtonTitle(AppData.InputActionButtonType.Cancel, "Cancel");
         }
 
         public async void SwitchPageAsync(AppData.TabViewType viewType, Action<AppData.Callback> callback = null)

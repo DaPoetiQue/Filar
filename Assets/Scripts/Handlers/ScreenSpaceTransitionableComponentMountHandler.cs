@@ -89,6 +89,7 @@ namespace Com.RedicalGames.Filar
 
                 callbackResults.result = $"Get Target Success - Target Has Been Found From Component.";
                 callbackResults.data = target;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
             }
 
             return callbackResults;
