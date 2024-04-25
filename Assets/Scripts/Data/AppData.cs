@@ -38948,6 +38948,8 @@ namespace Com.RedicalGames.Filar
             {
                 var callbackResults = new Callback();
 
+
+
                 SetFocusedWidget(widget, widgetFocusedCallbackResults => 
                 {
                     callbackResults.SetResult(widgetFocusedCallbackResults);
@@ -51844,85 +51846,75 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.SetResult(IsNotActiveView(viewType));
 
-                    if(callbackResults.Success())
+                    if (callbackResults.Success())
                     {
-                        SetActiveTabViewType(viewType, activeViewSelectedCallbackResults => 
+                        var tabViews = GetTabViewList().GetData();
+
+                        switch (GetTransitionType().GetData())
                         {
-                            callbackResults.SetResult(activeViewSelectedCallbackResults);
+                            case TransitionType.Default:
 
-                            if(callbackResults.Success())
-                            {
-                                var tabViews = GetTabViewList().GetData();
-
-                                switch (GetTransitionType().GetData())
+                                for (int i = 0; i < tabViews.Count; i++)
                                 {
-                                    case TransitionType.Default:
-
-                                        for (int i = 0; i < tabViews.Count; i++)
+                                    if (tabViews[i].GetType().GetData() == viewType)
+                                    {
+                                        tabViews[i].ShowTab(tabShownCallbackResults =>
                                         {
-                                            if (tabViews[i].GetType().GetData() == viewType)
-                                            {
-                                                tabViews[i].ShowTab(tabShownCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(tabShownCallbackResults);
-                                                });
-                                            }
-                                            else
-                                            {
-                                                tabViews[i].HideTab(tabHiddenCallbackResults =>
-                                                {
-                                                    callbackResults.SetResult(tabHiddenCallbackResults);
-                                                });
-                                            }
-                                        }
+                                            callbackResults.SetResult(tabShownCallbackResults);
+                                        });
+                                    }
+                                    else
+                                    {
+                                        tabViews[i].HideTab(tabHiddenCallbackResults =>
+                                        {
+                                            callbackResults.SetResult(tabHiddenCallbackResults);
+                                        });
+                                    }
+                                }
 
-                                        break;
+                                break;
 
-                                    case TransitionType.Translate:
+                            case TransitionType.Translate:
 
-                                        callbackResults.SetResult(GetTransitionableUIComponent());
+                                callbackResults.SetResult(GetTransitionableUIComponent());
+
+                                if (callbackResults.Success())
+                                {
+                                    var transitionalComponent = GetTransitionableUIComponent().GetData();
+
+                                    callbackResults.SetResult(GetTabViewTransitionInfo(viewType));
+
+                                    if (callbackResults.Success())
+                                    {
+                                        var tabInfo = GetTabViewTransitionInfo(viewType).GetData();
+
+                                        callbackResults.SetResult(GetTabLayout());
 
                                         if (callbackResults.Success())
                                         {
-                                            var transitionalComponent = GetTransitionableUIComponent().GetData();
-
-                                            callbackResults.SetResult(GetTabViewTransitionInfo(viewType));
+                                            callbackResults.SetResult(transitionalComponent.Initialized());
 
                                             if (callbackResults.Success())
                                             {
-                                                var tabInfo = GetTabViewTransitionInfo(viewType).GetData();
-
-                                                callbackResults.SetResult(GetTabLayout());
-
-                                                if (callbackResults.Success())
+                                                transitionalComponent.InvokeTransition(tabInfo, invokedTransitionCallbackResults =>
                                                 {
-                                                    callbackResults.SetResult(transitionalComponent.Initialized());
-
-                                                    if (callbackResults.Success())
-                                                    {
-                                                        transitionalComponent.InvokeTransition(tabInfo, invokedTransitionCallbackResults =>
-                                                        {
-                                                            callbackResults.SetResult(invokedTransitionCallbackResults);
-                                                        });
-                                                    }
-                                                    else
-                                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                                }
-                                                else
-                                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                                    callbackResults.SetResult(invokedTransitionCallbackResults);
+                                                });
                                             }
                                             else
                                                 Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                         }
                                         else
                                             Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-
-                                        break;
+                                    }
+                                    else
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
                                 }
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
+                                else
+                                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+                                break;
+                        }
                     }
                     else
                         Log(callbackResults.GetResultCode, callbackResults.GetResult, this);

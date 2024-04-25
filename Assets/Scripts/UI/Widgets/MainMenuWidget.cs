@@ -247,37 +247,7 @@ namespace Com.RedicalGames.Filar
                 {
                     callbackResults.SetResult(screen.IsFocusedWidget(this));
 
-                    if (callbackResults.Success())
-                    {
-                        screen.RemoveFocusedWidget(this, async focusedWidgetRemovedCallbackResults =>
-                        {
-                            callbackResults.SetResult(focusedWidgetRemovedCallbackResults);
-
-                            if (callbackResults.Success())
-                            {
-                                //var hideWidgetAsyncCallbackResultsTask = await screen.HideScreenWidgetAsync(AppData.WidgetType.HomeMenuWidget);
-                                //callbackResults.SetResult(hideWidgetAsyncCallbackResultsTask);
-
-                                //if (callbackResults.Success())
-                                //{
-                                //    widget.SetActionButtonTitle(AppData.InputActionButtonType.ShowPostsButton, "Posts", titleSetCallbackResults =>
-                                //    {
-                                //        callbackResults.SetResult(titleSetCallbackResults);
-
-                                //        if (callbackResults.Success())
-                                //            screen.ShowWidget(this);
-                                //        else
-                                //            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                                //    });
-                                //}
-                                //else
-                                //    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                            }
-                            else
-                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
-                        });
-                    }
-                    else
+                    if (callbackResults.UnSuccessful())
                     {
                         widget.SetActionButtonTitle(AppData.InputActionButtonType.ShowPostsButton, "Close", titleSetCallbackResults =>
                         {
