@@ -22,6 +22,12 @@ namespace Com.RedicalGames.Filar
         [SerializeField]
         RectTransform screenWidgetsContainer = null;
 
+        [Space(5)]
+        [SerializeField]
+        private UIScreenSafeAreaHandler safeArea = null;
+
+        private AppData.ScreenResolution screenResolution = null;
+
         AppData.SceneConfigDataPacket previousScreenData;
 
         float screenTransitionSpeed = 0.0f;
@@ -52,8 +58,121 @@ namespace Com.RedicalGames.Filar
 
         protected override void Init()
         {
-            
+            var callbackResults = new AppData.Callback(GetSafeArea());
+
+            if(callbackResults.Success())
+            {
+                callbackResults.SetResult(GetScreenResolution());
+
+                if (callbackResults.Success())
+                {
+                    GetSafeArea().GetData().Configure(GetScreenResolution().GetData(), safeAreaConfiguredCallbackResults =>
+                    {
+                        callbackResults.SetResult(safeAreaConfiguredCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "Init Failed - App Events Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                            if (callbackResults.Success())
+                            {
+                                var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+
+                                appEventsManagerInstance.OnEventSubscription(OnScreenUpdateEvent, AppData.EventType.OnUpdate, true, subscribedToUpdateEventCallbackResults => 
+                                {
+                                    callbackResults.SetResult(subscribedToUpdateEventCallbackResults);
+
+                                    if(callbackResults.UnSuccessful())
+                                        Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                                });
+                            }
+                            else
+                                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
         }
+
+        #region Screen Resolutions
+
+        private AppData.CallbackData<AppData.ScreenResolution> GetScreenResolution()
+        {
+            var callbackResults = new AppData.CallbackData<AppData.ScreenResolution>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(screenResolution, "Screen Resolution", "Get Screen Resolution Failed - Screen Resolution Is Null - Invalid opeartion."));
+
+            if (callbackResults.Success())
+            {
+                callbackResults.result = "Get Screen Resolution Success - Screen Resolution Has Been Initialized.";
+                callbackResults.data = screenResolution;
+            }
+            else
+            {
+                screenResolution = new AppData.ScreenResolution();
+
+                callbackResults.result = "Get Screen Resolution Success - Initialized A New Screen Resolution.";
+                callbackResults.data = screenResolution;
+                callbackResults.resultCode = AppData.Helpers.SuccessCode;
+            }
+
+            return callbackResults;
+        }
+
+        public AppData.CallbackData<UIScreenSafeAreaHandler> GetSafeArea()
+        {
+            var callbackResults = new AppData.CallbackData<UIScreenSafeAreaHandler>();
+
+            callbackResults.SetResult(AppData.Helpers.GetAppComponentValid(safeArea, "Safe Area", "Get Safe Area Failed - Safe Area Value Is Null - Invalid Operation."));
+
+            if(callbackResults.Success())
+            {
+                callbackResults.result = "Get Safe Area Success - Safe Area Value Has Been Assigned.";
+                callbackResults.data = safeArea;
+            }
+            else
+                Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+
+            return callbackResults;
+        }
+
+        private void OnScreenUpdateEvent()
+        {
+            if (GetScreenResolution().GetData().ResolutionChanged().Success())
+            {
+                var callbackResults = new AppData.Callback(AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance", "Init Failed - App Events Manager Instance Is Not Initialized Yet - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    var appEventsManagerInstance = AppData.Helpers.GetAppComponentValid(AppEventsManager.Instance, "App Events Manager Instance").GetData();
+
+                    GetScreenResolution().GetData().SyncResolution(resolutionSyncedCallbackResults =>
+                    {
+                        callbackResults.SetResult(resolutionSyncedCallbackResults);
+
+                        if (callbackResults.Success())
+                        {
+                            appEventsManagerInstance.InvokeEvent(AppData.EventType.OnScreenResolutionChanged, GetScreenResolution().GetData(), onResolutionChangedEventCallbackResults => 
+                            {
+                                callbackResults.SetResult(onResolutionChangedEventCallbackResults);
+                            });
+                        }
+                        else
+                            Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+                    });
+                }
+                else
+                    Log(callbackResults.GetResultCode, callbackResults.GetResult, this);
+            }
+        }
+
+        #endregion
 
         public async Task<AppData.CallbackDataList<Screen>> OnScreenInitAsync()
         {

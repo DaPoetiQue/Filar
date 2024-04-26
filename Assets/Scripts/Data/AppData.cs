@@ -3291,6 +3291,99 @@ namespace Com.RedicalGames.Filar
         }
 
         [Serializable]
+        public class ScreenResolution
+        {
+            #region Components
+
+            [SerializeField]
+            private int width;
+
+            [Space(5)]
+            [SerializeField]
+            private int height;
+
+            #endregion
+
+            #region Main
+
+            #region Constructors
+
+            public ScreenResolution()
+            {
+                width = UnityEngine.Screen.width;
+                height = UnityEngine.Screen.height;
+            }
+
+            public ScreenResolution(int width, int height)
+            {
+                this.width = width;
+                this.height = height;
+            }
+
+            #endregion
+
+            #region Data Getters
+
+            public CallbackData<(int width, int height)> GetResolution()
+            {
+                var callbackResults = new CallbackData<(int width, int height)>(Helpers.GetAppIntValueAssigned(width, "Width", $"Get Resolution Failed - Width Value Is Set To Default : {width} - Invalid Operation."));
+
+                if(callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppIntValueAssigned(height, "Height", $"Get Resolution Failed - Height Value Is Set To Default : {height} - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Get Resolution Success - Resolution Is Set To - [Width : {width} - Height : {height}]";
+                        callbackResults.data = (width, height);
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public Callback ResolutionChanged()
+            {
+                var callbackResults = new Callback(Helpers.GetAppIntValueAssigned(width, "Width", $"Resolution Changed  Failed - Width Value Is Set To Default : {width} - Invalid Operation."));
+
+                if (callbackResults.Success())
+                {
+                    callbackResults.SetResult(Helpers.GetAppIntValueAssigned(height, "Height", $"Resolution Changed Failed - Height Value Is Set To Default : {height} - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.SetResult(Helpers.GetAppIntValuesNotEqual(width, UnityEngine.Screen.width, $"Resolution Width Has Not Changed."));
+
+                        if(callbackResults.Success())
+                            callbackResults.SetResult(Helpers.GetAppIntValuesNotEqual(height, UnityEngine.Screen.height, $"Resolution Height Has Not Changed."));
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            /// <summary>
+            /// Syncs The Resolution Component To The Current Resultion.
+            /// </summary>
+            public void SyncResolution(Action<Callback> callback = null)
+            {
+                var callbackResults = new Callback(ResolutionChanged());
+
+                if(callbackResults.Success())
+                {
+                    width = UnityEngine.Screen.width;
+                    height = UnityEngine.Screen.height;
+                }
+
+                callback?.Invoke(callbackResults);
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        [Serializable]
         public class ScreenReferencedWidgetDependencyAssetBundle<T> : DataDebugger, IScreenReferencedWidgetDependencyAssetBundle<T> where T : Enum
         {
             #region Components
@@ -62723,6 +62816,46 @@ namespace Com.RedicalGames.Filar
                 return callbackResults;
             }
 
+            public static CallbackData<(int valueA, int valueB)> GetAppIntValuesEqual(int valueA, int valueB , string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                var callbackResults = new CallbackData<(int valueA, int valueB)>();
+
+                if (valueA == valueB)
+                {
+                    callbackResults.result = $"Value A : {valueA} Is Equal To Value B : {valueB}.";
+                    callbackResults.data = (valueA, valueB);
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Value A : {valueA} Is Not Equal To Value B : {valueB}."; ;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static CallbackData<(int valueA, int valueB)> GetAppIntValuesNotEqual(int valueA, int valueB, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
+            {
+                var callbackResults = new CallbackData<(int valueA, int valueB)>();
+
+                if (valueA != valueB)
+                {
+                    callbackResults.result = $"Value A : {valueA} Is Equal To Value B : {valueB}.";
+                    callbackResults.data = (valueA, valueB);
+                    callbackResults.resultCode = SuccessCode;
+                }
+                else
+                {
+                    callbackResults.result = $"Value A : {valueA} Is Not Equal To Value B : {valueB}."; ;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
             public static CallbackData<string> GetAppStringValueEqual(string valueA, string valueB, string name = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null)
             {
                 var callbackResults = new CallbackData<string>(GetAppStringValueNotNullOrEmpty(valueA, name ?? "Name Not Assigned", "Get String Value Equal Failed - Value A Parameter Value Is Null / Empty - Invalid operation"));
@@ -64192,7 +64325,8 @@ namespace Com.RedicalGames.Filar
             OnProgressPercentageIntValue,
             OnProgressInfo,
             OnShowWidgetTrigger,
-            OnHideWidgetTrigger
+            OnHideWidgetTrigger,
+            OnScreenResolutionChanged
         }
 
         public enum TransitionableEventType
@@ -65304,8 +65438,8 @@ namespace Com.RedicalGames.Filar
             public static event ParamVoid<T> _OnSelectableWidgetTransitionInProgressEvent;
 
             public static event ParamVoid<T> _OnPostSelectedEvent;
-
             public static event ParamVoid<T> _OnProgressInfoEvent;
+            public static event ParamVoid<T> _OnScreenResolutionChangedEvent;
 
             #endregion
 
@@ -65330,6 +65464,8 @@ namespace Com.RedicalGames.Filar
             public static void OnPostSelectedEvent(T post) => _OnPostSelectedEvent?.Invoke(post);
 
             public static void OnProgressInfoEvent(T progressInfoConfig) => _OnProgressInfoEvent?.Invoke(progressInfoConfig);
+
+            public static void OnScreenResolutionChangedEvent(T resolution) => _OnScreenResolutionChangedEvent?.Invoke(resolution);
 
             #endregion
         }

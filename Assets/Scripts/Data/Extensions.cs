@@ -116,6 +116,7 @@ namespace Com.RedicalGames.Filar
 
         public static void SetWidgetScale(this RectTransform reference, Vector2 scale) => reference.sizeDelta = scale;
         public static void SetWidgetScale(this RectTransform reference, int width, int height) => reference.sizeDelta = new Vector2(width, height);
+        public static void SetWidgetScale(this RectTransform reference, (int width, int height) scale) => reference.sizeDelta = new Vector2(scale.width, scale.height);
         public static void SetWidgetScale(this RectTransform reference, Vector3 scale) => reference.localScale = scale;
 
         public static void SetWidgetPosition(this RectTransform reference, Vector2 position) => reference.anchoredPosition = position;

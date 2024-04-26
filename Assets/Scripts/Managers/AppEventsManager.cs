@@ -471,6 +471,16 @@ namespace Com.RedicalGames.Filar
                                 AppData.GenericActionEvents<T>._OnProgressInfoEvent -= eventMethod.Invoke;
 
                             break;
+
+
+                        case AppData.EventType.OnScreenResolutionChanged:
+
+                            if (subscribe)
+                                AppData.GenericActionEvents<T>._OnScreenResolutionChangedEvent += eventMethod.Invoke;
+                            else
+                                AppData.GenericActionEvents<T>._OnScreenResolutionChangedEvent -= eventMethod.Invoke;
+
+                            break;
                     }
                 }
                 else
@@ -916,6 +926,12 @@ namespace Com.RedicalGames.Filar
                         case AppData.EventType.OnProgressInfo:
 
                             AppData.GenericActionEvents<T>.OnProgressInfoEvent(eventData);
+
+                            break;
+
+                        case AppData.EventType.OnScreenResolutionChanged:
+
+                            AppData.GenericActionEvents<T>.OnScreenResolutionChangedEvent(eventData);
 
                             break;
                     }

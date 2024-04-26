@@ -2904,7 +2904,7 @@ GameObject:
   - component: {fileID: 352969773}
   - component: {fileID: 352969774}
   m_Layer: 0
-  m_Name: Audio Handler
+  m_Name: __Audio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3432,8 +3432,9 @@ GameObject:
   - component: {fileID: 511625447}
   - component: {fileID: 511625446}
   - component: {fileID: 511625445}
+  - component: {fileID: 511625448}
   m_Layer: 5
-  m_Name: Screen Widgets Container (World Space)
+  m_Name: __Safe Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3458,7 +3459,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 339.99997, y: 690}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &511625445
 MonoBehaviour:
@@ -3522,6 +3523,23 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &511625448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511625443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6ebcba22fb68f14991e8ada159706a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logAttributes:
+    enabledInfoLogs: 0
+    enabledExceptionLogs: 0
+    logCatInfo:
+      debugClassLogCat: 
 --- !u!1 &525955588
 GameObject:
   m_ObjectHideFlags: 0
@@ -15259,6 +15277,7 @@ MonoBehaviour:
   screens: []
   currentScreen: {fileID: 0}
   screenWidgetsContainer: {fileID: 511625444}
+  safeArea: {fileID: 511625448}
 --- !u!1 &1497537141
 GameObject:
   m_ObjectHideFlags: 0
@@ -16944,7 +16963,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1854347471
 RectTransform:
   m_ObjectHideFlags: 0
