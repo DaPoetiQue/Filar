@@ -10059,24 +10059,36 @@ namespace Com.RedicalGames.Filar
                             {
                                 var  meshName = submeshDataList[i][0];
 
-                                var verticesArrary = Helpers.StringToVector3ArrayJob(submeshDataList[i][1], vertexSplit);
-                                var trianglesArray = Helpers.StringToIntArrayJob(submeshDataList[i][2]);
-                                var normalsArray = Helpers.StringToVector3ArrayJob(submeshDataList[i][3], normalSplit);
-                                var uvsArray = Helpers.StringToVector2ArrayJob(submeshDataList[i][4], uvSplit);
-                                var tangentsArray = Helpers.StringToVector4ArrayJob(submeshDataList[i][5], tangentSplit);
-                                var indicesArray = Helpers.StringToIntArrayJob(submeshDataList[i][6]);
+                                var verticesArrayCallbackResultsTask = Helpers.ConvertStringToVector3ArrayAsync(submeshDataList[i][1], vertexSplit);
+                                var trianglesArrayCallbackResultsTask = Helpers.ConvertStringToIntArrayAsync(submeshDataList[i][2]);
+                                var normalsArrayCallbackResultsTask = Helpers.ConvertStringToVector3ArrayAsync(submeshDataList[i][3], normalSplit);
+                                var uvsArrayCallbackResultsTask = Helpers.ConvertStringToVector2ArrayAsync(submeshDataList[i][4], uvSplit);
+                                var tangentsArrayCallbackResultsTask = Helpers.ConvertStringToVector4ArrayAsync(submeshDataList[i][5], tangentSplit);
+                                var indicesArrayCallbackResultsTask = Helpers.ConvertStringToIntArrayAsync(submeshDataList[i][6]);
+
+                                var meshDataTasks = new List<Task>
+                                {
+                                    verticesArrayCallbackResultsTask,
+                                    trianglesArrayCallbackResultsTask,
+                                    normalsArrayCallbackResultsTask,
+                                    uvsArrayCallbackResultsTask,
+                                    tangentsArrayCallbackResultsTask,
+                                    indicesArrayCallbackResultsTask
+                                };
+
+                                await Task.WhenAll(meshDataTasks);
 
                                 var topology = int.Parse(submeshDataList[i][7]);
                                 var materials = submeshDataList[i][8];
 
                                 var mesh = new Mesh();
                                 mesh.name = meshName;
-                                mesh.SetVertices(verticesArrary);
-                                mesh.SetTriangles(trianglesArray, 0);
-                                mesh.SetNormals(normalsArray);
-                                mesh.SetUVs(0, uvsArray);
-                                mesh.SetTangents(tangentsArray);
-                                mesh.SetIndices(indicesArray, (MeshTopology)topology, 0);
+                                mesh.SetVertices(verticesArrayCallbackResultsTask?.Result?.GetData());
+                                mesh.SetTriangles(trianglesArrayCallbackResultsTask?.Result?.GetData(), 0);
+                                mesh.SetNormals(normalsArrayCallbackResultsTask?.Result?.GetData());
+                                mesh.SetUVs(0, uvsArrayCallbackResultsTask?.Result?.GetData());
+                                mesh.SetTangents(tangentsArrayCallbackResultsTask?.Result?.GetData());
+                                mesh.SetIndices(indicesArrayCallbackResultsTask?.Result?.GetData(), (MeshTopology)topology, 0);
 
                                 mesh.RecalculateNormals();
                                 mesh.RecalculateTangents();
@@ -10087,11 +10099,7 @@ namespace Com.RedicalGames.Filar
                                 callbackResults.SetResult(serializableMaterial.GetMaterial());
 
                                 if (callbackResults.Success())
-                                    meshDataList.Add((meshName, mesh, serializableMaterial.GetMaterial().data));
-                                else
-                                    break;
-
-                                await Task.Yield();
+                                    meshDataList.Add((meshName, mesh, serializableMaterial.GetMaterial().GetData()));
                             }
 
                             if (callbackResults.Success())
@@ -60375,6 +60383,139 @@ namespace Com.RedicalGames.Filar
                 return vectorArray;
             }
 
+            #region String To Vectors
+
+            public static async Task<CallbackDataArray<Vector2>> ConvertStringToVector2ArrayAsync(string source, string seperator)
+            {
+                var callbackResults = new CallbackDataArray<Vector2>();
+
+                var splitStringArrayData = source.Split(seperator);
+
+                callbackResults.SetResult(GetAppStringArrayValid(splitStringArrayData));
+
+                if(callbackResults.Success())
+                {
+                    var vectorDataList = new List<Vector2>();
+
+                    for (int i = 0; i < splitStringArrayData.Length; i++)
+                    {
+                        var vectorSplit = splitStringArrayData[i].Split(" ");
+                        var vector = new Vector2(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]));
+                        vectorDataList.Add(vector);
+
+                        await Task.Yield();
+                    }
+
+                    callbackResults.SetResult(GetAppDataComponentsValid(vectorDataList));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Convert String To Vector2 Array Success.";
+                        callbackResults.data = vectorDataList.ToArray();
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public static async Task<CallbackDataArray<Vector3>> ConvertStringToVector3ArrayAsync(string source, string seperator)
+            {
+                var callbackResults = new CallbackDataArray<Vector3>();
+
+                var splitStringArrayData = source.Split(seperator);
+
+                callbackResults.SetResult(GetAppStringArrayValid(splitStringArrayData));
+
+                if (callbackResults.Success())
+                {
+                    var vectorDataList = new List<Vector3>();
+
+                    for (int i = 0; i < splitStringArrayData.Length; i++)
+                    {
+                        var vectorSplit = splitStringArrayData[i].Split(" ");
+                        var vector = new Vector3(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]), float.Parse(vectorSplit[2]));
+                        vectorDataList.Add(vector);
+
+                        await Task.Yield();
+                    }
+
+                    callbackResults.SetResult(GetAppDataComponentsValid(vectorDataList, "Vector Data List", $"Convert String To Vector 3 Array Async Failed - Couldn't Convert String Source : [{source}] To A Vector 3 Array - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Convert String To Vector 3 Array Async Success.";
+                        callbackResults.data = vectorDataList.ToArray();
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public static async Task<CallbackDataArray<Vector4>> ConvertStringToVector4ArrayAsync(string source, string seperator)
+            {
+                var callbackResults = new CallbackDataArray<Vector4>();
+
+                var splitStringArrayData = source.Split(seperator);
+
+                callbackResults.SetResult(GetAppStringArrayValid(splitStringArrayData));
+
+                if (callbackResults.Success())
+                {
+                    var vectorDataList = new List<Vector4>();
+
+                    for (int i = 0; i < splitStringArrayData.Length; i++)
+                    {
+                        var vectorSplit = splitStringArrayData[i].Split(" ");
+                        var vector = new Vector4(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]), float.Parse(vectorSplit[2]), float.Parse(vectorSplit[3]));
+                        vectorDataList.Add(vector);
+
+                        await Task.Yield();
+                    }
+
+                    callbackResults.SetResult(GetAppDataComponentsValid(vectorDataList, "Vector Data List", $"Convert String To Vector 4 Array Async Failed - Couldn't Convert String Source : [{source}] To A Vector 3 Array - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Convert String To Vector 4 Array Async Success.";
+                        callbackResults.data = vectorDataList.ToArray();
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            public static async Task<CallbackDataArray<int>> ConvertStringToIntArrayAsync(string source)
+            {
+                var callbackResults = new CallbackDataArray<int>();
+
+                var splitStringArrayData = source.Split(" ");
+
+                callbackResults.SetResult(GetAppStringArrayValid(splitStringArrayData));
+
+                if (callbackResults.Success())
+                {
+                    var intDataList = new List<int>();
+
+                    for (int i = 0; i < splitStringArrayData.Length; i++)
+                    {
+                        intDataList.Add(int.Parse(splitStringArrayData[i]));
+                        await Task.Yield();
+                    }
+
+                    callbackResults.SetResult(GetAppDataComponentsValid(intDataList, "Int Data List", $"Convert String To Int Array Async Failed - Couldn't Convert String Source : [{source}] To An Int Array - Invalid Operation."));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = $"Convert String To Int Array Async Success.";
+                        callbackResults.data = intDataList.ToArray();
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
+
             public static Vector3[] StringToVector3ArrayJob(string source, string seperator)
             {
                 var splitStringArray = Encoding.UTF8.GetBytes(seperator);
@@ -62238,6 +62379,37 @@ namespace Com.RedicalGames.Filar
                 }
 
                 callback.Invoke(callbackResults);
+            }
+
+            public static CallbackDataList<T> GetAppDataComponentsValid<T>(List<T> components, string componentsIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : struct
+            {
+                CallbackDataList<T> callbackResults = new CallbackDataList<T>();
+
+                if (components != null)
+                {
+                    if (components.Count > 0)
+                    {
+                        callbackResults.result = successOperationFallbackResults ?? $"Components : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
+                        callbackResults.data = components;
+                        callbackResults.resultCode = SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = "Component Is Not Null - There Are No Values Assigned - List Empty.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = WarningCode;
+                    }
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"There Are No Components Assigned. Param Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
             }
 
             public static void GetAppComponentsValid<T>(T[] components, string componentsIdentifier = null, Action<CallbackDataArray<T>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
