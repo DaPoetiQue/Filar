@@ -11,9 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using TMPro;
 using Unity.Collections;
-using Unity.Jobs;
-using Unity.Burst;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.EnhancedTouch;
@@ -9916,37 +9913,25 @@ namespace Com.RedicalGames.Filar
                         var readableMesh = Helpers.GetReadableMesh(meshProperties[i].GetFilter().sharedMesh);
                         var meshName = meshProperties[i].GetFilter().gameObject.name;
 
-                        #region Vertices - Delete This
+                        var verticesStringCallbackResultsTask = Helpers.ConvertVector3ArrayToStringAsync(readableMesh.vertices, vertexSplit);
+                        var trianglesStringCallbackResultsTask = Helpers.ConvertIntArrayToStringAsync(readableMesh.triangles);
+                        var normalsStringCallbackResultsTask = Helpers.ConvertVector3ArrayToStringAsync(readableMesh.normals, normalSplit);
+                        var uvsStringCallbackResultsTask = Helpers.ConvertVector2ArrayToStringAsync(readableMesh.uv, uvSplit);
+                        var tangentsStringCallbackResultsTask = Helpers.ConvertVector4ArrayToStringAsync(readableMesh.tangents, tangentSplit);
+                        var indicesStringCallbackResultsTask = Helpers.ConvertIntArrayToStringAsync(readableMesh.GetIndices(0));
 
-                        //var verticesSplitStringArray = Encoding.UTF8.GetBytes(vertexSplit);
+                        var meshDataTasks = new List<Task>
+                        {
+                            verticesStringCallbackResultsTask,
+                            trianglesStringCallbackResultsTask,
+                            normalsStringCallbackResultsTask,
+                            uvsStringCallbackResultsTask,
+                            tangentsStringCallbackResultsTask,
+                            indicesStringCallbackResultsTask
+                        };
 
-                        //var verticesJob = new Vector3ArrayToStringJob()
-                        //{
-                        //    vectorNativeArray = new NativeArray<Vector3>(readableMesh.vertices, Allocator.TempJob),
-                        //    splitStringNativeArray = new NativeArray<byte>(verticesSplitStringArray, Allocator.TempJob),
-                        //    results = new NativeList<byte>(Allocator.TempJob)
-                        //};
+                        await Task.WhenAll(meshDataTasks);
 
-                        //var verticesJobHandle = verticesJob.Schedule();
-
-                        //verticesJobHandle.Complete();
-
-                        //var vertices = Encoding.UTF8.GetString(verticesJob.results.ToArray());
-
-                        //verticesJob.vectorNativeArray.Dispose();
-                        //verticesJob.splitStringNativeArray.Dispose();
-                        //verticesJob.results.Dispose();
-
-                        //Debug.Log($" +++++++++++ Vertices String : {vertices}");
-
-                        #endregion
-
-                        var vertices = Helpers.Vector3ArrayToStringJob(readableMesh.vertices, vertexSplit);
-                        var triangles = Helpers.IntArrayToStringJob(readableMesh.triangles);
-                        var normals = Helpers.Vector3ArrayToStringJob(readableMesh.normals, normalSplit);
-                        var uvs = Helpers.Vector2ArrayToStringJob(readableMesh.uv, uvSplit);
-                        var tangents = Helpers.Vector4ArrayToStringJob(readableMesh.tangents, tangentSplit);
-                        var indices = Helpers.IntArrayToStringJob(readableMesh.GetIndices(0));
                         var topology = ((int)readableMesh.GetTopology(0)).ToString();
 
                         var serializableMaterialData = new SerializableMaterial(meshProperties[i].GetRenderer().sharedMaterial);
@@ -9963,8 +9948,8 @@ namespace Com.RedicalGames.Filar
 
                         StringBuilder subMeshString = new StringBuilder();
 
-                        subMeshString.Append(meshName).Append(subMeshSplit).Append(vertices).Append(subMeshSplit).Append(triangles).Append(subMeshSplit).Append(normals).
-                            Append(subMeshSplit).Append(uvs).Append(subMeshSplit).Append(tangents).Append(subMeshSplit).Append(indices).
+                        subMeshString.Append(meshName).Append(subMeshSplit).Append(verticesStringCallbackResultsTask?.Result?.GetData()).Append(subMeshSplit).Append(trianglesStringCallbackResultsTask?.Result?.GetData()).Append(subMeshSplit).Append(normalsStringCallbackResultsTask?.Result?.GetData()).
+                            Append(subMeshSplit).Append(uvsStringCallbackResultsTask?.Result?.GetData()).Append(subMeshSplit).Append(tangentsStringCallbackResultsTask?.Result?.GetData()).Append(subMeshSplit).Append(indicesStringCallbackResultsTask?.Result?.GetData()).
                             Append(subMeshSplit).Append(topology).Append(subMeshSplit).Append(material);
 
                         subMeshStringList.Add(subMeshString.ToString());
@@ -59468,240 +59453,6 @@ namespace Com.RedicalGames.Filar
             #endregion
         }
 
-        #region Unity Jobs
-
-        [BurstCompile]
-        public struct Vector2ArrayToStringJob : IJob
-        {
-            [ReadOnly]
-            public NativeArray<Vector2> vectorNativeArray;
-
-            [ReadOnly]
-            public NativeArray<byte> splitStringNativeArray;
-
-            public NativeList<byte> results;
-
-            public void Execute()
-            {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                var seperator = Encoding.UTF8.GetString(splitStringNativeArray.ToArray());
-
-                for (int i = 0; i < vectorNativeArray.Length; i++)
-                    stringBuilder.Append(vectorNativeArray[i].x).Append(" ").Append(vectorNativeArray[i].y).Append(seperator);
-
-                if (stringBuilder.Length > 0)
-                    stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
-
-                var stringBytesArray = Encoding.UTF8.GetBytes(stringBuilder.ToString());
-
-                for (int i = 0; i < stringBytesArray.Length; i++)
-                    results.Add(stringBytesArray[i]);
-            }
-        }
-
-        [BurstCompile]
-        public struct StringToVector2ArrayJob : IJob
-        {
-            [ReadOnly]
-            public NativeArray<byte> byteNativeArray;
-
-            [ReadOnly]
-            public NativeArray<byte> splitStringNativeArray;
-
-            public NativeList<Vector2> results;
-
-            public void Execute()
-            {
-                var seperator = Encoding.UTF8.GetString(splitStringNativeArray.ToArray());
-                var bytesToStringResults = Encoding.UTF8.GetString(byteNativeArray.ToArray());
-
-                var arrayData = bytesToStringResults.Split(seperator);
-
-                if (arrayData != null && arrayData.Length > 0)
-                {
-                    for (int i = 0; i < arrayData.Length; i++)
-                    {
-                        var vectorSplit = arrayData[i].Split(" ");
-                        var vector = new Vector2(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]));
-                        results.Add(vector);
-                    }
-                }
-            }
-        }
-
-        [BurstCompile]
-        public struct Vector3ArrayToStringJob : IJob
-        {    
-            [ReadOnly]
-            public NativeArray<Vector3> vectorNativeArray;
-
-            [ReadOnly]
-            public NativeArray<byte> splitStringNativeArray;
-
-            public NativeList<byte> results;
-
-            public void Execute()
-            {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                var seperator = Encoding.UTF8.GetString(splitStringNativeArray.ToArray());
-
-                for (int i = 0; i < vectorNativeArray.Length; i++)
-                    stringBuilder.Append(vectorNativeArray[i].x).Append(" ").Append(vectorNativeArray[i].y).Append(" ").Append(vectorNativeArray[i].z).Append(seperator);
-
-                if (stringBuilder.Length > 0)
-                    stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
-
-                var stringBytesArray = Encoding.UTF8.GetBytes(stringBuilder.ToString());
-
-                for (int i = 0; i < stringBytesArray.Length; i++)
-                    results.Add(stringBytesArray[i]);
-            }
-        }
-
-        [BurstCompile]
-        public struct StringToVector3ArrayJob : IJob
-        {
-            [ReadOnly]
-            public NativeArray<byte> byteNativeArray;
-
-            [ReadOnly]
-            public NativeArray<byte> splitStringNativeArray;
-
-            public NativeList<Vector3> results;
-
-            public void Execute()
-            {
-                var seperator = Encoding.UTF8.GetString(splitStringNativeArray.ToArray());
-                var bytesToStringResults = Encoding.UTF8.GetString(byteNativeArray.ToArray());
-
-                var arrayData = bytesToStringResults.Split(seperator);
-
-                if (arrayData != null && arrayData.Length > 0)
-                {
-                    for (int i = 0; i < arrayData.Length; i++)
-                    {
-                        var vectorSplit = arrayData[i].Split(" ");
-                        var vector = new Vector3(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]), float.Parse(vectorSplit[2]));
-                        results.Add(vector);
-                    }
-                }
-            }
-        }
-
-        [BurstCompile]
-        public struct Vector4ArrayToStringJob : IJob
-        {
-            [ReadOnly]
-            public NativeArray<Vector4> vectorNativeArray;
-
-            [ReadOnly]
-            public NativeArray<byte> splitStringNativeArray;
-
-            public NativeList<byte> results;
-
-            public void Execute()
-            {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                var seperator = Encoding.UTF8.GetString(splitStringNativeArray.ToArray());
-
-                for (int i = 0; i < vectorNativeArray.Length; i++)
-                    stringBuilder.Append(vectorNativeArray[i].x).Append(" ").Append(vectorNativeArray[i].y).Append(" ").Append(vectorNativeArray[i].z).Append(" ").Append(vectorNativeArray[i].w).Append(seperator);
-
-                if (stringBuilder.Length > 0)
-                    stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
-
-                var stringBytesArray = Encoding.UTF8.GetBytes(stringBuilder.ToString());
-
-                for (int i = 0; i < stringBytesArray.Length; i++)
-                    results.Add(stringBytesArray[i]);
-            }
-        }
-
-        [BurstCompile]
-        public struct StringToVector4ArrayJob : IJob
-        {
-            [ReadOnly]
-            public NativeArray<byte> byteNativeArray;
-
-            [ReadOnly]
-            public NativeArray<byte> splitStringNativeArray;
-
-            public NativeList<Vector4> results;
-
-            public void Execute()
-            {
-                var seperator = Encoding.UTF8.GetString(splitStringNativeArray.ToArray());
-                var bytesToStringResults = Encoding.UTF8.GetString(byteNativeArray.ToArray());
-
-                var arrayData = bytesToStringResults.Split(seperator);
-
-                if (arrayData != null && arrayData.Length > 0)
-                {
-                    for (int i = 0; i < arrayData.Length; i++)
-                    {
-                        var vectorSplit = arrayData[i].Split(" ");
-                        var vector = new Vector4(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]), float.Parse(vectorSplit[2]), float.Parse(vectorSplit[3]));
-                        results.Add(vector);
-                    }
-                }
-            }
-        }
-
-        [BurstCompile]
-        public struct IntArrayToStringJob : IJob
-        {
-            [ReadOnly]
-            public NativeArray<int> vectorNativeArray;
-
-            public NativeList<byte> results;
-
-            public void Execute()
-            {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                for (int i = 0; i < vectorNativeArray.Length; i++)
-                    stringBuilder.Append(vectorNativeArray[i]).Append(" ");
-
-                if (stringBuilder.Length > 0)
-                    stringBuilder.Remove(stringBuilder.Length - 1, 1);
-
-                var stringBytesArray = Encoding.UTF8.GetBytes(stringBuilder.ToString());
-
-                for (int i = 0; i < stringBytesArray.Length; i++)
-                    results.Add(stringBytesArray[i]);
-            }
-        }
-
-        [BurstCompile]
-        public struct StringToIntArrayJob : IJob
-        {
-            [ReadOnly]
-            public NativeArray<byte> byteNativeArray;
-
-            public NativeList<int> results;
-
-            public void Execute()
-            {
-                var bytesToStringResults = Encoding.UTF8.GetString(byteNativeArray.ToArray());
-
-                var arrayData = bytesToStringResults.Split(" ");
-
-                if (arrayData != null && arrayData.Length > 0)
-                {
-                    var intArray = new int[arrayData.Length];
-
-                    if (arrayData != null && arrayData.Length > 0)
-                        for (int i = 0; i < arrayData.Length; i++)
-                            results.Add(int.Parse(arrayData[i]));
-                }
-            }
-        }
-
-        #endregion
-
         #region Managed Objects
 
         public struct ManagedObjectReference<T> where T : class
@@ -60340,32 +60091,6 @@ namespace Com.RedicalGames.Filar
                 return vectorArray;
             }
 
-
-            public static Vector2[] StringToVector2ArrayJob(string source, string seperator)
-            {
-                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
-                var arrayData = Encoding.UTF8.GetBytes(source);
-
-                var stringToVectorArrayJob = new StringToVector2ArrayJob()
-                {
-                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.Persistent),
-                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.Persistent),
-                    results = new NativeList<Vector2>(Allocator.Persistent)
-                };
-
-                var vectorStringJobHandle = stringToVectorArrayJob.Schedule();
-
-                vectorStringJobHandle.Complete();
-
-                var results = stringToVectorArrayJob.results.ToArray();
-
-                stringToVectorArrayJob.byteNativeArray.Dispose();
-                stringToVectorArrayJob.splitStringNativeArray.Dispose();
-                stringToVectorArrayJob.results.Dispose();
-
-                return results;
-            }
-
             public static Vector3[] StringArrayToVector3Array(string[] arrayData)
             {
                 var vectorArray = new Vector3[arrayData.Length];
@@ -60383,7 +60108,7 @@ namespace Com.RedicalGames.Filar
                 return vectorArray;
             }
 
-            #region String To Vectors
+            #region Convert String To Vectors And Int
 
             public static async Task<CallbackDataArray<Vector2>> ConvertStringToVector2ArrayAsync(string source, string seperator)
             {
@@ -60516,105 +60241,133 @@ namespace Com.RedicalGames.Filar
 
             #endregion
 
-            public static Vector3[] StringToVector3ArrayJob(string source, string seperator)
+            #region Convert Vectors And Structs To Int
+
+            public static async Task<CallbackData<string>> ConvertVector2ArrayToStringAsync(Vector2[] vectorDataArray, string seperator)
             {
-                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
-                var arrayData = Encoding.UTF8.GetBytes(source);
+                var callbackResults = new CallbackData<string>(GetAppDataComponentsValid(vectorDataArray, "Vector 2 Data Array"));
 
-                var stringToVectorArrayJob = new StringToVector3ArrayJob()
+                if (callbackResults.Success())
                 {
-                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.Persistent),
-                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.Persistent),
-                    results = new NativeList<Vector3>(Allocator.Persistent)
-                };
+                    StringBuilder stringBuilder = new StringBuilder();
 
-                var vectorStringJobHandle = stringToVectorArrayJob.Schedule();
-
-                vectorStringJobHandle.Complete();
-
-                var results = stringToVectorArrayJob.results.ToArray();
-
-                stringToVectorArrayJob.byteNativeArray.Dispose();
-                stringToVectorArrayJob.splitStringNativeArray.Dispose();
-                stringToVectorArrayJob.results.Dispose();
-
-                return results;
-            }
-
-            public static Vector4[] StringArrayToVector4Array(string[] arrayData)
-            {
-                var vectorArray = new Vector4[arrayData.Length];
-
-                if (arrayData != null && arrayData.Length > 0)
-                {
-                    for (int i = 0; i < arrayData.Length; i++)
+                    for (int i = 0; i < vectorDataArray.Length; i++)
                     {
-                        var vectorSplit = arrayData[i].Split(" ");
-                        var vector = new Vector4(float.Parse(vectorSplit[0]), float.Parse(vectorSplit[1]), float.Parse(vectorSplit[2]), float.Parse(vectorSplit[3]));
-                        vectorArray[i] = vector;
+                        stringBuilder.Append(vectorDataArray[i].x).Append(" ").Append(vectorDataArray[i].y).Append(seperator);
+                        await Task.Yield();
+                    }
+
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
+
+                    var vectorStringDataResults = stringBuilder.ToString();
+
+                    callbackResults.SetResult(GetAppStringValueNotNullOrEmpty(vectorStringDataResults));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = "Convert Vector 2 Array To String Async Success.";
+                        callbackResults.data = vectorStringDataResults;
                     }
                 }
 
-                return vectorArray;
+                return callbackResults;
             }
 
-            public static Vector4[] StringToVector4ArrayJob(string source, string seperator)
+            public static async Task<CallbackData<string>> ConvertVector3ArrayToStringAsync(Vector3[] vectorDataArray, string seperator)
             {
-                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
-                var arrayData = Encoding.UTF8.GetBytes(source);
+                var callbackResults = new CallbackData<string>(GetAppDataComponentsValid(vectorDataArray, "Vector 3 Data Array"));
 
-                var stringToVectorArrayJob = new StringToVector4ArrayJob()
+                if (callbackResults.Success())
                 {
-                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.Persistent),
-                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.Persistent),
-                    results = new NativeList<Vector4>(Allocator.Persistent)
-                };
+                    StringBuilder stringBuilder = new StringBuilder();
 
-                var vectorStringJobHandle = stringToVectorArrayJob.Schedule();
+                    for (int i = 0; i < vectorDataArray.Length; i++)
+                    {
+                        stringBuilder.Append(vectorDataArray[i].x).Append(" ").Append(vectorDataArray[i].y).Append(" ").Append(vectorDataArray[i].z).Append(seperator);
+                        await Task.Yield();
+                    }
 
-                vectorStringJobHandle.Complete();
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
 
-                var results = stringToVectorArrayJob.results.ToArray();
+                    var vectorStringDataResults = stringBuilder.ToString();
 
-                stringToVectorArrayJob.byteNativeArray.Dispose();
-                stringToVectorArrayJob.splitStringNativeArray.Dispose();
-                stringToVectorArrayJob.results.Dispose();
+                    callbackResults.SetResult(GetAppStringValueNotNullOrEmpty(vectorStringDataResults));
 
-                return results;
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = "Convert Vector 3 Array To String Async Success.";
+                        callbackResults.data = vectorStringDataResults;
+                    }
+                }
+
+                return callbackResults;
             }
 
-            public static int[] StringArrayToIntArray(string[] arrayData)
+            public static async Task<CallbackData<string>> ConvertVector4ArrayToStringAsync(Vector4[] vectorDataArray, string seperator)
             {
-                var intArray = new int[arrayData.Length];
+                var callbackResults = new CallbackData<string>(GetAppDataComponentsValid(vectorDataArray, "Vector 4 Data Array"));
 
-                if (arrayData != null && arrayData.Length > 0)
-                    for (int i = 0; i < arrayData.Length; i++)
-                        intArray[i] = int.Parse(arrayData[i]);
-
-                return intArray;
-            }
-
-            public static int[] StringToIntArrayJob(string source)
-            {
-                var arrayData = Encoding.UTF8.GetBytes(source);
-
-                var stringToVectorArrayJob = new StringToIntArrayJob()
+                if (callbackResults.Success())
                 {
-                    byteNativeArray = new NativeArray<byte>(arrayData, Allocator.Persistent),
-                    results = new NativeList<int>(Allocator.Persistent)
-                };
+                    StringBuilder stringBuilder = new StringBuilder();
 
-                var vectorStringJobHandle = stringToVectorArrayJob.Schedule();
+                    for (int i = 0; i < vectorDataArray.Length; i++)
+                    {
+                        stringBuilder.Append(vectorDataArray[i].x).Append(" ").Append(vectorDataArray[i].y).Append(" ").Append(vectorDataArray[i].z).Append(" ").Append(vectorDataArray[i].w).Append(seperator);
+                        await Task.Yield();
+                    }
 
-                vectorStringJobHandle.Complete();
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - seperator.Length, seperator.Length);
 
-                var results = stringToVectorArrayJob.results.ToArray();
+                    var vectorStringDataResults = stringBuilder.ToString();
 
-                stringToVectorArrayJob.byteNativeArray.Dispose();
-                stringToVectorArrayJob.results.Dispose();
+                    callbackResults.SetResult(GetAppStringValueNotNullOrEmpty(vectorStringDataResults));
 
-                return results;
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = "Convert Vector 4 Array To String Async Success.";
+                        callbackResults.data = vectorStringDataResults;
+                    }
+                }
+
+                return callbackResults;
             }
+
+            public static async Task<CallbackData<string>> ConvertIntArrayToStringAsync(int[] intDataArray)
+            {
+                var callbackResults = new CallbackData<string>(GetAppDataComponentsValid(intDataArray, "Int Data Array"));
+
+                if (callbackResults.Success())
+                {
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    for (int i = 0; i < intDataArray.Length; i++)
+                    {
+                        stringBuilder.Append(intDataArray[i]).Append(" ");
+                        await Task.Yield();
+                    }
+
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Remove(stringBuilder.Length - 1, 1);
+
+                    var intStringDataResults = stringBuilder.ToString();
+
+                    callbackResults.SetResult(GetAppStringValueNotNullOrEmpty(intStringDataResults));
+
+                    if (callbackResults.Success())
+                    {
+                        callbackResults.result = "Convert Int Array To String Async Success.";
+                        callbackResults.data = intStringDataResults;
+                    }
+                }
+
+                return callbackResults;
+            }
+
+            #endregion
 
             public static string Vector2ArrayToString(Vector2[] arrayData, string seperator)
             {
@@ -60682,78 +60435,6 @@ namespace Com.RedicalGames.Filar
                     throw new ArgumentException("Vector 3 Array To String Failed - Array Data Is Null.");
 
                 return stringBuilder.ToString();
-            }
-
-            public static string Vector2ArrayToStringJob(Vector2[] arrayData, string seperator)
-            {
-                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
-
-                var vectorStringJob = new Vector2ArrayToStringJob()
-                {
-                    vectorNativeArray = new NativeArray<Vector2>(arrayData, Allocator.TempJob),
-                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.TempJob),
-                    results = new NativeList<byte>(Allocator.TempJob)
-                };
-
-                var vectorStringJobHandle = vectorStringJob.Schedule();
-
-                vectorStringJobHandle.Complete();
-
-                var results = Encoding.UTF8.GetString(vectorStringJob.results.ToArray());
-
-                vectorStringJob.vectorNativeArray.Dispose();
-                vectorStringJob.splitStringNativeArray.Dispose();
-                vectorStringJob.results.Dispose();
-
-                return results;
-            }
-
-            public static string Vector3ArrayToStringJob(Vector3[] arrayData, string seperator)
-            {
-                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
-
-                var vectorStringJob = new Vector3ArrayToStringJob()
-                {
-                    vectorNativeArray = new NativeArray<Vector3>(arrayData, Allocator.TempJob),
-                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.TempJob),
-                    results = new NativeList<byte>(Allocator.TempJob)
-                };
-
-                var vectorStringJobHandle = vectorStringJob.Schedule();
-
-                vectorStringJobHandle.Complete();
-
-                var results = Encoding.UTF8.GetString(vectorStringJob.results.ToArray());
-
-                vectorStringJob.vectorNativeArray.Dispose();
-                vectorStringJob.splitStringNativeArray.Dispose();
-                vectorStringJob.results.Dispose();
-
-                return results;
-            }
-
-            public static string Vector4ArrayToStringJob(Vector4[] arrayData, string seperator)
-            {
-                var splitStringArray = Encoding.UTF8.GetBytes(seperator);
-
-                var vectorStringJob = new Vector4ArrayToStringJob()
-                {
-                    vectorNativeArray = new NativeArray<Vector4>(arrayData, Allocator.TempJob),
-                    splitStringNativeArray = new NativeArray<byte>(splitStringArray, Allocator.TempJob),
-                    results = new NativeList<byte>(Allocator.TempJob)
-                };
-
-                var vectorStringJobHandle = vectorStringJob.Schedule();
-
-                vectorStringJobHandle.Complete();
-
-                var results = Encoding.UTF8.GetString(vectorStringJob.results.ToArray());
-
-                vectorStringJob.vectorNativeArray.Dispose();
-                vectorStringJob.splitStringNativeArray.Dispose();
-                vectorStringJob.results.Dispose();
-
-                return results;
             }
 
             public static string Vector3ToString(Vector3 data, string seperator)
@@ -60854,26 +60535,6 @@ namespace Com.RedicalGames.Filar
                     throw new ArgumentException("Int Array To String Failed- Array Data Is Null.");
 
                 return stringBuilder.ToString();
-            }
-
-            public static string IntArrayToStringJob(int[] arrayData)
-            {
-                var vectorStringJob = new IntArrayToStringJob()
-                {
-                    vectorNativeArray = new NativeArray<int>(arrayData, Allocator.TempJob),
-                    results = new NativeList<byte>(Allocator.TempJob)
-                };
-
-                var vectorStringJobHandle = vectorStringJob.Schedule();
-
-                vectorStringJobHandle.Complete();
-
-                var results = Encoding.UTF8.GetString(vectorStringJob.results.ToArray());
-
-                vectorStringJob.vectorNativeArray.Dispose();
-                vectorStringJob.results.Dispose();
-
-                return results;
             }
 
             public static async Task<string> IntArrayToStringAsync(int[] arrayData)
@@ -62198,7 +61859,7 @@ namespace Com.RedicalGames.Filar
 
             public static Callback ComponentHasContent<T>(Queue<T> contents, T referencedContent, string contentsIdentifier = null, string contentIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
             {
-                Callback callbackResults = new Callback();
+                var callbackResults = new Callback();
 
                 if (contents.Contains(referencedContent))
                 {
@@ -62220,7 +61881,7 @@ namespace Com.RedicalGames.Filar
 
             public static Callback ComponentDoesntHaveContent<T>(List<T> contents, T referencedContent, string contentsIdentifier = null, string contentIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
             {
-                Callback callbackResults = new Callback();
+                var callbackResults = new Callback();
 
                 if (!contents.Contains(referencedContent))
                 {
@@ -62238,7 +61899,7 @@ namespace Com.RedicalGames.Filar
 
             public static Callback ComponentDoesntHaveContent<T>(T[] contents, T referencedContent, string contentsIdentifier = null, string contentIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
             {
-                Callback callbackResults = new Callback();
+                var callbackResults = new Callback();
 
                 if (!contents.Contains(referencedContent))
                 {
@@ -62256,7 +61917,7 @@ namespace Com.RedicalGames.Filar
 
             public static Callback ComponentDoesntHaveContent<T>(Queue<T> contents, T referencedContent, string contentsIdentifier = null, string contentIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
             {
-                Callback callbackResults = new Callback();
+                var callbackResults = new Callback();
 
                 if (!contents.Contains(referencedContent))
                 {
@@ -62278,7 +61939,7 @@ namespace Com.RedicalGames.Filar
 
             public static Callback ComponentAddContent<T>(T referencedContent, List<T> contents, string contentsIdentifier = null, string contentIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
             {
-                Callback callbackResults = new Callback();
+                var callbackResults = new Callback();
 
                 if (!contents.Contains(referencedContent))
                 {
@@ -62306,7 +61967,7 @@ namespace Com.RedicalGames.Filar
 
             public static async Task<Callback> ComponentAddContentAsync<T>(T referencedContent, List<T> contents, string contentIdentifier = null, string contentsIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
             {
-                Callback callbackResults = new Callback();
+                var callbackResults = new Callback();
 
                 if (!contents.Contains(referencedContent))
                 {
@@ -62340,7 +62001,7 @@ namespace Com.RedicalGames.Filar
 
             public static void GetAppComponentsValid<T>(List<T> components, string componentsIdentifier = null, Action<CallbackDataList<T>> callback = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : class
             {
-                CallbackDataList<T> callbackResults = new CallbackDataList<T>();
+                var callbackResults = new CallbackDataList<T>();
 
                 if (components != null)
                 {
@@ -62388,6 +62049,37 @@ namespace Com.RedicalGames.Filar
                 if (components != null)
                 {
                     if (components.Count > 0)
+                    {
+                        callbackResults.result = successOperationFallbackResults ?? $"Components : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
+                        callbackResults.data = components;
+                        callbackResults.resultCode = SuccessCode;
+                    }
+                    else
+                    {
+                        callbackResults.result = "Component Is Not Null - There Are No Values Assigned - List Empty.";
+                        callbackResults.data = default;
+                        callbackResults.resultCode = WarningCode;
+                    }
+                }
+                else
+                {
+                    string results = (failedOperationFallbackResults != null) ? failedOperationFallbackResults : $"There Are No Components Assigned. Param Is Not Valid - Not Found / Missing / Null.";
+
+                    callbackResults.result = results;
+                    callbackResults.data = default;
+                    callbackResults.resultCode = ErrorCode;
+                }
+
+                return callbackResults;
+            }
+
+            public static CallbackDataArray<T> GetAppDataComponentsValid<T>(T[] components, string componentsIdentifier = null, string failedOperationFallbackResults = null, string successOperationFallbackResults = null) where T : struct
+            {
+                var callbackResults = new CallbackDataArray<T>();
+
+                if (components != null)
+                {
+                    if (components.Length > 0)
                     {
                         callbackResults.result = successOperationFallbackResults ?? $"Components : {componentsIdentifier ?? "Name Unsassigned"} Is Valid.";
                         callbackResults.data = components;
