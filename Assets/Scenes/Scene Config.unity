@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3708985, g: 0.3783704, b: 0.35722548, a: 1}
+  m_IndirectSpecularColor: {r: 0.3708985, g: 0.3783701, b: 0.3572253, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1161,7 +1161,7 @@ MonoBehaviour:
     deslikesDataString: 
     commentsDataString: 
   obj: {fileID: 3653823627276522066}
-  thumbnail: {fileID: 21300000, guid: 7cd7b2fdb233c4240ba97acea16638ec, type: 3}
+  thumbnail: {fileID: 21300000, guid: d72a92965d4bc804caf3b0813d8421aa, type: 3}
   imageEncoderType: 0
 --- !u!4 &1921894487
 Transform:
@@ -1265,7 +1265,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3653823626054570115, guid: d9028eb9d39c86647bf45430a14b84fc, type: 3}
       propertyPath: m_Name
-      value: Glow Box
+      value: Wooden Box
       objectReference: {fileID: 0}
     - target: {fileID: 3653823626054570115, guid: d9028eb9d39c86647bf45430a14b84fc, type: 3}
       propertyPath: m_IsActive
@@ -1274,7 +1274,7 @@ PrefabInstance:
     - target: {fileID: 3653823626054570117, guid: d9028eb9d39c86647bf45430a14b84fc, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 41921f2494a7ef14eb0f7e3b32398389, type: 2}
+      objectReference: {fileID: 2100000, guid: 0212656a580d750469ba6100d261fd9e, type: 2}
     - target: {fileID: 3653823626054570119, guid: d9028eb9d39c86647bf45430a14b84fc, type: 3}
       propertyPath: m_RootOrder
       value: 6
