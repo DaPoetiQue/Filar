@@ -242,6 +242,8 @@ namespace Com.RedicalGames.Filar
                     AppData.GenericActionEvents<Screen>._OnScreenTransitionInProgressEvent += value => eventMethod?.Invoke(AppData.EventType.OnScreenTransitionInProgress);
                     AppData.GenericActionEvents<AppData.Widget>._OnWidgetShownEvent += value => eventMethod?.Invoke(AppData.EventType.OnWidgetShown);
                     AppData.GenericActionEvents<AppData.Widget>._OnWidgetHiddenEvent += value => eventMethod?.Invoke(AppData.EventType.OnWidgetHidden);
+                    AppData.GenericActionEvents<AppData.TabView<AppData.WidgetType>>._OnTabViewShownEvent += value => eventMethod?.Invoke(AppData.EventType.OnTabViewShownEvent);
+                    AppData.GenericActionEvents<AppData.TabView<AppData.WidgetType>>._OnTabViewHiddenEvent += value => eventMethod?.Invoke(AppData.EventType.OnTabViewHiddenEvent);
                     AppData.GenericActionEvents<AppData.Widget>._OnWidgetTransitionInProgressEvent += value => eventMethod?.Invoke(AppData.EventType.OnWidgetTransitionInProgress);
                     AppData.GenericActionEvents<AppData.SelectableWidget>._OnSelectableWidgetShownEvent += value => eventMethod?.Invoke(AppData.EventType.OnSelectableWidgetShown);
                     AppData.GenericActionEvents<AppData.SelectableWidget>._OnSelectableWidgetHiddenEvent += value => eventMethod?.Invoke(AppData.EventType.OnSelectableWidgetHidden);
@@ -269,6 +271,8 @@ namespace Com.RedicalGames.Filar
                     AppData.GenericActionEvents<Screen>._OnScreenTransitionInProgressEvent -= value => eventMethod?.Invoke(AppData.EventType.OnScreenTransitionInProgress);
                     AppData.GenericActionEvents<AppData.Widget>._OnWidgetShownEvent -= value => eventMethod?.Invoke(AppData.EventType.OnWidgetShown);
                     AppData.GenericActionEvents<AppData.Widget>._OnWidgetHiddenEvent -= value => eventMethod?.Invoke(AppData.EventType.OnWidgetHidden);
+                    AppData.GenericActionEvents<AppData.TabView<AppData.WidgetType>>._OnTabViewShownEvent -= value => eventMethod?.Invoke(AppData.EventType.OnTabViewShownEvent);
+                    AppData.GenericActionEvents<AppData.TabView<AppData.WidgetType>>._OnTabViewHiddenEvent -= value => eventMethod?.Invoke(AppData.EventType.OnTabViewHiddenEvent);
                     AppData.GenericActionEvents<AppData.Widget>._OnWidgetTransitionInProgressEvent -= value => eventMethod?.Invoke(AppData.EventType.OnWidgetTransitionInProgress);
                     AppData.GenericActionEvents<AppData.SelectableWidget>._OnSelectableWidgetShownEvent -= value => eventMethod?.Invoke(AppData.EventType.OnSelectableWidgetShown);
                     AppData.GenericActionEvents<AppData.SelectableWidget>._OnSelectableWidgetHiddenEvent -= value => eventMethod?.Invoke(AppData.EventType.OnSelectableWidgetHidden);
