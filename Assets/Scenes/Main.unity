@@ -3741,12 +3741,12 @@ MonoBehaviour:
     transitionableMounts:
     - name: On Post Widget Visible Mount
       mount: {fileID: 1231959794}
-      transitionSpeed: 2.5
+      transitionSpeed: 5
       eventTriggerDistance: 1
       mountType: 1
     - name: On Post Widget Hidden Mount
       mount: {fileID: 1770299843}
-      transitionSpeed: 2.5
+      transitionSpeed: 5
       eventTriggerDistance: 1
       mountType: 2
     active: 1

@@ -2779,7 +2779,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-  transitionableUIMounts: []
 --- !u!1 &691520170624519501
 GameObject:
   m_ObjectHideFlags: 0
@@ -3497,12 +3496,12 @@ MonoBehaviour:
   transitionableUIMountList:
   - name: Visible Mount
     mount: {fileID: 1787495787260082343}
-    transitionSpeed: 8
+    transitionSpeed: 5
     eventTriggerDistance: 0.1
     mountType: 1
   - name: Hidden Mount
     mount: {fileID: 7758880921396125170}
-    transitionSpeed: 8
+    transitionSpeed: 5
     eventTriggerDistance: 0.1
     mountType: 2
   initialVisibilityState: 2
@@ -5723,7 +5722,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-  transitionableUIMounts: []
 --- !u!1 &4464188120856273142
 GameObject:
   m_ObjectHideFlags: 0
@@ -8119,7 +8117,6 @@ MonoBehaviour:
       toggleWidgets: []
       textWidgets: []
       imageWidgets: []
-  transitionableUIMounts: []
 --- !u!114 &6423312120073391183
 MonoBehaviour:
   m_ObjectHideFlags: 0
